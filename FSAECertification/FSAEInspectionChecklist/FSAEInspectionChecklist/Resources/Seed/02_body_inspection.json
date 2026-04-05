@@ -1,0 +1,453 @@
+{
+  "code": "02_body",
+  "title": "Body Inspection",
+  "displayOrder": 2,
+  "sections": [
+    {
+      "title": "Body & Appearance",
+      "displayOrder": 1,
+      "testCases": [
+        {
+          "itemId": "B10",
+          "ruleRef": "V.4.3.1",
+          "title": "WET TIRES (CAR)",
+          "displayOrder": 1,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Record Brand, Compound, Size for the wet tire set on the car." }
+          ]
+        },
+        {
+          "itemId": "B11",
+          "ruleRef": "GR.9.3",
+          "title": "FIRST YEAR VEHICLE",
+          "displayOrder": 2,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "New Chassis and is within its initial Competition Year." }
+          ]
+        },
+        {
+          "itemId": "B12",
+          "ruleRef": "VE.2.2",
+          "title": "PUSH BAR",
+          "displayOrder": 3,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Always with car (detachable), push & pull, usable by 2 people standing behind the car. EVs: HV disconnect tool, if used." }
+          ]
+        },
+        {
+          "itemId": "B16",
+          "ruleRef": "VE.1.1",
+          "title": "CAR NUMBERS",
+          "displayOrder": 4,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "On front & both sides of car. Minimum 150 mm tall, 18 mm stroke & spacing. White-on-black or black-on-white only. Background shape: round, oval, rectangular or square. Visibility must not be obstructed." }
+          ]
+        },
+        {
+          "itemId": "B17",
+          "ruleRef": "VE.1.3",
+          "title": "SAE DECALS",
+          "displayOrder": 5,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "SAE logo on front OR both sides, in prominent location." }
+          ]
+        },
+        {
+          "itemId": "B18",
+          "ruleRef": "VE.1.2",
+          "title": "SCHOOL NAME",
+          "displayOrder": 6,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "School name or recognized initials. Both sides of car, easily visible location, 50 mm tall min, Roman letters, high contrast background." }
+          ]
+        },
+        {
+          "itemId": "B19",
+          "ruleRef": "VE.1.4",
+          "title": "TECH STICKER SPACE",
+          "displayOrder": 7,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "25 cm wide x 20 cm high available space, located on centerline of upper front bodywork (nose) of car." }
+          ]
+        },
+        {
+          "itemId": "B20",
+          "ruleRef": "VE.2.5",
+          "title": "CAMERA MOUNTS",
+          "displayOrder": 8,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "If >0.25 kg, must be secured by two points (typical GoPro-brand camera is <0.25 kg). No cameras mounted to helmet." }
+          ]
+        },
+        {
+          "itemId": "B21",
+          "ruleRef": "V.1.4",
+          "title": "GROUND CLEARANCE",
+          "displayOrder": 9,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Sufficient clearance so that no part of the car other than the tires will contact the track surface." }
+          ]
+        },
+        {
+          "itemId": "B23",
+          "ruleRef": "V.2.2",
+          "title": "VISIBILITY",
+          "displayOrder": 10,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "100° min field of view to each side. Head rotation OK, or mirrors. If mirrors, must be firmly installed and adjusted." }
+          ]
+        },
+        {
+          "itemId": "B24",
+          "ruleRef": "T.2.9",
+          "title": "ROLL BAR PADDING",
+          "displayOrder": 11,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Installed on any bar that could be hit by the driver's helmet. 12 mm thick. Specification: SFI 45.1 or FIA 8857/2001. Pipe insulation or other foams not OK." }
+          ]
+        },
+        {
+          "itemId": "B25",
+          "ruleRef": "F.5.12",
+          "title": "OTHER SIDE TUBES",
+          "displayOrder": 12,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Cockpit design must prevent driver's neck from hitting bracing or other side tubes." }
+          ]
+        },
+        {
+          "itemId": "B26",
+          "ruleRef": "T.1.4",
+          "title": "VEHICLE CONTROLS",
+          "displayOrder": 13,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "No hands, arms, or elbows outside side impact system when actuating controls. All controls including shifter must be inside cockpit and below topmost point of Front Hoop." }
+          ]
+        },
+        {
+          "itemId": "B27",
+          "ruleRef": "T.2.5",
+          "title": "LAP BELT FIT",
+          "displayOrder": 14,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Must pass over pelvis, not waist. 45-65° to horizon for upright driver, 60-80° for reclined." }
+          ]
+        },
+        {
+          "itemId": "B28",
+          "ruleRef": "T.2.6",
+          "title": "SHOULDER HARNESS FIT",
+          "displayOrder": 15,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Angle from shoulder between 10° up and 20° down (vs horizontal)." }
+          ]
+        },
+        {
+          "itemId": "B29",
+          "ruleRef": "T.2.7",
+          "title": "SUB BELT FIT",
+          "displayOrder": 16,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Snug, holding latch in place. Position in side-view — 5 Point: aligned with or forward of shoulder belt line; 6 Point: vertical or rearward of latch." }
+          ]
+        },
+        {
+          "itemId": "B30",
+          "ruleRef": "VE.3.3.7",
+          "title": "ARM RESTRAINTS FIT",
+          "displayOrder": 17,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Installed so the driver can release them and exit unassisted regardless of vehicle's position." }
+          ]
+        },
+        {
+          "itemId": "B31",
+          "ruleRef": "T.2.8",
+          "title": "HEAD RESTRAINT FIT",
+          "displayOrder": 18,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Max 25 mm (1\") forward gap to helmet. Helmet contact point min 50 mm (2\") from any edge. Applies to ALL DRIVERS (may be adjusted for each driver)." }
+          ]
+        },
+        {
+          "itemId": "B32",
+          "ruleRef": "F.5.6.3",
+          "title": "MAIN HOOP & FRONT HOOP HEIGHTS",
+          "displayOrder": 19,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Helmet 50 mm (2.0\") below lines between top of front and main roll hoops, and top of main hoop to rear attachment point of main hoop bracing. Applies for every driver." }
+          ]
+        },
+        {
+          "itemId": "B33",
+          "ruleRef": "T.1.3.2",
+          "title": "DRIVER'S FOOT PROTECTION",
+          "displayOrder": 20,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Feet must be rearward of the Front Bulkhead and no part of shoes or legs above or outside the Major Structure in side or front views when touching pedals. Remove nose bodywork if necessary for visual access." }
+          ]
+        },
+        {
+          "itemId": "B34",
+          "ruleRef": "IN.5.2",
+          "title": "EGRESS",
+          "displayOrder": 21,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "5 seconds max to actuate cockpit master switch and exit to side of vehicle, from driving position, wearing safety equipment. Wings must remain fixed in position. See egress worksheet." }
+          ]
+        },
+        {
+          "itemId": "B35",
+          "ruleRef": "V.1",
+          "title": "BODY & STYLING",
+          "displayOrder": 22,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Open cockpit, formula style body. Four wheels, not in a line." }
+          ]
+        },
+        {
+          "itemId": "B36",
+          "ruleRef": "V.1.1",
+          "title": "OPEN WHEEL",
+          "displayOrder": 23,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Top 180° of wheel/tire unobstructed from above. Tires unobstructed from sides. Vertical keepout zones 75mm in front & behind tires." }
+          ]
+        },
+        {
+          "itemId": "B37",
+          "ruleRef": "T.7.2",
+          "title": "BODYWORK",
+          "displayOrder": 24,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "No large openings (>~6mm) in bodywork into driver compartment in front of or alongside driver. Body/nose min 38 mm radius, +/-45° all directions." }
+          ]
+        },
+        {
+          "itemId": "B38",
+          "ruleRef": "V.1.2",
+          "title": "WHEELBASE",
+          "displayOrder": 25,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Minimum 1525 mm." }
+          ]
+        },
+        {
+          "itemId": "B39",
+          "ruleRef": "VE.2.1",
+          "title": "JACKING POINT",
+          "displayOrder": 26,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Horizontal, lateral tube at the rear. Orange color. 300 mm wide by 25-30 mm O.D. Visible to person standing 1 meter behind car. 75 mm min ground clearance. Rear tires must come off the ground using Quick-Jack (lifts to 200 mm). Exposed around the lower 180° of its circumference." }
+          ]
+        },
+        {
+          "itemId": "B40",
+          "ruleRef": "T.1.5 / T.1.6",
+          "title": "SEAT",
+          "displayOrder": 27,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Insulated against heat conduction, convection and radiation. Lowest point no lower than top of lower structure OR must have longitudinal 1.00\" OD x 0.065\" steel tube underneath." }
+          ]
+        },
+        {
+          "itemId": "B41",
+          "ruleRef": "T.1.8",
+          "title": "FIREWALL",
+          "displayOrder": 28,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Rigid, nonflammable material. Separates driver (line-of-sight to mid-height of driver's helmet) from fuel, cooling, oil, lithium battery, heat sources, and all tractive system components. Wire/cable pass-throughs OK with grommets. Multiple panels OK w/ gaps sealed. Seals (e.g. metal tape) cannot be stressed or used to hold firewalls in place. No gaps at sides or bottom. Leaks cannot contact driver." }
+          ]
+        },
+        {
+          "itemId": "B42",
+          "ruleRef": "T.1.7",
+          "title": "FLOOR CLOSEOUT PANEL",
+          "displayOrder": 29,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Non-perforated, non-brittle material from foot area to firewall. Multiple panels OK if gaps less than 3 mm (1/8\")." }
+          ]
+        },
+        {
+          "itemId": "B43",
+          "ruleRef": "T.1.3",
+          "title": "DRIVER'S LEG PROTECTION",
+          "displayOrder": 30,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Covers inside cockpit over sharp parts or moving suspension and steering components." }
+          ]
+        },
+        {
+          "itemId": "B48",
+          "ruleRef": "V.4",
+          "title": "WHEELS",
+          "displayOrder": 31,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "203 mm (8.0\") min diameter. Wheels with single wheel nut must have positive retainer. Aluminum lug nuts hard-anodized and pristine condition." }
+          ]
+        },
+        {
+          "itemId": "B49",
+          "ruleRef": "T.2.2",
+          "title": "DRIVER RESTRAINT HARNESS",
+          "displayOrder": 32,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "5, 6 or 7 point harness. Must be labeled: SFI 16.1, 16.5, or FIA 8853/98, 8853/2016 (or lookup FIA D-number). All lap belts must have Quick Adjusters. Reclined drivers must have 6 or 7 point and Quick Adjuster sub-belts OR 2 sets of sub belts. Belts expire after expiration year (not month) marked on label." }
+          ]
+        },
+        {
+          "itemId": "B50",
+          "ruleRef": "T.2.2",
+          "title": "HARNESS HARDWARE AND INSTALLATION",
+          "displayOrder": 33,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Belts threaded through hardware per manufacturer instructions. Hardware must be unmodified (no drilling, welding, etc)." }
+          ]
+        },
+        {
+          "itemId": "B51",
+          "ruleRef": "T.2.4",
+          "title": "HARNESS MOUNTS",
+          "displayOrder": 34,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Belts must be protected by firewalls. All belts attached securely to Primary Structure. Tabs 1.6 mm (0.063\") thick min, 60 mm² shear area; tabs combining lap & sub belts 90 mm². Double-shear preferred. Tabs welded on both sides; bolt-on tabs use minimum of two 1/4\" dia Grade 5 bolts. Tabs aligned with load direction of belt, may be pre-bent." }
+          ]
+        },
+        {
+          "itemId": "B52",
+          "ruleRef": "T.2.5",
+          "title": "LAP BELT POSITION",
+          "displayOrder": 35,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Pivoting mounting using eye bolt or shoulder bolt (no tube wrap). Not redirected by seat. Belt centerline max 3\" forward of seatback-seatbottom junction in side view." }
+          ]
+        },
+        {
+          "itemId": "B53",
+          "ruleRef": "T.2.6",
+          "title": "SHOULDER HARNESS POSITION",
+          "displayOrder": 36,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Mounting points 175-235 mm (~7\" - 9\") apart. Tube wrap OK." }
+          ]
+        },
+        {
+          "itemId": "B54",
+          "ruleRef": "T.2.7",
+          "title": "SUB BELT POSITION",
+          "displayOrder": 37,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Sub belts cannot be re-directed by anything other than the driver's body." }
+          ]
+        },
+        {
+          "itemId": "B55",
+          "ruleRef": "T.2.5.8 / T.2.6.3 / T.2.7.4",
+          "title": "BELT ATTACHMENT FASTENERS",
+          "displayOrder": 38,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Lap & Shoulder: 10 mm Grade 8.8 (3/8\" SAE Grade 5). Sub: 8 mm (5/16\"), or as specified by harness manufacturer. Pins required in clip-brackets. Special rules for eye-type attachments: aligned, fully tight, see T.2.4.5. CRITICAL (positive locking) per T.8." }
+          ]
+        },
+        {
+          "itemId": "B56",
+          "ruleRef": "T.2.8",
+          "title": "HEAD RESTRAINT",
+          "displayOrder": 39,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Min 150 mm width, 235 cm² area AND height adjustment of 175 mm (7\"); OR 280 mm (11\") height. 38 mm (1.5\") thick. Near vertical. Pad and mount must take 900 N rearward and 300 N lateral forces. Energy absorbing material: SFI Standard 45.2 or FIA Tech List 17 (CONFOR blue CF45 or CF45M), with 20mm inspection hole in its cover. Mount must be within Main Hoop Bracing envelope, or add extra tube per F.5.10." }
+          ]
+        },
+        {
+          "itemId": "BS33",
+          "ruleRef": "T.7.1",
+          "title": "AERODYNAMIC DEVICES",
+          "displayOrder": 40,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "No powered ground effects. Securely mounted — no oscillation or excessive movement. Applies to wings, undertray, splitter, endplates, vanes, etc. Vertical keepout zones 75mm in front & behind tires." }
+          ]
+        },
+        {
+          "itemId": "BS34",
+          "ruleRef": "T.7.1",
+          "title": "EDGE RADII",
+          "displayOrder": 41,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Horizontal leading edges min 5 mm radius. Vertical forward-facing edges min 3 mm radius. Other edges: not sharp per GR.1.5." }
+          ]
+        },
+        {
+          "itemId": "BS35",
+          "ruleRef": "T.7.4",
+          "title": "FRONT MOUNTED AERO",
+          "displayOrder": 42,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Max forward: 700 mm ahead of the front tires. Max width: OUTSIDE of the front tires (at hub height). Max height: 250 mm if in front of tires (without driver)." }
+          ]
+        },
+        {
+          "itemId": "BS36",
+          "ruleRef": "T.7.5-8",
+          "title": "REAR MOUNTED AERO",
+          "displayOrder": 43,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Max rearward: 250 mm behind the rear tires. Max forward: Headrest support (undertrays exempt). Max width: INSIDE of the rear tires (at hub height). Max height: 1.2 m above ground (without driver)." }
+          ]
+        },
+        {
+          "itemId": "BS37",
+          "ruleRef": "T.7.5-8",
+          "title": "AERO BETWEEN WHEEL CENTERLINES",
+          "displayOrder": 44,
+          "badges": [],
+          "steps": [
+            { "displayOrder": 1, "type": "requirement", "content": "Max width: Line between front & rear tires (at hub height). Max height: 500 mm (exempt if within 400 mm of car centerline)." }
+          ]
+        }
+      ]
+    }
+  ]
+}

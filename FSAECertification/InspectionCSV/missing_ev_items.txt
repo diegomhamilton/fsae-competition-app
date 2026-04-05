@@ -1,0 +1,83 @@
+Missing / incomplete EV inspection items
+=========================================
+For each item below, provide: rule_ref (if wrong), title, and description.
+If an item does not exist in the PDF, write "N/A".
+
+---
+
+EV16
+rule_ref: EV.5.7.4.b
+EV.5.7.4.b
+Voltage Indicator must be labeled with “High Voltage Present”.
+
+---
+
+EV24
+EV.8.2.4
+Charger connector must incorporate an interlock such that the connectors only
+become live if are correctly connected.
+
+---
+
+EV36
+EV.5.3.2.c
+Maintenance Plugs must be impossible to connect in any configuration other
+than the intended.
+---
+
+EV37
+EV.5.3.2.d
+Maintenance Plugs must not require tools to remove or install.
+Removal and installation must be possible using HV insulated gloves + leather
+gloves.
+
+---
+
+EV42
+BR.4.6.1.2
+Attachment of the temperature sensors must not rely solely on tape.
+
+---
+
+EV43
+EV.5.2.2.a
+If the container is made of electrically conductive material, the poles of the
+accumulator stack(s) and cells must be insulated to the inner walls of the
+Accumulator Container.
+
+---
+
+EV70
+T.6
+Compressed gas cylinders must:
+Be an unmodified COTS cylinder (labeled), filled with nonflammable gas and
+with a regulator on tank.
+Securely mounted, axis not pointed at driver, rearward of Main Hoop within the
+frame envelope, or in structural sidepod; not in cockpit, with appropriate lines &
+fittings.
+
+---
+
+EV79
+EV.5.8.3
+TSMPs must be 4mm shrouded red banana jacks, marked with “HV-” and “HV+”.
+
+---
+
+EV90
+EV.5.5.1.g
+MSD must be clearly marked with “MSD”.
+
+---
+
+EV102
+V.7.2.2
+When all shutdown circuit switches are ON, turn the TSMS OFF.
+TS Voltage must decrease below 60VDC in 5 seconds.
+
+---
+
+EV103
+EV.7.2.2
+When all shutdown circuit switches are ON, turn the GLVMS OFF.
+TS Voltage must decrease below 60VDC in 5 seconds.

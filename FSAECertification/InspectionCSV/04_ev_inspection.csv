@@ -1,0 +1,120 @@
+item_id,rule_ref,title,description
+EV1,EV.2 / GR.7,DATASHEETS AND RULES QUESTIONS,Datasheets and copies of any submitted Rules Questions with the received answer.
+EV2,IN.4.1 / BR.4.6.3.2,SAFETY GLASSES,Safety glasses with side shields for all team members that might work on the Tractive System or Accumulator.
+EV3,IN.4.1 / BR.4.6.3.2,FACE SHIELD,Face Shield.
+EV4,IN.4.1 / BR.4.6.3.2,HV INSULATING GLOVES,"HV insulating gloves which are 12 months or less from their test date. Must include leather gloves to protect the insulating gloves from mechanical damages. Test report must be provided."
+EV5,IN.4.1 / BR.4.6.3.2,MULTIMETER,Multimeter with protected probe tips.
+EV6,IN.4.1 / BR.4.6.3.2,INSULATED TOOLS,"Insulated cable shears, screwdrivers and associated HV tools."
+EV7,IN.4.1 / BR.4.6.3.2,HV INSULATING BLANKETS,Two HV insulating blankets of minimum 0.83 m² each. Test report must be provided.
+EV8,EV.8.1,ACCUMULATOR CHARGER,Charger(s) for the Accumulator(s).
+EV9,EV.4.10,ACCUMULATOR CONTAINER HAND CART,Accumulator Container Hand Cart.
+EV10,EV.5.1.4,SPARE ACCUMULATORS,Spare Accumulator(s) (if applicable).
+EV11,BR.4.6.3.1,BANANA-TYPE MEASURING TIPS,Two 4 mm banana-banana type measuring tips.
+EV12,EV.4.3.8.a,SCHOOL NAME AND VEHICLE NUMBER ON ACCUMULATOR,School Name and Vehicle Number must be present and clearly visible on the accumulator.
+EV13,EV.4.3.8.b,ACCUMULATOR HAZARD SYMBOL,"Accumulator must have symbol specified in ISO 7010-W012 (triangle with black lightning bolt on yellow background)."
+EV14,EV.4.3.8.c,ACCUMULATOR ALWAYS ENERGIZED LABEL,"""Always energized"" text must be present and clearly visible on the accumulator."
+EV15,EV.4.3.8.d,ACCUMULATOR VOLTAGE INDICATOR LABEL,Must indicate when accumulator voltage is greater than 60VDC.
+EV16,EV.5.7.4.b,VOLTAGE INDICATOR LABEL,"""High Voltage Present"" text must be present and clearly visible on the Voltage Indicator."
+EV17,F.10.4.4,ACCUMULATOR HOLES/OPENINGS,"Accumulator may have holes/openings with a maximum diameter of 10mm. Only round holes are allowed. Must not have a line of sight to the driver, with the firewall installed or not."
+EV18,EV.5.9 / EV.7.8,TS CONNECTOR INTERLOCK,Tractive System connectors outside of a housing must contain an Interlock.
+EV19,EV.4.10.3.a,HAND CART LOAD CAPACITY,The Hand Cart must be able to carry the load of the Accumulator Container(s) without tipping out.
+EV20,EV.4.10.3.b,HAND CART MINIMUM WHEELS,Hand cart must contain a minimum of two wheels.
+EV21,EV.4.10.3.c,HAND CART DEAD MAN BRAKE,"Hand cart must have a brake system using a Dead Man type switch (releasing the brake only when pushing and holding a handle) OR by manually lifting part of the cart off the ground."
+EV22,EV.4.10.3.c,HAND CART BRAKE EFFECTIVENESS,The Hand Cart brake system must stop the hand cart with a fully loaded Accumulator Container.
+EV23,EV.4.10.4,ACCUMULATOR ATTACHMENT TO CART,Accumulator Container(s) must be securely attached to the Hand Cart.
+EV24,EV.8.2.4,CHARGER CONNECTOR INTERLOCK,Charger connector must incorporate an interlock such that the connectors only become live if are correctly connected.
+EV25,EV.8.2.6 / EV.5.8.2,TSMP RESISTANCE MEASUREMENT (CHARGER),"Measure resistance between TSMP HV- and TSMP HV+."
+EV26,EV.8.2.2,CHARGER HOUSING GROUNDING,"If the charger housing is conductive, it must be connected to the earth ground of the AC input."
+EV27,EV.8.2.3,CHARGER CONNECTIONS ISOLATED,All connections of the charger(s) must be isolated and covered.
+EV28,EV.8.2.5,HV CHARGING LEADS COLOR,High Voltage charging leads must be orange.
+EV29,EV.6.3.4.c,SHIELDED CABLE GROUNDING,Any shielded cable must have the shield grounded.
+EV30,EV.8.2.7,CHARGER E-STOP BUTTON,"The charger must include a Push-Pull OR Push-Rotate emergency stop switch. The E-Stop switch must have a minimum diameter of 25mm, open the shutdown circuit and hold the position when pressed. Must be labelled with the International Electrical Symbol (a red spark on a white edged blue triangle)."
+EV31,EV.6.3.4.a,TS WIRING CONDUIT (CHARGER),"Any Tractive System wiring that runs outside of electrical enclosures must be enclosed in separate orange nonconductive conduit OR be a shielded cable."
+EV32,EV.6.3.4.b,CONDUIT ANCHORING,"The conduit or shielded cable must be securely anchored at each end to allow it to withstand a force of 200 N without straining the cable end crimp."
+EV33,,SES CHECK,"Carefully check accumulator pictures attached to the inspection sheet and confirm that the accumulator mounts, internal structure and other mechanical parts match what was approved during the SES."
+EV34,,ESF CHECK,"Carefully check all components of the accumulator and car to confirm they match what was provided on the datasheets tab of the ESF. ESF documentation is attached to the inspection sheet."
+EV35,EV.5.3.2.b,MAINTENANCE PLUGS ACCESSIBLE,Maintenance Plugs must be accessible after opening the Accumulator Container without the need to move/remove any other components.
+EV36,EV.5.3.2.c,MAINTENANCE PLUGS FOOLPROOF CONNECTION,Maintenance Plugs must be impossible to connect in any configuration other than the intended.
+EV37,EV.5.3.2.d,MAINTENANCE PLUGS TOOL-FREE REMOVAL,"Maintenance Plugs must not require tools to remove or install. Removal and installation must be possible using HV insulated gloves + leather gloves."
+EV38,EV.5.3.2.e,MAINTENANCE PLUGS LOCKING FEATURE,Maintenance Plugs must include a positive locking feature to prevent unintended disconnection.
+EV39,EV.5.3.2.f,MAINTENANCE PLUGS NON-CONDUCTIVE SURFACES,"Maintenance Plugs must have nonconductive surfaces, except where required to make electrical connection."
+EV40,EV.7.5.5 / BR.4.6.1.1,TEMPERATURE MONITORING,A minimum of 30% of the accumulator cells must have temperature monitoring.
+EV41,EV.7.5.4,TEMPERATURE SENSOR CONTACT,"The temperature sensor used must be in direct contact with the cell's negative terminal OR with the busbar less than 10mm away from the cell terminal."
+EV42,BR.4.6.1.2,TEMPERATURE SENSOR ATTACHMENT,Attachment of the temperature sensors must not rely solely on tape.
+EV43,EV.5.2.2.a,ACCUMULATOR CONTAINER INSULATION,"If the container is made of electrically conductive material, the poles of the accumulator stack(s) and cells must be insulated to the inner walls of the Accumulator Container."
+EV44,EV.6.5.5,TS AND GLV WIRING SEPARATION,"TS and GLV wiring must be separated by an insulating barrier OR by the specified distance."
+EV45,EV.6.6.6,FUSE REQUIREMENT,"All wires with more than 150mm in length must have a fuse within the first 150mm from the cable's source."
+EV46,EV.5.4.3,NO ALWAYS-ENERGIZED TS CABLES,"No ""always energized"" TS cables leave the accumulator container. All TS wires leaving accumulator must be disconnected by an AIR."
+EV47,EV.5.1.4,SPARE ACCUMULATOR SEGMENTS IDENTICAL,"All Accumulator Segments and/or Accumulator Containers (including spares and replacement parts) must be identical to the design documented in the ESF and SES."
+EV48,EV.11.5.4,CHARGING LABEL,"When charging, each Accumulator Container(s) must have a label that contains the required information."
+EV49,EV.6.7,CHARGER GROUNDING RESISTANCE,Measured resistance between conductive surfaces and ground pin of the charger's AC connector must be < 300mOhm.
+EV50,EV.5.8.2 / EV.8.2.6,TSMP RESISTANCE MEASUREMENT (CHARGING),"Measure resistance between TSMP HV- and TSMP HV+: 000V < Vmax < 200V = 10kOhm."
+EV51,EV.5.7,ACCUMULATOR INDICATOR,"Accumulator Indicator indicates if voltage above 60VDC is present outside of the container. Check indicator during the charging demonstration."
+EV52,EV.5.7.4.a,VOLTAGE INDICATOR VISIBILITY,The Voltage Indicator must be clearly visible when connecting/disconnecting the Accumulator Tractive System connections.
+EV53,EV.8.2.7 / EV.8.4.2,CHARGER E-STOP TEST,"When charging, press the E-Stop button. The E-Stop button on charger must open the shutdown circuit and stop the charging."
+EV54,EV.8.3 / EV.8.4.1 / IN.4.4,IMD CHARGER TEST,"IMD must open shutdown circuit in 30 seconds when isolation fault is present. 1. Accumulator in valid charge condition. 2. Connect TSMP(-) and GLVS ground using the IMD test resistor. 3. IMD shall detect an insulation fault, turn off the charger and open AIRs in 30 seconds. 4. Repeat the test using the TSMP(+)."
+EV55,EV.7.3 / EV.7.4.1 / EV.7.5.5 / BR.4.6.1.1,BMS CHARGING MONITORING,"When charging, the BMS must be live, monitoring the cell voltage of each cell and cell temperature of more than 30% of cells."
+EV56,EV.7.3.5 / EV.8.3,BMS FAULT SHUTDOWN,"When charging, the BMS must be able to turn OFF the charger in an event that a fault is detected (Shutdown Circuit open)."
+EV57,IN.2.6 / IN.4.7.1,ACCUMULATOR INSPECTION SEALS,Upon completion of accumulator inspection the following parts must be sealed to prevent modification.
+EV58,IN.2.3,VISIBLE ACCESS,Visible access must be possible to all items on Tech Sheet without the use of mirrors or borescopes.
+EV59,T.1.9,COCKPIT FIREWALL,"The cockpit firewall must separate the driver from any Tractive System components other than Outboard Wheel Motors and associated cables. Must be made of aluminum and grounded to the chassis."
+EV60,,FOOT PEDAL ACCELERATOR,"The foot pedal must have a positive stop to prevent sensors from being mechanically overstressed. Two springs must be used to return the accelerator pedal to the off position and each spring must work with the other disconnected. The springs in the APPS are not acceptable return springs."
+EV61,T.3.3,BRAKE SYSTEM,
+EV62,IN.2.6 / IN.4.7.1,LV BATTERIES AND PRESSURIZED CYLINDERS SEALS,LV Batteries and Pressurized cylinders must be sealed to prevent modification.
+EV63,T.6.2,HIGH PRESSURE HYDRAULIC SHIELDS,"High pressure hydraulic pumps and lines must have 1 mm thick steel or aluminum shields to protect driver and workers. (Brakes & clutch exempt.)"
+EV64,T.5.6,CATCH CANS,"Catch cans must be sealed: 10% of system volume or 0.5 L minimum."
+EV65,T.5.5.1,FLUID LEAKS,Fluid Leaks are not permitted. Firewalls must prevent contact with driver.
+EV67,T.5.2,SCATTERSHIELDS,"Scattershields are required for clutches, chains, belts, CVT rotating parts, etc. Must not be perforated and must end parallel to lowest part of front and rear sprockets. Attached with min. 6mm fasteners (CRITICAL FASTENERS)."
+EV68,T.5.2,SCATTERSHIELD MATERIALS,Scattershields must be made of approved materials. OEM motor drive sprocket cover is OK.
+EV69,T.5.2,FINGER GUARDS,Finger guards are required to cover all drivetrain rotating parts.
+EV70,T.6,COMPRESSED GAS CYLINDERS,"Compressed gas cylinders must: be an unmodified COTS cylinder (labeled), filled with nonflammable gas and with a regulator on tank. Securely mounted, axis not pointed at driver, rearward of Main Hoop within the frame envelope, or in structural sidepod; not in cockpit, with appropriate lines & fittings."
+EV71,T.5.4,COOLANTS,Coolants must be 100% water or oil.
+EV72,F.11.1 / F.5.16 / F.3.2.1.n / F.4.1.3,TS COMPONENTS IN ROLLOVER ENVELOPE,"TS components (except only for Outboard Wheel Motors and their connections) must be contained inside the Rollover Protection Envelope."
+EV73,EV.6.3.2,TS WIRING INSULATION RATING,TS wiring must meet the required insulation voltage rating.
+EV74,EV.6.3.3,TS WIRING PROTECTION,"TS wiring must be protected from loosening due to vibration, against damage by rotating and/or moving parts, and located out of the way of possible snagging or damage."
+EV75,EV.6.3.4,TS WIRING CONDUIT (CAR),"TS wiring must be enclosed in separate orange nonconductive conduit OR be an orange shielded cable. The conduit or cable must be securely anchored at each end to allow it to withstand a force of 200N without straining the cable or crimp."
+EV76,EV.6.7,GROUNDING RESISTANCE,"Measure resistance between electrically conductive surfaces and GLV System Ground must be < 300mOhm. Measure resistance between parts which may become electrically conductive (Carbon Fiber parts) and GLV System Ground must be <5 Ohm."
+EV77,EV.4.9.1,TS ENCLOSURE LABELING,"Each housing or enclosure containing parts of the Tractive System, other than motor housings, must be labelled with the hazard symbol (triangle with black lightning bolt on yellow background)."
+EV78,EV.5.8.1,TSMPs,"TSMPs must meet required specifications and must be kept accessible."
+EV79,EV.5.8.3,TSMP SPECIFICATION,"TSMPs must be 4mm shrouded red banana jacks, marked with ""HV-"" and ""HV+""."
+EV80,EV.5.8.2,TSMP RESISTANCE MEASUREMENT (CAR),Measure resistance between TSMP HV- and TSMP HV+.
+EV81,EV.6.1.2,TRACTIVE SYSTEM PROBE TEST,"When the Tractive System enclosures are in place, must not be possible to contact any Tractive System connections with a 100mm long, 6mm diameter insulated test probe."
+EV82,EV.6.2.1,INSULATION TEMPERATURE RATING,Insulation materials must have a minimum temperature rating of 90°C.
+EV83,EV.6.2.2,INSULATING TAPE LIMITATION,Insulating tape or paint may be part of the insulation but must not be the only insulation.
+EV84,EV.6.4.3 / EV.6.4.4,BOLTED ELECTRICAL CONNECTIONS,Bolted electrical connections in the high current path of the Tractive System must include a positive locking feature to prevent unintentional loosening.
+EV85,EV.7.8 / EV.4.1.3 / EV.5.5.2 / EV.5.9,INTERLOCKS,Interlocks must be incorporated into all required locations per rules.
+EV86,EV.5.5.1.b,MSD HEIGHT,MSD must be more than 350mm from the ground.
+EV87,EV.5.5.1.c,MSD VISIBILITY,MSD must be easily visible when standing behind the vehicle.
+EV88,EV.5.5.1.d,MSD OPERABILITY TIME,MSD must be operable in 10 seconds or less by an untrained person.
+EV89,EV.5.5.1.e,MSD BODYWORK ACCESS,MSD must be operable without removing any bodywork or obstruction or using tools.
+EV90,EV.5.5.1.g,MSD MARKING,"""MSD"" must be clearly marked on the MSD."
+EV91,EV.5.5.4 / EV.6.1.2,MSD DUMMY CONNECTOR,A dummy connector or similar may be used on the MSD to restore isolation.
+EV92,EV.7.10.2,SHUTDOWN BUTTONS TYPE,"Shutdown buttons must be a push-pull OR push-rotate emergency stop button. Must hold when operated to the OFF position."
+EV93,EV.7.10.3,EXTERNAL SHUTDOWN BUTTONS,"One Shutdown button must be on each side of the vehicle. It must have a diameter 40mm minimum. Must not be easily removable or mounted onto removable bodywork."
+EV94,EV.7.10.4,COCKPIT SHUTDOWN BUTTON,"One Shutdown button must be mounted in the cockpit. It must have a diameter 24mm minimum. Located in easy reach of the belted-in driver and not obstructed by the steering wheel or any other part."
+EV95,EV.7.10.5,SHUTDOWN BUTTON SYMBOL,"The Shutdown buttons must have the International Electrical symbol (a red spark on a white edged blue triangle)."
+EV96,EV.7.9 / T.9.3,SWITCH POSITIONS MARKED,"OFF and ON positions must be clearly marked. ON position must be in horizontal position."
+EV97,EV.7.9.2,GLVMS INDICATOR,GLVMS must be in the center of a completely red circular area of >50mm in diameter.
+EV98,EV.7.9.3,TSMS INDICATOR,TSMS must be in the center of a completely orange circular area of >50mm in diameter.
+EV99,EV.7.9.3.e / EV.11.3.1,TSMS POSITION,Position must be clearly indicated.
+EV100,IN.4.5,ISOLATION MEASUREMENT,"Measure isolation between TSMP and chassis ground. Choose next voltage level above TS Voltage (250V or 500V)."
+EV101,EV.7.6 / EV.5.11,IMD SHUTDOWN TEST,"IMD must open the shutdown circuit in 30 seconds when isolation fault is present. 1. Activate Tractive System; IMD indicator OFF, TSSI is GREEN. 2. Connect IMD test box between TSMP HV- and GLV Ground. 3. IMD must trip in 30 seconds and TS voltage must decrease below 60VDC in 5 seconds; IMD indicator is ON (RED), TSSI is flashing RED. 4. Remove test box and reset."
+EV102,EV.7.2.2,TSMS SHUTDOWN TEST,"When all shutdown circuit switches are ON, turn the TSMS OFF. TS Voltage must decrease below 60VDC in 5 seconds."
+EV103,EV.7.2.2,GLVMS SHUTDOWN TEST,"When all shutdown circuit switches are ON, turn the GLVMS OFF. TS Voltage must decrease below 60VDC in 5 seconds."
+EV104,EV.7.2.2,LEFT SHUTDOWN BUTTON TEST,"When all shutdown circuit switches are ON, push the Left Shutdown Button. TS Voltage must decrease below 60VDC in 5 seconds."
+EV105,EV.7.2.2,COCKPIT SHUTDOWN BUTTON TEST,"When all shutdown circuit switches are ON, push the Cockpit Shutdown Button. TS Voltage must decrease below 60VDC in 5 seconds."
+EV106,EV.7.2.2,BOTS TEST,"When all shutdown circuit switches are ON, turn the BOTS OFF. TS Voltage must decrease below 60VDC in 5 seconds."
+EV107,EV.7.2.2,MSD TEST,"When all shutdown circuit switches are ON, remove the MSD. TS Voltage must decrease below 60VDC in 5 seconds."
+EV108,EV.7.2.2,OUTBOARD MOTOR INTERLOCK TEST,"When all shutdown circuit switches are ON, open the Outboard Wheel Motor Interlocks (if applicable). TS Voltage must decrease below 60VDC in 5 seconds."
+EV109,T.9.4 / EV.7.2.2,INERTIA SWITCH TEST,"Unmount the Inertia Switch. Activate TS, shake the switch and check if TS deactivates. TS Voltage must decrease below 60VDC in 5 seconds."
+EV110,EV.5.10,RTML FLASHING,The RTML must be flashing amber when GLV turned ON and the voltage outside the accumulator container exceeds 60VDC.
+EV111,EV.5.10,RTML DOT COMPLIANCE,The RTML must comply with DOT FMVSS 108.
+EV112,EV.9.6,READY-TO-DRIVE SOUND,"The vehicle must make a characteristic sound when Ready-to-Drive. Must be sounded continuously for min 1 second and max 3 seconds. Minimum sound level of 80dBA. The vehicle must not make other sounds similar to Ready-to-Drive sound."
+EV113,T.3.4.1,BRAKE LIGHT VISIBILITY,"Press Brake Pedal. The Brake Light must be clearly visible from the rear in very bright sunlight."
+EV114,T.3.4.2,BRAKE LIGHT SPECIFICATION,"Brake Light must be Red in color on a Black background with a minimum shining surface of 15cm²."
+EV115,EV.9.5,READY-TO-DRIVE DEMONSTRATION,"The team must demonstrate how the car is set to Ready-to-Drive mode by the driver. 1. Enable TS. 2. Press Accelerator — motors SHOULD NOT spin. 3. Press brake and start button. 4. Press Accelerator — motors SHOULD spin. 5. Press shutdown button. 6. Release shutdown button and enable TS. 7. Press Accelerator — motors SHOULD NOT spin. 8. Press brake and start button. 9. Press Accelerator — motors SHOULD spin."
+EV116,EV.4.7,TORQUE STOP ON SIMULTANEOUS PEDALS,"Torque production must stop when accelerator and brake pedal are pressed simultaneously. 1. Press accelerator to show that axle turns. 2. With accelerator > 25%, press brake pedal — axle must stop. 3. Keeping accelerator >25%, release brake pedal — axle must remain stopped. 4. Slowly release accelerator; axle may turn again once < 5% pedal position."
+EV117,EV.4.2.9,APPS IMPLAUSIBILITY TEST,"Torque production must stop if APPS are implausible. 1. Press accelerator to show that axle turns. 2. Unplug all but 1 APPS. 3. Press accelerator — axle must not turn. Repeat for each APPS sensor."
+EV118,EV.7.7,BSPD DEMONSTRATION,"The team must have a test to demonstrate BSPD operation. 1. Enable TS. 2. Press and hold Brake (may require driver in car). 3. Turn up simulated current (5kW at nominal voltage). 4. TS must shut off in 0.5 sec. 5. Release brake and turn off simulated current. The TS may not automatically return to active state. The driver must not be able to reactivate the Tractive System."
+EV119,EV.3.2,ENERGY METER,The Energy Meter must be installed in an easily accessible location.
+EV120,IN.2.6 / IN.4.7.1,EV INSPECTION SEALS,Upon completion of the EV inspection the following parts must be sealed to prevent modification.

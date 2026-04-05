@@ -1,0 +1,46 @@
+item_id,rule_ref,title,description
+44,F.8.6.3,NON-CRUSHABLE OBJECTS,"25 mm clearance aft of AI Plate, Front Bulkhead including diagonals, and to pedals @ full travel and adjustment."
+46,T.3.2,BRAKE PEDAL,"Steel, aluminum, or machined titanium (no welded Ti). Alt matl. OK for pad face. Entire pedal-to-frame system capable of 2kN (tested only by organizers)."
+57,V.3.2,STEERING,
+58,V.3.2.8,CRITICAL FASTENERS — STEERING,"Steering wheel, column, rack mounting, tie rods."
+59,GR.1.5,SUSPENSION PICK-UP POINTS,"Inspected thoroughly for integrity: binding, over-articulation."
+60,V.3.3,STEERING WHEEL,
+61,V.3.1,SUSPENSION,Bearings: double-shear or safety washers.
+62,V.4.2.2,MODIFIED LUG BOLTS/STUDS,Verify good engineering practices are followed e.g. no drill holes for mass reduction.
+63,V.3.1.4,CRITICAL FASTENERS — SUSPENSION,"Control arms, knuckle, spring load path, single wheel nuts. Exempt: lug nuts, multi-piece wheels, anti-roll bars, dampers. All fasteners must be tight (esp: jam nuts)."
+64,T.3.1,BRAKES,Must be below chassis/tub in side-view.
+65,T.3.1,CRITICAL FASTENERS — BRAKES,
+66,GR.1.5,BRAKE CONTROL SYSTEMS,"ABS, Traction, Yaw Control, etc: must have an approved FMEA."
+S1,F.5.8,MAIN HOOP,Max 10° rearward from vertical.
+S2,"F.5.9, F.6.6",MAIN HOOP BRACING,Must be on same side of vertical as Main Hoop.
+S3,T.2.8.3,HEAD RESTRAINT (CHASSIS),
+S4,F.5.11,EXTERNAL ITEMS,"Single fastener connection at MH-MHB node preferred. For mid-MHB or mid-Upper-MH mounts: SES failure calculations and structural brace required. Some light items may freely attach per F.5.11.3. Components offset longitudinally, not resting on tube. Suspension only permitted at nodes. Powertrain mounts discouraged."
+S5,F.5.7,FRONT HOOP,"Max 20° to vertical; F.6.3.5 max 10° towards cockpit if no rearward bracing."
+S5b,F.5.6.3,BENDS IN ROLL HOOPS,"Triangulated in side-view OR less than 25mm from a monocoque attachment point."
+S7,F.5.14,STEERING COMPONENTS OUTSIDE FRAME,"Per end (60kN total) shown in SES."
+S9,F.5.3,HOLES AND OPENINGS IN REGULATED TUBES,"Welded caps or welded inserts, except bottom of roll hoops."
+S10,"F.5.4, F.5.13",BOLTED JOINTS CONNECTING PRIMARY STRUCTURES,"Plates 2.0 mm (0.08"")."
+S11,T.2.4.3,HARNESS ATTACHMENTS,"Tear-out strength requirements in SES. Double-shear preferred."
+S12,F.8.5.6,IA LEADING EDGE VERTICAL POSITION,"Must be <=75mm, and must be <=90mm. Record ride height measurement."
+S13,F.8.4.3,STANDARD IMPACT ATTENUATOR,
+S14,F.8.4,NON-STANDARD IMPACT ATTENUATOR,"Crushed element, not collapsed mount."
+S15,F.8.2,ANTI-INTRUSION PLATE,"Attachment: 8mm (5/16"") bolts, or bonded or laminated (AIP extending to outer edge of bulkhead), or >50% welded (AIP extending to centerline of bulkhead tubes)."
+S16,F.8.6,FRONT WING DETACHMENT,
+S17,F.8.4.3,FRONT BULKHEAD DIAGONAL,"Required with non-standard foam IA when FBH > 400mm x 350mm; diagonal required for all."
+S18,F.1.17,LOAD PATHS AND TRIANGULATION,"Sufficient diagonal tubing to fully triangulate in between required. Applies to Upper, Lower, and Diagonal structural tubes."
+S19,F.5.2,BENT OR MULTIPLE TUBES,"Bends Size C, Upper SIS diag Size B, Shoulder Harness Brace Size C."
+S20,F.6.2,FRONT BULKHEAD SUPPORT,Brace to SIS if top tube does not connect near upper SIS.
+S21,F.6.3,FRONT HOOP BRACING,Rear above Upper SIS.
+S22,F.6.4,SIDE IMPACT STRUCTURE,Must connect endpoints of Main and Front hoops.
+S23,F.6.5,SHOULDER HARNESS MOUNTING BAR,"Supports Shoulder Harnesses, driver equipment, headrest, and light bodywork including the firewall and/or seat."
+S24,F.3.2,TUBE MINIMUMS,"Tech may use ultrasound to measure wall thickness and/or ask that 4 mm dia holes be drilled. See table F.3.2.1 Requirements by Application."
+S33EV,F.11.2.1,EV SIDE IMPACT — ACCUMULATOR AND TRACTIVE SYSTEM,Side impact protection for the accumulator should be present except at mount locations.
+S34EV,F.11.2.2,EV REAR IMPACT — ACCUMULATOR AND TRACTIVE SYSTEM,"A fully structural path (triangulated if tube) back to the Upper and Lower SIS is required. Crushable objects should have 25mm gap to the accumulator."
+S25,F.4.3,LAMINATE TEST SPECIMENS,
+S26,"F.7.4, F.7.6",BOLTED ROLL HOOP ATTACHMENTS,Attachment through skins.
+S27,F.7.4,LAMINATED FRONT HOOP,"Joined only by adhesive, cores must fit tightly."
+S28,F.7.5,SIDE IMPACT PROTECTION,Required between Front Hoop and Main Hoop.
+S29,,LAMINATE THICKNESS VS SAMPLES AND SES,"Checked with 4mm hole or external calipers."
+S30,F.5.6.5,MAIN HOOP & FRONT HOOP HEIGHTS (PERCY),"Helmet of 95th percentile male (PERCY) to be 50 mm below the lines between top of front and main roll hoops and between top of main hoop to rear attachment point of main hoop bracing. Center of bottom circle placed minimum 915 mm from pedals."
+S31,T.1.1,COCKPIT OPENING,"Template to pass from above cockpit to bottom of top SIS tube and less than 320mm from lowest point inside cockpit. Steering wheel & column, seat and padding can be removed; no removing firewall. Fore/aft translation of template OK."
+S32,T.1.2,COCKPIT INTERNAL CROSS SECTION,"Template to pass from rearwards of the steering column to 100 mm rearwards of the pedals. Steering wheel may be removed; padding may be removed if removable with no tools & with driver in seat."

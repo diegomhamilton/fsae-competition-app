@@ -1,0 +1,13 @@
+step_id,instruction
+PRE1,The car must have the sticker for approval in the Mechanical / EV Inspection before performing the Rain Test.
+PRE2,The car must be complete (ready to Drive).
+PRE3,All accompanying members must be using PPE.
+PRE4,The vehicle must be off the ground in its jacking points.
+PRE5,No driver or member is inside the vehicle.
+PRE6,The vehicle must be completely off.
+1,Instruct the ESO to activate the TS and wait for the RML to flash.
+2,"Inspect the TSSI for the IMD, confirming that there are no insulation faults. Then instruct the ESO to connect a resistor to the TSMP, inducing a fault. Inspect the TSSI for the IMD again, confirming that the system is operational and detecting the fault."
+3,Reset the system and activate the TS again.
+4,With the vehicle on jack stands and no personnel nearby start the water spray. Keep the spray on for 120 seconds.
+5,Stop the water spray and monitor the vehicle for another 120 seconds.
+6,"The test is considered successful if the vehicle does not enter a fault condition for the entire 240 seconds. If the test is successful, it is considered complete. Contact the EV inspection leader to obtain the approval sticker."
