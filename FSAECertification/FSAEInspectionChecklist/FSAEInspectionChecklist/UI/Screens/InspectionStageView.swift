@@ -18,33 +18,25 @@ struct InspectionStageView: View {
             ForEach(viewModel.sections) { section in
                 Section(section.title) {
                     ForEach(viewModel.testCases(in: section)) { testCase in
-                        if viewModel.isActive(testCase) {
-                            InlineTestCaseView(
-                                testCase: testCase,
-                                session: session,
-                                onVerdictSet: {
-                                    if let next = viewModel.nextPending(after: testCase) {
-                                        withAnimation(.spring(duration: 0.35)) {
-                                            viewModel.activate(next)
-                                        }
-                                    }
-                                }
-                            )
-                            .transition(.opacity.combined(with: .scale(scale: 0.97, anchor: .top)))
-                            .listRowBackground(Color.accentColor.opacity(0.05))
-                        } else {
-                            Button {
-                                withAnimation(.spring(duration: 0.35)) {
+                        let expanded = viewModel.isActive(testCase)
+                        ExpandableTestCaseRowView(
+                            testCase: testCase,
+                            session: session,
+                            isExpanded: expanded,
+                            onTap: {
+                                withAnimation(.spring(duration: 0.38, bounce: 0.12)) {
                                     viewModel.activate(testCase)
                                 }
-                            } label: {
-                                TestCaseRowView(
-                                    testCase: testCase,
-                                    result: viewModel.result(for: testCase)
-                                )
+                            },
+                            onVerdictSet: {
+                                if let next = viewModel.nextPending(after: testCase) {
+                                    withAnimation(.spring(duration: 0.38, bounce: 0.12)) {
+                                        viewModel.activate(next)
+                                    }
+                                }
                             }
-                            .buttonStyle(.plain)
-                        }
+                        )
+                        .listRowBackground(expanded ? Color.accentColor.opacity(0.05) : Color.clear)
                     }
                 }
             }

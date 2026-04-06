@@ -1,86 +1,108 @@
 import SwiftUI
 import SwiftData
 
-struct InlineTestCaseView: View {
+struct ExpandableTestCaseRowView: View {
     @Environment(\.modelContext) private var modelContext
     let testCase: TestCase
     let session: InspectionSession
+    let isExpanded: Bool
+    var onTap: () -> Void
     var onVerdictSet: () -> Void
 
     @State private var viewModel: TestCaseDetailViewModel
 
-    init(testCase: TestCase, session: InspectionSession, onVerdictSet: @escaping () -> Void) {
+    init(
+        testCase: TestCase,
+        session: InspectionSession,
+        isExpanded: Bool,
+        onTap: @escaping () -> Void,
+        onVerdictSet: @escaping () -> Void
+    ) {
         self.testCase = testCase
         self.session = session
+        self.isExpanded = isExpanded
+        self.onTap = onTap
         self.onVerdictSet = onVerdictSet
         _viewModel = State(wrappedValue: TestCaseDetailViewModel(testCase: testCase, session: session))
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 0) {
             header
-            badges
-            steps
-            verdictPicker
+
+            if isExpanded {
+                expandedContent
+                    .padding(.top, 10)
+                    .transition(.opacity)
+            }
         }
-        .padding(.vertical, 6)
+        .contentShape(Rectangle())
+        .onTapGesture { if !isExpanded { onTap() } }
+        .padding(.vertical, 4)
+        .animation(.smooth, value: isExpanded)
         .task {
             viewModel.configure(with: TestCaseResultService(modelContext: modelContext))
         }
     }
 
-    // MARK: - Subviews
+    // MARK: - Header
+    // Structure is identical in both states — only opacity changes, no layout shifts.
 
     private var header: some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(spacing: 12) {
             statusIcon
-            VStack(alignment: .leading, spacing: 3) {
-                Text(testCase.title)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(testCase.title)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    Spacer()
+                    // Badges stay in layout; fade out when expanded to avoid reflow
+                    ForEach(testCase.badges, id: \.self) { badge in
+                        BadgeLabel(text: badge)
+                            .opacity(isExpanded ? 0 : 1)
+                    }
+                }
                 if let ruleRef = testCase.ruleRef {
                     Text(ruleRef)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             }
-            Spacer()
+
+            // Always in layout to hold space; fades in when expanded
             NavigationLink(value: testCase) {
                 Image(systemName: "info.circle")
                     .font(.body)
                     .foregroundStyle(.secondary)
             }
+            .opacity(isExpanded ? 1 : 0)
+            .allowsHitTesting(isExpanded)
         }
     }
 
-    @ViewBuilder
-    private var badges: some View {
-        if !testCase.badges.isEmpty {
-            HStack(spacing: 6) {
-                ForEach(testCase.badges, id: \.self) { badge in
-                    Text(badge)
-                        .font(.caption2)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.orange.opacity(0.15))
-                        .foregroundStyle(Color.orange)
-                        .clipShape(Capsule())
+    // MARK: - Expanded content
+
+    private var expandedContent: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if !testCase.badges.isEmpty {
+                HStack(spacing: 6) {
+                    ForEach(testCase.badges, id: \.self) { BadgeLabel(text: $0) }
                 }
             }
+
+            if !viewModel.sortedSteps.isEmpty {
+                VStack(spacing: 4) {
+                    ForEach(viewModel.sortedSteps) { TestStepRowView(step: $0) }
+                }
+            }
+
+            verdictPicker
         }
     }
 
-    @ViewBuilder
-    private var steps: some View {
-        if !viewModel.sortedSteps.isEmpty {
-            VStack(spacing: 4) {
-                ForEach(viewModel.sortedSteps) { step in
-                    TestStepRowView(step: step)
-                }
-            }
-        }
-    }
+    // MARK: - Verdict picker
 
     private var verdictPicker: some View {
         HStack(spacing: 0) {
@@ -89,10 +111,7 @@ struct InlineTestCaseView: View {
                 Button {
                     guard viewModel.result?.status != status else { return }
                     viewModel.setStatus(status)
-                    Task { @MainActor in
-                        try? await Task.sleep(for: .milliseconds(350))
-                        onVerdictSet()
-                    }
+                    onVerdictSet()
                 } label: {
                     Text(label(for: status))
                         .font(.subheadline)
@@ -101,16 +120,13 @@ struct InlineTestCaseView: View {
                         .padding(.vertical, 8)
                         .background(selected ? color(for: status) : Color.clear)
                         .foregroundStyle(selected ? .white : color(for: status))
-                        .animation(.easeInOut(duration: 0.15), value: selected)
+                        .animation(.smooth, value: selected)
                 }
                 .buttonStyle(.plain)
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
-        )
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.3), lineWidth: 1))
     }
 
     // MARK: - Helpers
@@ -121,6 +137,7 @@ struct InlineTestCaseView: View {
             .font(.title3)
             .foregroundStyle(color)
             .frame(width: 24)
+            .contentTransition(.symbolEffect(.replace))
     }
 
     private var iconInfo: (String, Color) {
@@ -148,5 +165,19 @@ struct InlineTestCaseView: View {
         case .notApplicable: return .secondary
         case .pending:       return .secondary
         }
+    }
+}
+
+private struct BadgeLabel: View {
+    let text: String
+    var body: some View {
+        Text(text)
+            .font(.caption2)
+            .fontWeight(.semibold)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.orange.opacity(0.15))
+            .foregroundStyle(Color.orange)
+            .clipShape(Capsule())
     }
 }
