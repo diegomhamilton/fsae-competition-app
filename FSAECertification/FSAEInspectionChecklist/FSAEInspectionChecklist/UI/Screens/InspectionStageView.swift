@@ -18,12 +18,25 @@ struct InspectionStageView: View {
             ForEach(viewModel.sections) { section in
                 Section(section.title) {
                     ForEach(viewModel.testCases(in: section)) { testCase in
-                        NavigationLink(value: testCase) {
-                            TestCaseRowView(
-                                testCase: testCase,
-                                result: viewModel.result(for: testCase)
-                            )
-                        }
+                        let expanded = viewModel.isActive(testCase)
+                        ExpandableTestCaseRowView(
+                            testCase: testCase,
+                            session: session,
+                            isExpanded: expanded,
+                            onTap: {
+                                withAnimation(.spring(duration: 0.38, bounce: 0.12)) {
+                                    viewModel.activate(testCase)
+                                }
+                            },
+                            onVerdictSet: {
+                                if let next = viewModel.nextPending(after: testCase) {
+                                    withAnimation(.spring(duration: 0.38, bounce: 0.12)) {
+                                        viewModel.activate(next)
+                                    }
+                                }
+                            }
+                        )
+                        .listRowBackground(expanded ? Color.accentColor.opacity(0.05) : Color.clear)
                     }
                 }
             }

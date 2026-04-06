@@ -6,6 +6,7 @@ final class InspectionStageViewModel {
     let template: InspectionTemplate
     let session: InspectionSession
     var errorMessage: String?
+    var activeTestCaseID: String?
 
     private var resultService: TestCaseResultService?
 
@@ -16,6 +17,9 @@ final class InspectionStageViewModel {
 
     func configure(with resultService: TestCaseResultService) {
         self.resultService = resultService
+        if activeTestCaseID == nil {
+            activeTestCaseID = firstPendingTestCase()?.itemId
+        }
     }
 
     var sections: [InspectionSection] {
@@ -32,5 +36,35 @@ final class InspectionStageViewModel {
 
     func progress() -> (completed: Int, total: Int) {
         resultService?.progress(for: template, in: session) ?? (0, 0)
+    }
+
+    func isActive(_ testCase: TestCase) -> Bool {
+        activeTestCaseID == testCase.itemId
+    }
+
+    func activate(_ testCase: TestCase) {
+        activeTestCaseID = testCase.itemId
+    }
+
+    /// Returns the next test case with a pending result after `current`, wrapping around.
+    func nextPending(after current: TestCase) -> TestCase? {
+        let all = allTestCasesOrdered()
+        guard let idx = all.firstIndex(where: { $0.itemId == current.itemId }) else { return nil }
+        let tail = Array(all[(idx + 1)...])
+        let head = Array(all[..<idx])
+        return (tail + head).first { isPending($0) }
+    }
+
+    private func firstPendingTestCase() -> TestCase? {
+        allTestCasesOrdered().first { isPending($0) }
+    }
+
+    private func isPending(_ testCase: TestCase) -> Bool {
+        let status = result(for: testCase)?.status
+        return status == nil || status == .pending
+    }
+
+    private func allTestCasesOrdered() -> [TestCase] {
+        sections.flatMap { testCases(in: $0) }
     }
 }
