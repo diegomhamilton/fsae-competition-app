@@ -12,7 +12,7 @@
 
 ## Improve inspection feature
 
-- [ ] Implement sequential view in inspection stage: no need for user to click in test case to see it's details. One active test case should be displayed in stage list, user can still access the test case details: Automatically go to next step when submit result; Animate test step transition.
+- [ x ] Implement sequential view in inspection stage: no need for user to click in test case to see it's details. One active test case should be displayed in stage list, user can still access the test case details: Automatically go to next step when submit result; Animate test step transition.
 - [ ] Review steps and type of steps for each test case
 - [ ] Add attachments to the step: images, documents.
 - [ ] Gallery, files or camera
