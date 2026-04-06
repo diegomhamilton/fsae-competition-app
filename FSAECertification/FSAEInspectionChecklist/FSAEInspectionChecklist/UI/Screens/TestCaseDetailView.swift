@@ -89,45 +89,20 @@ struct TestCaseDetailView: View {
         }
     }
 
-    private var verdictPicker: some View {
-        HStack(spacing: 0) {
-            ForEach([TestCaseStatus.pass, .fail, .notApplicable], id: \.self) { status in
-                let selected = viewModel.result?.status == status
-                Button(action: { viewModel.setStatus(status) }) {
-                    Text(label(for: status))
-                        .font(.subheadline)
-                        .fontWeight(selected ? .semibold : .regular)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(selected ? color(for: status) : Color.clear)
-                        .foregroundStyle(selected ? .white : color(for: status))
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+    private var verdictBinding: Binding<TestCaseStatus> {
+        Binding(
+            get: { viewModel.result?.status ?? .pending },
+            set: { viewModel.setStatus($0) }
         )
     }
 
-    private func label(for status: TestCaseStatus) -> String {
-        switch status {
-        case .pass:           return "Pass"
-        case .fail:           return "Fail"
-        case .notApplicable:  return "N/A"
-        case .pending:        return "—"
+    private var verdictPicker: some View {
+        Picker("Verdict", selection: verdictBinding) {
+            Text("Pass").tag(TestCaseStatus.pass)
+            Text("Fail").tag(TestCaseStatus.fail)
+            Text("N/A").tag(TestCaseStatus.notApplicable)
         }
-    }
-
-    private func color(for status: TestCaseStatus) -> Color {
-        switch status {
-        case .pass:           return .green
-        case .fail:           return .red
-        case .notApplicable:  return .secondary
-        case .pending:        return .secondary
-        }
+        .pickerStyle(.segmented)
     }
 
     private func commitNotes() {
