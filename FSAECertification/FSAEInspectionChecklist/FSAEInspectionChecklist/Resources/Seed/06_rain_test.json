@@ -14,18 +14,18 @@
           "displayOrder": 1,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "precondition", "content": "The car must have the sticker for approval in the Mechanical / EV Inspection before performing the Rain Test." },
-            { "displayOrder": 2, "type": "precondition", "content": "The car must be complete (ready to Drive)." },
-            { "displayOrder": 3, "type": "precondition", "content": "All accompanying members must be using PPE." },
-            { "displayOrder": 4, "type": "precondition", "content": "The vehicle must be off the ground in its jacking points." },
-            { "displayOrder": 5, "type": "precondition", "content": "No driver or member is inside the vehicle." },
-            { "displayOrder": 6, "type": "precondition", "content": "The vehicle must be completely off." },
-            { "displayOrder": 7, "type": "instruction", "content": "Instruct the ESO to activate the TS and wait for the RML to flash." },
-            { "displayOrder": 8, "type": "instruction", "content": "Inspect the TSSI for the IMD, confirming that there are no insulation faults. Then instruct the ESO to connect a resistor to the TSMP, inducing a fault. Inspect the TSSI for the IMD again, confirming that the system is operational and detecting the fault." },
-            { "displayOrder": 9, "type": "instruction", "content": "Reset the system and activate the TS again." },
-            { "displayOrder": 10, "type": "instruction", "content": "With the vehicle on jack stands and no personnel nearby start the water spray. Keep the spray on for 120 seconds." },
-            { "displayOrder": 11, "type": "instruction", "content": "Stop the water spray and monitor the vehicle for another 120 seconds." },
-            { "displayOrder": 12, "type": "instruction", "content": "The test is considered successful if the vehicle does not enter a fault condition for the entire 240 seconds. If the test is successful, it is considered complete. Contact the EV inspection leader to obtain the approval sticker." }
+            { "displayOrder": 1, "type": "gate", "content": "The car must have the sticker for approval in the Mechanical / EV Inspection before performing the Rain Test." },
+            { "displayOrder": 2, "type": "gate", "content": "The car must be complete (ready to Drive)." },
+            { "displayOrder": 3, "type": "gate", "content": "All accompanying members must be using PPE." },
+            { "displayOrder": 4, "type": "gate", "content": "The vehicle must be off the ground in its jacking points." },
+            { "displayOrder": 5, "type": "gate", "content": "No driver or member is inside the vehicle." },
+            { "displayOrder": 6, "type": "gate", "content": "The vehicle must be completely off." },
+            { "displayOrder": 7, "type": "action", "content": "Instruct the ESO to activate the TS and wait for the RML to flash." },
+            { "displayOrder": 8, "type": "action", "content": "Inspect the TSSI for the IMD, confirming that there are no insulation faults. Then instruct the ESO to connect a resistor to the TSMP, inducing a fault. Inspect the TSSI for the IMD again, confirming that the system is operational and detecting the fault." },
+            { "displayOrder": 9, "type": "action", "content": "Reset the system and activate the TS again." },
+            { "displayOrder": 10, "type": "action", "content": "With the vehicle on jack stands and no personnel nearby start the water spray. Keep the spray on for 120 seconds." },
+            { "displayOrder": 11, "type": "action", "content": "Stop the water spray and monitor the vehicle for another 120 seconds." },
+            { "displayOrder": 12, "type": "action", "content": "The test is considered successful if the vehicle does not enter a fault condition for the entire 240 seconds. If the test is successful, it is considered complete. Contact the EV inspection leader to obtain the approval sticker." }
           ]
         }
       ]
