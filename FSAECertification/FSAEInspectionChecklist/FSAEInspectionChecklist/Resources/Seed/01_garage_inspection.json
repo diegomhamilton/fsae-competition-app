@@ -14,7 +14,7 @@
           "displayOrder": 1,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Closed-face with integral chin guard (no dirtbike helmets). Face shield integral with helmet, impact resistant material. Specification: Snell K2010, K2015, K2020, M2010, M2015, M2020-D/-R, M2025-D/-R, SA2010, SA2015, SA2020, SA2025, EA2016; or SFI 31.1/2015, 41.1/2015; or FIA 8860-2010 & newer, 8859-2015 & newer. No camera mounts: VE.2.5.3. Place sticker on left side." }
+            { "displayOrder": 1, "type": "check", "content": "Closed-face with integral chin guard (no dirtbike helmets). Face shield integral with helmet, impact resistant material. Specification: Snell K2010, K2015, K2020, M2010, M2015, M2020-D/-R, M2025-D/-R, SA2010, SA2015, SA2020, SA2025, EA2016; or SFI 31.1/2015, 41.1/2015; or FIA 8860-2010 & newer, 8859-2015 & newer. No camera mounts: VE.2.5.3. Place sticker on left side." }
           ]
         },
         {
@@ -24,7 +24,7 @@
           "displayOrder": 2,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Required for all drivers. Flame Resistant material. Covers head, neck and hair. No label required." }
+            { "displayOrder": 1, "type": "check", "content": "Required for all drivers. Flame Resistant material. Covers head, neck and hair. No label required." }
           ]
         },
         {
@@ -34,7 +34,7 @@
           "displayOrder": 3,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Required for all drivers. Must be commercially manufactured. No label required." }
+            { "displayOrder": 1, "type": "check", "content": "Required for all drivers. Must be commercially manufactured. No label required." }
           ]
         },
         {
@@ -44,7 +44,7 @@
           "displayOrder": 4,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Single piece suit, no holes. Must be labeled. Specification: SFI 3.2A/5; SFI 3.4/5; FIA 1986; FIA 8856-2000 or 8856-2018." }
+            { "displayOrder": 1, "type": "check", "content": "Single piece suit, no holes. Must be labeled. Specification: SFI 3.2A/5; SFI 3.4/5; FIA 1986; FIA 8856-2000 or 8856-2018." }
           ]
         },
         {
@@ -54,7 +54,7 @@
           "displayOrder": 5,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Flame Resistant material (not all-leather). No holes. Leather palms allowed only over flame resistant material. No label required." }
+            { "displayOrder": 1, "type": "check", "content": "Flame Resistant material (not all-leather). No holes. Leather palms allowed only over flame resistant material. No label required." }
           ]
         },
         {
@@ -64,7 +64,7 @@
           "displayOrder": 6,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "No holes. Must be labeled. Specification: SFI 3.3; or FIA 8856-2000 or 8856-2018." }
+            { "displayOrder": 1, "type": "check", "content": "No holes. Must be labeled. Specification: SFI 3.3; or FIA 8856-2000 or 8856-2018." }
           ]
         },
         {
@@ -74,7 +74,7 @@
           "displayOrder": 7,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Flame resistant material (no cotton; no polyester). Must cover all bare skin. No label required. VE.3.1.2: Approved materials include Carbon X, Indura, Nomex, Polybenzimidazole (PBI) and Proban." }
+            { "displayOrder": 1, "type": "check", "content": "Flame resistant material (no cotton; no polyester). Must cover all bare skin. No label required. VE.3.1.2: Approved materials include Carbon X, Indura, Nomex, Polybenzimidazole (PBI) and Proban." }
           ]
         },
         {
@@ -84,7 +84,7 @@
           "displayOrder": 8,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "2.4mm min tread depth. Molded or cut by tire manufacturer. Record front and rear: Brand, Compound, Size." }
+            { "displayOrder": 1, "type": "check", "content": "2.4mm min tread depth. Molded or cut by tire manufacturer. Record front and rear: Brand, Compound, Size." }
           ]
         },
         {
@@ -94,7 +94,7 @@
           "displayOrder": 9,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Hand-held, dry chemical (no AFFF or halon), min specification: 10BC; 1A10BC; 34B; 5A 34B; 20BE; or 1A 10BE. Min 0.9 kg (2 lb). Two required: must present both at Tech." }
+            { "displayOrder": 1, "type": "check", "content": "Hand-held, dry chemical (no AFFF or halon), min specification: 10BC; 1A10BC; 34B; 5A 34B; 20BE; or 1A 10BE. Min 0.9 kg (2 lb). Two required: must present both at Tech." }
           ]
         }
       ]

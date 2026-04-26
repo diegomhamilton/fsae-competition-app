@@ -2,10 +2,12 @@ import Foundation
 import SwiftData
 
 enum TestStepType: String, Codable {
-    case requirement
-    case instruction
-    case precondition
-    case note
+    case gate
+    case action
+    case check
+    case context
+    case measurement
+    case evidence
 }
 
 @Model

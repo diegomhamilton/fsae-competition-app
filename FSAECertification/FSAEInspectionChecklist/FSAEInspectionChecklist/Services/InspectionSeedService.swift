@@ -27,7 +27,7 @@ private struct SeedTestCase: Decodable {
 
 private struct SeedTestStep: Decodable {
     let displayOrder: Int
-    let type: String
+    let type: TestStepType
     let content: String
 }
 
@@ -35,7 +35,7 @@ private struct SeedTestStep: Decodable {
 
 final class InspectionSeedService {
     private let modelContext: ModelContext
-    private let seedVersion = 1
+    private let seedVersion = 2
 
     private var currentSeedVersion: Int {
         get { UserDefaults.standard.integer(forKey: "inspection_seed_version") }
@@ -104,10 +104,9 @@ final class InspectionSeedService {
                 template.testCases.append(testCase)
 
                 for seedStep in seedCase.steps {
-                    let stepType = TestStepType(rawValue: seedStep.type) ?? .requirement
                     let step = TestStep(
                         displayOrder: seedStep.displayOrder,
-                        type: stepType,
+                        type: seedStep.type,
                         content: seedStep.content
                     )
                     step.testCase = testCase
