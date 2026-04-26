@@ -208,4 +208,92 @@ struct FSAEInspectionChecklistTests {
         context.insert(emptyTemplate)
         #expect(resultService.progress(for: emptyTemplate, in: session) == (0, 0))
     }
+
+    // MARK: - ViewModels
+
+    @Test func activeSessionViewModel_createSession_successAndFailurePaths() throws {
+        let container = try makeContainer()
+        let context = ModelContext(container)
+        let template = makeTemplate(in: context)
+        let sessionService = InspectionSessionService(modelContext: context)
+        let resultService = TestCaseResultService(modelContext: context)
+
+        let viewModel = ActiveSessionViewModel()
+        viewModel.configure(with: sessionService, resultService: resultService)
+        viewModel.createSession(teamName: "Team", vehicleNumber: "10", eventYear: 2026)
+
+        #expect(viewModel.errorMessage == nil)
+
+        let session = try #require(try sessionService.activeSession())
+        let progress = viewModel.progress(for: template, in: session)
+        #expect(progress == (0, template.testCases.count))
+    }
+
+    @Test func inspectionStageViewModel_sectionsAndTestCases_areSortedAndScoped() throws {
+        let container = try makeContainer()
+        let context = ModelContext(container)
+
+        let template = InspectionTemplate(code: "S", title: "Stage", displayOrder: 1)
+        context.insert(template)
+
+        let section2 = InspectionSection(title: "S2", displayOrder: 2)
+        let section1 = InspectionSection(title: "S1", displayOrder: 1)
+        section1.template = template
+        section2.template = template
+        template.sections = [section2, section1]
+        context.insert(section1)
+        context.insert(section2)
+
+        let tc2 = TestCase(itemId: "TC2", title: "Two", displayOrder: 2)
+        let tc1 = TestCase(itemId: "TC1", title: "One", displayOrder: 1)
+        [tc1, tc2].forEach {
+            $0.section = section1
+            $0.template = template
+            context.insert($0)
+        }
+        section1.testCases = [tc2, tc1]
+        template.testCases = [tc2, tc1]
+
+        let sessionService = InspectionSessionService(modelContext: context)
+        let session = try sessionService.createSession(teamName: "Team", vehicleNumber: "11", eventYear: 2026)
+        let resultService = TestCaseResultService(modelContext: context)
+
+        let viewModel = InspectionStageViewModel(template: template, session: session)
+        viewModel.configure(with: resultService)
+
+        #expect(viewModel.sections.map(\.displayOrder) == [1, 2])
+        #expect(viewModel.testCases(in: section1).map(\.itemId) == ["TC1", "TC2"])
+        #expect(viewModel.testCases(in: section2).isEmpty)
+    }
+
+    @Test func testCaseDetailViewModel_sortedStepsAndMutations_workAsExpected() throws {
+        let container = try makeContainer()
+        let context = ModelContext(container)
+
+        let template = makeTemplate(in: context, code: "D", testCasesPerSection: 1)
+        let testCase = try #require(template.testCases.first)
+        let step2 = TestStep(displayOrder: 2, type: .instruction, content: "Second")
+        let step1 = TestStep(displayOrder: 1, type: .requirement, content: "First")
+        step1.testCase = testCase
+        step2.testCase = testCase
+        context.insert(step1)
+        context.insert(step2)
+        testCase.steps = [step2, step1]
+
+        let session = try InspectionSessionService(modelContext: context)
+            .createSession(teamName: "Team", vehicleNumber: "12", eventYear: 2026)
+        let resultService = TestCaseResultService(modelContext: context)
+
+        let viewModel = TestCaseDetailViewModel(testCase: testCase, session: session)
+        viewModel.configure(with: resultService)
+
+        #expect(viewModel.sortedSteps.map(\.displayOrder) == [1, 2])
+        #expect(viewModel.result != nil)
+
+        viewModel.setStatus(.pass)
+        #expect(viewModel.result?.status == .pass)
+        viewModel.setNotes("checked")
+        #expect(viewModel.result?.inspectorNotes == "checked")
+        #expect(viewModel.errorMessage == nil)
+    }
 }
