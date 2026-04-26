@@ -34,8 +34,9 @@ ViewModels are tested with **stub/spy service doubles** passed via `configure(wi
 | 10 | Each test case has a non-empty `itemId` and `title` | no empty strings |
 | 11 | Every test case has at least one `TestStep` | `steps.count >= 1` |
 | 12 | Test cases EV101–EV120 all carry the `"CAUTION: ENERGIZED"` badge | `badges.contains("CAUTION: ENERGIZED")` for all |
-| 13 | Test cases EV1–EV100 do not carry the `"CAUTION: ENERGIZED"` badge | badge absent for all |
-| 14 | Multi-step EV item (e.g. EV101 — IMD Shutdown Test) produces at least one `.instruction` step in addition to the `.requirement` | step types include `.instruction` |
+| 13 | Test cases EV48–EV56 all carry the `"CAUTION: ENERGIZED"` badge | `badges.contains("CAUTION: ENERGIZED")` for all |
+| 14 | Other test cases do not carry the `"CAUTION: ENERGIZED"` badge | badge absent for all |
+| 15 | Multi-step EV item (e.g. EV101 — IMD Shutdown Test) produces at least one `.instruction` step in addition to the `.requirement` | step types include `.instruction` |
 
 ### `extension InspectionSeedServiceTests` — TestStep types
 
