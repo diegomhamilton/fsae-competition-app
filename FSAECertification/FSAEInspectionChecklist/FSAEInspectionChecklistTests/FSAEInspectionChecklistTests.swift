@@ -264,6 +264,19 @@ struct FSAEInspectionChecklistTests {
         #expect(viewModel.sections.map(\.displayOrder) == [1, 2])
         #expect(viewModel.testCases(in: section1).map(\.itemId) == ["TC1", "TC2"])
         #expect(viewModel.testCases(in: section2).isEmpty)
+
+        let first = try #require(viewModel.testCases(in: section1).first)
+        viewModel.activate(first)
+        #expect(viewModel.activeTestCase()?.itemId == "TC1")
+
+        let firstResult = try #require(resultService.result(for: first, in: session))
+        try resultService.setStatus(.pass, for: firstResult)
+
+        #expect(viewModel.jumpToNextPendingFromActive()?.itemId == "TC2")
+
+        let activeAfterSet = try #require(viewModel.applyVerdictToActive(.fail))
+        #expect(activeAfterSet.itemId == "TC1")
+        #expect(viewModel.result(for: first)?.status == .fail)
     }
 
     @Test func testCaseDetailViewModel_sortedStepsAndMutations_workAsExpected() throws {

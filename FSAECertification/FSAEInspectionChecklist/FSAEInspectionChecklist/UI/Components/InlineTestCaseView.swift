@@ -8,6 +8,7 @@ struct ExpandableTestCaseRowView: View {
     let isExpanded: Bool
     var onTap: () -> Void
     var onVerdictSet: () -> Void
+    var onInfoTap: () -> Void
 
     @State private var viewModel: TestCaseDetailViewModel
 
@@ -16,13 +17,15 @@ struct ExpandableTestCaseRowView: View {
         session: InspectionSession,
         isExpanded: Bool,
         onTap: @escaping () -> Void,
-        onVerdictSet: @escaping () -> Void
+        onVerdictSet: @escaping () -> Void,
+        onInfoTap: @escaping () -> Void
     ) {
         self.testCase = testCase
         self.session = session
         self.isExpanded = isExpanded
         self.onTap = onTap
         self.onVerdictSet = onVerdictSet
+        self.onInfoTap = onInfoTap
         _viewModel = State(wrappedValue: TestCaseDetailViewModel(testCase: testCase, session: session))
     }
 
@@ -72,11 +75,12 @@ struct ExpandableTestCaseRowView: View {
             }
 
             // Always in layout to hold space; fades in when expanded
-            NavigationLink(value: testCase) {
+            Button(action: onInfoTap) {
                 Image(systemName: "info.circle")
                     .font(.body)
                     .foregroundStyle(.secondary)
             }
+            .buttonStyle(.plain)
             .opacity(isExpanded ? 1 : 0)
             .allowsHitTesting(isExpanded)
         }
