@@ -84,7 +84,7 @@
           "displayOrder": 8,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "2.4mm min tread depth. Molded or cut by tire manufacturer. Record front and rear: Brand, Compound, Size." }
+            { "displayOrder": 1, "type": "measurement", "content": "2.4mm min tread depth. Molded or cut by tire manufacturer. Record front and rear: Brand, Compound, Size." }
           ]
         },
         {

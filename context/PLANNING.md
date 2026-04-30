@@ -12,7 +12,7 @@
 
 ## Current focus (selected next task)
 
-**Selected task:** Review steps and type of steps for each test case.
+**Selected task:** Execute migration Phase 2A: promote and normalize measurement step types across seed test cases.
 
 Why this next:
 - It is the first unchecked dependency in the "Improve inspection feature" stream.
@@ -22,15 +22,18 @@ Initial implementation checklist:
 - [x] Inventory current step types used by each inspection test case.
 - [x] Propose normalized step type definitions and required fields.
 - [x] Map old step types to normalized ones (breaking migration completed in seed data).
-- [ ] Validate the new step model against sequential view behavior.
+- [ ] Validate the new step model against sequential view behavior (after Phase 2A + 2B seed promotions).
 - [x] Remove legacy compatibility layer and enforce strict v2 step type decoding.
-- [ ] Add `measurement` + `evidence` type handling in UI and result capture.
+- [ ] Add `measurement` type handling in UI and result capture.
+- [ ] Add `evidence` registering support in UI and result capture (audio/video/photo/PDF/text).
 
 Reference: See `STEP_TYPE_MIGRATION_PLAN.md` for migration phases, mapping rules, and rollout strategy.
 
 ## Improve inspection feature
 
 - [x] Implement sequential view in inspection stage: no need for user to click in test case to see it's details. One active test case should be displayed in stage list, user can still access the test case details: Automatically go to next step when submit result; Animate test step transition.
+- [ ] Add support to measurement, identify and update existing test steps to implement measurement types.
+- [ ] Add support to evidence registering, such as audio, video, photo, PDF or text.
 - [ ] Review steps and type of steps for each test case
 - [ ] Add attachments to the step: images, documents.
 - [ ] Gallery, files or camera

@@ -226,7 +226,7 @@
           "displayOrder": 23,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Must be <=75mm, and must be <=90mm. Record ride height measurement." }
+            { "displayOrder": 1, "type": "measurement", "content": "Must be <=75mm, and must be <=90mm. Record ride height measurement." }
           ]
         },
         {

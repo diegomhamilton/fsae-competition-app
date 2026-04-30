@@ -214,7 +214,7 @@
           "displayOrder": 21,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "5 seconds max to actuate cockpit master switch and exit to side of vehicle, from driving position, wearing safety equipment. Wings must remain fixed in position. See egress worksheet." }
+            { "displayOrder": 1, "type": "measurement", "content": "5 seconds max to actuate cockpit master switch and exit to side of vehicle, from driving position, wearing safety equipment. Wings must remain fixed in position. See egress worksheet." }
           ]
         },
         {
@@ -254,7 +254,7 @@
           "displayOrder": 25,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Minimum 1525 mm." }
+            { "displayOrder": 1, "type": "measurement", "content": "Minimum 1525 mm." }
           ]
         },
         {

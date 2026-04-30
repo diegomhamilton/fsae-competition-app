@@ -49,10 +49,23 @@ We migrate source data and code directly to v2.
 3. Make seed decoding strict (`SeedTestStep.type: TestStepType`) so invalid/legacy values fail fast.
 4. Bump seed version to force reseeding in development.
 
-### Phase 2 — Semantic enrichment (next)
+### Phase 2 — Semantic enrichment (in progress)
 From existing `check` and `action` steps, progressively promote entries into richer types:
 - `check -> measurement` when content includes a quantifiable threshold or required value.
 - `action/check -> evidence` when the step should capture an attachment for audit trail.
+
+
+#### Phase 2A — Measurement promotion pass (next)
+1. Identify candidate `check`/`action` steps with explicit thresholds, units, or timed windows.
+2. Convert qualifying steps to `measurement` in seed JSON files.
+3. Add reviewer checklist for false-positive prevention (rule intent + unit clarity).
+4. Track conversion summary by seed file (counts before/after).
+
+#### Phase 2B — Evidence promotion pass
+1. Identify candidate `action`/`check` steps that require proof artifacts.
+2. Convert qualifying steps to `evidence` and annotate evidence intent in step wording.
+3. Define accepted evidence classes for first release: `photo`, `video`, `audio`, `pdf`, `text`.
+4. Track conversion summary by seed file (counts before/after).
 
 ### Phase 3 — UI and result model updates
 1. Update row rendering (icon/color/badges) for v2 types.
