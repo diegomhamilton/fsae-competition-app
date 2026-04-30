@@ -23,30 +23,36 @@ struct TestStepRowView: View {
 
     private var iconName: String {
         switch step.type {
-        case .requirement:  return "doc.text"
-        case .instruction:  return "arrow.right.circle"
-        case .precondition: return "exclamationmark.triangle"
-        case .note:         return "info.circle"
+        case .check:       return "doc.text"
+        case .action:      return "arrow.right.circle"
+        case .precondition:        return "exclamationmark.triangle"
+        case .context:     return "info.circle"
+        case .measurement: return "ruler"
+        case .evidence:    return "paperclip"
         }
     }
 
     private var iconColor: Color {
         switch step.type {
-        case .requirement:  return .primary
-        case .instruction:  return .accentColor
-        case .precondition: return .orange
-        case .note:         return .secondary
+        case .check:       return .primary
+        case .action:      return .accentColor
+        case .precondition:        return .orange
+        case .context:     return .secondary
+        case .measurement: return .teal
+        case .evidence:    return .purple
         }
     }
 
     private var textColor: Color {
-        step.type == .note ? .secondary : .primary
+        step.type == .context ? .secondary : .primary
     }
 
     private var background: Color {
         switch step.type {
-        case .precondition: return .orange.opacity(0.08)
-        case .note:         return .secondary.opacity(0.06)
+        case .precondition:        return .orange.opacity(0.08)
+        case .context:     return .secondary.opacity(0.06)
+        case .measurement: return .teal.opacity(0.08)
+        case .evidence:    return .purple.opacity(0.08)
         default:            return .clear
         }
     }
