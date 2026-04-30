@@ -32,14 +32,6 @@ struct InspectionStageView: View {
                                         scrollTargetID = testCase.itemId
                                     }
                                 },
-                                onVerdictSet: {
-                                    if let next = viewModel.nextPending(after: testCase) {
-                                        withAnimation(.spring(duration: 0.38, bounce: 0.12)) {
-                                            viewModel.activate(next)
-                                            scrollTargetID = next.itemId
-                                        }
-                                    }
-                                },
                                 onInfoTap: {
                                     selectedDetailTestCase = testCase
                                 }

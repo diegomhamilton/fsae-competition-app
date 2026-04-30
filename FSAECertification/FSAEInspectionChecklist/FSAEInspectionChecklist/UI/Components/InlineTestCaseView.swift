@@ -7,7 +7,6 @@ struct ExpandableTestCaseRowView: View {
     let session: InspectionSession
     let isExpanded: Bool
     var onTap: () -> Void
-    var onVerdictSet: () -> Void
     var onInfoTap: () -> Void
 
     @State private var viewModel: TestCaseDetailViewModel
@@ -17,14 +16,12 @@ struct ExpandableTestCaseRowView: View {
         session: InspectionSession,
         isExpanded: Bool,
         onTap: @escaping () -> Void,
-        onVerdictSet: @escaping () -> Void,
         onInfoTap: @escaping () -> Void
     ) {
         self.testCase = testCase
         self.session = session
         self.isExpanded = isExpanded
         self.onTap = onTap
-        self.onVerdictSet = onVerdictSet
         self.onInfoTap = onInfoTap
         _viewModel = State(wrappedValue: TestCaseDetailViewModel(testCase: testCase, session: session))
     }
@@ -101,31 +98,7 @@ struct ExpandableTestCaseRowView: View {
                     ForEach(viewModel.sortedSteps) { TestStepRowView(step: $0) }
                 }
             }
-
-            verdictPicker
         }
-    }
-
-    // MARK: - Verdict picker
-
-    private var verdictBinding: Binding<TestCaseStatus> {
-        Binding(
-            get: { viewModel.result?.status ?? .pending },
-            set: { newStatus in
-                guard viewModel.result?.status != newStatus else { return }
-                viewModel.setStatus(newStatus)
-                onVerdictSet()
-            }
-        )
-    }
-
-    private var verdictPicker: some View {
-        Picker("Verdict", selection: verdictBinding) {
-            Text("Pass").tag(TestCaseStatus.pass)
-            Text("Fail").tag(TestCaseStatus.fail)
-            Text("N/A").tag(TestCaseStatus.notApplicable)
-        }
-        .pickerStyle(.segmented)
     }
 
     // MARK: - Helpers
