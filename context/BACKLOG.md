@@ -1,4 +1,4 @@
-# BACKLOG (RESET BASELINE)
+# BACKLOG
 
 ## Purpose
 This backlog is reset to a clean baseline focused on rebuilding product planning in the right order:
