@@ -1,65 +1,26 @@
-# iOS App Design Workflow
+# PROJECT — FSAE Inspection Checklist iOS App (Reset Planning Baseline)
 
-## 1. App Definition
+## Product goal
+Build a reliable iOS inspection workflow for Formula SAE judges that is deterministic, fast in the field, and resilient across relaunches.
 
--   Problem
--   Target user
--   Core value
--   Key features (3--5 max)
--   Success metric
+## Scope baseline
+- Stage-based inspections with explicit step outcomes.
+- Notes, measurement, and evidence capture with rule-based validation.
+- Per-team persistence and later multi-team management.
+- Historical traceability of submissions.
 
-## 2. User Personas
+## Planning strategy (from reset)
+We are restarting planning from first principles and will deliver in this order:
+1. **User Stories** (behavior contracts)
+2. **Flows** (path + validation logic)
+3. **Screens** (flow-driven screen/state map)
+4. **Architecture** (MVVM contracts ready for implementation)
 
-1. Judges of Formula SAE competitions, they're usually alumni from active teams, sometimes sponsors, engineers and managers.
-2. Students from universities that are part of Formula SAE teams, like team captain and other members.
-3. 
+## Source of truth
+- Backlog reset and feature sequencing: `context/BACKLOG.md`
+- End-to-end planning execution plan: `context/DESIGN_PLAN.md`
 
-## 3. User Stories
-
-Format: As a \[user\], I want to \[action\], so that \[outcome\]
-
-Group by flows: - Onboarding - Core action - Secondary features -
-Settings
-
-## 4. Gap Analysis
-
-Check: - Edge cases - Errors - Empty states - First-time experience -
-Real usage vs happy path
-
-## 5. Wireframes
-
-Focus on: - Screens - Navigation - Layout hierarchy
-
-Tools: - Figma - Sketch - Balsamiq
-
-## 6. UI Mockups
-
-Add: - Visual style - Spacing - Typography - iOS conventions
-
-## 7. Review
-
-Ensure: - All stories map to screens - Flows are complete - No dead ends
-
-## 8. Prototype (Optional)
-
-Use Figma to create clickable flows.
-
-## 9. Development Prep
-
-Define: - Screens list - Components - States - API needs
-
-## Workflow with ChatGPT
-
-1.  Provide app idea
-2.  Clarify and refine
-3.  Build user stories
-4.  Identify gaps
-5.  Generate wireframes
-
-## Common Mistakes
-
--   Starting with UI too early
--   Too many features
--   Ignoring edge cases
--   Designing for yourself
--   Skipping iteration
+## Constraints
+- Do not start UI mockups before stories/flows are stable.
+- Do not lock architecture before screen/state mapping exists.
+- Every implementation item must trace back to a story, flow, and architecture contract.
