@@ -14,7 +14,7 @@
           "displayOrder": 1,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "25 mm clearance aft of AI Plate, Front Bulkhead including diagonals, and to pedals @ full travel and adjustment." }
+            { "displayOrder": 1, "type": "check", "content": "25 mm clearance aft of AI Plate, Front Bulkhead including diagonals, and to pedals @ full travel and adjustment." }
           ]
         },
         {
@@ -24,7 +24,7 @@
           "displayOrder": 2,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Steel, aluminum, or machined titanium (no welded Ti). Alt matl. OK for pad face. Entire pedal-to-frame system capable of 2kN (tested only by organizers)." }
+            { "displayOrder": 1, "type": "check", "content": "Steel, aluminum, or machined titanium (no welded Ti). Alt matl. OK for pad face. Entire pedal-to-frame system capable of 2kN (tested only by organizers)." }
           ]
         },
         {
@@ -42,7 +42,7 @@
           "displayOrder": 4,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Steering wheel, column, rack mounting, tie rods." }
+            { "displayOrder": 1, "type": "check", "content": "Steering wheel, column, rack mounting, tie rods." }
           ]
         },
         {
@@ -52,7 +52,7 @@
           "displayOrder": 5,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Inspected thoroughly for integrity: binding, over-articulation." }
+            { "displayOrder": 1, "type": "check", "content": "Inspected thoroughly for integrity: binding, over-articulation." }
           ]
         },
         {
@@ -70,7 +70,7 @@
           "displayOrder": 7,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Bearings: double-shear or safety washers." }
+            { "displayOrder": 1, "type": "check", "content": "Bearings: double-shear or safety washers." }
           ]
         },
         {
@@ -80,7 +80,7 @@
           "displayOrder": 8,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Verify good engineering practices are followed e.g. no drill holes for mass reduction." }
+            { "displayOrder": 1, "type": "check", "content": "Verify good engineering practices are followed e.g. no drill holes for mass reduction." }
           ]
         },
         {
@@ -90,7 +90,7 @@
           "displayOrder": 9,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Control arms, knuckle, spring load path, single wheel nuts. Exempt: lug nuts, multi-piece wheels, anti-roll bars, dampers. All fasteners must be tight (esp: jam nuts)." }
+            { "displayOrder": 1, "type": "check", "content": "Control arms, knuckle, spring load path, single wheel nuts. Exempt: lug nuts, multi-piece wheels, anti-roll bars, dampers. All fasteners must be tight (esp: jam nuts)." }
           ]
         },
         {
@@ -100,7 +100,7 @@
           "displayOrder": 10,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Must be below chassis/tub in side-view." }
+            { "displayOrder": 1, "type": "check", "content": "Must be below chassis/tub in side-view." }
           ]
         },
         {
@@ -118,7 +118,7 @@
           "displayOrder": 12,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "ABS, Traction, Yaw Control, etc: must have an approved FMEA." }
+            { "displayOrder": 1, "type": "check", "content": "ABS, Traction, Yaw Control, etc: must have an approved FMEA." }
           ]
         },
         {
@@ -128,7 +128,7 @@
           "displayOrder": 13,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Max 10° rearward from vertical." }
+            { "displayOrder": 1, "type": "check", "content": "Max 10° rearward from vertical." }
           ]
         },
         {
@@ -138,7 +138,7 @@
           "displayOrder": 14,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Must be on same side of vertical as Main Hoop." }
+            { "displayOrder": 1, "type": "check", "content": "Must be on same side of vertical as Main Hoop." }
           ]
         },
         {
@@ -156,7 +156,7 @@
           "displayOrder": 16,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Single fastener connection at MH-MHB node preferred. For mid-MHB or mid-Upper-MH mounts: SES failure calculations and structural brace required. Some light items may freely attach per F.5.11.3. Components offset longitudinally, not resting on tube. Suspension only permitted at nodes. Powertrain mounts discouraged." }
+            { "displayOrder": 1, "type": "check", "content": "Single fastener connection at MH-MHB node preferred. For mid-MHB or mid-Upper-MH mounts: SES failure calculations and structural brace required. Some light items may freely attach per F.5.11.3. Components offset longitudinally, not resting on tube. Suspension only permitted at nodes. Powertrain mounts discouraged." }
           ]
         },
         {
@@ -166,7 +166,7 @@
           "displayOrder": 17,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Max 20° to vertical; F.6.3.5 max 10° towards cockpit if no rearward bracing." }
+            { "displayOrder": 1, "type": "check", "content": "Max 20° to vertical; F.6.3.5 max 10° towards cockpit if no rearward bracing." }
           ]
         },
         {
@@ -176,7 +176,7 @@
           "displayOrder": 18,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Triangulated in side-view OR less than 25mm from a monocoque attachment point." }
+            { "displayOrder": 1, "type": "check", "content": "Triangulated in side-view OR less than 25mm from a monocoque attachment point." }
           ]
         },
         {
@@ -186,7 +186,7 @@
           "displayOrder": 19,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Per end (60kN total) shown in SES." }
+            { "displayOrder": 1, "type": "check", "content": "Per end (60kN total) shown in SES." }
           ]
         },
         {
@@ -196,7 +196,7 @@
           "displayOrder": 20,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Welded caps or welded inserts, except bottom of roll hoops." }
+            { "displayOrder": 1, "type": "check", "content": "Welded caps or welded inserts, except bottom of roll hoops." }
           ]
         },
         {
@@ -206,7 +206,7 @@
           "displayOrder": 21,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Plates 2.0 mm (0.08\")." }
+            { "displayOrder": 1, "type": "check", "content": "Plates 2.0 mm (0.08\")." }
           ]
         },
         {
@@ -216,7 +216,7 @@
           "displayOrder": 22,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Tear-out strength requirements in SES. Double-shear preferred." }
+            { "displayOrder": 1, "type": "check", "content": "Tear-out strength requirements in SES. Double-shear preferred." }
           ]
         },
         {
@@ -226,7 +226,7 @@
           "displayOrder": 23,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Must be <=75mm, and must be <=90mm. Record ride height measurement." }
+            { "displayOrder": 1, "type": "check", "content": "Must be <=75mm, and must be <=90mm. Record ride height measurement." }
           ]
         },
         {
@@ -244,7 +244,7 @@
           "displayOrder": 25,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Crushed element, not collapsed mount." }
+            { "displayOrder": 1, "type": "check", "content": "Crushed element, not collapsed mount." }
           ]
         },
         {
@@ -254,7 +254,7 @@
           "displayOrder": 26,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Attachment: 8mm (5/16\") bolts, or bonded or laminated (AIP extending to outer edge of bulkhead), or >50% welded (AIP extending to centerline of bulkhead tubes)." }
+            { "displayOrder": 1, "type": "check", "content": "Attachment: 8mm (5/16\") bolts, or bonded or laminated (AIP extending to outer edge of bulkhead), or >50% welded (AIP extending to centerline of bulkhead tubes)." }
           ]
         },
         {
@@ -272,7 +272,7 @@
           "displayOrder": 28,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Required with non-standard foam IA when FBH > 400mm x 350mm; diagonal required for all." }
+            { "displayOrder": 1, "type": "check", "content": "Required with non-standard foam IA when FBH > 400mm x 350mm; diagonal required for all." }
           ]
         },
         {
@@ -282,7 +282,7 @@
           "displayOrder": 29,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Sufficient diagonal tubing to fully triangulate in between required. Applies to Upper, Lower, and Diagonal structural tubes." }
+            { "displayOrder": 1, "type": "check", "content": "Sufficient diagonal tubing to fully triangulate in between required. Applies to Upper, Lower, and Diagonal structural tubes." }
           ]
         },
         {
@@ -292,7 +292,7 @@
           "displayOrder": 30,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Bends Size C, Upper SIS diag Size B, Shoulder Harness Brace Size C." }
+            { "displayOrder": 1, "type": "check", "content": "Bends Size C, Upper SIS diag Size B, Shoulder Harness Brace Size C." }
           ]
         },
         {
@@ -302,7 +302,7 @@
           "displayOrder": 31,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Brace to SIS if top tube does not connect near upper SIS." }
+            { "displayOrder": 1, "type": "check", "content": "Brace to SIS if top tube does not connect near upper SIS." }
           ]
         },
         {
@@ -312,7 +312,7 @@
           "displayOrder": 32,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Rear above Upper SIS." }
+            { "displayOrder": 1, "type": "check", "content": "Rear above Upper SIS." }
           ]
         },
         {
@@ -322,7 +322,7 @@
           "displayOrder": 33,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Must connect endpoints of Main and Front hoops." }
+            { "displayOrder": 1, "type": "check", "content": "Must connect endpoints of Main and Front hoops." }
           ]
         },
         {
@@ -332,7 +332,7 @@
           "displayOrder": 34,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Supports Shoulder Harnesses, driver equipment, headrest, and light bodywork including the firewall and/or seat." }
+            { "displayOrder": 1, "type": "check", "content": "Supports Shoulder Harnesses, driver equipment, headrest, and light bodywork including the firewall and/or seat." }
           ]
         },
         {
@@ -342,7 +342,7 @@
           "displayOrder": 35,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Tech may use ultrasound to measure wall thickness and/or ask that 4 mm dia holes be drilled. See table F.3.2.1 Requirements by Application." }
+            { "displayOrder": 1, "type": "check", "content": "Tech may use ultrasound to measure wall thickness and/or ask that 4 mm dia holes be drilled. See table F.3.2.1 Requirements by Application." }
           ]
         },
         {
@@ -352,7 +352,7 @@
           "displayOrder": 36,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Side impact protection for the accumulator should be present except at mount locations." }
+            { "displayOrder": 1, "type": "check", "content": "Side impact protection for the accumulator should be present except at mount locations." }
           ]
         },
         {
@@ -362,7 +362,7 @@
           "displayOrder": 37,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "A fully structural path (triangulated if tube) back to the Upper and Lower SIS is required. Crushable objects should have 25mm gap to the accumulator." }
+            { "displayOrder": 1, "type": "check", "content": "A fully structural path (triangulated if tube) back to the Upper and Lower SIS is required. Crushable objects should have 25mm gap to the accumulator." }
           ]
         },
         {
@@ -380,7 +380,7 @@
           "displayOrder": 39,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Attachment through skins." }
+            { "displayOrder": 1, "type": "check", "content": "Attachment through skins." }
           ]
         },
         {
@@ -390,7 +390,7 @@
           "displayOrder": 40,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Joined only by adhesive, cores must fit tightly." }
+            { "displayOrder": 1, "type": "check", "content": "Joined only by adhesive, cores must fit tightly." }
           ]
         },
         {
@@ -400,7 +400,7 @@
           "displayOrder": 41,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Required between Front Hoop and Main Hoop." }
+            { "displayOrder": 1, "type": "check", "content": "Required between Front Hoop and Main Hoop." }
           ]
         },
         {
@@ -410,7 +410,7 @@
           "displayOrder": 42,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Checked with 4mm hole or external calipers." }
+            { "displayOrder": 1, "type": "check", "content": "Checked with 4mm hole or external calipers." }
           ]
         },
         {
@@ -420,7 +420,7 @@
           "displayOrder": 43,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Helmet of 95th percentile male (PERCY) to be 50 mm below the lines between top of front and main roll hoops and between top of main hoop to rear attachment point of main hoop bracing. Center of bottom circle placed minimum 915 mm from pedals." }
+            { "displayOrder": 1, "type": "check", "content": "Helmet of 95th percentile male (PERCY) to be 50 mm below the lines between top of front and main roll hoops and between top of main hoop to rear attachment point of main hoop bracing. Center of bottom circle placed minimum 915 mm from pedals." }
           ]
         },
         {
@@ -430,7 +430,7 @@
           "displayOrder": 44,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Template to pass from above cockpit to bottom of top SIS tube and less than 320mm from lowest point inside cockpit. Steering wheel & column, seat and padding can be removed; no removing firewall. Fore/aft translation of template OK." }
+            { "displayOrder": 1, "type": "check", "content": "Template to pass from above cockpit to bottom of top SIS tube and less than 320mm from lowest point inside cockpit. Steering wheel & column, seat and padding can be removed; no removing firewall. Fore/aft translation of template OK." }
           ]
         },
         {
@@ -440,7 +440,7 @@
           "displayOrder": 45,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Template to pass from rearwards of the steering column to 100 mm rearwards of the pedals. Steering wheel may be removed; padding may be removed if removable with no tools & with driver in seat." }
+            { "displayOrder": 1, "type": "check", "content": "Template to pass from rearwards of the steering column to 100 mm rearwards of the pedals. Steering wheel may be removed; padding may be removed if removable with no tools & with driver in seat." }
           ]
         }
       ]

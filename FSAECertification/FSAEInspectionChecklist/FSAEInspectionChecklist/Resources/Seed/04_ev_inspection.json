@@ -14,7 +14,7 @@
           "displayOrder": 1,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Datasheets and copies of any submitted Rules Questions with the received answer." }
+            { "displayOrder": 1, "type": "check", "content": "Datasheets and copies of any submitted Rules Questions with the received answer." }
           ]
         },
         {
@@ -24,7 +24,7 @@
           "displayOrder": 2,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Safety glasses with side shields for all team members that might work on the Tractive System or Accumulator." }
+            { "displayOrder": 1, "type": "check", "content": "Safety glasses with side shields for all team members that might work on the Tractive System or Accumulator." }
           ]
         },
         {
@@ -34,7 +34,7 @@
           "displayOrder": 3,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Face Shield." }
+            { "displayOrder": 1, "type": "check", "content": "Face Shield." }
           ]
         },
         {
@@ -44,7 +44,7 @@
           "displayOrder": 4,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "HV insulating gloves which are 12 months or less from their test date. Must include leather gloves to protect the insulating gloves from mechanical damages. Test report must be provided." }
+            { "displayOrder": 1, "type": "check", "content": "HV insulating gloves which are 12 months or less from their test date. Must include leather gloves to protect the insulating gloves from mechanical damages. Test report must be provided." }
           ]
         },
         {
@@ -54,7 +54,7 @@
           "displayOrder": 5,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Multimeter with protected probe tips." }
+            { "displayOrder": 1, "type": "check", "content": "Multimeter with protected probe tips." }
           ]
         },
         {
@@ -64,7 +64,7 @@
           "displayOrder": 6,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Insulated cable shears, screwdrivers and associated HV tools." }
+            { "displayOrder": 1, "type": "check", "content": "Insulated cable shears, screwdrivers and associated HV tools." }
           ]
         },
         {
@@ -74,7 +74,7 @@
           "displayOrder": 7,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Two HV insulating blankets of minimum 0.83 m² each. Test report must be provided." }
+            { "displayOrder": 1, "type": "check", "content": "Two HV insulating blankets of minimum 0.83 m² each. Test report must be provided." }
           ]
         },
         {
@@ -84,7 +84,7 @@
           "displayOrder": 8,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Charger(s) for the Accumulator(s)." }
+            { "displayOrder": 1, "type": "check", "content": "Charger(s) for the Accumulator(s)." }
           ]
         },
         {
@@ -94,7 +94,7 @@
           "displayOrder": 9,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Accumulator Container Hand Cart." }
+            { "displayOrder": 1, "type": "check", "content": "Accumulator Container Hand Cart." }
           ]
         },
         {
@@ -104,7 +104,7 @@
           "displayOrder": 10,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Spare Accumulator(s) (if applicable)." }
+            { "displayOrder": 1, "type": "check", "content": "Spare Accumulator(s) (if applicable)." }
           ]
         },
         {
@@ -114,7 +114,7 @@
           "displayOrder": 11,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Two 4 mm banana-banana type measuring tips." }
+            { "displayOrder": 1, "type": "check", "content": "Two 4 mm banana-banana type measuring tips." }
           ]
         },
         {
@@ -124,7 +124,7 @@
           "displayOrder": 12,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "School Name and Vehicle Number must be present and clearly visible on the accumulator." }
+            { "displayOrder": 1, "type": "check", "content": "School Name and Vehicle Number must be present and clearly visible on the accumulator." }
           ]
         },
         {
@@ -134,7 +134,7 @@
           "displayOrder": 13,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Accumulator must have symbol specified in ISO 7010-W012 (triangle with black lightning bolt on yellow background)." }
+            { "displayOrder": 1, "type": "check", "content": "Accumulator must have symbol specified in ISO 7010-W012 (triangle with black lightning bolt on yellow background)." }
           ]
         },
         {
@@ -144,7 +144,7 @@
           "displayOrder": 14,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "\"Always energized\" text must be present and clearly visible on the accumulator." }
+            { "displayOrder": 1, "type": "check", "content": "\"Always energized\" text must be present and clearly visible on the accumulator." }
           ]
         },
         {
@@ -154,7 +154,7 @@
           "displayOrder": 15,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Must indicate when accumulator voltage is greater than 60VDC." }
+            { "displayOrder": 1, "type": "check", "content": "Must indicate when accumulator voltage is greater than 60VDC." }
           ]
         },
         {
@@ -164,7 +164,7 @@
           "displayOrder": 16,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "\"High Voltage Present\" text must be present and clearly visible on the Voltage Indicator." }
+            { "displayOrder": 1, "type": "check", "content": "\"High Voltage Present\" text must be present and clearly visible on the Voltage Indicator." }
           ]
         },
         {
@@ -174,7 +174,7 @@
           "displayOrder": 17,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Accumulator may have holes/openings with a maximum diameter of 10mm. Only round holes are allowed. Must not have a line of sight to the driver, with the firewall installed or not." }
+            { "displayOrder": 1, "type": "check", "content": "Accumulator may have holes/openings with a maximum diameter of 10mm. Only round holes are allowed. Must not have a line of sight to the driver, with the firewall installed or not." }
           ]
         },
         {
@@ -184,7 +184,7 @@
           "displayOrder": 18,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Tractive System connectors outside of a housing must contain an Interlock." }
+            { "displayOrder": 1, "type": "check", "content": "Tractive System connectors outside of a housing must contain an Interlock." }
           ]
         },
         {
@@ -194,7 +194,7 @@
           "displayOrder": 19,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The Hand Cart must be able to carry the load of the Accumulator Container(s) without tipping out." }
+            { "displayOrder": 1, "type": "check", "content": "The Hand Cart must be able to carry the load of the Accumulator Container(s) without tipping out." }
           ]
         },
         {
@@ -204,7 +204,7 @@
           "displayOrder": 20,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Hand cart must contain a minimum of two wheels." }
+            { "displayOrder": 1, "type": "check", "content": "Hand cart must contain a minimum of two wheels." }
           ]
         },
         {
@@ -214,7 +214,7 @@
           "displayOrder": 21,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Hand cart must have a brake system using a Dead Man type switch (releasing the brake only when pushing and holding a handle) OR by manually lifting part of the cart off the ground." }
+            { "displayOrder": 1, "type": "check", "content": "Hand cart must have a brake system using a Dead Man type switch (releasing the brake only when pushing and holding a handle) OR by manually lifting part of the cart off the ground." }
           ]
         },
         {
@@ -224,7 +224,7 @@
           "displayOrder": 22,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The Hand Cart brake system must stop the hand cart with a fully loaded Accumulator Container." }
+            { "displayOrder": 1, "type": "check", "content": "The Hand Cart brake system must stop the hand cart with a fully loaded Accumulator Container." }
           ]
         },
         {
@@ -234,7 +234,7 @@
           "displayOrder": 23,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Accumulator Container(s) must be securely attached to the Hand Cart." }
+            { "displayOrder": 1, "type": "check", "content": "Accumulator Container(s) must be securely attached to the Hand Cart." }
           ]
         },
         {
@@ -244,7 +244,7 @@
           "displayOrder": 24,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Charger connector must incorporate an interlock such that the connectors only become live if are correctly connected." }
+            { "displayOrder": 1, "type": "check", "content": "Charger connector must incorporate an interlock such that the connectors only become live if are correctly connected." }
           ]
         },
         {
@@ -254,7 +254,7 @@
           "displayOrder": 25,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Measure resistance between TSMP HV- and TSMP HV+." }
+            { "displayOrder": 1, "type": "check", "content": "Measure resistance between TSMP HV- and TSMP HV+." }
           ]
         },
         {
@@ -264,7 +264,7 @@
           "displayOrder": 26,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "If the charger housing is conductive, it must be connected to the earth ground of the AC input." }
+            { "displayOrder": 1, "type": "check", "content": "If the charger housing is conductive, it must be connected to the earth ground of the AC input." }
           ]
         },
         {
@@ -274,7 +274,7 @@
           "displayOrder": 27,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "All connections of the charger(s) must be isolated and covered." }
+            { "displayOrder": 1, "type": "check", "content": "All connections of the charger(s) must be isolated and covered." }
           ]
         },
         {
@@ -284,7 +284,7 @@
           "displayOrder": 28,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "High Voltage charging leads must be orange." }
+            { "displayOrder": 1, "type": "check", "content": "High Voltage charging leads must be orange." }
           ]
         },
         {
@@ -294,7 +294,7 @@
           "displayOrder": 29,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Any shielded cable must have the shield grounded." }
+            { "displayOrder": 1, "type": "check", "content": "Any shielded cable must have the shield grounded." }
           ]
         },
         {
@@ -304,7 +304,7 @@
           "displayOrder": 30,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The charger must include a Push-Pull OR Push-Rotate emergency stop switch. The E-Stop switch must have a minimum diameter of 25mm, open the shutdown circuit and hold the position when pressed. Must be labelled with the International Electrical Symbol (a red spark on a white edged blue triangle)." }
+            { "displayOrder": 1, "type": "check", "content": "The charger must include a Push-Pull OR Push-Rotate emergency stop switch. The E-Stop switch must have a minimum diameter of 25mm, open the shutdown circuit and hold the position when pressed. Must be labelled with the International Electrical Symbol (a red spark on a white edged blue triangle)." }
           ]
         },
         {
@@ -314,7 +314,7 @@
           "displayOrder": 31,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Any Tractive System wiring that runs outside of electrical enclosures must be enclosed in separate orange nonconductive conduit OR be a shielded cable." }
+            { "displayOrder": 1, "type": "check", "content": "Any Tractive System wiring that runs outside of electrical enclosures must be enclosed in separate orange nonconductive conduit OR be a shielded cable." }
           ]
         },
         {
@@ -324,7 +324,7 @@
           "displayOrder": 32,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The conduit or shielded cable must be securely anchored at each end to allow it to withstand a force of 200 N without straining the cable end crimp." }
+            { "displayOrder": 1, "type": "check", "content": "The conduit or shielded cable must be securely anchored at each end to allow it to withstand a force of 200 N without straining the cable end crimp." }
           ]
         },
         {
@@ -334,7 +334,7 @@
           "displayOrder": 33,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Carefully check accumulator pictures attached to the inspection sheet and confirm that the accumulator mounts, internal structure and other mechanical parts match what was approved during the SES." }
+            { "displayOrder": 1, "type": "check", "content": "Carefully check accumulator pictures attached to the inspection sheet and confirm that the accumulator mounts, internal structure and other mechanical parts match what was approved during the SES." }
           ]
         },
         {
@@ -344,7 +344,7 @@
           "displayOrder": 34,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Carefully check all components of the accumulator and car to confirm they match what was provided on the datasheets tab of the ESF. ESF documentation is attached to the inspection sheet." }
+            { "displayOrder": 1, "type": "check", "content": "Carefully check all components of the accumulator and car to confirm they match what was provided on the datasheets tab of the ESF. ESF documentation is attached to the inspection sheet." }
           ]
         },
         {
@@ -354,7 +354,7 @@
           "displayOrder": 35,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Maintenance Plugs must be accessible after opening the Accumulator Container without the need to move/remove any other components." }
+            { "displayOrder": 1, "type": "check", "content": "Maintenance Plugs must be accessible after opening the Accumulator Container without the need to move/remove any other components." }
           ]
         },
         {
@@ -364,7 +364,7 @@
           "displayOrder": 36,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Maintenance Plugs must be impossible to connect in any configuration other than the intended." }
+            { "displayOrder": 1, "type": "check", "content": "Maintenance Plugs must be impossible to connect in any configuration other than the intended." }
           ]
         },
         {
@@ -374,7 +374,7 @@
           "displayOrder": 37,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Maintenance Plugs must not require tools to remove or install. Removal and installation must be possible using HV insulated gloves + leather gloves." }
+            { "displayOrder": 1, "type": "check", "content": "Maintenance Plugs must not require tools to remove or install. Removal and installation must be possible using HV insulated gloves + leather gloves." }
           ]
         },
         {
@@ -384,7 +384,7 @@
           "displayOrder": 38,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Maintenance Plugs must include a positive locking feature to prevent unintended disconnection." }
+            { "displayOrder": 1, "type": "check", "content": "Maintenance Plugs must include a positive locking feature to prevent unintended disconnection." }
           ]
         },
         {
@@ -394,7 +394,7 @@
           "displayOrder": 39,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Maintenance Plugs must have nonconductive surfaces, except where required to make electrical connection." }
+            { "displayOrder": 1, "type": "check", "content": "Maintenance Plugs must have nonconductive surfaces, except where required to make electrical connection." }
           ]
         },
         {
@@ -404,7 +404,7 @@
           "displayOrder": 40,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "A minimum of 30% of the accumulator cells must have temperature monitoring." }
+            { "displayOrder": 1, "type": "check", "content": "A minimum of 30% of the accumulator cells must have temperature monitoring." }
           ]
         },
         {
@@ -414,7 +414,7 @@
           "displayOrder": 41,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The temperature sensor used must be in direct contact with the cell's negative terminal OR with the busbar less than 10mm away from the cell terminal." }
+            { "displayOrder": 1, "type": "check", "content": "The temperature sensor used must be in direct contact with the cell's negative terminal OR with the busbar less than 10mm away from the cell terminal." }
           ]
         },
         {
@@ -424,7 +424,7 @@
           "displayOrder": 42,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Attachment of the temperature sensors must not rely solely on tape." }
+            { "displayOrder": 1, "type": "check", "content": "Attachment of the temperature sensors must not rely solely on tape." }
           ]
         },
         {
@@ -434,7 +434,7 @@
           "displayOrder": 43,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "If the container is made of electrically conductive material, the poles of the accumulator stack(s) and cells must be insulated to the inner walls of the Accumulator Container." }
+            { "displayOrder": 1, "type": "check", "content": "If the container is made of electrically conductive material, the poles of the accumulator stack(s) and cells must be insulated to the inner walls of the Accumulator Container." }
           ]
         },
         {
@@ -444,7 +444,7 @@
           "displayOrder": 44,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "TS and GLV wiring must be separated by an insulating barrier OR by the specified distance." }
+            { "displayOrder": 1, "type": "check", "content": "TS and GLV wiring must be separated by an insulating barrier OR by the specified distance." }
           ]
         },
         {
@@ -454,7 +454,7 @@
           "displayOrder": 45,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "All wires with more than 150mm in length must have a fuse within the first 150mm from the cable's source." }
+            { "displayOrder": 1, "type": "check", "content": "All wires with more than 150mm in length must have a fuse within the first 150mm from the cable's source." }
           ]
         },
         {
@@ -464,7 +464,7 @@
           "displayOrder": 46,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "No \"always energized\" TS cables leave the accumulator container. All TS wires leaving accumulator must be disconnected by an AIR." }
+            { "displayOrder": 1, "type": "check", "content": "No \"always energized\" TS cables leave the accumulator container. All TS wires leaving accumulator must be disconnected by an AIR." }
           ]
         },
         {
@@ -474,7 +474,7 @@
           "displayOrder": 47,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "All Accumulator Segments and/or Accumulator Containers (including spares and replacement parts) must be identical to the design documented in the ESF and SES." }
+            { "displayOrder": 1, "type": "check", "content": "All Accumulator Segments and/or Accumulator Containers (including spares and replacement parts) must be identical to the design documented in the ESF and SES." }
           ]
         },
         {
@@ -484,7 +484,7 @@
           "displayOrder": 48,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "When charging, each Accumulator Container(s) must have a label that contains the required information." }
+            { "displayOrder": 1, "type": "check", "content": "When charging, each Accumulator Container(s) must have a label that contains the required information." }
           ]
         },
         {
@@ -494,7 +494,7 @@
           "displayOrder": 49,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Measured resistance between conductive surfaces and ground pin of the charger's AC connector must be < 300mOhm." }
+            { "displayOrder": 1, "type": "check", "content": "Measured resistance between conductive surfaces and ground pin of the charger's AC connector must be < 300mOhm." }
           ]
         },
         {
@@ -504,7 +504,7 @@
           "displayOrder": 50,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Measure resistance between TSMP HV- and TSMP HV+: 000V < Vmax < 200V = 10kOhm." }
+            { "displayOrder": 1, "type": "check", "content": "Measure resistance between TSMP HV- and TSMP HV+: 000V < Vmax < 200V = 10kOhm." }
           ]
         },
         {
@@ -514,7 +514,7 @@
           "displayOrder": 51,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Accumulator Indicator indicates if voltage above 60VDC is present outside of the container. Check indicator during the charging demonstration." }
+            { "displayOrder": 1, "type": "check", "content": "Accumulator Indicator indicates if voltage above 60VDC is present outside of the container. Check indicator during the charging demonstration." }
           ]
         },
         {
@@ -524,7 +524,7 @@
           "displayOrder": 52,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The Voltage Indicator must be clearly visible when connecting/disconnecting the Accumulator Tractive System connections." }
+            { "displayOrder": 1, "type": "check", "content": "The Voltage Indicator must be clearly visible when connecting/disconnecting the Accumulator Tractive System connections." }
           ]
         },
         {
@@ -534,7 +534,7 @@
           "displayOrder": 53,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "When charging, press the E-Stop button. The E-Stop button on charger must open the shutdown circuit and stop the charging." }
+            { "displayOrder": 1, "type": "check", "content": "When charging, press the E-Stop button. The E-Stop button on charger must open the shutdown circuit and stop the charging." }
           ]
         },
         {
@@ -544,11 +544,11 @@
           "displayOrder": 54,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "IMD must open shutdown circuit in 30 seconds when isolation fault is present." },
-            { "displayOrder": 2, "type": "instruction", "content": "Accumulator in valid charge condition." },
-            { "displayOrder": 3, "type": "instruction", "content": "Connect TSMP(-) and GLVS ground using the IMD test resistor." },
-            { "displayOrder": 4, "type": "instruction", "content": "IMD shall detect an insulation fault, turn off the charger and open AIRs in 30 seconds." },
-            { "displayOrder": 5, "type": "instruction", "content": "Repeat the test using the TSMP(+)." }
+            { "displayOrder": 1, "type": "check", "content": "IMD must open shutdown circuit in 30 seconds when isolation fault is present." },
+            { "displayOrder": 2, "type": "action", "content": "Accumulator in valid charge condition." },
+            { "displayOrder": 3, "type": "action", "content": "Connect TSMP(-) and GLVS ground using the IMD test resistor." },
+            { "displayOrder": 4, "type": "action", "content": "IMD shall detect an insulation fault, turn off the charger and open AIRs in 30 seconds." },
+            { "displayOrder": 5, "type": "action", "content": "Repeat the test using the TSMP(+)." }
           ]
         },
         {
@@ -558,7 +558,7 @@
           "displayOrder": 55,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "When charging, the BMS must be live, monitoring the cell voltage of each cell and cell temperature of more than 30% of cells." }
+            { "displayOrder": 1, "type": "check", "content": "When charging, the BMS must be live, monitoring the cell voltage of each cell and cell temperature of more than 30% of cells." }
           ]
         },
         {
@@ -568,7 +568,7 @@
           "displayOrder": 56,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "When charging, the BMS must be able to turn OFF the charger in an event that a fault is detected (Shutdown Circuit open)." }
+            { "displayOrder": 1, "type": "check", "content": "When charging, the BMS must be able to turn OFF the charger in an event that a fault is detected (Shutdown Circuit open)." }
           ]
         },
         {
@@ -578,7 +578,7 @@
           "displayOrder": 57,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Upon completion of accumulator inspection the following parts must be sealed to prevent modification." }
+            { "displayOrder": 1, "type": "check", "content": "Upon completion of accumulator inspection the following parts must be sealed to prevent modification." }
           ]
         },
         {
@@ -588,7 +588,7 @@
           "displayOrder": 58,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Visible access must be possible to all items on Tech Sheet without the use of mirrors or borescopes." }
+            { "displayOrder": 1, "type": "check", "content": "Visible access must be possible to all items on Tech Sheet without the use of mirrors or borescopes." }
           ]
         },
         {
@@ -598,7 +598,7 @@
           "displayOrder": 59,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The cockpit firewall must separate the driver from any Tractive System components other than Outboard Wheel Motors and associated cables. Must be made of aluminum and grounded to the chassis." }
+            { "displayOrder": 1, "type": "check", "content": "The cockpit firewall must separate the driver from any Tractive System components other than Outboard Wheel Motors and associated cables. Must be made of aluminum and grounded to the chassis." }
           ]
         },
         {
@@ -608,7 +608,7 @@
           "displayOrder": 60,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The foot pedal must have a positive stop to prevent sensors from being mechanically overstressed. Two springs must be used to return the accelerator pedal to the off position and each spring must work with the other disconnected. The springs in the APPS are not acceptable return springs." }
+            { "displayOrder": 1, "type": "check", "content": "The foot pedal must have a positive stop to prevent sensors from being mechanically overstressed. Two springs must be used to return the accelerator pedal to the off position and each spring must work with the other disconnected. The springs in the APPS are not acceptable return springs." }
           ]
         },
         {
@@ -626,7 +626,7 @@
           "displayOrder": 62,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "LV Batteries and Pressurized cylinders must be sealed to prevent modification." }
+            { "displayOrder": 1, "type": "check", "content": "LV Batteries and Pressurized cylinders must be sealed to prevent modification." }
           ]
         },
         {
@@ -636,7 +636,7 @@
           "displayOrder": 63,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "High pressure hydraulic pumps and lines must have 1 mm thick steel or aluminum shields to protect driver and workers. (Brakes & clutch exempt.)" }
+            { "displayOrder": 1, "type": "check", "content": "High pressure hydraulic pumps and lines must have 1 mm thick steel or aluminum shields to protect driver and workers. (Brakes & clutch exempt.)" }
           ]
         },
         {
@@ -646,7 +646,7 @@
           "displayOrder": 64,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Catch cans must be sealed: 10% of system volume or 0.5 L minimum." }
+            { "displayOrder": 1, "type": "check", "content": "Catch cans must be sealed: 10% of system volume or 0.5 L minimum." }
           ]
         },
         {
@@ -656,7 +656,7 @@
           "displayOrder": 65,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Fluid Leaks are not permitted. Firewalls must prevent contact with driver." }
+            { "displayOrder": 1, "type": "check", "content": "Fluid Leaks are not permitted. Firewalls must prevent contact with driver." }
           ]
         },
         {
@@ -666,7 +666,7 @@
           "displayOrder": 66,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Scattershields are required for clutches, chains, belts, CVT rotating parts, etc. Must not be perforated and must end parallel to lowest part of front and rear sprockets. Attached with min. 6mm fasteners (CRITICAL FASTENERS)." }
+            { "displayOrder": 1, "type": "check", "content": "Scattershields are required for clutches, chains, belts, CVT rotating parts, etc. Must not be perforated and must end parallel to lowest part of front and rear sprockets. Attached with min. 6mm fasteners (CRITICAL FASTENERS)." }
           ]
         },
         {
@@ -676,7 +676,7 @@
           "displayOrder": 67,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Scattershields must be made of approved materials. OEM motor drive sprocket cover is OK." }
+            { "displayOrder": 1, "type": "check", "content": "Scattershields must be made of approved materials. OEM motor drive sprocket cover is OK." }
           ]
         },
         {
@@ -686,7 +686,7 @@
           "displayOrder": 68,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Finger guards are required to cover all drivetrain rotating parts." }
+            { "displayOrder": 1, "type": "check", "content": "Finger guards are required to cover all drivetrain rotating parts." }
           ]
         },
         {
@@ -696,7 +696,7 @@
           "displayOrder": 69,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Compressed gas cylinders must be an unmodified COTS cylinder (labeled), filled with nonflammable gas and with a regulator on tank. Securely mounted, axis not pointed at driver, rearward of Main Hoop within the frame envelope, or in structural sidepod; not in cockpit, with appropriate lines & fittings." }
+            { "displayOrder": 1, "type": "check", "content": "Compressed gas cylinders must be an unmodified COTS cylinder (labeled), filled with nonflammable gas and with a regulator on tank. Securely mounted, axis not pointed at driver, rearward of Main Hoop within the frame envelope, or in structural sidepod; not in cockpit, with appropriate lines & fittings." }
           ]
         },
         {
@@ -706,7 +706,7 @@
           "displayOrder": 70,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Coolants must be 100% water or oil." }
+            { "displayOrder": 1, "type": "check", "content": "Coolants must be 100% water or oil." }
           ]
         },
         {
@@ -716,7 +716,7 @@
           "displayOrder": 71,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "TS components (except only for Outboard Wheel Motors and their connections) must be contained inside the Rollover Protection Envelope." }
+            { "displayOrder": 1, "type": "check", "content": "TS components (except only for Outboard Wheel Motors and their connections) must be contained inside the Rollover Protection Envelope." }
           ]
         },
         {
@@ -726,7 +726,7 @@
           "displayOrder": 72,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "TS wiring must meet the required insulation voltage rating." }
+            { "displayOrder": 1, "type": "check", "content": "TS wiring must meet the required insulation voltage rating." }
           ]
         },
         {
@@ -736,7 +736,7 @@
           "displayOrder": 73,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "TS wiring must be protected from loosening due to vibration, against damage by rotating and/or moving parts, and located out of the way of possible snagging or damage." }
+            { "displayOrder": 1, "type": "check", "content": "TS wiring must be protected from loosening due to vibration, against damage by rotating and/or moving parts, and located out of the way of possible snagging or damage." }
           ]
         },
         {
@@ -746,7 +746,7 @@
           "displayOrder": 74,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "TS wiring must be enclosed in separate orange nonconductive conduit OR be an orange shielded cable. The conduit or cable must be securely anchored at each end to allow it to withstand a force of 200N without straining the cable or crimp." }
+            { "displayOrder": 1, "type": "check", "content": "TS wiring must be enclosed in separate orange nonconductive conduit OR be an orange shielded cable. The conduit or cable must be securely anchored at each end to allow it to withstand a force of 200N without straining the cable or crimp." }
           ]
         },
         {
@@ -756,7 +756,7 @@
           "displayOrder": 75,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Measure resistance between electrically conductive surfaces and GLV System Ground must be < 300mOhm. Measure resistance between parts which may become electrically conductive (Carbon Fiber parts) and GLV System Ground must be <5 Ohm." }
+            { "displayOrder": 1, "type": "check", "content": "Measure resistance between electrically conductive surfaces and GLV System Ground must be < 300mOhm. Measure resistance between parts which may become electrically conductive (Carbon Fiber parts) and GLV System Ground must be <5 Ohm." }
           ]
         },
         {
@@ -766,7 +766,7 @@
           "displayOrder": 76,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Each housing or enclosure containing parts of the Tractive System, other than motor housings, must be labelled with the hazard symbol (triangle with black lightning bolt on yellow background)." }
+            { "displayOrder": 1, "type": "check", "content": "Each housing or enclosure containing parts of the Tractive System, other than motor housings, must be labelled with the hazard symbol (triangle with black lightning bolt on yellow background)." }
           ]
         },
         {
@@ -776,7 +776,7 @@
           "displayOrder": 77,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "TSMPs must meet required specifications and must be kept accessible." }
+            { "displayOrder": 1, "type": "check", "content": "TSMPs must meet required specifications and must be kept accessible." }
           ]
         },
         {
@@ -786,7 +786,7 @@
           "displayOrder": 78,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "TSMPs must be 4mm shrouded red banana jacks, marked with \"HV-\" and \"HV+\"." }
+            { "displayOrder": 1, "type": "check", "content": "TSMPs must be 4mm shrouded red banana jacks, marked with \"HV-\" and \"HV+\"." }
           ]
         },
         {
@@ -796,7 +796,7 @@
           "displayOrder": 79,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Measure resistance between TSMP HV- and TSMP HV+." }
+            { "displayOrder": 1, "type": "check", "content": "Measure resistance between TSMP HV- and TSMP HV+." }
           ]
         },
         {
@@ -806,7 +806,7 @@
           "displayOrder": 80,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "When the Tractive System enclosures are in place, must not be possible to contact any Tractive System connections with a 100mm long, 6mm diameter insulated test probe." }
+            { "displayOrder": 1, "type": "check", "content": "When the Tractive System enclosures are in place, must not be possible to contact any Tractive System connections with a 100mm long, 6mm diameter insulated test probe." }
           ]
         },
         {
@@ -816,7 +816,7 @@
           "displayOrder": 81,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Insulation materials must have a minimum temperature rating of 90°C." }
+            { "displayOrder": 1, "type": "check", "content": "Insulation materials must have a minimum temperature rating of 90°C." }
           ]
         },
         {
@@ -826,7 +826,7 @@
           "displayOrder": 82,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Insulating tape or paint may be part of the insulation but must not be the only insulation." }
+            { "displayOrder": 1, "type": "check", "content": "Insulating tape or paint may be part of the insulation but must not be the only insulation." }
           ]
         },
         {
@@ -836,7 +836,7 @@
           "displayOrder": 83,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Bolted electrical connections in the high current path of the Tractive System must include a positive locking feature to prevent unintentional loosening." }
+            { "displayOrder": 1, "type": "check", "content": "Bolted electrical connections in the high current path of the Tractive System must include a positive locking feature to prevent unintentional loosening." }
           ]
         },
         {
@@ -846,7 +846,7 @@
           "displayOrder": 84,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Interlocks must be incorporated into all required locations per rules." }
+            { "displayOrder": 1, "type": "check", "content": "Interlocks must be incorporated into all required locations per rules." }
           ]
         },
         {
@@ -856,7 +856,7 @@
           "displayOrder": 85,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "MSD must be more than 350mm from the ground." }
+            { "displayOrder": 1, "type": "check", "content": "MSD must be more than 350mm from the ground." }
           ]
         },
         {
@@ -866,7 +866,7 @@
           "displayOrder": 86,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "MSD must be easily visible when standing behind the vehicle." }
+            { "displayOrder": 1, "type": "check", "content": "MSD must be easily visible when standing behind the vehicle." }
           ]
         },
         {
@@ -876,7 +876,7 @@
           "displayOrder": 87,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "MSD must be operable in 10 seconds or less by an untrained person." }
+            { "displayOrder": 1, "type": "check", "content": "MSD must be operable in 10 seconds or less by an untrained person." }
           ]
         },
         {
@@ -886,7 +886,7 @@
           "displayOrder": 88,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "MSD must be operable without removing any bodywork or obstruction or using tools." }
+            { "displayOrder": 1, "type": "check", "content": "MSD must be operable without removing any bodywork or obstruction or using tools." }
           ]
         },
         {
@@ -896,7 +896,7 @@
           "displayOrder": 89,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "\"MSD\" must be clearly marked on the MSD." }
+            { "displayOrder": 1, "type": "check", "content": "\"MSD\" must be clearly marked on the MSD." }
           ]
         },
         {
@@ -906,7 +906,7 @@
           "displayOrder": 90,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "A dummy connector or similar may be used on the MSD to restore isolation." }
+            { "displayOrder": 1, "type": "check", "content": "A dummy connector or similar may be used on the MSD to restore isolation." }
           ]
         },
         {
@@ -916,7 +916,7 @@
           "displayOrder": 91,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Shutdown buttons must be a push-pull OR push-rotate emergency stop button. Must hold when operated to the OFF position." }
+            { "displayOrder": 1, "type": "check", "content": "Shutdown buttons must be a push-pull OR push-rotate emergency stop button. Must hold when operated to the OFF position." }
           ]
         },
         {
@@ -926,7 +926,7 @@
           "displayOrder": 92,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "One Shutdown button must be on each side of the vehicle. It must have a diameter 40mm minimum. Must not be easily removable or mounted onto removable bodywork." }
+            { "displayOrder": 1, "type": "check", "content": "One Shutdown button must be on each side of the vehicle. It must have a diameter 40mm minimum. Must not be easily removable or mounted onto removable bodywork." }
           ]
         },
         {
@@ -936,7 +936,7 @@
           "displayOrder": 93,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "One Shutdown button must be mounted in the cockpit. It must have a diameter 24mm minimum. Located in easy reach of the belted-in driver and not obstructed by the steering wheel or any other part." }
+            { "displayOrder": 1, "type": "check", "content": "One Shutdown button must be mounted in the cockpit. It must have a diameter 24mm minimum. Located in easy reach of the belted-in driver and not obstructed by the steering wheel or any other part." }
           ]
         },
         {
@@ -946,7 +946,7 @@
           "displayOrder": 94,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The Shutdown buttons must have the International Electrical symbol (a red spark on a white edged blue triangle)." }
+            { "displayOrder": 1, "type": "check", "content": "The Shutdown buttons must have the International Electrical symbol (a red spark on a white edged blue triangle)." }
           ]
         },
         {
@@ -956,7 +956,7 @@
           "displayOrder": 95,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "OFF and ON positions must be clearly marked. ON position must be in horizontal position." }
+            { "displayOrder": 1, "type": "check", "content": "OFF and ON positions must be clearly marked. ON position must be in horizontal position." }
           ]
         },
         {
@@ -966,7 +966,7 @@
           "displayOrder": 96,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "GLVMS must be in the center of a completely red circular area of >50mm in diameter." }
+            { "displayOrder": 1, "type": "check", "content": "GLVMS must be in the center of a completely red circular area of >50mm in diameter." }
           ]
         },
         {
@@ -976,7 +976,7 @@
           "displayOrder": 97,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "TSMS must be in the center of a completely orange circular area of >50mm in diameter." }
+            { "displayOrder": 1, "type": "check", "content": "TSMS must be in the center of a completely orange circular area of >50mm in diameter." }
           ]
         },
         {
@@ -986,7 +986,7 @@
           "displayOrder": 98,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Position must be clearly indicated." }
+            { "displayOrder": 1, "type": "check", "content": "Position must be clearly indicated." }
           ]
         },
         {
@@ -996,7 +996,7 @@
           "displayOrder": 99,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Measure isolation between TSMP and chassis ground. Choose next voltage level above TS Voltage (250V or 500V)." }
+            { "displayOrder": 1, "type": "check", "content": "Measure isolation between TSMP and chassis ground. Choose next voltage level above TS Voltage (250V or 500V)." }
           ]
         },
         {
@@ -1006,11 +1006,11 @@
           "displayOrder": 100,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "IMD must open the shutdown circuit in 30 seconds when isolation fault is present." },
-            { "displayOrder": 2, "type": "instruction", "content": "Activate Tractive System; IMD indicator OFF, TSSI is GREEN." },
-            { "displayOrder": 3, "type": "instruction", "content": "Connect IMD test box between TSMP HV- and GLV Ground." },
-            { "displayOrder": 4, "type": "instruction", "content": "IMD must trip in 30 seconds and TS voltage must decrease below 60VDC in 5 seconds; IMD indicator is ON (RED), TSSI is flashing RED." },
-            { "displayOrder": 5, "type": "instruction", "content": "Remove test box and reset." }
+            { "displayOrder": 1, "type": "check", "content": "IMD must open the shutdown circuit in 30 seconds when isolation fault is present." },
+            { "displayOrder": 2, "type": "action", "content": "Activate Tractive System; IMD indicator OFF, TSSI is GREEN." },
+            { "displayOrder": 3, "type": "action", "content": "Connect IMD test box between TSMP HV- and GLV Ground." },
+            { "displayOrder": 4, "type": "action", "content": "IMD must trip in 30 seconds and TS voltage must decrease below 60VDC in 5 seconds; IMD indicator is ON (RED), TSSI is flashing RED." },
+            { "displayOrder": 5, "type": "action", "content": "Remove test box and reset." }
           ]
         },
         {
@@ -1021,8 +1021,8 @@
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
-            { "displayOrder": 2, "type": "instruction", "content": "Turn the TSMS OFF." },
-            { "displayOrder": 3, "type": "requirement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 2, "type": "action", "content": "Turn the TSMS OFF." },
+            { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1033,8 +1033,8 @@
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
-            { "displayOrder": 2, "type": "instruction", "content": "Turn the GLVMS OFF." },
-            { "displayOrder": 3, "type": "requirement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 2, "type": "action", "content": "Turn the GLVMS OFF." },
+            { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1045,8 +1045,8 @@
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
-            { "displayOrder": 2, "type": "instruction", "content": "Push the Left Shutdown Button." },
-            { "displayOrder": 3, "type": "requirement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 2, "type": "action", "content": "Push the Left Shutdown Button." },
+            { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1057,8 +1057,8 @@
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
-            { "displayOrder": 2, "type": "instruction", "content": "Push the Cockpit Shutdown Button." },
-            { "displayOrder": 3, "type": "requirement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 2, "type": "action", "content": "Push the Cockpit Shutdown Button." },
+            { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1069,8 +1069,8 @@
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
-            { "displayOrder": 2, "type": "instruction", "content": "Turn the BOTS OFF." },
-            { "displayOrder": 3, "type": "requirement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 2, "type": "action", "content": "Turn the BOTS OFF." },
+            { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1081,8 +1081,8 @@
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
-            { "displayOrder": 2, "type": "instruction", "content": "Remove the MSD." },
-            { "displayOrder": 3, "type": "requirement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 2, "type": "action", "content": "Remove the MSD." },
+            { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1093,8 +1093,8 @@
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
-            { "displayOrder": 2, "type": "instruction", "content": "Open the Outboard Wheel Motor Interlocks (if applicable)." },
-            { "displayOrder": 3, "type": "requirement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 2, "type": "action", "content": "Open the Outboard Wheel Motor Interlocks (if applicable)." },
+            { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1104,9 +1104,9 @@
           "displayOrder": 108,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "instruction", "content": "Unmount the Inertia Switch." },
-            { "displayOrder": 2, "type": "instruction", "content": "Activate TS, shake the switch and check if TS deactivates." },
-            { "displayOrder": 3, "type": "requirement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 1, "type": "action", "content": "Unmount the Inertia Switch." },
+            { "displayOrder": 2, "type": "action", "content": "Activate TS, shake the switch and check if TS deactivates." },
+            { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1116,7 +1116,7 @@
           "displayOrder": 109,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The RTML must be flashing amber when GLV turned ON and the voltage outside the accumulator container exceeds 60VDC." }
+            { "displayOrder": 1, "type": "check", "content": "The RTML must be flashing amber when GLV turned ON and the voltage outside the accumulator container exceeds 60VDC." }
           ]
         },
         {
@@ -1126,7 +1126,7 @@
           "displayOrder": 110,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The RTML must comply with DOT FMVSS 108." }
+            { "displayOrder": 1, "type": "check", "content": "The RTML must comply with DOT FMVSS 108." }
           ]
         },
         {
@@ -1136,7 +1136,7 @@
           "displayOrder": 111,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The vehicle must make a characteristic sound when Ready-to-Drive. Must be sounded continuously for min 1 second and max 3 seconds. Minimum sound level of 80dBA. The vehicle must not make other sounds similar to Ready-to-Drive sound." }
+            { "displayOrder": 1, "type": "check", "content": "The vehicle must make a characteristic sound when Ready-to-Drive. Must be sounded continuously for min 1 second and max 3 seconds. Minimum sound level of 80dBA. The vehicle must not make other sounds similar to Ready-to-Drive sound." }
           ]
         },
         {
@@ -1146,8 +1146,8 @@
           "displayOrder": 112,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "instruction", "content": "Press Brake Pedal." },
-            { "displayOrder": 2, "type": "requirement", "content": "The Brake Light must be clearly visible from the rear in very bright sunlight." }
+            { "displayOrder": 1, "type": "action", "content": "Press Brake Pedal." },
+            { "displayOrder": 2, "type": "check", "content": "The Brake Light must be clearly visible from the rear in very bright sunlight." }
           ]
         },
         {
@@ -1157,7 +1157,7 @@
           "displayOrder": 113,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Brake Light must be Red in color on a Black background with a minimum shining surface of 15cm²." }
+            { "displayOrder": 1, "type": "check", "content": "Brake Light must be Red in color on a Black background with a minimum shining surface of 15cm²." }
           ]
         },
         {
@@ -1167,16 +1167,16 @@
           "displayOrder": 114,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The team must demonstrate how the car is set to Ready-to-Drive mode by the driver." },
-            { "displayOrder": 2, "type": "instruction", "content": "Enable TS." },
-            { "displayOrder": 3, "type": "instruction", "content": "Press Accelerator — motors SHOULD NOT spin." },
-            { "displayOrder": 4, "type": "instruction", "content": "Press brake and start button." },
-            { "displayOrder": 5, "type": "instruction", "content": "Press Accelerator — motors SHOULD spin." },
-            { "displayOrder": 6, "type": "instruction", "content": "Press shutdown button." },
-            { "displayOrder": 7, "type": "instruction", "content": "Release shutdown button and enable TS." },
-            { "displayOrder": 8, "type": "instruction", "content": "Press Accelerator — motors SHOULD NOT spin." },
-            { "displayOrder": 9, "type": "instruction", "content": "Press brake and start button." },
-            { "displayOrder": 10, "type": "instruction", "content": "Press Accelerator — motors SHOULD spin." }
+            { "displayOrder": 1, "type": "check", "content": "The team must demonstrate how the car is set to Ready-to-Drive mode by the driver." },
+            { "displayOrder": 2, "type": "action", "content": "Enable TS." },
+            { "displayOrder": 3, "type": "action", "content": "Press Accelerator — motors SHOULD NOT spin." },
+            { "displayOrder": 4, "type": "action", "content": "Press brake and start button." },
+            { "displayOrder": 5, "type": "action", "content": "Press Accelerator — motors SHOULD spin." },
+            { "displayOrder": 6, "type": "action", "content": "Press shutdown button." },
+            { "displayOrder": 7, "type": "action", "content": "Release shutdown button and enable TS." },
+            { "displayOrder": 8, "type": "action", "content": "Press Accelerator — motors SHOULD NOT spin." },
+            { "displayOrder": 9, "type": "action", "content": "Press brake and start button." },
+            { "displayOrder": 10, "type": "action", "content": "Press Accelerator — motors SHOULD spin." }
           ]
         },
         {
@@ -1186,11 +1186,11 @@
           "displayOrder": 115,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Torque production must stop when accelerator and brake pedal are pressed simultaneously." },
-            { "displayOrder": 2, "type": "instruction", "content": "Press accelerator to show that axle turns." },
-            { "displayOrder": 3, "type": "instruction", "content": "With accelerator > 25%, press brake pedal — axle must stop." },
-            { "displayOrder": 4, "type": "instruction", "content": "Keeping accelerator >25%, release brake pedal — axle must remain stopped." },
-            { "displayOrder": 5, "type": "instruction", "content": "Slowly release accelerator; axle may turn again once < 5% pedal position." }
+            { "displayOrder": 1, "type": "check", "content": "Torque production must stop when accelerator and brake pedal are pressed simultaneously." },
+            { "displayOrder": 2, "type": "action", "content": "Press accelerator to show that axle turns." },
+            { "displayOrder": 3, "type": "action", "content": "With accelerator > 25%, press brake pedal — axle must stop." },
+            { "displayOrder": 4, "type": "action", "content": "Keeping accelerator >25%, release brake pedal — axle must remain stopped." },
+            { "displayOrder": 5, "type": "action", "content": "Slowly release accelerator; axle may turn again once < 5% pedal position." }
           ]
         },
         {
@@ -1200,10 +1200,10 @@
           "displayOrder": 116,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Torque production must stop if APPS are implausible." },
-            { "displayOrder": 2, "type": "instruction", "content": "Press accelerator to show that axle turns." },
-            { "displayOrder": 3, "type": "instruction", "content": "Unplug all but 1 APPS." },
-            { "displayOrder": 4, "type": "instruction", "content": "Press accelerator — axle must not turn. Repeat for each APPS sensor." }
+            { "displayOrder": 1, "type": "check", "content": "Torque production must stop if APPS are implausible." },
+            { "displayOrder": 2, "type": "action", "content": "Press accelerator to show that axle turns." },
+            { "displayOrder": 3, "type": "action", "content": "Unplug all but 1 APPS." },
+            { "displayOrder": 4, "type": "action", "content": "Press accelerator — axle must not turn. Repeat for each APPS sensor." }
           ]
         },
         {
@@ -1213,13 +1213,13 @@
           "displayOrder": 117,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The team must have a test to demonstrate BSPD operation." },
-            { "displayOrder": 2, "type": "instruction", "content": "Enable TS." },
-            { "displayOrder": 3, "type": "instruction", "content": "Press and hold Brake (may require driver in car)." },
-            { "displayOrder": 4, "type": "instruction", "content": "Turn up simulated current (5kW at nominal voltage)." },
-            { "displayOrder": 5, "type": "instruction", "content": "TS must shut off in 0.5 sec." },
-            { "displayOrder": 6, "type": "instruction", "content": "Release brake and turn off simulated current." },
-            { "displayOrder": 7, "type": "note", "content": "The TS may not automatically return to active state. The driver must not be able to reactivate the Tractive System." }
+            { "displayOrder": 1, "type": "check", "content": "The team must have a test to demonstrate BSPD operation." },
+            { "displayOrder": 2, "type": "action", "content": "Enable TS." },
+            { "displayOrder": 3, "type": "action", "content": "Press and hold Brake (may require driver in car)." },
+            { "displayOrder": 4, "type": "action", "content": "Turn up simulated current (5kW at nominal voltage)." },
+            { "displayOrder": 5, "type": "action", "content": "TS must shut off in 0.5 sec." },
+            { "displayOrder": 6, "type": "action", "content": "Release brake and turn off simulated current." },
+            { "displayOrder": 7, "type": "context", "content": "The TS may not automatically return to active state. The driver must not be able to reactivate the Tractive System." }
           ]
         },
         {
@@ -1229,7 +1229,7 @@
           "displayOrder": 118,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "The Energy Meter must be installed in an easily accessible location." }
+            { "displayOrder": 1, "type": "check", "content": "The Energy Meter must be installed in an easily accessible location." }
           ]
         },
         {
@@ -1239,7 +1239,7 @@
           "displayOrder": 119,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "requirement", "content": "Upon completion of the EV inspection the following parts must be sealed to prevent modification." }
+            { "displayOrder": 1, "type": "check", "content": "Upon completion of the EV inspection the following parts must be sealed to prevent modification." }
           ]
         }
       ]
