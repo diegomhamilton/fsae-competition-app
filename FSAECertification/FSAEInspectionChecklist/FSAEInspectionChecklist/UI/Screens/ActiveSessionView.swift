@@ -59,7 +59,7 @@ struct ActiveSessionView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("\(session.teamName) — \(session.vehicleNumber)")
                         .font(.headline)
-                    Text("Event \(session.eventYear)")
+                    Text("Event \(String(session.eventYear))")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -104,7 +104,7 @@ struct ActiveSessionView: View {
                 Section("Team Info") {
                     TextField("Team Name", text: $teamName)
                     TextField("Vehicle Number", text: $vehicleNumber)
-                    Stepper("Year: \(eventYear)", value: $eventYear, in: 2020...2099)
+                    Stepper("Year: \(String(eventYear))", value: $eventYear, in: 2020...2099)
                 }
             }
             .navigationTitle("New Session")
