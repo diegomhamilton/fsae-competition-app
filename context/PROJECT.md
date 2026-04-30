@@ -117,3 +117,37 @@ Common mistakes to avoid:
 - Ignoring edge cases
 - Designing for internal assumptions only
 - Skipping iteration and validation
+
+
+## 8) Backlog Integration + Task Start Plan (Immediate)
+
+### What is now fully integrated from BACKLOG
+- **B-002** is the immediate quality gate for reliable inspection behavior (explicit outcomes, notes-required enforcement, stage persistence).
+- **F-000** is the explicit migration epic that closes unfinished `measurement`/`evidence` support before attachment features.
+- **F-001/F-002** remain blocked by F-000 completion; **F-004** depends on B-002 stability.
+
+### How to start tasks now (no UI/architecture design yet)
+1. **Kick off B-002.1 (Outcome state enforcement)**
+   - Document test scenarios + acceptance checklist directly in task notes/PR body.
+   - Implement submit-gate validation for unresolved outcomes (`pass/fail/skip` required per step).
+   - Add Swift Testing unit coverage for unresolved-outcome blocking.
+2. **Then B-002.2 (Notes-required enforcement)**
+   - Lock rule-driven notes requirement semantics.
+   - Add inline + submit-time validation tests.
+3. **Then B-002.3/B-002.4 (Persistence + regression tests)**
+   - Verify same-team stage persistence after relaunch with deterministic reload behavior.
+4. **Start F-000 only after B-002 baseline is green**
+   - Execute **F-000.1** first (Phase 2A validation closure).
+   - Continue to **F-000.2** (Phase 2B promotions + minimal UI/result wiring).
+   - Finish with **F-000.3** regression pack.
+
+### Definition of Ready (DoR) for each task start
+- Test scenarios written first.
+- Acceptance criteria restated in implementation PR.
+- File ownership/risk note for shared contracts (`TestStep`, result schema, session persistence).
+- Swift Testing plan included before coding begins.
+
+### Recommended first implementation slice
+- **Start with B-002.1 in the next coding session** because it has smallest scope, unblocks deterministic submit gating, and reduces migration ambiguity before F-000.
+
+---
