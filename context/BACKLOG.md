@@ -72,6 +72,29 @@
 
 ## Features
 
+### F-000 Step-type migration completion (Phase 2A/2B + UI/result support)
+- **Description:** Complete and track the remaining work from `implementation_plans/Active/STEP_TYPE_MIGRATION_PLAN.md` so `measurement` and `evidence` types are fully supported end-to-end.
+- **Why now:** This is a blocker for attachment features and currently only partially tracked in roadmap notes, not as an explicit backlog execution item.
+- **Dependencies:** None (foundational), but should finish before F-001/F-002.
+- **Acceptance criteria:**
+  - Phase 2A validation is completed and documented (sequential behavior verified after measurement promotions).
+  - Phase 2B evidence promotions are completed with conversion summary per seed file.
+  - UI supports `measurement` and `evidence` step rendering in active stage flow.
+  - Result capture supports structured measurement values and evidence metadata persistence contracts.
+  - Swift Testing coverage exists for seed decode + submit gating behavior with these new types.
+- **Test scenarios to document before implementation:**
+  - Decode all seed files after Phase 2A/2B with strict step typing enabled.
+  - Execute a stage containing `measurement` step(s) and submit valid/invalid values.
+  - Execute a stage containing `evidence` step(s) with and without required proof artifacts.
+  - Relaunch app and verify stored measurement/evidence payloads reload for same team.
+- **Estimate:** **L** (8 sessions), split into two waves:
+  - **F-000.1 Phase 2A validation closure (S, 2 sessions)**
+  - **F-000.2 Phase 2B promotions + UI/result support starter (M, 4 sessions)**
+  - **F-000.3 Swift Testing + persistence regression pack (S, 2 sessions)**
+- **Parallelization:**
+  - Can run in parallel with B-001/B-002 if model contracts are frozen before merge.
+  - Should not run in parallel with F-001 model/schema changes unless one owner controls `TestStep`/result schema.
+
 ### F-004 Multi-team session management on one device
 - **Description:** Add explicit workflow for handling multiple teams on the same device (session list/switcher + active session selection).
 - **Dependencies:** B-002 (stage result persistence correctness).
@@ -165,8 +188,9 @@
 ## Dependency map (explicit)
 - **B-001:** none.
 - **B-002:** none.
+- **F-000:** none (foundational; recommended before F-001/F-002).
 - **E-001:** soft dependency on B-001 scroll coordinator decisions (to avoid duplicate logic).
-- **F-001:** depends on roadmap step-type validation/UI handling (`measurement` + `evidence`) readiness.
+- **F-001:** depends on F-000 completion.
 - **F-002:** depends on F-001.
 - **F-003:** depends on stable persistence schema (recommended after B-002 stage persistence validation).
 - **F-004:** depends on B-002.
@@ -184,9 +208,10 @@
 
 ### Wave 2
 - E-001 (jump arrows)
-- Remaining roadmap validation: sequential behavior
+- F-000.1 (Phase 2A validation closure)
 
 ### Wave 3
+- F-000.2 + F-000.3 (Phase 2B promotions, UI/result support, Swift Testing pack)
 - F-001 (attachments foundation)
 - F-004 (multi-team session management), once B-002 is accepted
 
