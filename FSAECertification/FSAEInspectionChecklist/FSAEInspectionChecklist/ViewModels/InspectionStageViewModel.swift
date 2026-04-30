@@ -46,6 +46,10 @@ final class InspectionStageViewModel {
         activeTestCaseID = testCase.itemId
     }
 
+    func activeTestCase() -> TestCase? {
+        allTestCasesOrdered().first { $0.itemId == activeTestCaseID }
+    }
+
     /// Returns the next test case with a pending result after `current`, wrapping around.
     func nextPending(after current: TestCase) -> TestCase? {
         let all = allTestCasesOrdered()
@@ -53,6 +57,11 @@ final class InspectionStageViewModel {
         let tail = Array(all[(idx + 1)...])
         let head = Array(all[..<idx])
         return (tail + head).first { isPending($0) }
+    }
+
+    func jumpToNextPendingFromActive() -> TestCase? {
+        guard let active = activeTestCase() else { return firstPendingTestCase() }
+        return nextPending(after: active)
     }
 
     private func firstPendingTestCase() -> TestCase? {
