@@ -28,7 +28,15 @@ struct TestStepRowView: View {
         case .precondition:        return "exclamationmark.triangle"
         case .context:     return "info.circle"
         case .measurement: return "ruler"
-        case .evidence:    return "paperclip"
+        case .evidence:
+            switch step.evidenceType {
+            case .photo:   return "photo"
+            case .video:   return "video"
+            case .audio:   return "mic"
+            case .pdf:     return "doc.richtext"
+            case .text:    return "text.alignleft"
+            case .generic: return "paperclip"
+            }
         }
     }
 
