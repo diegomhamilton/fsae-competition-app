@@ -19,7 +19,3 @@
 - [ ] Add required attachments to step
 - [ ] Implement test case details history of past submissions
 
-
-# User Stories
-You can find all user stories at Design/UserStories.
-Within `Design/UserStories`, `History/` and `Active/` are folders for those story groups.
