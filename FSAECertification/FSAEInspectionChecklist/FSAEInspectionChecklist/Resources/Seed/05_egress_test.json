@@ -14,7 +14,7 @@
           "displayOrder": 1,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "gate", "content": "The car must have the Mechanical Technical Inspection sticker before performing the Egress Test." },
+            { "displayOrder": 1, "type": "precondition", "content": "The car must have the Mechanical Technical Inspection sticker before performing the Egress Test." },
             { "displayOrder": 2, "type": "check", "content": "Verify all side body parts are mounted." },
             { "displayOrder": 3, "type": "check", "content": "Verify all front body parts are mounted." },
             { "displayOrder": 4, "type": "check", "content": "Verify the driver is wearing all required equipment." },

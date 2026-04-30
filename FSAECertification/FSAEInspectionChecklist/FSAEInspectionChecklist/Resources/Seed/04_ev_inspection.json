@@ -1020,7 +1020,7 @@
           "displayOrder": 101,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "gate", "content": "All shutdown circuit switches must be ON." },
+            { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Turn the TSMS OFF." },
             { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
@@ -1032,7 +1032,7 @@
           "displayOrder": 102,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "gate", "content": "All shutdown circuit switches must be ON." },
+            { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Turn the GLVMS OFF." },
             { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
@@ -1044,7 +1044,7 @@
           "displayOrder": 103,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "gate", "content": "All shutdown circuit switches must be ON." },
+            { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Push the Left Shutdown Button." },
             { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
@@ -1056,7 +1056,7 @@
           "displayOrder": 104,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "gate", "content": "All shutdown circuit switches must be ON." },
+            { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Push the Cockpit Shutdown Button." },
             { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
@@ -1068,7 +1068,7 @@
           "displayOrder": 105,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "gate", "content": "All shutdown circuit switches must be ON." },
+            { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Turn the BOTS OFF." },
             { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
@@ -1080,7 +1080,7 @@
           "displayOrder": 106,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "gate", "content": "All shutdown circuit switches must be ON." },
+            { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Remove the MSD." },
             { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
@@ -1092,7 +1092,7 @@
           "displayOrder": 107,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "gate", "content": "All shutdown circuit switches must be ON." },
+            { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Open the Outboard Wheel Motor Interlocks (if applicable)." },
             { "displayOrder": 3, "type": "check", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]

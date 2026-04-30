@@ -19,7 +19,7 @@ We will evolve the model from broad content labels to behavior-oriented step typ
 
 | v2 type | Purpose | Required fields | Optional fields |
 |---|---|---|---|
-| `gate` | Must be true before executing test actions. | `content` | `ruleRef`, `evidencePolicy` |
+| `precondition` | Must be true before executing test actions. | `content` | `ruleRef`, `evidencePolicy` |
 | `action` | Inspector/team action to perform during a test. | `content` | `expectedOutcome`, `evidencePolicy` |
 | `check` | Verifiable compliance statement. | `content` | `ruleRef`, `expectedValue`, `evidencePolicy` |
 | `context` | Non-blocking note, caution, or logistics info. | `content` | `severity` |
@@ -43,7 +43,7 @@ We migrate source data and code directly to v2.
 1. Replace all legacy seed values with canonical v2 values:
    - `requirement -> check`
    - `instruction -> action`
-   - `precondition -> gate`
+   - `precondition -> precondition` (kept legacy term as canonical label)
    - `note -> context`
 2. Update `TestStepType` enum to v2 values only.
 3. Make seed decoding strict (`SeedTestStep.type: TestStepType`) so invalid/legacy values fail fast.
@@ -71,7 +71,7 @@ From existing `check` and `action` steps, progressively promote entries into ric
 |---|---|---|
 | `requirement` | `check` | Most entries are compliance statements to verify. |
 | `instruction` | `action` | Imperative inspection/test procedure steps. |
-| `precondition` | `gate` | Preconditions must pass before running procedure. |
+| `precondition` | `precondition` | Preconditions must pass before running procedure (label preserved). |
 | `note` | `context` | Supplemental/non-blocking guidance. |
 
 ### Early promotion rules (draft) for richer mapping

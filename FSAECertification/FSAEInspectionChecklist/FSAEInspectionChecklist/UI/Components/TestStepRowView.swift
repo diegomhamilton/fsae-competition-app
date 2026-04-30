@@ -25,7 +25,7 @@ struct TestStepRowView: View {
         switch step.type {
         case .check:       return "doc.text"
         case .action:      return "arrow.right.circle"
-        case .gate:        return "exclamationmark.triangle"
+        case .precondition:        return "exclamationmark.triangle"
         case .context:     return "info.circle"
         case .measurement: return "ruler"
         case .evidence:    return "paperclip"
@@ -36,7 +36,7 @@ struct TestStepRowView: View {
         switch step.type {
         case .check:       return .primary
         case .action:      return .accentColor
-        case .gate:        return .orange
+        case .precondition:        return .orange
         case .context:     return .secondary
         case .measurement: return .teal
         case .evidence:    return .purple
@@ -49,7 +49,7 @@ struct TestStepRowView: View {
 
     private var background: Color {
         switch step.type {
-        case .gate:        return .orange.opacity(0.08)
+        case .precondition:        return .orange.opacity(0.08)
         case .context:     return .secondary.opacity(0.06)
         case .measurement: return .teal.opacity(0.08)
         case .evidence:    return .purple.opacity(0.08)

@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 enum TestStepType: String, Codable {
-    case gate
+    case precondition
     case action
     case check
     case context
