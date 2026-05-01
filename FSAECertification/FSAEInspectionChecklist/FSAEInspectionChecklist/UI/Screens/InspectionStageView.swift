@@ -7,6 +7,7 @@ struct InspectionStageView: View {
     let session: InspectionSession
     @State private var viewModel: InspectionStageViewModel
     @State private var scrollTargetID: String?
+    @State private var selectedDetailTestCase: TestCase?
 
     init(template: InspectionTemplate, session: InspectionSession) {
         self.template = template
@@ -38,6 +39,9 @@ struct InspectionStageView: View {
                                             scrollTargetID = next.itemId
                                         }
                                     }
+                                },
+                                onInfoTap: {
+                                    selectedDetailTestCase = testCase
                                 }
                             )
                             .id(testCase.itemId)
@@ -70,11 +74,17 @@ struct InspectionStageView: View {
         .navigationDestination(for: TestCase.self) { testCase in
             TestCaseDetailView(testCase: testCase, session: session)
         }
+        .navigationDestination(item: $selectedDetailTestCase) { testCase in
+            TestCaseDetailView(testCase: testCase, session: session)
+        }
         .task {
             viewModel.configure(with: TestCaseResultService(modelContext: modelContext))
             if let activeID = viewModel.activeTestCaseID {
                 scrollTargetID = activeID
             }
         }
+        .buttonStyle(.plain)
+        .disabled(viewModel.activeTestCase() == nil)
+        .opacity(viewModel.activeTestCase() == nil ? 0.45 : 1)
     }
 }
