@@ -32,6 +32,14 @@ struct InspectionStageView: View {
                                         scrollTargetID = testCase.itemId
                                     }
                                 },
+                                onVerdictSet: {
+                                    if let next = viewModel.nextPending(after: testCase) {
+                                        withAnimation(.spring(duration: 0.38, bounce: 0.12)) {
+                                            viewModel.activate(next)
+                                            scrollTargetID = next.itemId
+                                        }
+                                    }
+                                },
                                 onInfoTap: {
                                     selectedDetailTestCase = testCase
                                 }
@@ -51,9 +59,17 @@ struct InspectionStageView: View {
         }
         .navigationTitle(template.title)
         .navigationBarTitleDisplayMode(.large)
-        .safeAreaInset(edge: .bottom) {
-            verdictDock
-                .padding(.bottom, 24)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Next Pending") {
+                    guard let next = viewModel.jumpToNextPendingFromActive() else { return }
+                    withAnimation(.spring(duration: 0.38, bounce: 0.12)) {
+                        viewModel.activate(next)
+                        scrollTargetID = next.itemId
+                    }
+                }
+                .disabled(viewModel.jumpToNextPendingFromActive() == nil)
+            }
         }
         .navigationDestination(for: TestCase.self) { testCase in
             TestCaseDetailView(testCase: testCase, session: session)
@@ -66,42 +82,6 @@ struct InspectionStageView: View {
             if let activeID = viewModel.activeTestCaseID {
                 scrollTargetID = activeID
             }
-        }
-    }
-
-    private var verdictDock: some View {
-        HStack(spacing: 10) {
-            verdictPill(title: "Pass", status: .pass, tint: .green)
-            verdictPill(title: "Fail", status: .fail, tint: .red)
-            verdictPill(title: "N/A", status: .notApplicable, tint: .secondary)
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay(
-            Capsule()
-                .stroke(Color.white.opacity(0.28), lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(0.12), radius: 12, y: 5)
-    }
-
-    private func verdictPill(title: String, status: TestCaseStatus, tint: Color) -> some View {
-        Button {
-            guard viewModel.applyVerdictToActive(status) != nil else { return }
-            if let active = viewModel.activeTestCase(), let next = viewModel.nextPending(after: active) {
-                withAnimation(.spring(duration: 0.38, bounce: 0.12)) {
-                    viewModel.activate(next)
-                    scrollTargetID = next.itemId
-                }
-            }
-        } label: {
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(tint)
-                .frame(minWidth: 72)
-                .padding(.vertical, 10)
-                .padding(.horizontal, 10)
-                .background(Color.white.opacity(0.14), in: Capsule())
         }
         .buttonStyle(.plain)
         .disabled(viewModel.activeTestCase() == nil)

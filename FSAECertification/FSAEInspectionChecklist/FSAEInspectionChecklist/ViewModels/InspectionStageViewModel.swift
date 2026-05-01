@@ -64,24 +64,6 @@ final class InspectionStageViewModel {
         return nextPending(after: active)
     }
 
-    @discardableResult
-    func applyVerdictToActive(_ status: TestCaseStatus) -> TestCase? {
-        guard
-            let resultService,
-            let active = activeTestCase(),
-            let result = result(for: active)
-        else { return nil }
-
-        do {
-            try resultService.setStatus(status, for: result)
-            errorMessage = nil
-            return active
-        } catch {
-            errorMessage = "Unable to set verdict: \(error.localizedDescription)"
-            return nil
-        }
-    }
-
     private func firstPendingTestCase() -> TestCase? {
         allTestCasesOrdered().first { isPending($0) }
     }

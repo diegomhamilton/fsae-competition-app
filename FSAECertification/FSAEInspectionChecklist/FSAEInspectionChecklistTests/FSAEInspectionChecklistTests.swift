@@ -273,10 +273,6 @@ struct FSAEInspectionChecklistTests {
         try resultService.setStatus(.pass, for: firstResult)
 
         #expect(viewModel.jumpToNextPendingFromActive()?.itemId == "TC2")
-
-        let activeAfterSet = try #require(viewModel.applyVerdictToActive(.fail))
-        #expect(activeAfterSet.itemId == "TC1")
-        #expect(viewModel.result(for: first)?.status == .fail)
     }
 
     @Test func testCaseDetailViewModel_sortedStepsAndMutations_workAsExpected() throws {
