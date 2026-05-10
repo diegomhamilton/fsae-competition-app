@@ -4,6 +4,7 @@ Sources:
 - `Design/UserStories/InspectionEvents/PHASE1_STORY_CATALOG.md`
 - `Design/Flows/InspectionEvents/PHASE2_FLOW_SET.md`
 - `Design/Flows/InspectionEvents/PHASE3_SCREEN_MAP.md`
+- `Design/UI/DESIGN_PROPOSAL.md`
 
 ## 1) Domain Model Map
 
@@ -38,8 +39,10 @@ Sources:
 - `id: String`
 - `stageId: String`
 - `title: String`
-- `type: StepType` (`outcome | measurement | evidence`)
+- `type: StepType` (`check | measurement | precondition | action | context`)
 - `rules: StepRules`
+
+Evidence is modeled as a step capability through `StepRules` and `StepResult.attachments`, not as a standalone step type. Any step type can support or require evidence.
 
 ### StepResult
 - `stepId: String`
@@ -83,15 +86,13 @@ Sources:
 
 | Screen ID | ViewModel | Responsibilities | Inputs | Outputs |
 |---|---|---|---|---|
-| SC-001 | `SessionSelectorViewModel` | Load teams/session states; create/resume session. | eventId | team list, session status badges, load errors |
-| SC-002 | `ActiveTeamDashboardViewModel` | Show active context; navigate to stage/history/switch; restore pointer. | sessionId | context header, action intents, restore warnings |
-| SC-003 | `StageChecklistViewModel` | Load ordered steps; track completion; run submit gating. | sessionId, stageId | step rows, validation banner, submit enabled state |
-| SC-004 | `OutcomeStepViewModel` | Edit outcome/notes and enforce notes-on-fail rule. | stepId | field states, inline validation, saved draft state |
-| SC-005 | `MeasurementStepViewModel` | Validate measurement format/range/precision. | stepId | parsed value, field errors, validity state |
-| SC-006 | `EvidenceStepViewModel` | Manage attachments, required-proof status. | stepId | attachment list, add/remove results, evidence validity |
-| SC-007 | `TeamSwitchViewModel` | Confirm switch, persist draft, resolve failures. | sourceSessionId, targetTeamId | confirm state, save progress, switch result/error |
-| SC-008 | `HistoryListViewModel` | Load immutable submission list. | teamId, testCaseId | history rows, empty state, load error |
-| SC-009 | `HistoryDetailViewModel` | Load read-only snapshot detail. | submissionId | immutable stage/step detail, retry state |
+| SC-001 | `SessionSelectorViewModel` | Load teams/session states; create/resume session. Milestone 2. | eventId | team list, session status badges, load errors |
+| SC-002 | `ActiveTeamDashboardViewModel` | Show active team context; show stage progress/blockers; navigate to selected stage. In Milestone 1 this is scoped to one active team. | sessionId, activeTeamId | context header, stage rows, stage selection intents |
+| SC-003 | `StageExecutionViewModel` | Load ordered steps; own inline verdict, notes, measurement, and evidence status/actions; calculate progress/blockers; run submit gating; expose Step detail drill-in intent. | sessionId, stageId | editable step rows, blocker summary, progress state, submit enabled state, selected step intent |
+| SC-004 / SC-005 / SC-006 | `StepDetailViewModel` | Provide focused drill-in editing for outcome/notes, measurement, and evidence over the same draft `StepResult` state used by `StageExecutionViewModel`. | stepId, shared draft store | field states, inline validation, attachment metadata, saved draft state |
+| SC-007 | `TeamSwitchViewModel` | Confirm switch, persist draft, resolve failures. Milestone 2. | sourceSessionId, targetTeamId | confirm state, save progress, switch result/error |
+| SC-008 | `HistoryListViewModel` | Load immutable submission list. Deferred until after Milestone 2. | teamId, testCaseId | history rows, empty state, load error |
+| SC-009 | `HistoryDetailViewModel` | Load read-only snapshot detail. Deferred until after Milestone 2. | submissionId | immutable stage/step detail, retry state |
 
 ---
 
@@ -105,6 +106,8 @@ Sources:
 - `restoreContext(sessionId) -> RestoredContext`
 - `switchTeam(sourceSessionId, targetTeamId) -> InspectionSession`
 
+Milestone 1 uses an in-memory draft store for one active team and does not require durable session persistence. `SessionPersistenceService` becomes required in Milestone 2 for multi-team support, draft restore, and context switching.
+
 ### ValidationService
 - `validateStep(step: TestStep, result: StepResult) -> [ValidationError]`
 - `validateStage(stage: Stage, results: [StepResult]) -> ValidationSummary`
@@ -115,6 +118,8 @@ Sources:
 - `removeAttachment(attachmentId) -> Void`
 - `listAttachments(stepId) -> [Attachment]`
 - `resolvePreview(attachmentId) -> PreviewDescriptor`
+
+Milestone 1 may store attachment metadata in memory to validate evidence-required flows. Durable attachment storage is a Milestone 2+ concern.
 
 ### SubmissionHistoryService
 - `listSubmissions(teamId, testCaseId) -> [SubmissionSummary]`
@@ -154,6 +159,8 @@ Error handling conventions:
   - `submission_snapshots`
 - Include `schemaVersion` globally and `version` per session.
 
+Milestone 1 does not persist this storage shape. It uses in-memory draft state while the Team and Stage flow is validated. Durable storage begins in Milestone 2.
+
 ### Migration Rules
 - Use additive migrations for new step fields/types.
 - On read, apply compatibility adapters:
@@ -170,7 +177,7 @@ Error handling conventions:
 
 ## 6) Gate D Checklist (Architecture -> Implementation)
 - Model contracts defined for `InspectionSession`, `Stage`, `TestCase`, `TestStep`, `StepResult`, `Attachment`.
-- ViewModel ownership defined for every Phase 3 screen (`SC-001`..`SC-009`).
+- ViewModel ownership defined for every Phase 3 screen (`SC-001`..`SC-009`), with Milestone 1 focused on `SC-002`, `SC-003`, and Step detail drill-in.
 - Service contracts defined for persistence, validation, attachments, and history.
 - Validation order and failure surfaces frozen.
 - Storage and migration strategy defined for step-type evolution.
