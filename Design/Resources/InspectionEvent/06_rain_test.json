@@ -1,0 +1,44 @@
+{
+  "code": "06_rain",
+  "title": "Rain Test",
+  "displayOrder": 6,
+  "sections": [
+    {
+      "title": "Rain Test Procedure",
+      "displayOrder": 1,
+      "testCases": [
+        {
+          "itemId": "RainTest",
+          "ruleRef": null,
+          "title": "RAIN TEST",
+          "displayOrder": 1,
+          "badges": ["CAUTION: ENERGIZED"],
+          "steps": [
+            { "displayOrder": 1, "type": "precondition", "content": "The car must have the sticker for approval in the Mechanical / EV Inspection before performing the Rain Test." },
+            { "displayOrder": 2, "type": "precondition", "content": "The car must be complete (ready to Drive)." },
+            { "displayOrder": 3, "type": "precondition", "content": "All accompanying members must be using PPE." },
+            { "displayOrder": 4, "type": "precondition", "content": "The vehicle must be off the ground in its jacking points." },
+            { "displayOrder": 5, "type": "precondition", "content": "No driver or member is inside the vehicle." },
+            { "displayOrder": 6, "type": "precondition", "content": "The vehicle must be completely off." },
+            { "displayOrder": 7, "type": "action", "content": "Instruct the ESO to activate the tractive system (TS)." },
+            { "displayOrder": 8, "type": "check", "content": "Verify the RML is flashing after TS activation." },
+            { "displayOrder": 9, "type": "check", "content": "Inspect TSSI/IMD status and verify there are no insulation faults before induced-fault testing." },
+            { "displayOrder": 10, "type": "action", "content": "Instruct the ESO to connect a resistor to the TSMP to induce an insulation fault." },
+            { "displayOrder": 11, "type": "check", "content": "Inspect TSSI/IMD status and verify the induced insulation fault is detected." },
+            { "displayOrder": 12, "type": "check", "content": "Verify the IMD fault-detection path remains operational after fault injection." },
+            { "displayOrder": 13, "type": "action", "content": "Reset the system after induced-fault verification." },
+            { "displayOrder": 14, "type": "action", "content": "Instruct the ESO to activate the TS again after reset." },
+            { "displayOrder": 15, "type": "precondition", "content": "Before spray starts, verify no personnel are near the vehicle." },
+            { "displayOrder": 16, "type": "action", "content": "Start the water spray with the vehicle on jack stands." },
+            { "displayOrder": 17, "type": "measurement", "content": "Maintain continuous water spray for 120 seconds." },
+            { "displayOrder": 18, "type": "action", "content": "Stop the water spray." },
+            { "displayOrder": 19, "type": "measurement", "content": "Monitor the vehicle for 120 seconds after spray stops." },
+            { "displayOrder": 20, "type": "measurement", "content": "Verify the vehicle does not enter a fault condition for the full 240-second test window." },
+            { "displayOrder": 21, "type": "context", "content": "If Step 20 passes, mark the Rain Test as successful and complete." },
+            { "displayOrder": 22, "type": "action", "content": "Contact the EV inspection leader to obtain the approval sticker." }
+          ]
+        }
+      ]
+    }
+  ]
+}
