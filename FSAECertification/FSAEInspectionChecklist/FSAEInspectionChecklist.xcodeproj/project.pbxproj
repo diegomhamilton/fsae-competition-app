@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		62E500012F91A00100E1A101 /* InspectionEvent in Resources */ = {isa = PBXBuildFile; fileRef = 62E500002F91A00100E1A101 /* InspectionEvent */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		9ECA43D12F80C1030083BF80 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		62E500002F91A00100E1A101 /* InspectionEvent */ = {isa = PBXFileReference; lastKnownFileType = folder; name = InspectionEvent; path = ../../Design/Resources/InspectionEvent; sourceTree = "<group>"; };
 		9ECA43C12F80C1010083BF80 /* FSAEInspectionChecklist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FSAEInspectionChecklist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ECA43D02F80C1030083BF80 /* FSAEInspectionChecklistTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FSAEInspectionChecklistTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ECA43DA2F80C1030083BF80 /* FSAEInspectionChecklistUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FSAEInspectionChecklistUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +83,7 @@
 				9ECA43C32F80C1010083BF80 /* FSAEInspectionChecklist */,
 				9ECA43D32F80C1030083BF80 /* FSAEInspectionChecklistTests */,
 				9ECA43DD2F80C1030083BF80 /* FSAEInspectionChecklistUITests */,
+				62E500002F91A00100E1A101 /* InspectionEvent */,
 				9ECA43C22F80C1010083BF80 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -212,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				62E500012F91A00100E1A101 /* InspectionEvent in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
