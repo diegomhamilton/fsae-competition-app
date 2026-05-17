@@ -3,32 +3,54 @@ import SwiftData
 
 // MARK: - Seed DTOs
 
-private struct SeedTemplate: Decodable {
+
+struct StageDTO: Decodable {
     let code: String
     let title: String
     let displayOrder: Int
-    let sections: [SeedSection]
+    let sections: [SectionDTO]
 }
 
-private struct SeedSection: Decodable {
+struct SectionDTO: Decodable {
     let title: String
     let displayOrder: Int
-    let testCases: [SeedTestCase]
+    let testCases: [TestCaseDTO]
 }
 
-private struct SeedTestCase: Decodable {
+struct TestCaseDTO: Decodable {
     let itemId: String
     let ruleRef: String?
     let title: String
     let displayOrder: Int
     let badges: [String]
-    let steps: [SeedTestStep]
+    let steps: [StepDTO]
 }
 
-private struct SeedTestStep: Decodable {
+struct StepDTO: Decodable {
     let displayOrder: Int
     let type: TestStepType
     let content: String
+}
+
+final class InspectionContentLoader {
+    private let bundle: Bundle
+
+    init(bundle: Bundle = .main) {
+        self.bundle = bundle
+    }
+
+    func loadStage(fileName: String) throws -> StageDTO {
+        guard let url = bundle.url(forResource: fileName, withExtension: "json") else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+
+        let data = try Data(contentsOf: url)
+        return try JSONDecoder().decode(StageDTO.self, from: data)
+    }
+
+    func loadStages(fileNames: [String]) throws -> [StageDTO] {
+        try fileNames.map(loadStage)
+    }
 }
 
 // MARK: - Service
@@ -63,19 +85,20 @@ final class InspectionSeedService {
         ]
 
         for fileName in fileNames {
-            guard let url = Bundle.main.url(forResource: fileName, withExtension: "json") else {
-                print("⚠️ Seed file not found: \(fileName).json")
+            let loader = InspectionContentLoader()
+            do {
+                let stage = try loader.loadStage(fileName: fileName)
+                try insert(stage)
+            } catch {
+                print("⚠️ Seed file failed to load: \(fileName).json (\(error.localizedDescription))")
                 continue
             }
-            let data = try Data(contentsOf: url)
-            let seedTemplate = try JSONDecoder().decode(SeedTemplate.self, from: data)
-            try insert(seedTemplate)
         }
 
         try modelContext.save()
     }
 
-    private func insert(_ seed: SeedTemplate) throws {
+    private func insert(_ seed: StageDTO) throws {
         let template = InspectionTemplate(
             code: seed.code,
             title: seed.title,

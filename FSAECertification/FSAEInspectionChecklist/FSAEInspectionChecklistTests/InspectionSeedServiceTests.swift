@@ -336,3 +336,55 @@ extension InspectionSeedServiceTests {
         }
     }
 }
+
+// MARK: - InspectionContentLoader
+
+extension InspectionSeedServiceTests {
+
+    @Test("InspectionContentLoader decodes representative stage JSON")
+    func contentLoader_decodesRepresentativeStage() throws {
+        let loader = InspectionContentLoader(bundle: try seedBundle())
+
+        let stage = try loader.loadStage(fileName: "01_garage_inspection")
+
+        #expect(stage.code == "01_garage")
+        #expect(stage.title == "Garage Inspection")
+        #expect(stage.sections.isEmpty == false)
+    }
+
+    @Test("InspectionContentLoader preserves ordering for sections, test cases, and steps")
+    func contentLoader_preservesOrdering() throws {
+        let loader = InspectionContentLoader(bundle: try seedBundle())
+
+        let stage = try loader.loadStage(fileName: "04_ev_inspection")
+
+        let sectionOrders = stage.sections.map(\.displayOrder)
+        #expect(sectionOrders == sectionOrders.sorted())
+
+        for section in stage.sections {
+            let testCaseOrders = section.testCases.map(\.displayOrder)
+            #expect(testCaseOrders == testCaseOrders.sorted())
+
+            for testCase in section.testCases {
+                let stepOrders = testCase.steps.map(\.displayOrder)
+                #expect(stepOrders == stepOrders.sorted())
+            }
+        }
+    }
+
+    private func seedBundle() throws -> Bundle {
+        let candidates: [Bundle] = [
+            .main,
+            Bundle(for: InspectionSeedServiceTests.self),
+            Bundle(for: InspectionSeedService.self)
+        ]
+
+        for bundle in candidates {
+            if bundle.url(forResource: "01_garage_inspection", withExtension: "json") != nil {
+                return bundle
+            }
+        }
+
+        throw CocoaError(.fileNoSuchFile)
+    }
+}
