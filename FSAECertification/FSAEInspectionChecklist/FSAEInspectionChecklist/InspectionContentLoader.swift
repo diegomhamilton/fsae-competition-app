@@ -63,9 +63,9 @@ struct InspectionContentLoader {
         self.stageDirectoryURL = stageDirectoryURL
     }
 
-    init(bundle: Bundle = .main, resourceDirectoryName: String = "InspectionEvent/Resources") throws {
-        guard let stageDirectoryURL = bundle.resourceURL?.appendingPathComponent(resourceDirectoryName) else {
-            throw LoadError.resourceDirectoryNotFound(resourceDirectoryName)
+    init(bundle: Bundle = .main) throws {
+        guard let stageDirectoryURL = bundle.resourceURL else {
+            throw LoadError.resourceDirectoryNotFound("bundle resource root")
         }
 
         self.stageDirectoryURL = stageDirectoryURL
