@@ -47,6 +47,19 @@ struct InspectionContentLoaderTests {
         #expect(wetTires.steps.first?.type == .measurement)
     }
 
+    @Test("decodes nullable rule reference")
+    func decodesNullableRuleReference() throws {
+        // Arrange
+        let loader = try InspectionContentLoader(bundle: appBundle)
+
+        // Act
+        let rainStage = try #require(try loader.loadStageDTOs().first { $0.code == "06_rain" })
+        let rainTest = try #require(rainStage.sections.first?.testCases.first)
+
+        // Assert
+        #expect(rainTest.ruleRef == nil)
+    }
+
     @Test("sorts nested content by display order")
     func sortsNestedContentByDisplayOrder() throws {
         // Arrange

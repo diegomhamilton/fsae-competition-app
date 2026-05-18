@@ -15,7 +15,7 @@ struct InspectionSectionDTO: Codable, Equatable {
 
 struct InspectionTestCaseDTO: Codable, Equatable {
     let itemId: String
-    let ruleRef: String
+    let ruleRef: String?
     let title: String
     let displayOrder: Int
     let badges: [String]
@@ -63,8 +63,8 @@ struct InspectionContentLoader {
         self.stageDirectoryURL = stageDirectoryURL
     }
 
-    init(bundle: Bundle = .main, resourceDirectoryName: String = "InspectionEvent") throws {
-        guard let stageDirectoryURL = bundle.url(forResource: resourceDirectoryName, withExtension: nil) else {
+    init(bundle: Bundle = .main, resourceDirectoryName: String = "InspectionEvent/Resources") throws {
+        guard let stageDirectoryURL = bundle.resourceURL?.appendingPathComponent(resourceDirectoryName) else {
             throw LoadError.resourceDirectoryNotFound(resourceDirectoryName)
         }
 
