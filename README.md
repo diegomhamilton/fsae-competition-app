@@ -2,6 +2,8 @@
 
 An iOS app for conducting **Formula SAE Electric Vehicle technical inspections**. Inspectors walk through all official FSAE inspection stages, recording pass/fail verdicts and notes against each test case with full rule references.
 
+This is based on the Inspection Sheet PDF document available in the `context/` folder.
+
 ---
 
 ## Features
