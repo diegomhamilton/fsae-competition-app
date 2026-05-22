@@ -404,7 +404,7 @@
       ]
     },
     {
-      "title": "Monocoque Chassis",
+      "title": "Cockpit Templates (Applicable to Tube and Monocoque Chassis)",
       "displayOrder": 8,
       "testCases": [
         {
@@ -454,13 +454,7 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Checked with 4mm hole or external calipers." }
           ]
-        }
-      ]
-    },
-    {
-      "title": "Cockpit Templates (Applicable to Tube and Monocoque Chassis)",
-      "displayOrder": 9,
-      "testCases": [
+        },
         {
           "itemId": "S30",
           "ruleRef": "F.5.6.5",
