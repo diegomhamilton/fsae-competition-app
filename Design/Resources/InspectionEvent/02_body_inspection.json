@@ -4,7 +4,7 @@
   "displayOrder": 2,
   "sections": [
     {
-      "title": "Body & Appearance",
+      "title": "Driver In, Bodywork On",
       "displayOrder": 1,
       "testCases": [
         {
@@ -176,7 +176,13 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Installed so the driver can release them and exit unassisted regardless of vehicle's position." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Driver Fit",
+      "displayOrder": 2,
+      "testCases": [
         {
           "itemId": "B31",
           "ruleRef": "T.2.8",
@@ -216,7 +222,13 @@
           "steps": [
             { "displayOrder": 1, "type": "measurement", "content": "5 seconds max to actuate cockpit master switch and exit to side of vehicle, from driving position, wearing safety equipment. Wings must remain fixed in position. See egress worksheet." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Driver Out",
+      "displayOrder": 3,
+      "testCases": [
         {
           "itemId": "B35",
           "ruleRef": "V.1",
@@ -316,7 +328,13 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "203 mm (8.0\") min diameter. Wheels with single wheel nut must have positive retainer. Aluminum lug nuts hard-anodized and pristine condition." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Driver Restraints",
+      "displayOrder": 4,
+      "testCases": [
         {
           "itemId": "B49",
           "ruleRef": "T.2.2",
@@ -396,9 +414,15 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Min 150 mm width, 235 cm² area AND height adjustment of 175 mm (7\"); OR 280 mm (11\") height. 38 mm (1.5\") thick. Near vertical. Pad and mount must take 900 N rearward and 300 N lateral forces. Energy absorbing material: SFI Standard 45.2 or FIA Tech List 17 (CONFOR blue CF45 or CF45M), with 20mm inspection hole in its cover. Mount must be within Main Hoop Bracing envelope, or add extra tube per F.5.10." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Aero",
+      "displayOrder": 5,
+      "testCases": [
         {
-          "itemId": "BS33",
+          "itemId": "S33",
           "ruleRef": "T.7.1",
           "title": "AERODYNAMIC DEVICES",
           "displayOrder": 40,
@@ -408,7 +432,7 @@
           ]
         },
         {
-          "itemId": "BS34",
+          "itemId": "S34",
           "ruleRef": "T.7.1",
           "title": "EDGE RADII",
           "displayOrder": 41,
@@ -418,7 +442,7 @@
           ]
         },
         {
-          "itemId": "BS35",
+          "itemId": "S35",
           "ruleRef": "T.7.4",
           "title": "FRONT MOUNTED AERO",
           "displayOrder": 42,
@@ -428,7 +452,7 @@
           ]
         },
         {
-          "itemId": "BS36",
+          "itemId": "S36",
           "ruleRef": "T.7.5-8",
           "title": "REAR MOUNTED AERO",
           "displayOrder": 43,
@@ -438,7 +462,7 @@
           ]
         },
         {
-          "itemId": "BS37",
+          "itemId": "S37",
           "ruleRef": "T.7.5-8",
           "title": "AERO BETWEEN WHEEL CENTERLINES",
           "displayOrder": 44,

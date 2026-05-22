@@ -4,7 +4,7 @@
   "displayOrder": 3,
   "sections": [
     {
-      "title": "Chassis & Structure",
+      "title": "Bodywork Off",
       "displayOrder": 1,
       "testCases": [
         {
@@ -26,7 +26,13 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Steel, aluminum, or machined titanium (no welded Ti). Alt matl. OK for pad face. Entire pedal-to-frame system capable of 2kN (tested only by organizers)." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "General Inspection - Chassis / Check Chassis with the SES Chassis FSAE-B 2024 document",
+      "displayOrder": 2,
+      "testCases": [
         {
           "itemId": "C57",
           "ruleRef": "V.3.2",
@@ -120,9 +126,15 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "ABS, Traction, Yaw Control, etc: must have an approved FMEA." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Roll Hoops",
+      "displayOrder": 3,
+      "testCases": [
         {
-          "itemId": "CS1",
+          "itemId": "S1",
           "ruleRef": "F.5.8",
           "title": "MAIN HOOP",
           "displayOrder": 13,
@@ -132,7 +144,7 @@
           ]
         },
         {
-          "itemId": "CS2",
+          "itemId": "S2",
           "ruleRef": "F.5.9 / F.6.6",
           "title": "MAIN HOOP BRACING",
           "displayOrder": 14,
@@ -142,7 +154,7 @@
           ]
         },
         {
-          "itemId": "CS3",
+          "itemId": "S3",
           "ruleRef": "T.2.8.3",
           "title": "HEAD RESTRAINT (CHASSIS)",
           "displayOrder": 15,
@@ -150,7 +162,7 @@
           "steps": []
         },
         {
-          "itemId": "CS4",
+          "itemId": "S4",
           "ruleRef": "F.5.11",
           "title": "EXTERNAL ITEMS",
           "displayOrder": 16,
@@ -160,7 +172,7 @@
           ]
         },
         {
-          "itemId": "CS5",
+          "itemId": "S5",
           "ruleRef": "F.5.7",
           "title": "FRONT HOOP",
           "displayOrder": 17,
@@ -170,7 +182,7 @@
           ]
         },
         {
-          "itemId": "CS5b",
+          "itemId": "S6",
           "ruleRef": "F.5.6.3",
           "title": "BENDS IN ROLL HOOPS",
           "displayOrder": 18,
@@ -178,9 +190,15 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Triangulated in side-view OR less than 25mm from a monocoque attachment point." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Chassis Features",
+      "displayOrder": 4,
+      "testCases": [
         {
-          "itemId": "CS7",
+          "itemId": "S7",
           "ruleRef": "F.5.14",
           "title": "STEERING COMPONENTS OUTSIDE FRAME",
           "displayOrder": 19,
@@ -190,7 +208,7 @@
           ]
         },
         {
-          "itemId": "CS9",
+          "itemId": "S9",
           "ruleRef": "F.5.3",
           "title": "HOLES AND OPENINGS IN REGULATED TUBES",
           "displayOrder": 20,
@@ -200,7 +218,7 @@
           ]
         },
         {
-          "itemId": "CS10",
+          "itemId": "S10",
           "ruleRef": "F.5.4 / F.5.13",
           "title": "BOLTED JOINTS CONNECTING PRIMARY STRUCTURES",
           "displayOrder": 21,
@@ -210,7 +228,7 @@
           ]
         },
         {
-          "itemId": "CS11",
+          "itemId": "S11",
           "ruleRef": "T.2.4.3",
           "title": "HARNESS ATTACHMENTS",
           "displayOrder": 22,
@@ -218,9 +236,15 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Tear-out strength requirements in SES. Double-shear preferred." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Front Impact",
+      "displayOrder": 5,
+      "testCases": [
         {
-          "itemId": "CS12",
+          "itemId": "S12",
           "ruleRef": "F.8.5.6",
           "title": "IA LEADING EDGE VERTICAL POSITION",
           "displayOrder": 23,
@@ -230,7 +254,7 @@
           ]
         },
         {
-          "itemId": "CS13",
+          "itemId": "S13",
           "ruleRef": "F.8.4.3",
           "title": "STANDARD IMPACT ATTENUATOR",
           "displayOrder": 24,
@@ -238,7 +262,7 @@
           "steps": []
         },
         {
-          "itemId": "CS14",
+          "itemId": "S14",
           "ruleRef": "F.8.4",
           "title": "NON-STANDARD IMPACT ATTENUATOR",
           "displayOrder": 25,
@@ -248,7 +272,7 @@
           ]
         },
         {
-          "itemId": "CS15",
+          "itemId": "S15",
           "ruleRef": "F.8.2",
           "title": "ANTI-INTRUSION PLATE",
           "displayOrder": 26,
@@ -258,7 +282,7 @@
           ]
         },
         {
-          "itemId": "CS16",
+          "itemId": "S16",
           "ruleRef": "F.8.6",
           "title": "FRONT WING DETACHMENT",
           "displayOrder": 27,
@@ -266,7 +290,7 @@
           "steps": []
         },
         {
-          "itemId": "CS17",
+          "itemId": "S17",
           "ruleRef": "F.8.4.3",
           "title": "FRONT BULKHEAD DIAGONAL",
           "displayOrder": 28,
@@ -274,9 +298,15 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Required with non-standard foam IA when FBH > 400mm x 350mm; diagonal required for all." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Tube Primary Structure",
+      "displayOrder": 6,
+      "testCases": [
         {
-          "itemId": "CS18",
+          "itemId": "S18",
           "ruleRef": "F.1.17",
           "title": "LOAD PATHS AND TRIANGULATION",
           "displayOrder": 29,
@@ -286,7 +316,7 @@
           ]
         },
         {
-          "itemId": "CS19",
+          "itemId": "S19",
           "ruleRef": "F.5.2",
           "title": "BENT OR MULTIPLE TUBES",
           "displayOrder": 30,
@@ -296,7 +326,7 @@
           ]
         },
         {
-          "itemId": "CS20",
+          "itemId": "S20",
           "ruleRef": "F.6.2",
           "title": "FRONT BULKHEAD SUPPORT",
           "displayOrder": 31,
@@ -306,7 +336,7 @@
           ]
         },
         {
-          "itemId": "CS21",
+          "itemId": "S21",
           "ruleRef": "F.6.3",
           "title": "FRONT HOOP BRACING",
           "displayOrder": 32,
@@ -316,7 +346,7 @@
           ]
         },
         {
-          "itemId": "CS22",
+          "itemId": "S22",
           "ruleRef": "F.6.4",
           "title": "SIDE IMPACT STRUCTURE",
           "displayOrder": 33,
@@ -326,7 +356,7 @@
           ]
         },
         {
-          "itemId": "CS23",
+          "itemId": "S23",
           "ruleRef": "F.6.5",
           "title": "SHOULDER HARNESS MOUNTING BAR",
           "displayOrder": 34,
@@ -336,7 +366,7 @@
           ]
         },
         {
-          "itemId": "CS24",
+          "itemId": "S24",
           "ruleRef": "F.3.2",
           "title": "TUBE MINIMUMS",
           "displayOrder": 35,
@@ -344,9 +374,15 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Tech may use ultrasound to measure wall thickness and/or ask that 4 mm dia holes be drilled. See table F.3.2.1 Requirements by Application." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "EV Impact Protection",
+      "displayOrder": 7,
+      "testCases": [
         {
-          "itemId": "CS33EV",
+          "itemId": "S33EV",
           "ruleRef": "F.11.2.1",
           "title": "EV SIDE IMPACT — ACCUMULATOR AND TRACTIVE SYSTEM",
           "displayOrder": 36,
@@ -356,7 +392,7 @@
           ]
         },
         {
-          "itemId": "CS34EV",
+          "itemId": "S34EV",
           "ruleRef": "F.11.2.2",
           "title": "EV REAR IMPACT — ACCUMULATOR AND TRACTIVE SYSTEM",
           "displayOrder": 37,
@@ -364,9 +400,15 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "A fully structural path (triangulated if tube) back to the Upper and Lower SIS is required. Crushable objects should have 25mm gap to the accumulator." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Monocoque Chassis",
+      "displayOrder": 8,
+      "testCases": [
         {
-          "itemId": "CS25",
+          "itemId": "S25",
           "ruleRef": "F.4.3",
           "title": "LAMINATE TEST SPECIMENS",
           "displayOrder": 38,
@@ -374,7 +416,7 @@
           "steps": []
         },
         {
-          "itemId": "CS26",
+          "itemId": "S26",
           "ruleRef": "F.7.4 / F.7.6",
           "title": "BOLTED ROLL HOOP ATTACHMENTS",
           "displayOrder": 39,
@@ -384,7 +426,7 @@
           ]
         },
         {
-          "itemId": "CS27",
+          "itemId": "S27",
           "ruleRef": "F.7.4",
           "title": "LAMINATED FRONT HOOP",
           "displayOrder": 40,
@@ -394,7 +436,7 @@
           ]
         },
         {
-          "itemId": "CS28",
+          "itemId": "S28",
           "ruleRef": "F.7.5",
           "title": "SIDE IMPACT PROTECTION",
           "displayOrder": 41,
@@ -404,7 +446,7 @@
           ]
         },
         {
-          "itemId": "CS29",
+          "itemId": "S29",
           "ruleRef": null,
           "title": "LAMINATE THICKNESS VS SAMPLES AND SES",
           "displayOrder": 42,
@@ -412,9 +454,15 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Checked with 4mm hole or external calipers." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Cockpit Templates (Applicable to Tube and Monocoque Chassis)",
+      "displayOrder": 9,
+      "testCases": [
         {
-          "itemId": "CS30",
+          "itemId": "S30",
           "ruleRef": "F.5.6.5",
           "title": "MAIN HOOP & FRONT HOOP HEIGHTS (PERCY)",
           "displayOrder": 43,
@@ -424,7 +472,7 @@
           ]
         },
         {
-          "itemId": "CS31",
+          "itemId": "S31",
           "ruleRef": "T.1.1",
           "title": "COCKPIT OPENING",
           "displayOrder": 44,
@@ -434,7 +482,7 @@
           ]
         },
         {
-          "itemId": "CS32",
+          "itemId": "S32",
           "ruleRef": "T.1.2",
           "title": "COCKPIT INTERNAL CROSS SECTION",
           "displayOrder": 45,
