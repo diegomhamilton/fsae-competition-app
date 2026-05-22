@@ -4,7 +4,7 @@
   "displayOrder": 4,
   "sections": [
     {
-      "title": "EV Inspection",
+      "title": "Personal Protective Equipment and External Checks / Start with accumulator container closed",
       "displayOrder": 1,
       "testCases": [
         {
@@ -186,7 +186,13 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Tractive System connectors outside of a housing must contain an Interlock." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Accumulator Hand Cart",
+      "displayOrder": 2,
+      "testCases": [
         {
           "itemId": "EV19",
           "ruleRef": "EV.4.10.3.a",
@@ -236,7 +242,13 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Accumulator Container(s) must be securely attached to the Hand Cart." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Accumulator Charger",
+      "displayOrder": 3,
+      "testCases": [
         {
           "itemId": "EV24",
           "ruleRef": "EV.8.2.4",
@@ -326,7 +338,13 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "The conduit or shielded cable must be securely anchored at each end to allow it to withstand a force of 200 N without straining the cable end crimp." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Accumulator Internal Checks / Container Open",
+      "displayOrder": 4,
+      "testCases": [
         {
           "itemId": "EV33",
           "ruleRef": null,
@@ -466,7 +484,13 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "No \"always energized\" TS cables leave the accumulator container. All TS wires leaving accumulator must be disconnected by an AIR." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Spare parts",
+      "displayOrder": 5,
+      "testCases": [
         {
           "itemId": "EV47",
           "ruleRef": "EV.5.1.4",
@@ -476,7 +500,13 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "All Accumulator Segments and/or Accumulator Containers (including spares and replacement parts) must be identical to the design documented in the ESF and SES." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "Charging Procedure",
+      "displayOrder": 6,
+      "testCases": [
         {
           "itemId": "EV48",
           "ruleRef": "EV.11.5.4",
@@ -580,7 +610,13 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Upon completion of accumulator inspection the following parts must be sealed to prevent modification." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "EV Mechanical Inspection",
+      "displayOrder": 7,
+      "testCases": [
         {
           "itemId": "EV58",
           "ruleRef": "IN.2.3",
@@ -708,7 +744,13 @@
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "Coolants must be 100% water or oil." }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "title": "TS Design and Components",
+      "displayOrder": 8,
+      "testCases": [
         {
           "itemId": "EV72",
           "ruleRef": "F.11.1 / F.5.16 / F.3.2.1.n / F.4.1.3",
