@@ -48,9 +48,14 @@ Design the technical inspection event architecture for the FSAE checklist app us
 
 ## Required Skill Usage
 
+Always use:
+
 - `.skills/architecture-developer.md` for folder structure, MVC boundaries, and test target organization.
 - `.skills/concurrency-developer.md` for actor isolation, async services, and main-actor UI rules.
-- `.skills/swiftui-developer.md` for SwiftUI composition boundaries and localizable `Strings` enums.
+
+Use only when the slice requires it:
+
+- `.skills/swiftui-developer.md` when architecture decisions touch SwiftUI composition, navigation, or localizable `Strings` enums.
 - `.skills/accessibility.md` when architecture choices affect stable identifiers or VoiceOver flow completion.
 - `.skills/personas.md` when scenario interpretation needs judge or student context.
 

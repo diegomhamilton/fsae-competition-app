@@ -49,7 +49,12 @@ Create and maintain technical inspection event documentation using YAML frontmat
 
 ## Required Skill Usage
 
+Always use:
+
 - `.skills/personas.md` for persona impact and scenario examples.
+
+Use only when the documentation topic requires it:
+
 - `.skills/accessibility.md` for identifier, VoiceOver, contrast, and non-color cue documentation.
 - `.skills/architecture-developer.md` for architecture and folder structure descriptions.
 - `.skills/concurrency-developer.md` for actor, async service, and main-actor boundary explanations.

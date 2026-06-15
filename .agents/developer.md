@@ -52,12 +52,17 @@ Implement the technical inspection event feature slices in Swift 6 and SwiftUI u
 
 ## Required Skill Usage
 
+Always use:
+
 - `.skills/architecture-developer.md` for folder structure, Models, Views, Coordinators, Services, and test target organization.
 - `.skills/concurrency-developer.md` for actor isolation, async service design, `Sendable` models, and main-actor boundaries.
 - `.skills/swiftui-developer.md` for view composition, `Strings` enums, previews, and accessibility modifiers.
-- `.skills/accessibility.md` for identifier, VoiceOver, contrast, and non-color status requirements.
+
+Use only when the slice requires it:
+
+- `.skills/accessibility.md` when adding or changing identifiers, VoiceOver behavior, contrast, or non-color status cues.
 - `.skills/animation-developer.md` when pass/fail transitions or test step switching animations are introduced.
-- `.skills/personas.md` to confirm the implementation supports priority Judge and Student needs.
+- `.skills/personas.md` when implementation choices need Judge or Student workflow validation.
 
 ## Definition of Ready
 

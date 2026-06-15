@@ -1,131 +1,136 @@
-import XCTest
+import Foundation
+import Testing
 @testable import FSAEInspectionChecklist
 
-final class InspectionTestStepModelTests: XCTestCase {
-    func testUS002CheckStepCapturesRuleEvidenceAndPendingOutcome() {
-        let step = InspectionTestStep(
-            id: "RT-08",
-            code: "RT-08",
-            ruleReference: "EV.6.1",
-            title: "RML flashing",
-            type: .check,
-            content: "Verify the RML is flashing after TS activation.",
-            requiredOutcome: true,
-            requiresEvidence: true,
-            safetyBadges: [.energized]
-        )
+struct InspectionTestStepModelTests {
+    @Test("US-002 decodes an inspection test step with outcome, evidence requirement, and safety metadata")
+    func us002DecodesInspectionTestStepWithOutcomeEvidenceAndSafetyMetadata() throws {
+        let json = """
+        {
+          "id": "RT-08",
+          "code": "RT-08",
+          "ruleReference": "EV.6.1",
+          "title": "RML flashing",
+          "type": "check",
+          "content": "Verify the RML is flashing after TS activation.",
+          "outcome": "pending",
+          "isRequired": true,
+          "evidenceRequirement": {
+            "isRequired": true,
+            "minimumAttachmentCount": 1
+          },
+          "safetyBadges": ["energized"]
+        }
+        """
 
-        XCTAssertEqual(step.id, "RT-08")
-        XCTAssertEqual(step.code, "RT-08")
-        XCTAssertEqual(step.ruleReference, "EV.6.1")
-        XCTAssertEqual(step.type, .check)
-        XCTAssertTrue(step.requiredOutcome)
-        XCTAssertTrue(step.requiresEvidence)
-        XCTAssertEqual(step.safetyBadges, [.energized])
-        XCTAssertEqual(step.defaultOutcome, .pending)
+        let step = try JSONDecoder().decode(InspectionTestStep.self, from: Data(json.utf8))
+
+        #expect(step.id == "RT-08")
+        #expect(step.code == "RT-08")
+        #expect(step.ruleReference == "EV.6.1")
+        #expect(step.title == "RML flashing")
+        #expect(step.type == .check)
+        #expect(step.outcome == .pending)
+        #expect(step.isRequired)
+        #expect(step.evidenceRequirement.isRequired)
+        #expect(step.evidenceRequirement.minimumAttachmentCount == 1)
+        #expect(step.safetyBadges == [.energized])
     }
 
-    func testInspectionOutcomeExposesDisplayAndValidationSemantics() {
-        XCTAssertEqual(InspectionOutcome.pass.displayName, "Pass")
-        XCTAssertEqual(InspectionOutcome.fail.displayName, "Fail")
-        XCTAssertEqual(InspectionOutcome.notApplicable.displayName, "N/A")
-        XCTAssertEqual(InspectionOutcome.pending.displayName, "Pending")
+    @Test("US-002 inspection outcomes model required completion and failed-note policy")
+    func us002InspectionOutcomeModelsSubmissionAndFailedNotePolicy() {
+        #expect(InspectionOutcome.pass.satisfiesRequiredOutcome)
+        #expect(InspectionOutcome.fail.satisfiesRequiredOutcome)
+        #expect(InspectionOutcome.notApplicable.satisfiesRequiredOutcome)
+        #expect(!InspectionOutcome.pending.satisfiesRequiredOutcome)
 
-        XCTAssertTrue(InspectionOutcome.pass.satisfiesRequiredOutcome)
-        XCTAssertTrue(InspectionOutcome.fail.satisfiesRequiredOutcome)
-        XCTAssertTrue(InspectionOutcome.notApplicable.satisfiesRequiredOutcome)
-        XCTAssertFalse(InspectionOutcome.pending.satisfiesRequiredOutcome)
+        #expect(!InspectionOutcome.pass.requiresInspectorNote(whenFailedNotesAreRequired: true))
+        #expect(InspectionOutcome.fail.requiresInspectorNote(whenFailedNotesAreRequired: true))
+        #expect(!InspectionOutcome.fail.requiresInspectorNote(whenFailedNotesAreRequired: false))
 
-        XCTAssertTrue(InspectionOutcome.fail.requiresInspectorNote)
-        XCTAssertFalse(InspectionOutcome.pass.requiresInspectorNote)
+        #expect(InspectionOutcome.pass.localizationKey == "inspection.outcome.pass")
+        #expect(InspectionOutcome.fail.localizationKey == "inspection.outcome.fail")
+        #expect(InspectionOutcome.notApplicable.localizationKey == "inspection.outcome.notApplicable")
+        #expect(InspectionOutcome.pending.localizationKey == "inspection.outcome.pending")
     }
 
-    func testUS003MeasurementValueAcceptsRangeAndPrecision() throws {
-        let range = MeasurementRange(
+    @Test("US-003 measurement values accept valid input and reject non-numeric, over-precision, and out-of-range input")
+    func us003MeasurementValueAcceptsValidValuesAndRejectsInvalidValues() throws {
+        let rule = MeasurementRule(
             unit: .seconds,
             minimum: Decimal(string: "0.00")!,
             maximum: Decimal(string: "4.99")!,
-            maximumFractionDigits: 2
+            precision: 2
         )
 
-        let measurement = try MeasurementValue(rawValue: "4.38", range: range)
+        let measurement = try MeasurementValue(rawValue: "4.38", rule: rule)
 
-        XCTAssertEqual(measurement.value, Decimal(string: "4.38")!)
-        XCTAssertEqual(measurement.unit, .seconds)
-        XCTAssertEqual(measurement.formattedValue, "4.38 s")
-        XCTAssertTrue(range.contains(measurement))
-    }
+        #expect(measurement.decimalValue == Decimal(string: "4.38")!)
+        #expect(measurement.unit == .seconds)
+        #expect(measurement.formattedValue == "4.38 seconds")
 
-    func testUS003MeasurementValueRejectsInvalidFormatsPrecisionAndRange() {
-        let range = MeasurementRange(
-            unit: .seconds,
-            minimum: Decimal(string: "0.00")!,
-            maximum: Decimal(string: "4.99")!,
-            maximumFractionDigits: 2
-        )
-
-        XCTAssertThrowsError(try MeasurementValue(rawValue: "fast", range: range)) { error in
-            XCTAssertEqual(error as? MeasurementValue.ValidationError, .nonNumericFormat)
+        #expect(throws: MeasurementValue.ValidationError.nonNumericFormat) {
+            try MeasurementValue(rawValue: "fast", rule: rule)
         }
-        XCTAssertThrowsError(try MeasurementValue(rawValue: "4.999", range: range)) { error in
-            XCTAssertEqual(error as? MeasurementValue.ValidationError, .precisionExceeded)
+        #expect(throws: MeasurementValue.ValidationError.precisionExceeded) {
+            try MeasurementValue(rawValue: "4.999", rule: rule)
         }
-        XCTAssertThrowsError(try MeasurementValue(rawValue: "5.40", range: range)) { error in
-            XCTAssertEqual(error as? MeasurementValue.ValidationError, .outsideAllowedRange)
+        #expect(throws: MeasurementValue.ValidationError.outsideValidRange) {
+            try MeasurementValue(rawValue: "5.40", rule: rule)
         }
     }
 
-    func testUS004EvidenceMetadataTracksRequiredAttachmentIdentity() {
+    @Test("US-004 evidence metadata satisfies required proof and removed metadata no longer counts")
+    func us004EvidenceMetadataSatisfiesAndUnsatisfiesEvidenceRequirements() {
+        let capturedAt = Date(timeIntervalSince1970: 1_780_000_000)
         let metadata = EvidenceAttachmentMetadata(
             id: "rml-visible-photo",
+            filename: "IMG_2042.jpg",
             displayName: "RML visible photo",
-            mediaType: .photo,
-            source: .mockAttachment,
-            createdAt: Date(timeIntervalSince1970: 0)
+            contentType: "image/jpeg",
+            capturedBy: "A. Maia",
+            capturedAt: capturedAt
         )
+        let requirement = EvidenceRequirement(isRequired: true, minimumAttachmentCount: 1)
 
-        XCTAssertEqual(metadata.id, "rml-visible-photo")
-        XCTAssertEqual(metadata.displayName, "RML visible photo")
-        XCTAssertEqual(metadata.mediaType, .photo)
-        XCTAssertEqual(metadata.source, .mockAttachment)
-        XCTAssertEqual(metadata.accessibilityValue, "Attachment RML visible photo added")
+        #expect(metadata.id == "rml-visible-photo")
+        #expect(metadata.accessibilityLabel == "RML visible photo, image/jpeg, captured by A. Maia")
+        #expect(!requirement.isSatisfied(by: []))
+        #expect(requirement.isSatisfied(by: [metadata]))
+        #expect(!requirement.isSatisfied(by: [metadata.removed()]))
     }
 
-    func testAccessibilityIdentifierHelpersDoNotDependOnLocalizedLabels() {
-        XCTAssertEqual(
-            InspectionAccessibilityIdentifier.testStepRow(stepID: "RT-08").rawValue,
-            "inspection.testStep.RT-08.row"
+    @Test("Accessibility identifier helpers build stable identifiers without localized labels")
+    func accessibilityIdentifierHelpersBuildStableIdentifiersWithoutLocalizedLabels() {
+        #expect(
+            InspectionAccessibilityIdentifier.testStepRow(stepID: "RT-08").rawValue
+                == "inspection.testStep.RT-08.row"
         )
-        XCTAssertEqual(
-            InspectionAccessibilityIdentifier.testStepOutcome(stepID: "RT-08", outcome: .fail).rawValue,
-            "inspection.testStep.RT-08.outcome.fail"
+        #expect(
+            InspectionAccessibilityIdentifier.outcomeControl(stepID: "RT-08", outcome: .fail).rawValue
+                == "inspection.testStep.RT-08.outcome.fail"
         )
-        XCTAssertEqual(
-            InspectionAccessibilityIdentifier.measurementField(stepID: "EG-14").rawValue,
-            "inspection.testStep.EG-14.measurement"
+        #expect(
+            InspectionAccessibilityIdentifier.measurementField(stepID: "EG-14").rawValue
+                == "inspection.testStep.EG-14.measurement.value"
         )
-        XCTAssertEqual(
-            InspectionAccessibilityIdentifier.evidenceAction(stepID: "RT-08").rawValue,
-            "inspection.testStep.RT-08.evidence.action"
+        #expect(
+            InspectionAccessibilityIdentifier.evidenceButton(stepID: "RT-08").rawValue
+                == "inspection.testStep.RT-08.evidence.add"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.doneButton(stepID: "RT-08").rawValue
+                == "inspection.testStep.RT-08.done"
         )
     }
 
-    func testLocalizableStringKeyHelpersReturnStableKeys() {
-        XCTAssertEqual(
-            InspectionTestStepStrings.title.key(for: "RT-08"),
-            "inspection.testStep.RT-08.title"
-        )
-        XCTAssertEqual(
-            InspectionTestStepStrings.notesPlaceholder.key(for: "RT-08"),
-            "inspection.testStep.RT-08.notes.placeholder"
-        )
-        XCTAssertEqual(
-            InspectionTestStepStrings.measurementError(.outsideAllowedRange).key,
-            "inspection.testStep.measurement.error.outsideAllowedRange"
-        )
-        XCTAssertEqual(
-            InspectionTestStepStrings.evidenceRequired.key,
-            "inspection.testStep.evidence.required"
-        )
+    @Test("Localizable string key helpers return structured keys for test step views")
+    func localizableStringKeyHelpersReturnStructuredKeysForStepViews() {
+        #expect(InspectionStepStrings.title(stepID: "RT-08").key == "inspection.testStep.RT-08.title")
+        #expect(InspectionStepStrings.outcome(.pass).key == "inspection.outcome.pass")
+        #expect(InspectionStepStrings.outcome(.fail).key == "inspection.outcome.fail")
+        #expect(InspectionStepStrings.evidenceRequired.key == "inspection.testStep.evidence.required")
+        #expect(InspectionStepStrings.measurementUnit(.seconds).key == "inspection.measurement.unit.seconds")
+        #expect(InspectionStepStrings.safetyBadge(.energized).key == "inspection.safetyBadge.energized")
     }
 }

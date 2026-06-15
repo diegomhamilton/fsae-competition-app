@@ -51,8 +51,13 @@ Define and maintain the test strategy for the technical inspection event workflo
 
 ## Required Skill Usage
 
+Always use:
+
 - `.skills/personas.md` for persona priority and scenario discovery.
 - `.skills/accessibility.md` for stable identifiers, VoiceOver coverage, contrast, and non-color cues.
+
+Use only when the test scope requires it:
+
 - `.skills/swiftui-developer.md` for View helper, preview, and accessibility modifier test seams.
 - `.skills/concurrency-developer.md` for actor isolation, async service, and `Sendable` test coverage.
 - `.skills/architecture-developer.md` for model, service, coordinator, and test target organization.
