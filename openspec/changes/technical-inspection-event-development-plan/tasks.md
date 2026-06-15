@@ -8,21 +8,21 @@
 
 ## 2. Agent Files PR
 
-- [ ] 2.1 Open PR 2 to add `.agents/architect.md` with MVC architecture responsibilities based on the `.feature` file.
-- [ ] 2.2 Add `.agents/tester.md` with persona-driven unit, UI, snapshot, positive, negative, and edge-case responsibilities.
-- [ ] 2.3 Add `.agents/planner.md` with incremental feature slicing, feature branch naming, task-sized commits, optional task branch splitting, PR 1 description template usage, manual validation checkpoints, squash merge, and documented git workflow responsibilities.
-- [ ] 2.4 Add `.agents/developer.md` with Swift 6, SwiftUI, Concurrency-first, TDD, and Architect-plan implementation responsibilities.
-- [ ] 2.5 Add `.agents/documenter.md` with YAML frontmatter, technical report style, feature impact, use case, and tutorial responsibilities.
-- [ ] 2.6 Verify every agent file names required inputs, outputs, owned workflow phases, and skill usage.
+- [x] 2.1 Open PR 2 to add `.agents/architect.md` with MVC architecture responsibilities based on the `.feature` file.
+- [x] 2.2 Add `.agents/tester.md` with persona-driven unit, UI, snapshot, positive, negative, and edge-case responsibilities.
+- [x] 2.3 Add `.agents/planner.md` with incremental feature slicing, feature branch naming, task-sized commits, optional task branch splitting, PR 1 description template usage, manual validation checkpoints, squash merge, and documented git workflow responsibilities.
+- [x] 2.4 Add `.agents/developer.md` with Swift 6, SwiftUI, Concurrency-first, TDD, and Architect-plan implementation responsibilities.
+- [x] 2.5 Add `.agents/documenter.md` with YAML frontmatter, technical report style, feature impact, use case, and tutorial responsibilities.
+- [x] 2.6 Verify every agent file names required inputs, outputs, owned workflow phases, and skill usage.
 
 ## 3. Skill and Persona Files PR
 
-- [ ] 3.1 Open PR 3 to add `.skills/accessibility.md` covering identifiers, VoiceOver, contrast, non-color status cues, and accessible flow completion.
-- [ ] 3.2 Add `.skills/concurrency-developer.md` covering actor isolation, async services, Sendable-safe models, and main-actor UI boundaries.
-- [ ] 3.3 Add `.skills/swiftui-developer.md` covering view composition, structured localizable `Strings` enums, previews, and accessibility modifiers.
-- [ ] 3.4 Add `.skills/animation-developer.md` covering pass/fail transitions and smooth test step switching without reducing accessibility.
-- [ ] 3.5 Add `.skills/architecture-developer.md` covering folder structure, Models, Views, Coordinators, Services, and test target organization.
-- [ ] 3.6 Add `.skills/personas.md` plus persona markdown files for Judge, Student, Professor, Fans, and Sponsors, with Judge and Student marked priority.
+- [x] 3.1 Open PR 3 to add `.skills/accessibility.md` covering identifiers, VoiceOver, contrast, non-color status cues, and accessible flow completion.
+- [x] 3.2 Add `.skills/concurrency-developer.md` covering actor isolation, async services, Sendable-safe models, and main-actor UI boundaries.
+- [x] 3.3 Add `.skills/swiftui-developer.md` covering view composition, structured localizable `Strings` enums, previews, and accessibility modifiers.
+- [x] 3.4 Add `.skills/animation-developer.md` covering pass/fail transitions and smooth test step switching without reducing accessibility.
+- [x] 3.5 Add `.skills/architecture-developer.md` covering folder structure, Models, Views, Coordinators, Services, and test target organization.
+- [x] 3.6 Add `.skills/personas.md` plus persona markdown files for Judge, Student, Professor, Fans, and Sponsors, with Judge and Student marked priority.
 
 ## 4. Test Step Slice
 
