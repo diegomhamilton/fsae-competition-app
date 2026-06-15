@@ -1,10 +1,10 @@
 ## 1. Planning PR
 
-- [ ] 1.1 Open PR 1 with `proposal.md`, `design.md`, `tasks.md`, and capability specs for the technical inspection event development plan.
-- [ ] 1.2 In PR 1, document the full judge flow from mock login to session selection, stage inspection, submission, rechecks, and sticker eligibility.
-- [ ] 1.3 In PR 1, highlight agent usage for each phase: Architect, Tester, Planner, Developer, and Documenter.
-- [ ] 1.4 In PR 1, reference `Design/UserStories/InspectionEvents/features/inspection_event_use_cases.feature` as the source for acceptance scenarios.
-- [ ] 1.5 In PR 1, define the required PR sequence and note that UI tests are integrated in a dedicated PR.
+- [x] 1.1 Open PR 1 with `proposal.md`, `design.md`, `tasks.md`, and capability specs for the technical inspection event development plan.
+- [x] 1.2 In PR 1, document the full judge flow from mock login to session selection, stage inspection, submission, rechecks, and sticker eligibility.
+- [x] 1.3 In PR 1, highlight agent usage for each phase: Architect, Tester, Planner, Developer, and Documenter.
+- [x] 1.4 In PR 1, reference `Design/UserStories/InspectionEvents/features/inspection_event_use_cases.feature` as the source for acceptance scenarios.
+- [x] 1.5 In PR 1, define the required PR sequence and note that UI tests are integrated in a dedicated PR.
 
 ## 2. Agent Files PR
 

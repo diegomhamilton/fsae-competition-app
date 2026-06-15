@@ -149,7 +149,16 @@ Rollback strategy:
 ## Open Questions
 
 - What authentication shape should replace the initial mock login: local judge profile, event-provided credentials, or a future remote service?
+A: let's keep it local judge profile for now.
+
 - Should evidence remain metadata-only for the first full workflow, or should camera/file picker integration be included before recheck review?
+A: evidence can be kept metadata only, having a button like "Add fake attachment" for the time being
+
 - Should recheck review require the same judge, any judge, or a lead judge role?
+A: can be specific judge or .any, settable by the judge
+
 - Where should finalized sticker records live once sticker eligibility is achieved?
+A: Inspection Event list and applicable team views (e.g. inspection event submissions of a team)
+
 - Which snapshot testing library should be adopted for Swift 6 once the test target is introduced?
+A: Search and provide proposal.
