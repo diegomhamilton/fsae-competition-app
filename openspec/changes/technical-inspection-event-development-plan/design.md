@@ -121,6 +121,43 @@ Decision:
 Rationale:
 - The team wants dedicated agents and skills to guide the work. Creating them before implementation gives future task branches consistent instructions.
 
+### Automate Feature PR Flow
+
+Decision:
+- Each major feature slice should use one feature branch and one PR by default.
+- Feature branches should use a predictable name that includes the inspection-event area and feature slice, such as `codex/inspection-event-test-step`, `codex/inspection-event-test-case`, `codex/inspection-event-stage-content`, `codex/inspection-event-session-flow`, and `codex/inspection-event-ui-tests`.
+- Tasks within a feature branch should be split across distinct commits. Each commit should complete a coherent task or tightly related task pair, include the relevant tests or fixture updates when practical, and avoid mixing unrelated implementation contexts.
+- Task branches should be created only when a feature PR grows across too many file contexts or review concerns. Examples include separating model/service changes from large SwiftUI refactors, Xcode project churn, generated fixtures, or documentation-only follow-ups.
+- When task branches are needed, they should branch from the active feature branch and use a nested name such as `codex/inspection-event-test-step-models` or `codex/inspection-event-session-flow-rechecks`.
+- Prefer a single PR per major feature. Task branches should be squash-merged into the feature branch before the feature PR is submitted or updated for review.
+- PR descriptions should reuse the PR 1 structure:
+
+```md
+## Summary
+
+<Brief feature outcome and why it matters.>
+
+## Scope
+
+- <Primary code, test, fixture, documentation, and accessibility changes.>
+
+## Notes
+
+- <Design decisions, known limitations, follow-up slices, or review context.>
+
+## Validation
+
+- `<test or validation command>`
+- <Manual validation notes mapped to feature scenarios where relevant.>
+```
+
+Rationale:
+- A feature branch per major feature keeps implementation review centered on one useful product outcome.
+- Task-sized commits make reviewer history useful without forcing every task into its own PR.
+- Task branches keep large features workable without forcing every internal split to become a long-lived public PR.
+- Reusing PR 1's description format makes each PR easy to scan and keeps validation visible.
+- Squash-merging task branches into the feature branch preserves a readable history while allowing incremental development.
+
 ## Risks / Trade-offs
 
 - [Risk] The current JSON schema does not encode every validation policy, such as required evidence or measurement ranges. -> Mitigation: add mock policy fixtures first, then introduce explicit metadata extensions only through reviewed specs.
@@ -129,6 +166,7 @@ Rationale:
 - [Risk] Snapshot tests can be brittle across simulator/runtime changes. -> Mitigation: limit snapshots to high-value states and keep them in the dedicated UI-test PR.
 - [Risk] Multi-agent documentation can become decorative. -> Mitigation: each agent file must list responsibilities, required inputs, expected outputs, and phase ownership.
 - [Risk] Recheck state can conflict with immutable submission history. -> Mitigation: submitted snapshots remain immutable; rechecks create review records that reference the failed test case and later accepted state.
+- [Risk] Feature PRs can become too broad if models, services, views, fixtures, tests, and docs all churn at once. -> Mitigation: split work into task-sized commits first, then use short-lived task branches only when review context remains mixed, and squash those branches back into the feature branch.
 
 ## Migration Plan
 
@@ -143,7 +181,9 @@ Rationale:
 
 Rollback strategy:
 - Planning PRs can be reverted independently.
-- Implementation task branches should be squash-merged so a failing slice can be reverted without disrupting later planning artifacts.
+- Implementation feature branches should be squash-merged into the target branch so a failing slice can be reverted without disrupting later planning artifacts.
+- Implementation tasks should be committed separately on the feature branch so each completed task has a reviewable checkpoint before the final feature PR is prepared.
+- Short-lived task branches should be squash-merged into their parent feature branch before the feature PR is finalized.
 - Services should keep mock JSON fixtures available to restore manual validation even if bundled JSON loading fails.
 
 ## Open Questions
