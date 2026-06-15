@@ -93,9 +93,9 @@ enum StepOutcome: String, Hashable {
 
 enum MockInspectionData {
     static let teams: [InspectionTeam] = [
-        InspectionTeam(id: 12, school: "Michigan Racing", carNumber: "42E", status: .resumed, currentStage: "EV Inspection", lastSaved: "Saved 2 min ago"),
-        InspectionTeam(id: 28, school: "Cal Poly Racing", carNumber: "18E", status: .ready, currentStage: "Garage Inspection", lastSaved: "Not started"),
-        InspectionTeam(id: 41, school: "RIT Electric", carNumber: "77E", status: .blocked, currentStage: "Rain Test", lastSaved: "Needs evidence")
+        InspectionTeam(id: 12, school: "IF1 Racing", carNumber: "1", status: .resumed, currentStage: "EV Inspection", lastSaved: "Saved 2 min ago"),
+        InspectionTeam(id: 28, school: "Capibarib-E Racing", carNumber: "13", status: .ready, currentStage: "Garage Inspection", lastSaved: "Not started"),
+        InspectionTeam(id: 41, school: "EVolt Racing UFRPE", carNumber: "15", status: .blocked, currentStage: "Rain Test", lastSaved: "Needs evidence")
     ]
 
     static let stages: [InspectionStage] = [
