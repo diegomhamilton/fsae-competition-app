@@ -149,16 +149,29 @@ Rollback strategy:
 ## Open Questions
 
 - What authentication shape should replace the initial mock login: local judge profile, event-provided credentials, or a future remote service?
-A: let's keep it local judge profile for now.
+Answer:
+- Use a local judge profile for now.
+- Keep `AuthenticationService` as an async mock boundary so event-provided credentials or a future remote service can replace the local profile later without changing the inspection flow.
 
 - Should evidence remain metadata-only for the first full workflow, or should camera/file picker integration be included before recheck review?
-A: evidence can be kept metadata only, having a button like "Add fake attachment" for the time being
+Answer:
+- Keep evidence metadata-only for the first full workflow.
+- Use a temporary "Add fake attachment" action that creates `EvidenceAttachmentMetadata` records without camera, photo library, file picker, or storage integration.
 
 - Should recheck review require the same judge, any judge, or a lead judge role?
-A: can be specific judge or .any, settable by the judge
+Answer:
+- Make recheck review policy judge-selectable per recheck or session policy.
+- Support at least two policy values initially: a specific judge and any judge.
+- Defer lead judge role enforcement until role-based access is introduced.
 
 - Where should finalized sticker records live once sticker eligibility is achieved?
-A: Inspection Event list and applicable team views (e.g. inspection event submissions of a team)
+Answer:
+- Store finalized sticker records with the inspection event data and expose them through applicable team views.
+- Surface sticker status in team-level inspection event submissions/history so judges can trace eligibility back to submitted stages and resolved rechecks.
 
 - Which snapshot testing library should be adopted for Swift 6 once the test target is introduced?
-A: Search and provide proposal.
+Answer:
+- Adopt `pointfreeco/swift-snapshot-testing` for the dedicated UI test and snapshot PR.
+- Rationale: it supports Swift Package Manager, Swift Testing and XCTest-style usage, image snapshots, textual snapshots, JSON/property-list snapshots, and custom strategies. Swift Package Index currently reports release `1.19.2`, Swift 6.0 through 6.3 build compatibility, and zero data race safety errors.
+- Use it only from test targets. Start with a narrow set of high-value SwiftUI states: test step, test case, stage list, validation blocked, recheck required, and sticker eligible.
+- Pin the package with an up-to-next-major requirement from the latest compatible release available when the UI-test PR starts.
