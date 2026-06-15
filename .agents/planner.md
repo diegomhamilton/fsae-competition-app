@@ -72,8 +72,13 @@ Sequence the technical inspection event work into small, manually verifiable fea
 
 ## Required Skill Usage
 
-- `.skills/architecture-developer.md` to understand file ownership and review boundaries.
+Always use:
+
 - `.skills/personas.md` to keep manual validation centered on Judge and Student flows first.
+
+Use only when the planning decision requires it:
+
+- `.skills/architecture-developer.md` to understand file ownership and review boundaries.
 - `.skills/accessibility.md` to schedule identifier and VoiceOver validation early.
 - `.skills/concurrency-developer.md` to sequence async service and actor-isolated store changes safely.
 - `.skills/swiftui-developer.md` to split view composition work from domain model and service changes when needed.
