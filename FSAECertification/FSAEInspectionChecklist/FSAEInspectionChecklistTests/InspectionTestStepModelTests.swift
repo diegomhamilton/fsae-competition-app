@@ -2,9 +2,10 @@ import Foundation
 import Testing
 @testable import FSAEInspectionChecklist
 
+@MainActor
 struct InspectionTestStepModelTests {
-    @Test("US-002 decodes an inspection test step with outcome, evidence requirement, and safety metadata")
-    func us002DecodesInspectionTestStepWithOutcomeEvidenceAndSafetyMetadata() throws {
+    @Test("US-002 decodes an inspection test step with default outcome, evidence requirement, and safety metadata")
+    func us002DecodesInspectionTestStepWithDefaultOutcomeEvidenceAndSafetyMetadata() throws {
         let json = """
         {
           "id": "RT-08",
@@ -13,13 +14,13 @@ struct InspectionTestStepModelTests {
           "title": "RML flashing",
           "type": "check",
           "content": "Verify the RML is flashing after TS activation.",
-          "outcome": "pending",
-          "isRequired": true,
-          "evidenceRequirement": {
-            "isRequired": true,
-            "minimumAttachmentCount": 1
-          },
-          "safetyBadges": ["energized"]
+          "requiredOutcome": true,
+          "requiresEvidence": true,
+          "safetyBadges": ["energized"],
+          "defaultOutcome": "pending",
+          "defaultNote": "Photo required if visibility is disputed.",
+          "measurementRange": null,
+          "evidenceAttachments": []
         }
         """
 
@@ -30,10 +31,10 @@ struct InspectionTestStepModelTests {
         #expect(step.ruleReference == "EV.6.1")
         #expect(step.title == "RML flashing")
         #expect(step.type == .check)
-        #expect(step.outcome == .pending)
-        #expect(step.isRequired)
-        #expect(step.evidenceRequirement.isRequired)
-        #expect(step.evidenceRequirement.minimumAttachmentCount == 1)
+        #expect(step.defaultOutcome == .pending)
+        #expect(step.requiredOutcome)
+        #expect(step.requiresEvidence)
+        #expect(step.defaultNote == "Photo required if visibility is disputed.")
         #expect(step.safetyBadges == [.energized])
     }
 
@@ -44,60 +45,60 @@ struct InspectionTestStepModelTests {
         #expect(InspectionOutcome.notApplicable.satisfiesRequiredOutcome)
         #expect(!InspectionOutcome.pending.satisfiesRequiredOutcome)
 
-        #expect(!InspectionOutcome.pass.requiresInspectorNote(whenFailedNotesAreRequired: true))
-        #expect(InspectionOutcome.fail.requiresInspectorNote(whenFailedNotesAreRequired: true))
-        #expect(!InspectionOutcome.fail.requiresInspectorNote(whenFailedNotesAreRequired: false))
+        #expect(!InspectionOutcome.pass.requiresInspectorNote)
+        #expect(InspectionOutcome.fail.requiresInspectorNote)
+        #expect(!InspectionOutcome.notApplicable.requiresInspectorNote)
+        #expect(!InspectionOutcome.pending.requiresInspectorNote)
 
-        #expect(InspectionOutcome.pass.localizationKey == "inspection.outcome.pass")
-        #expect(InspectionOutcome.fail.localizationKey == "inspection.outcome.fail")
-        #expect(InspectionOutcome.notApplicable.localizationKey == "inspection.outcome.notApplicable")
-        #expect(InspectionOutcome.pending.localizationKey == "inspection.outcome.pending")
+        #expect(InspectionOutcome.pass.displayName == "Pass")
+        #expect(InspectionOutcome.fail.displayName == "Fail")
+        #expect(InspectionOutcome.notApplicable.displayName == "N/A")
+        #expect(InspectionOutcome.pending.displayName == "Pending")
     }
 
     @Test("US-003 measurement values accept valid input and reject non-numeric, over-precision, and out-of-range input")
     func us003MeasurementValueAcceptsValidValuesAndRejectsInvalidValues() throws {
-        let rule = MeasurementRule(
+        let range = MeasurementRange(
             unit: .seconds,
             minimum: Decimal(string: "0.00")!,
             maximum: Decimal(string: "4.99")!,
-            precision: 2
+            maximumFractionDigits: 2
         )
 
-        let measurement = try MeasurementValue(rawValue: "4.38", rule: rule)
+        let measurement = try MeasurementValue(rawValue: "4.38", range: range)
 
-        #expect(measurement.decimalValue == Decimal(string: "4.38")!)
+        #expect(measurement.value == Decimal(string: "4.38")!)
         #expect(measurement.unit == .seconds)
-        #expect(measurement.formattedValue == "4.38 seconds")
+        #expect(measurement.formattedValue == "4.38 s")
 
         #expect(throws: MeasurementValue.ValidationError.nonNumericFormat) {
-            try MeasurementValue(rawValue: "fast", rule: rule)
+            try MeasurementValue(rawValue: "fast", range: range)
         }
         #expect(throws: MeasurementValue.ValidationError.precisionExceeded) {
-            try MeasurementValue(rawValue: "4.999", rule: rule)
+            try MeasurementValue(rawValue: "4.999", range: range)
         }
-        #expect(throws: MeasurementValue.ValidationError.outsideValidRange) {
-            try MeasurementValue(rawValue: "5.40", rule: rule)
+        #expect(throws: MeasurementValue.ValidationError.outsideAllowedRange) {
+            try MeasurementValue(rawValue: "5.40", range: range)
         }
     }
 
-    @Test("US-004 evidence metadata satisfies required proof and removed metadata no longer counts")
-    func us004EvidenceMetadataSatisfiesAndUnsatisfiesEvidenceRequirements() {
-        let capturedAt = Date(timeIntervalSince1970: 1_780_000_000)
+    @Test("US-004 evidence metadata stores attachment display data for required proof")
+    func us004EvidenceMetadataStoresAttachmentDisplayDataForRequiredProof() {
+        let createdAt = Date(timeIntervalSince1970: 1_780_000_000)
         let metadata = EvidenceAttachmentMetadata(
             id: "rml-visible-photo",
-            filename: "IMG_2042.jpg",
             displayName: "RML visible photo",
-            contentType: "image/jpeg",
-            capturedBy: "A. Maia",
-            capturedAt: capturedAt
+            mediaType: .photo,
+            source: .mockAttachment,
+            createdAt: createdAt
         )
-        let requirement = EvidenceRequirement(isRequired: true, minimumAttachmentCount: 1)
 
         #expect(metadata.id == "rml-visible-photo")
-        #expect(metadata.accessibilityLabel == "RML visible photo, image/jpeg, captured by A. Maia")
-        #expect(!requirement.isSatisfied(by: []))
-        #expect(requirement.isSatisfied(by: [metadata]))
-        #expect(!requirement.isSatisfied(by: [metadata.removed()]))
+        #expect(metadata.displayName == "RML visible photo")
+        #expect(metadata.mediaType == .photo)
+        #expect(metadata.source == .mockAttachment)
+        #expect(metadata.createdAt == createdAt)
+        #expect(metadata.accessibilityValue == "Attachment RML visible photo added")
     }
 
     @Test("Accessibility identifier helpers build stable identifiers without localized labels")
@@ -107,30 +108,36 @@ struct InspectionTestStepModelTests {
                 == "inspection.testStep.RT-08.row"
         )
         #expect(
-            InspectionAccessibilityIdentifier.outcomeControl(stepID: "RT-08", outcome: .fail).rawValue
+            InspectionAccessibilityIdentifier.testStepOutcome(stepID: "RT-08", outcome: .fail).rawValue
                 == "inspection.testStep.RT-08.outcome.fail"
         )
         #expect(
             InspectionAccessibilityIdentifier.measurementField(stepID: "EG-14").rawValue
-                == "inspection.testStep.EG-14.measurement.value"
+                == "inspection.testStep.EG-14.measurement"
         )
         #expect(
-            InspectionAccessibilityIdentifier.evidenceButton(stepID: "RT-08").rawValue
-                == "inspection.testStep.RT-08.evidence.add"
+            InspectionAccessibilityIdentifier.evidenceAction(stepID: "RT-08").rawValue
+                == "inspection.testStep.RT-08.evidence.action"
         )
         #expect(
-            InspectionAccessibilityIdentifier.doneButton(stepID: "RT-08").rawValue
+            InspectionAccessibilityIdentifier.doneAction(stepID: "RT-08").rawValue
                 == "inspection.testStep.RT-08.done"
         )
     }
 
     @Test("Localizable string key helpers return structured keys for test step views")
     func localizableStringKeyHelpersReturnStructuredKeysForStepViews() {
-        #expect(InspectionStepStrings.title(stepID: "RT-08").key == "inspection.testStep.RT-08.title")
-        #expect(InspectionStepStrings.outcome(.pass).key == "inspection.outcome.pass")
-        #expect(InspectionStepStrings.outcome(.fail).key == "inspection.outcome.fail")
-        #expect(InspectionStepStrings.evidenceRequired.key == "inspection.testStep.evidence.required")
-        #expect(InspectionStepStrings.measurementUnit(.seconds).key == "inspection.measurement.unit.seconds")
-        #expect(InspectionStepStrings.safetyBadge(.energized).key == "inspection.safetyBadge.energized")
+        #expect(InspectionTestStepStrings.title.key == "inspection.testStep.title")
+        #expect(InspectionTestStepStrings.title.key(for: "RT-08") == "inspection.testStep.RT-08.title")
+        #expect(InspectionTestStepStrings.notesPlaceholder.key == "inspection.testStep.notes.placeholder")
+        #expect(
+            InspectionTestStepStrings.notesPlaceholder.key(for: "RT-08")
+                == "inspection.testStep.RT-08.notes.placeholder"
+        )
+        #expect(InspectionTestStepStrings.evidenceRequired.key == "inspection.testStep.evidence.required")
+        #expect(
+            InspectionTestStepStrings.measurementError(.outsideAllowedRange).key
+                == "inspection.testStep.measurement.error.outsideAllowedRange"
+        )
     }
 }
