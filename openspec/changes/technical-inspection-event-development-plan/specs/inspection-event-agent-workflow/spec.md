@@ -45,12 +45,28 @@ The system delivery plan SHALL include skill markdown files for Accessibility, C
 - **WHEN** persona skill files are used
 - **THEN** Judge and Student personas receive priority, with Professor, Fans, and Sponsors used for secondary scenario discovery.
 
-### Requirement: Git workflow keeps implementation reviewable
-The system delivery plan SHALL use task branches and squash merges to keep the worktree clean and the commit history documented.
+### Requirement: Git workflow keeps implementation reviewable and automatable
+The system delivery plan SHALL use feature branches, task-sized commits, optional task branches, reusable PR descriptions, and squash merges to keep the worktree clean and the commit history documented.
 
 #### Scenario: Feature slice branch
 - **WHEN** an implementation slice begins
-- **THEN** the Planner agent defines a task branch, manual validation goal, test scope, and squash-merge notes.
+- **THEN** the Planner agent defines a feature branch, manual validation goal, test scope, PR description draft, and squash-merge notes.
+
+#### Scenario: Task-sized commits
+- **WHEN** implementation tasks are completed on a feature branch
+- **THEN** each task or tightly related task pair is committed separately with its tests, fixtures, or documentation updates where practical.
+
+#### Scenario: Task branch split
+- **WHEN** a feature branch accumulates too many file contexts or review concerns for one focused PR
+- **THEN** the Planner agent MAY split the work into short-lived task branches from the feature branch and squash-merge them back before the feature PR is finalized.
+
+#### Scenario: Single PR preferred per feature
+- **WHEN** a major feature is ready for review
+- **THEN** the system delivery workflow prefers one PR for the feature branch rather than one PR per task branch.
+
+#### Scenario: PR description template is reused
+- **WHEN** a feature PR is prepared
+- **THEN** its description uses the PR 1 sections `Summary`, `Scope`, `Notes`, and `Validation`, including test command output and manual validation notes.
 
 #### Scenario: Dedicated UI test PR
 - **WHEN** XCUITests and snapshot tests are introduced
