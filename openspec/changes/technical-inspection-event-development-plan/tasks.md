@@ -36,7 +36,7 @@
 
 ## 5. Test Case Slice
 
-- [ ] 5.0 Fix bug in which keyboard is not dismissable while editing Notes text input.
+- [ ] 5.0 In separate PR: Fix bug in which keyboard is not dismissable while editing Notes text input.
 - [ ] 5.1 Add failing unit tests for `InspectionTestCase`, ordered steps, rule references, draft aggregation, blocker counts, and test case progress.
 - [ ] 5.2 Add mock JSON fixtures for representative test cases with one step, multiple steps, measurement steps, required evidence, failed notes, and energized badges.
 - [ ] 5.3 Implement test case models and draft state composition from test step drafts.
@@ -58,9 +58,9 @@
 ## 7. Session, Submission, and Recheck Flow
 
 - [ ] 7.1 Add failing coordinator tests for mock login completion, session selector routing, start session, resume session, stage selection, team switching, and restored context.
-- [ ] 7.2 Implement `AppCoordinator`, `InspectionEventCoordinator`, `SessionSelectionCoordinator`, and `InspectionExecutionCoordinator`.
+- [ ] 7.2 Break each coordinator into a different task PR: Implement `AppCoordinator`, `InspectionEventCoordinator`, `SessionSelectionCoordinator`, and `InspectionExecutionCoordinator`.
 - [ ] 7.3 Implement `InspectionEventStore` as an actor-isolated event/session source of truth with scoped queries by event, team, session, and user access.
-- [ ] 7.4 Bind `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `StepOverviewView`, and `TeamSwitchConfirmationView` to coordinator-backed state.
+- [ ] 7.4 Merge into 7.2 PRs w/ coordinator: Bind `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `StepOverviewView`, and `TeamSwitchConfirmationView` to coordinator-backed state.
 - [ ] 7.5 Implement `SubmissionSnapshotService` for immutable stage submission snapshots.
 - [ ] 7.6 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
 - [ ] 7.7 Implement sticker eligibility calculation from submitted stages and open rechecks.
