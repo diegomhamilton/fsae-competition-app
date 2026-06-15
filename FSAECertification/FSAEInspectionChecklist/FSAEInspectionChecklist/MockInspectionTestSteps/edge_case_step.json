@@ -1,0 +1,15 @@
+{
+  "id": "EDGE-NO-OUTCOME",
+  "code": "EDGE-01",
+  "ruleReference": "IN.0",
+  "title": "Context-only instruction",
+  "type": "context",
+  "content": "Show a non-editable instruction that does not require a judge outcome.",
+  "requiredOutcome": false,
+  "requiresEvidence": false,
+  "safetyBadges": [],
+  "defaultOutcome": "notApplicable",
+  "defaultNote": "Context note visible inline.",
+  "measurementRange": null,
+  "evidenceAttachments": []
+}

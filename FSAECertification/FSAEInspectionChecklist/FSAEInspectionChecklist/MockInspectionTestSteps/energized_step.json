@@ -1,0 +1,15 @@
+{
+  "id": "EV-ENERGIZED-01",
+  "code": "EV-ENERGIZED-01",
+  "ruleReference": "EV.10",
+  "title": "Energized dynamic test boundary",
+  "type": "precondition",
+  "content": "Confirm energized dynamic test controls before the team proceeds.",
+  "requiredOutcome": true,
+  "requiresEvidence": false,
+  "safetyBadges": ["energized"],
+  "defaultOutcome": "pending",
+  "defaultNote": "",
+  "measurementRange": null,
+  "evidenceAttachments": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "RT-08",
+  "code": "RT-08",
+  "ruleReference": "EV.6.1",
+  "title": "RML flashing",
+  "type": "check",
+  "content": "Verify the RML is flashing after TS activation.",
+  "requiredOutcome": true,
+  "requiresEvidence": false,
+  "safetyBadges": [],
+  "defaultOutcome": "pending",
+  "defaultNote": "",
+  "measurementRange": null,
+  "evidenceAttachments": []
+}

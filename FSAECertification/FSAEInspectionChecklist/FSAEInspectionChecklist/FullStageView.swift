@@ -3,8 +3,8 @@ import SwiftUI
 struct FullStageView: View {
     let team: InspectionTeam
     let stage: InspectionStage
-    let steps: [InspectionStep]
-    @Binding var selectedStep: InspectionStep
+    let steps: [InspectionTestStep]
+    @Binding var selectedStep: InspectionTestStep
     @Binding var selectedScreen: ProposedScreen
 
     var body: some View {
@@ -52,17 +52,17 @@ struct FullStageView: View {
 }
 
 private struct FullStageStepCard: View {
-    let step: InspectionStep
+    let step: InspectionTestStep
     let openStepDetail: () -> Void
-    @State private var selectedOutcome: StepOutcome
+    @State private var selectedOutcome: InspectionOutcome
     @State private var noteText: String
     @State private var measurementValue: String
 
-    init(step: InspectionStep, openStepDetail: @escaping () -> Void) {
+    init(step: InspectionTestStep, openStepDetail: @escaping () -> Void) {
         self.step = step
         self.openStepDetail = openStepDetail
-        _selectedOutcome = State(initialValue: step.outcome)
-        _noteText = State(initialValue: step.note)
+        _selectedOutcome = State(initialValue: step.defaultOutcome)
+        _noteText = State(initialValue: step.defaultNote)
         _measurementValue = State(initialValue: step.type == .measurement ? "4.72" : "")
     }
 
@@ -103,10 +103,10 @@ private struct FullStageStepCard: View {
             }
 
             Picker("Verdict", selection: $selectedOutcome) {
-                Text("Pass").tag(StepOutcome.pass)
-                Text("Fail").tag(StepOutcome.fail)
-                Text("N/A").tag(StepOutcome.notApplicable)
-                Text("Pending").tag(StepOutcome.pending)
+                Text("Pass").tag(InspectionOutcome.pass)
+                Text("Fail").tag(InspectionOutcome.fail)
+                Text("N/A").tag(InspectionOutcome.notApplicable)
+                Text("Pending").tag(InspectionOutcome.pending)
             }
             .pickerStyle(.segmented)
 
@@ -115,7 +115,7 @@ private struct FullStageStepCard: View {
                     TextField("Value", text: $measurementValue)
                         .textFieldStyle(.roundedBorder)
                         .keyboardType(.decimalPad)
-                    Text(step.title == "Egress time" ? "seconds" : "value")
+                    Text(step.measurementRange?.unit.rawValue ?? "value")
                         .font(.subheadline)
                         .foregroundStyle(Color.fsaeSecondaryText)
                 }

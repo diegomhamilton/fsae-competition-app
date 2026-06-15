@@ -107,12 +107,12 @@ enum MockInspectionData {
         InspectionStage(id: 6, title: "Rain Test", subtitle: "IMD validation and water spray procedure", progress: 0.0, requiredOpenItems: 8)
     ]
 
-    static let steps: [InspectionStep] = [
-        InspectionStep(id: 1, code: "RT-01", ruleReference: "IN.4.1", title: "PPE verified", type: .precondition, content: "All accompanying members must be using PPE before energized work begins.", outcome: .pass, requiresEvidence: false, note: "ESO and two team members present."),
-        InspectionStep(id: 2, code: "RT-07", ruleReference: "Rain 7", title: "Activate TS", type: .action, content: "Instruct the ESO to activate the tractive system.", outcome: .pass, requiresEvidence: false, note: ""),
-        InspectionStep(id: 3, code: "RT-08", ruleReference: "EV.6.1", title: "RML flashing", type: .check, content: "Verify the RML is flashing after TS activation.", outcome: .pending, requiresEvidence: true, note: "Photo required if visibility is disputed."),
-        InspectionStep(id: 4, code: "EG-14", ruleReference: "VE.5", title: "Egress time", type: .measurement, content: "Measure elapsed egress time. Required: less than 5 seconds.", outcome: .pending, requiresEvidence: false, note: "Target range: 0.00s to 4.99s."),
-        InspectionStep(id: 5, code: "EG-21", ruleReference: "IN.13.3.1", title: "Wristband handling", type: .context, content: "Place the tallest-driver wristband on the correct driver; do not hand it to the team.", outcome: .notApplicable, requiresEvidence: false, note: "Context note visible inline.")
+    static let steps: [InspectionTestStep] = [
+        InspectionTestStep(id: "RT-01", code: "RT-01", ruleReference: "IN.4.1", title: "PPE verified", type: .precondition, content: "All accompanying members must be using PPE before energized work begins.", requiredOutcome: true, requiresEvidence: false, defaultOutcome: .pass, defaultNote: "ESO and two team members present."),
+        InspectionTestStep(id: "RT-07", code: "RT-07", ruleReference: "Rain 7", title: "Activate TS", type: .action, content: "Instruct the ESO to activate the tractive system.", requiredOutcome: true, requiresEvidence: false, defaultOutcome: .pass),
+        InspectionTestStep(id: "RT-08", code: "RT-08", ruleReference: "EV.6.1", title: "RML flashing", type: .check, content: "Verify the RML is flashing after TS activation.", requiredOutcome: true, requiresEvidence: true, defaultOutcome: .pending, defaultNote: "Photo required if visibility is disputed."),
+        InspectionTestStep(id: "EG-14", code: "EG-14", ruleReference: "VE.5", title: "Egress time", type: .measurement, content: "Measure elapsed egress time. Required: less than 5 seconds.", requiredOutcome: true, requiresEvidence: false, defaultOutcome: .pending, defaultNote: "Target range: 0.00s to 4.99s.", measurementRange: MeasurementRange(unit: .seconds, minimum: Decimal(string: "0.00")!, maximum: Decimal(string: "4.99")!, maximumFractionDigits: 2)),
+        InspectionTestStep(id: "EG-21", code: "EG-21", ruleReference: "IN.13.3.1", title: "Wristband handling", type: .context, content: "Place the tallest-driver wristband on the correct driver; do not hand it to the team.", requiredOutcome: false, requiresEvidence: false, defaultOutcome: .notApplicable, defaultNote: "Context note visible inline.")
     ]
 }
 

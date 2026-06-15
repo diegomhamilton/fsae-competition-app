@@ -1,17 +1,32 @@
 import SwiftUI
 
 struct StepOverviewView: View {
-    let step: InspectionStep
+    fileprivate enum Strings {
+        static let eyebrow = "SC-004 · SC-005 · SC-006 Step Details"
+        static let subtitle = "One overview for outcome, notes, measurements, and evidence using mock JSON-compatible inspection test step data."
+        static let outcome = "Outcome"
+        static let measurement = "Measurement"
+        static let measurementValue = "Value"
+        static let notes = "Notes"
+        static let done = "Done"
+        static let evidence = "Evidence"
+        static let addEvidence = "Add Fake Attachment"
+        static let required = "Required"
+        static let optional = "Optional"
+    }
+
+    let step: InspectionTestStep
     @Binding var selectedScreen: ProposedScreen
-    @State private var selectedOutcome = StepOutcome.pending
+    @State private var selectedOutcome = InspectionOutcome.pending
     @State private var measurementValue = "4.72"
     @State private var noteText = "Observed by lead judge at station 3."
+    @State private var evidenceAttachments: [EvidenceAttachmentMetadata] = []
 
     var body: some View {
         ScreenShell(
-            eyebrow: "SC-004 · SC-005 · SC-006 Step Details",
+            eyebrow: Strings.eyebrow,
             title: step.title,
-            subtitle: "One overview for outcome, notes, measurements, and evidence so the app UI can be evaluated before state logic is split."
+            subtitle: Strings.subtitle
         ) {
             ContentPanel {
                 HStack(alignment: .top) {
@@ -22,6 +37,10 @@ struct StepOverviewView: View {
                         HStack {
                             StatusPill(text: step.type.label, color: step.type.color)
                             StatusPill(text: step.ruleReference, color: .fsaeGray)
+                            ForEach(step.safetyBadges, id: \.self) { badge in
+                                StatusPill(text: badge.displayName, color: .fsaeRed)
+                                    .accessibilityLabel(badge.accessibilityLabel)
+                            }
                         }
                         Text(step.content)
                             .font(.body)
@@ -31,112 +50,151 @@ struct StepOverviewView: View {
             }
 
             ContentPanel {
-                Text("Outcome")
+                Text(Strings.outcome)
                     .font(.headline)
                     .foregroundStyle(Color.fsaeText)
-                Picker("Outcome", selection: $selectedOutcome) {
-                    Text("Pass").tag(StepOutcome.pass)
-                    Text("Fail").tag(StepOutcome.fail)
-                    Text("N/A").tag(StepOutcome.notApplicable)
-                    Text("Pending").tag(StepOutcome.pending)
+                Picker(Strings.outcome, selection: $selectedOutcome) {
+                    ForEach(InspectionOutcome.allCases, id: \.self) { outcome in
+                        Text(outcome.displayName).tag(outcome)
+                    }
                 }
                 .pickerStyle(.segmented)
+                .accessibilityIdentifier(InspectionAccessibilityIdentifier.testStepOutcome(stepID: step.id, outcome: selectedOutcome).rawValue)
+                .accessibilityValue(selectedOutcome.displayName)
             }
 
             if step.type == .measurement {
                 ContentPanel {
-                    Text("Measurement")
+                    Text(Strings.measurement)
                         .font(.headline)
                         .foregroundStyle(Color.fsaeText)
                     HStack {
-                        TextField("Value", text: $measurementValue)
+                        TextField(Strings.measurementValue, text: $measurementValue)
                             .textFieldStyle(.roundedBorder)
                             .keyboardType(.decimalPad)
-                        Text("seconds")
+                            .accessibilityIdentifier(InspectionAccessibilityIdentifier.measurementField(stepID: step.id).rawValue)
+                        Text(step.measurementRange?.unit.rawValue ?? "value")
                             .foregroundStyle(Color.fsaeSecondaryText)
                     }
-                    Text("Mock schema: numeric value with precision and range validation.")
+                    Text(measurementHelpText)
                         .font(.footnote)
                         .foregroundStyle(Color.fsaeSecondaryText)
                 }
             }
 
             ContentPanel {
-                Text("Notes")
+                Text(Strings.notes)
                     .font(.headline)
                     .foregroundStyle(Color.fsaeText)
                 TextEditor(text: $noteText)
                     .frame(minHeight: 110)
                     .padding(8)
                     .background(Color.black.opacity(0.04), in: RoundedRectangle(cornerRadius: 8))
+                    .accessibilityIdentifier(InspectionAccessibilityIdentifier.notesField(stepID: step.id).rawValue)
             }
 
-            EvidenceOverview(requiresEvidence: step.requiresEvidence)
+            EvidenceOverview(
+                stepID: step.id,
+                requiresEvidence: step.requiresEvidence,
+                attachments: $evidenceAttachments
+            )
 
             Button {
                 selectedScreen = .stageChecklist
             } label: {
-                Label("Done", systemImage: "checkmark.circle.fill")
+                Label(Strings.done, systemImage: "checkmark.circle.fill")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+            .accessibilityIdentifier(InspectionAccessibilityIdentifier.doneAction(stepID: step.id).rawValue)
         }
         .onAppear {
-            selectedOutcome = step.outcome
-            noteText = step.note.isEmpty ? noteText : step.note
+            selectedOutcome = step.defaultOutcome
+            noteText = step.defaultNote.isEmpty ? noteText : step.defaultNote
+            evidenceAttachments = step.evidenceAttachments
         }
         .navigationTitle("Step")
+    }
+
+    private var measurementHelpText: String {
+        guard let range = step.measurementRange else {
+            return "Mock schema: numeric value with precision and range validation."
+        }
+
+        return "Allowed range: \(range.minimum) to \(range.maximum) \(range.unit.rawValue)."
     }
 }
 
 private struct EvidenceOverview: View {
+    let stepID: String
     let requiresEvidence: Bool
+    @Binding var attachments: [EvidenceAttachmentMetadata]
 
     var body: some View {
         ContentPanel {
             HStack {
-                Text("Evidence")
+                Text(StepOverviewView.Strings.evidence)
                     .font(.headline)
                     .foregroundStyle(Color.fsaeText)
                 Spacer()
-                StatusPill(text: requiresEvidence ? "Required" : "Optional", color: requiresEvidence ? .fsaeRed : .fsaeGray)
+                StatusPill(
+                    text: requiresEvidence ? StepOverviewView.Strings.required : StepOverviewView.Strings.optional,
+                    color: requiresEvidence ? .fsaeRed : .fsaeGray
+                )
+                .accessibilityValue(requiresEvidence ? "Evidence required" : "Evidence optional")
             }
 
-            HStack(spacing: 12) {
-                EvidenceAttachment(title: "RML photo", subtitle: "IMG_2042 · 10:18", systemImage: "photo")
-                EvidenceAttachment(title: "Judge initials", subtitle: "A. Maia", systemImage: "signature")
+            if attachments.isEmpty {
+                Text(requiresEvidence ? "No attachment metadata added." : "Attachment metadata optional.")
+                    .font(.footnote)
+                    .foregroundStyle(Color.fsaeSecondaryText)
+            } else {
+                HStack(spacing: 12) {
+                    ForEach(attachments) { attachment in
+                        EvidenceAttachment(metadata: attachment)
+                    }
+                }
             }
 
             Button {
+                attachments.append(
+                    EvidenceAttachmentMetadata(
+                        id: "fake-attachment-\(attachments.count + 1)",
+                        displayName: "Fake attachment \(attachments.count + 1)",
+                        mediaType: .photo,
+                        source: .mockAttachment,
+                        createdAt: Date()
+                    )
+                )
             } label: {
-                Label("Add Evidence", systemImage: "plus.circle")
+                Label(StepOverviewView.Strings.addEvidence, systemImage: "plus.circle")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
+            .accessibilityIdentifier(InspectionAccessibilityIdentifier.evidenceAction(stepID: stepID).rawValue)
         }
     }
 }
 
 private struct EvidenceAttachment: View {
-    let title: String
-    let subtitle: String
-    let systemImage: String
+    let metadata: EvidenceAttachmentMetadata
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Image(systemName: systemImage)
+            Image(systemName: metadata.mediaType == .photo ? "photo" : "paperclip")
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(Color.fsaeBlue)
-            Text(title)
+            Text(metadata.displayName)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Color.fsaeText)
-            Text(subtitle)
+            Text(metadata.mediaType.rawValue.capitalized)
                 .font(.caption)
                 .foregroundStyle(Color.fsaeSecondaryText)
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.black.opacity(0.04), in: RoundedRectangle(cornerRadius: 8))
+        .accessibilityValue(metadata.accessibilityValue)
     }
 }
