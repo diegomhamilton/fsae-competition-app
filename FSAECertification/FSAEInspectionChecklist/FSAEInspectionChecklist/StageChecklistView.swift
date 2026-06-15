@@ -3,8 +3,8 @@ import SwiftUI
 struct StageChecklistView: View {
     let team: InspectionTeam
     let stage: InspectionStage
-    let steps: [InspectionStep]
-    @Binding var selectedStep: InspectionStep
+    let steps: [InspectionTestStep]
+    @Binding var selectedStep: InspectionTestStep
     @Binding var selectedScreen: ProposedScreen
 
     var body: some View {
@@ -54,7 +54,7 @@ struct StageChecklistView: View {
 }
 
 private struct StepRow: View {
-    let step: InspectionStep
+    let step: InspectionTestStep
     let isSelected: Bool
 
     var body: some View {
@@ -82,7 +82,7 @@ private struct StepRow: View {
                     .lineLimit(2)
             }
             Spacer()
-            StatusPill(text: step.outcome.rawValue, color: step.outcome.color)
+            StatusPill(text: step.defaultOutcome.displayName, color: step.defaultOutcome.color)
         }
         .padding(14)
         .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))

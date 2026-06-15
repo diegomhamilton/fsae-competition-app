@@ -1,0 +1,15 @@
+{
+  "id": "RML-EVIDENCE",
+  "code": "RT-08",
+  "ruleReference": "EV.6.1",
+  "title": "RML flashing evidence",
+  "type": "check",
+  "content": "Attach evidence metadata when RML visibility is disputed.",
+  "requiredOutcome": true,
+  "requiresEvidence": true,
+  "safetyBadges": [],
+  "defaultOutcome": "pending",
+  "defaultNote": "Photo required if visibility is disputed.",
+  "measurementRange": null,
+  "evidenceAttachments": []
+}

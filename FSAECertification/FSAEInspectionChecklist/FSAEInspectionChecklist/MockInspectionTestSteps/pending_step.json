@@ -1,0 +1,15 @@
+{
+  "id": "RT-PENDING",
+  "code": "RT-09",
+  "ruleReference": "EV.6.2",
+  "title": "Shutdown indicator pending",
+  "type": "check",
+  "content": "Verify the shutdown indicator state before stage submission.",
+  "requiredOutcome": true,
+  "requiresEvidence": false,
+  "safetyBadges": [],
+  "defaultOutcome": "pending",
+  "defaultNote": "",
+  "measurementRange": null,
+  "evidenceAttachments": []
+}

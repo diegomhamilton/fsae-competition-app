@@ -26,16 +26,17 @@
 
 ## 4. Test Step Slice
 
-- [ ] 4.1 Add failing unit tests for `InspectionTestStep`, `InspectionOutcome`, `MeasurementValue`, evidence metadata, accessibility identifier helpers, and localizable string key helpers.
-- [ ] 4.2 Add mock JSON fixtures for representative check, measurement, evidence-required, energized, passing, failing, pending, and edge-case test steps.
-- [ ] 4.3 Implement Swift 6 domain models for test steps and draft step state.
-- [ ] 4.4 Implement a mock async fixture loader for test step JSONs.
-- [ ] 4.5 Refactor the existing step detail UI into a test-step view backed by model data and structured `Strings` enums.
-- [ ] 4.6 Add accessibility identifiers and VoiceOver labels for outcome controls, notes, measurement input, evidence controls, safety badges, and done actions.
-- [ ] 4.7 Manually validate the Test Step view with mock JSONs and record the result in the PR description.
+- [x] 4.1 Add failing unit tests for `InspectionTestStep`, `InspectionOutcome`, `MeasurementValue`, evidence metadata, accessibility identifier helpers, and localizable string key helpers.
+- [x] 4.2 Add mock JSON fixtures for representative check, measurement, evidence-required, energized, passing, failing, pending, and edge-case test steps.
+- [x] 4.3 Implement Swift 6 domain models for test steps and draft step state.
+- [x] 4.4 Implement a mock async fixture loader for test step JSONs.
+- [x] 4.5 Refactor the existing step detail UI into a test-step view backed by model data and structured `Strings` enums.
+- [x] 4.6 Add accessibility identifiers and VoiceOver labels for outcome controls, notes, measurement input, evidence controls, safety badges, and done actions.
+- [x] 4.7 Manually validate the Test Step view with mock JSONs and record the result in the PR description.
 
 ## 5. Test Case Slice
 
+- [ ] 5.0 Fix bug in which keyboard is not dismissable while editing Notes text input.
 - [ ] 5.1 Add failing unit tests for `InspectionTestCase`, ordered steps, rule references, draft aggregation, blocker counts, and test case progress.
 - [ ] 5.2 Add mock JSON fixtures for representative test cases with one step, multiple steps, measurement steps, required evidence, failed notes, and energized badges.
 - [ ] 5.3 Implement test case models and draft state composition from test step drafts.

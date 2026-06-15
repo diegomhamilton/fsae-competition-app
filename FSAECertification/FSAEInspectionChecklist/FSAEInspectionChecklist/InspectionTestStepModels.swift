@@ -1,0 +1,264 @@
+import Foundation
+import SwiftUI
+
+struct InspectionTestStep: Identifiable, Codable, Hashable, Sendable {
+    let id: String
+    let code: String
+    let ruleReference: String
+    let title: String
+    let type: InspectionTestStepType
+    let content: String
+    let requiredOutcome: Bool
+    let requiresEvidence: Bool
+    let safetyBadges: [InspectionSafetyBadge]
+    let defaultOutcome: InspectionOutcome
+    let defaultNote: String
+    let measurementRange: MeasurementRange?
+    let evidenceAttachments: [EvidenceAttachmentMetadata]
+
+    init(
+        id: String,
+        code: String,
+        ruleReference: String,
+        title: String,
+        type: InspectionTestStepType,
+        content: String,
+        requiredOutcome: Bool,
+        requiresEvidence: Bool,
+        safetyBadges: [InspectionSafetyBadge] = [],
+        defaultOutcome: InspectionOutcome = .pending,
+        defaultNote: String = "",
+        measurementRange: MeasurementRange? = nil,
+        evidenceAttachments: [EvidenceAttachmentMetadata] = []
+    ) {
+        self.id = id
+        self.code = code
+        self.ruleReference = ruleReference
+        self.title = title
+        self.type = type
+        self.content = content
+        self.requiredOutcome = requiredOutcome
+        self.requiresEvidence = requiresEvidence
+        self.safetyBadges = safetyBadges
+        self.defaultOutcome = defaultOutcome
+        self.defaultNote = defaultNote
+        self.measurementRange = measurementRange
+        self.evidenceAttachments = evidenceAttachments
+    }
+}
+
+enum InspectionTestStepType: String, Codable, CaseIterable, Hashable, Sendable {
+    case check
+    case measurement
+    case precondition
+    case action
+    case context
+
+    var label: String {
+        rawValue.capitalized
+    }
+
+    var symbol: String {
+        switch self {
+        case .check: "checkmark.seal"
+        case .measurement: "ruler"
+        case .precondition: "exclamationmark.shield"
+        case .action: "hand.tap"
+        case .context: "info.circle"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .check: .fsaeGreen
+        case .measurement: .fsaeBlue
+        case .precondition: .fsaeAmber
+        case .action: .fsaeRed
+        case .context: .fsaeGray
+        }
+    }
+}
+
+enum InspectionSafetyBadge: String, Codable, Hashable, Sendable {
+    case energized
+
+    var displayName: String {
+        switch self {
+        case .energized: "CAUTION: ENERGIZED"
+        }
+    }
+
+    var accessibilityLabel: String {
+        switch self {
+        case .energized: "Caution, energized dynamic test step"
+        }
+    }
+}
+
+enum InspectionOutcome: String, Codable, CaseIterable, Hashable, Sendable {
+    case pass
+    case fail
+    case notApplicable
+    case pending
+
+    var displayName: String {
+        switch self {
+        case .pass: "Pass"
+        case .fail: "Fail"
+        case .notApplicable: "N/A"
+        case .pending: "Pending"
+        }
+    }
+
+    var satisfiesRequiredOutcome: Bool {
+        self != .pending
+    }
+
+    var requiresInspectorNote: Bool {
+        self == .fail
+    }
+
+    var color: Color {
+        switch self {
+        case .pass: .fsaeGreen
+        case .fail: .fsaeRed
+        case .notApplicable: .fsaeGray
+        case .pending: .fsaeAmber
+        }
+    }
+}
+
+struct MeasurementRange: Codable, Hashable, Sendable {
+    let unit: MeasurementUnit
+    let minimum: Decimal
+    let maximum: Decimal
+    let maximumFractionDigits: Int
+
+    func contains(_ measurement: MeasurementValue) -> Bool {
+        measurement.unit == unit && measurement.value >= minimum && measurement.value <= maximum
+    }
+}
+
+struct MeasurementValue: Codable, Hashable, Sendable {
+    enum ValidationError: Error, Equatable, Sendable {
+        case nonNumericFormat
+        case precisionExceeded
+        case outsideAllowedRange
+    }
+
+    let value: Decimal
+    let unit: MeasurementUnit
+
+    init(rawValue: String, range: MeasurementRange) throws {
+        let trimmedValue = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let decimal = Decimal(string: trimmedValue, locale: Locale(identifier: "en_US_POSIX")) else {
+            throw ValidationError.nonNumericFormat
+        }
+
+        let fractionDigitCount = trimmedValue.split(separator: ".", omittingEmptySubsequences: false).dropFirst().first?.count ?? 0
+        guard fractionDigitCount <= range.maximumFractionDigits else {
+            throw ValidationError.precisionExceeded
+        }
+
+        self.value = decimal
+        self.unit = range.unit
+
+        guard range.contains(self) else {
+            throw ValidationError.outsideAllowedRange
+        }
+    }
+
+    var formattedValue: String {
+        "\(NSDecimalNumber(decimal: value).stringValue) \(unit.symbol)"
+    }
+}
+
+enum MeasurementUnit: String, Codable, Hashable, Sendable {
+    case seconds
+
+    var symbol: String {
+        switch self {
+        case .seconds: "s"
+        }
+    }
+}
+
+struct EvidenceAttachmentMetadata: Identifiable, Codable, Hashable, Sendable {
+    let id: String
+    let displayName: String
+    let mediaType: EvidenceMediaType
+    let source: EvidenceAttachmentSource
+    let createdAt: Date
+
+    var accessibilityValue: String {
+        "Attachment \(displayName) added"
+    }
+}
+
+enum EvidenceMediaType: String, Codable, Hashable, Sendable {
+    case photo
+    case signature
+    case note
+}
+
+enum EvidenceAttachmentSource: String, Codable, Hashable, Sendable {
+    case mockAttachment
+}
+
+struct InspectionAccessibilityIdentifier: RawRepresentable, Equatable, Hashable, Sendable {
+    let rawValue: String
+
+    init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+
+    static func testStepRow(stepID: String) -> Self {
+        Self(rawValue: "inspection.testStep.\(stepID).row")
+    }
+
+    static func testStepOutcome(stepID: String, outcome: InspectionOutcome) -> Self {
+        Self(rawValue: "inspection.testStep.\(stepID).outcome.\(outcome.rawValue)")
+    }
+
+    static func measurementField(stepID: String) -> Self {
+        Self(rawValue: "inspection.testStep.\(stepID).measurement")
+    }
+
+    static func evidenceAction(stepID: String) -> Self {
+        Self(rawValue: "inspection.testStep.\(stepID).evidence.action")
+    }
+
+    static func notesField(stepID: String) -> Self {
+        Self(rawValue: "inspection.testStep.\(stepID).notes")
+    }
+
+    static func doneAction(stepID: String) -> Self {
+        Self(rawValue: "inspection.testStep.\(stepID).done")
+    }
+}
+
+enum InspectionTestStepStrings: Equatable {
+    case title
+    case notesPlaceholder
+    case measurementError(MeasurementValue.ValidationError)
+    case evidenceRequired
+
+    func key(for stepID: String) -> String {
+        switch self {
+        case .title: "inspection.testStep.\(stepID).title"
+        case .notesPlaceholder: "inspection.testStep.\(stepID).notes.placeholder"
+        case .measurementError, .evidenceRequired: key
+        }
+    }
+
+    var key: String {
+        switch self {
+        case .title: "inspection.testStep.title"
+        case .notesPlaceholder: "inspection.testStep.notes.placeholder"
+        case .measurementError(.nonNumericFormat): "inspection.testStep.measurement.error.nonNumericFormat"
+        case .measurementError(.precisionExceeded): "inspection.testStep.measurement.error.precisionExceeded"
+        case .measurementError(.outsideAllowedRange): "inspection.testStep.measurement.error.outsideAllowedRange"
+        case .evidenceRequired: "inspection.testStep.evidence.required"
+        }
+    }
+}
