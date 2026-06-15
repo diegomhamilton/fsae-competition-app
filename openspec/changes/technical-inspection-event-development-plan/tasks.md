@@ -32,7 +32,7 @@
 - [x] 4.4 Implement a mock async fixture loader for test step JSONs.
 - [x] 4.5 Refactor the existing step detail UI into a test-step view backed by model data and structured `Strings` enums.
 - [x] 4.6 Add accessibility identifiers and VoiceOver labels for outcome controls, notes, measurement input, evidence controls, safety badges, and done actions.
-- [ ] 4.7 Manually validate the Test Step view with mock JSONs and record the result in the PR description.
+- [x] 4.7 Manually validate the Test Step view with mock JSONs and record the result in the PR description.
 
 ## 5. Test Case Slice
 
