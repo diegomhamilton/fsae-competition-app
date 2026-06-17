@@ -42,7 +42,7 @@
 - [ ] 5.3 Implement test case models and draft state composition from test step drafts.
 - [ ] 5.4 Implement `InspectionValidationService` rules for missing outcome, failed note requirement, invalid measurement, and missing evidence.
 - [ ] 5.5 Add coordinator tests for opening a test case, opening a test step, applying edits, and returning edits to the parent test case.
-- [ ] 5.6 Refactor the existing stage step card pattern into a test case view that renders ordered steps and validation summaries.
+- [x] 5.6 Refactor the existing stage step card pattern into a test case view that renders ordered steps and validation summaries.
 - [ ] 5.7 Manually validate the Test Case view with mock JSONs and record positive, negative, and edge cases from the `.feature` file.
 
 ## 6. Test Case List and Stage Slice
