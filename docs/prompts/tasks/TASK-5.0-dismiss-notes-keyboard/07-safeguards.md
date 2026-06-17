@@ -11,6 +11,12 @@ Review for:
 - Scope creep beyond keyboard dismissal
 - Accidental changes to inspection domain models
 - Missing Notes input locations
+- Duplicate keyboard toolbar buttons from attaching `.toolbar(placement: .keyboard)` inside repeated card/list views
+- Missing keyboard toolbar button from attaching `.toolbar(placement: .keyboard)` too high in the view hierarchy
+- Missing keyboard toolbar button from a conditionally emitted focused card-level SwiftUI toolbar
+- Over-reliance on SwiftUI keyboard toolbar placement after manual validation shows no visible `Done` button
+- UIKit usage for this task
+- A SwiftUI safe-area dismissal bar that appears when no Notes field is focused
 - Dismissal action that loses note text
 - Dismissal action that changes broader Done/save navigation behavior
 - Accessibility regression
