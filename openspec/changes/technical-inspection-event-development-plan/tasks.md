@@ -36,7 +36,7 @@
 
 ## 5. Test Case Slice
 
-- [ ] 5.0 In separate PR: Fix bug in which keyboard is not dismissable while editing Notes text input.
+- [x] 5.0 In separate PR: Fix bug in which keyboard is not dismissable while editing Notes text input.
 - [ ] 5.1 Add failing unit tests for `InspectionTestCase`, ordered steps, rule references, draft aggregation, blocker counts, and test case progress.
 - [ ] 5.2 Add mock JSON fixtures for representative test cases with one step, multiple steps, measurement steps, required evidence, failed notes, and energized badges.
 - [ ] 5.3 Implement test case models and draft state composition from test step drafts.
