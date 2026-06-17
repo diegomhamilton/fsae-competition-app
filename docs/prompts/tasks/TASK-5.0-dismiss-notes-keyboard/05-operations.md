@@ -22,7 +22,12 @@ For each operation, include:
 Required operation coverage:
 
 - Locate every current Notes input used by the inspection step or stage flow.
+- Identify whether each Notes input is rendered once or inside a repeated `ForEach`/card list.
 - Add a dismissal affordance for the software keyboard.
+- Ensure repeated note cards produce one keyboard `Done` button total, not one per card.
+- Account for manual validation evidence: per-card SwiftUI keyboard toolbars duplicated `Done`; parent-level SwiftUI toolbar hid `Done`; conditionally focused card-level SwiftUI toolbar still showed no `Done`.
+- Do not use UIKit for this task.
+- If SwiftUI `.toolbar(placement: .keyboard)` remains unreliable, add a SwiftUI `safeAreaInset(edge: .bottom)` dismissal bar that appears only while a Notes input is focused.
 - Preserve note text while dismissing the keyboard.
 - Keep the broader Done/save action behavior unchanged.
 - Update the OpenSpec task checkbox only after the fix is complete.

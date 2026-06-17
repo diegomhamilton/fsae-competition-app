@@ -1,11 +1,16 @@
 import SwiftUI
 
 struct FullStageView: View {
+    private enum Strings {
+        static let dismissKeyboard = "Done"
+    }
+
     let team: InspectionTeam
     let stage: InspectionStage
     let steps: [InspectionTestStep]
     @Binding var selectedStep: InspectionTestStep
     @Binding var selectedScreen: ProposedScreen
+    @FocusState private var focusedNoteStepID: String?
 
     var body: some View {
         ScreenShell(
@@ -32,7 +37,10 @@ struct FullStageView: View {
 
             VStack(spacing: 14) {
                 ForEach(steps) { step in
-                    FullStageStepCard(step: step) {
+                    FullStageStepCard(
+                        step: step,
+                        focusedNoteStepID: $focusedNoteStepID
+                    ) {
                         selectedStep = step
                         selectedScreen = .stepDetail
                     }
@@ -47,24 +55,32 @@ struct FullStageView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
         }
+        .safeAreaInset(edge: .bottom) {
+            if focusedNoteStepID != nil {
+                KeyboardDismissBar(title: Strings.dismissKeyboard) {
+                    focusedNoteStepID = nil
+                }
+            }
+        }
         .navigationTitle("Stage")
     }
 }
 
 private struct FullStageStepCard: View {
-    private enum Strings {
-        static let dismissKeyboard = "Done"
-    }
-
     let step: InspectionTestStep
+    let focusedNoteStepID: FocusState<String?>.Binding
     let openStepDetail: () -> Void
     @State private var selectedOutcome: InspectionOutcome
     @State private var noteText: String
     @State private var measurementValue: String
-    @FocusState private var isNotesFocused: Bool
 
-    init(step: InspectionTestStep, openStepDetail: @escaping () -> Void) {
+    init(
+        step: InspectionTestStep,
+        focusedNoteStepID: FocusState<String?>.Binding,
+        openStepDetail: @escaping () -> Void
+    ) {
         self.step = step
+        self.focusedNoteStepID = focusedNoteStepID
         self.openStepDetail = openStepDetail
         _selectedOutcome = State(initialValue: step.defaultOutcome)
         _noteText = State(initialValue: step.defaultNote)
@@ -143,7 +159,7 @@ private struct FullStageStepCard: View {
             }
 
             TextField("Judge notes", text: $noteText, axis: .vertical)
-                .focused($isNotesFocused)
+                .focused(focusedNoteStepID, equals: step.id)
                 .lineLimit(2...4)
                 .textFieldStyle(.roundedBorder)
         }
@@ -152,14 +168,6 @@ private struct FullStageStepCard: View {
         .overlay {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(selectedOutcome == .pending ? Color.fsaeAmber.opacity(0.5) : Color.fsaeBorder)
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button(Strings.dismissKeyboard) {
-                    isNotesFocused = false
-                }
-            }
         }
     }
 }

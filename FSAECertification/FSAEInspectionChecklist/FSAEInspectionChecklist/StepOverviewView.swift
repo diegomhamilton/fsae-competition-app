@@ -117,10 +117,9 @@ struct StepOverviewView: View {
             noteText = step.defaultNote.isEmpty ? noteText : step.defaultNote
             evidenceAttachments = step.evidenceAttachments
         }
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button(Strings.dismissKeyboard) {
+        .safeAreaInset(edge: .bottom) {
+            if isNotesFocused {
+                KeyboardDismissBar(title: Strings.dismissKeyboard) {
                     isNotesFocused = false
                 }
             }
