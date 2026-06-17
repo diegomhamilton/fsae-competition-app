@@ -1,0 +1,30 @@
+{
+  "id": "TC-EGRESS-001",
+  "code": "EGRESS-001",
+  "displayOrder": 3,
+  "title": "Driver egress timing",
+  "ruleReferences": ["VE.5"],
+  "safetyBadges": [],
+  "steps": [
+    {
+      "id": "EG-14",
+      "code": "EG-14",
+      "ruleReference": "VE.5",
+      "title": "Egress time",
+      "type": "measurement",
+      "content": "Measure elapsed egress time. Required: less than 5 seconds.",
+      "requiredOutcome": true,
+      "requiresEvidence": false,
+      "safetyBadges": [],
+      "defaultOutcome": "pending",
+      "defaultNote": "Target range: 0.00s to 4.99s.",
+      "measurementRange": {
+        "unit": "seconds",
+        "minimum": 0,
+        "maximum": 4.99,
+        "maximumFractionDigits": 2
+      },
+      "evidenceAttachments": []
+    }
+  ]
+}
