@@ -8,6 +8,7 @@ struct StepOverviewView: View {
         static let measurement = "Measurement"
         static let measurementValue = "Value"
         static let notes = "Notes"
+        static let dismissKeyboard = "Done"
         static let done = "Done"
         static let evidence = "Evidence"
         static let addEvidence = "Add Fake Attachment"
@@ -21,6 +22,7 @@ struct StepOverviewView: View {
     @State private var measurementValue = "4.72"
     @State private var noteText = "Observed by lead judge at station 3."
     @State private var evidenceAttachments: [EvidenceAttachmentMetadata] = []
+    @FocusState private var isNotesFocused: Bool
 
     var body: some View {
         ScreenShell(
@@ -87,6 +89,7 @@ struct StepOverviewView: View {
                     .font(.headline)
                     .foregroundStyle(Color.fsaeText)
                 TextEditor(text: $noteText)
+                    .focused($isNotesFocused)
                     .frame(minHeight: 110)
                     .padding(8)
                     .background(Color.black.opacity(0.04), in: RoundedRectangle(cornerRadius: 8))
@@ -113,6 +116,14 @@ struct StepOverviewView: View {
             selectedOutcome = step.defaultOutcome
             noteText = step.defaultNote.isEmpty ? noteText : step.defaultNote
             evidenceAttachments = step.evidenceAttachments
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button(Strings.dismissKeyboard) {
+                    isNotesFocused = false
+                }
+            }
         }
         .navigationTitle("Step")
     }

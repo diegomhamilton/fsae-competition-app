@@ -52,11 +52,16 @@ struct FullStageView: View {
 }
 
 private struct FullStageStepCard: View {
+    private enum Strings {
+        static let dismissKeyboard = "Done"
+    }
+
     let step: InspectionTestStep
     let openStepDetail: () -> Void
     @State private var selectedOutcome: InspectionOutcome
     @State private var noteText: String
     @State private var measurementValue: String
+    @FocusState private var isNotesFocused: Bool
 
     init(step: InspectionTestStep, openStepDetail: @escaping () -> Void) {
         self.step = step
@@ -138,6 +143,7 @@ private struct FullStageStepCard: View {
             }
 
             TextField("Judge notes", text: $noteText, axis: .vertical)
+                .focused($isNotesFocused)
                 .lineLimit(2...4)
                 .textFieldStyle(.roundedBorder)
         }
@@ -146,6 +152,14 @@ private struct FullStageStepCard: View {
         .overlay {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(selectedOutcome == .pending ? Color.fsaeAmber.opacity(0.5) : Color.fsaeBorder)
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button(Strings.dismissKeyboard) {
+                    isNotesFocused = false
+                }
+            }
         }
     }
 }
