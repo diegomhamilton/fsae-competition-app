@@ -114,6 +114,49 @@ enum MockInspectionData {
         InspectionTestStep(id: "EG-14", code: "EG-14", ruleReference: "VE.5", title: "Egress time", type: .measurement, content: "Measure elapsed egress time. Required: less than 5 seconds.", requiredOutcome: true, requiresEvidence: false, defaultOutcome: .pending, defaultNote: "Target range: 0.00s to 4.99s.", measurementRange: MeasurementRange(unit: .seconds, minimum: Decimal(string: "0.00")!, maximum: Decimal(string: "4.99")!, maximumFractionDigits: 2)),
         InspectionTestStep(id: "EG-21", code: "EG-21", ruleReference: "IN.13.3.1", title: "Wristband handling", type: .context, content: "Place the tallest-driver wristband on the correct driver; do not hand it to the team.", requiredOutcome: false, requiresEvidence: false, defaultOutcome: .notApplicable, defaultNote: "Context note visible inline.")
     ]
+
+    static let testCases: [InspectionTestCaseViewState] = [
+        InspectionTestCaseViewState(
+            id: "rain-rml",
+            code: "RAIN-RML",
+            title: "Rain test RML behavior",
+            ruleReferences: ["EV.6.1", "IN.11.3"],
+            stepStates: [
+                InspectionTestCaseStepViewState(
+                    displayOrder: 30,
+                    step: steps[2],
+                    outcome: steps[2].defaultOutcome,
+                    notes: steps[2].defaultNote,
+                    measurementInput: "",
+                    evidenceAttachmentCount: steps[2].evidenceAttachments.count
+                ),
+                InspectionTestCaseStepViewState(
+                    displayOrder: 10,
+                    step: steps[0],
+                    outcome: steps[0].defaultOutcome,
+                    notes: steps[0].defaultNote,
+                    measurementInput: "",
+                    evidenceAttachmentCount: steps[0].evidenceAttachments.count
+                ),
+                InspectionTestCaseStepViewState(
+                    displayOrder: 20,
+                    step: steps[1],
+                    outcome: steps[1].defaultOutcome,
+                    notes: steps[1].defaultNote,
+                    measurementInput: "",
+                    evidenceAttachmentCount: steps[1].evidenceAttachments.count
+                ),
+                InspectionTestCaseStepViewState(
+                    displayOrder: 40,
+                    step: steps[3],
+                    outcome: steps[3].defaultOutcome,
+                    notes: steps[3].defaultNote,
+                    measurementInput: "5.40",
+                    evidenceAttachmentCount: steps[3].evidenceAttachments.count
+                )
+            ]
+        )
+    ]
 }
 
 extension Color {

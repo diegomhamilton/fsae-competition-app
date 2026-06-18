@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedTeam = MockInspectionData.teams[0]
     @State private var selectedStage = MockInspectionData.stages[0]
+    @State private var selectedTestCase = MockInspectionData.testCases[0]
     @State private var selectedStep = MockInspectionData.steps[0]
     @State private var selectedScreen: ProposedScreen = .sessionSelector
     @State private var showingSwitchConfirmation = false
@@ -50,6 +51,20 @@ struct ContentView: View {
             .tag(ProposedScreen.stageChecklist)
 
             NavigationStack {
+                TestCaseView(
+                    team: selectedTeam,
+                    stage: selectedStage,
+                    testCase: selectedTestCase,
+                    selectedStep: $selectedStep,
+                    selectedScreen: $selectedScreen
+                )
+            }
+            .tabItem {
+                Label("Case", systemImage: "list.bullet.rectangle")
+            }
+            .tag(ProposedScreen.testCase)
+
+            NavigationStack {
                 StepOverviewView(
                     step: selectedStep,
                     selectedScreen: $selectedScreen
@@ -79,6 +94,7 @@ enum ProposedScreen: Hashable {
     case sessionSelector
     case dashboard
     case stageChecklist
+    case testCase
     case stepDetail
 }
 
