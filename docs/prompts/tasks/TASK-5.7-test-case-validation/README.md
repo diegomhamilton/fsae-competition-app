@@ -14,6 +14,11 @@ Run these prompts in order:
 6. `06-norms.md`
 7. `07-safeguards.md`
 
+Validation artifacts:
+
+- `08-manual-validation-checklist.md`
+- `09-pr-validation-note-draft.md`
+
 Expected PR title:
 
 `TASK#5.7: Validate test case view`
@@ -25,4 +30,3 @@ Branch:
 Build policy:
 
 Do not build automatically. The user owns build and manual app validation unless they explicitly ask Codex to run it. If actual manual validation cannot be performed, create a ready-to-run checklist and PR validation-note draft, and do not claim TASK#5.7 is complete.
-
