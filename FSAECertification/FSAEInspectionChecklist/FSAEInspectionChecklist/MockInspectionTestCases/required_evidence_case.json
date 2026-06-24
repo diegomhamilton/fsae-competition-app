@@ -1,0 +1,25 @@
+{
+  "id": "TC-EV-EVIDENCE-001",
+  "code": "EV-EVIDENCE-001",
+  "displayOrder": 4,
+  "title": "RML evidence requirement",
+  "ruleReferences": ["EV.6.1"],
+  "safetyBadges": [],
+  "steps": [
+    {
+      "id": "RML-EVIDENCE",
+      "code": "RT-08",
+      "ruleReference": "EV.6.1",
+      "title": "RML flashing evidence",
+      "type": "check",
+      "content": "Attach evidence metadata when RML visibility is disputed.",
+      "requiredOutcome": true,
+      "requiresEvidence": true,
+      "safetyBadges": [],
+      "defaultOutcome": "pending",
+      "defaultNote": "Photo required if visibility is disputed.",
+      "measurementRange": null,
+      "evidenceAttachments": []
+    }
+  ]
+}
