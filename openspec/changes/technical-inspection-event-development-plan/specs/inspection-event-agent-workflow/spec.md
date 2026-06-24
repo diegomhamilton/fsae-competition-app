@@ -69,5 +69,5 @@ The system delivery plan SHALL use feature branches, task-sized commits, optiona
 - **THEN** its description uses the PR 1 sections `Summary`, `Scope`, `Notes`, and `Validation`, including test command output and manual validation notes.
 
 #### Scenario: Dedicated UI test PR
-- **WHEN** XCUITests and snapshot tests are introduced
+- **WHEN** dedicated UI automation and snapshot tests are introduced
 - **THEN** they are added through a dedicated PR after accessibility identifiers and stable navigation hooks exist.

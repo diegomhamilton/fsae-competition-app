@@ -1,0 +1,43 @@
+# Entities Prompt
+
+For this task:
+
+Task: `7.3 Define Codable JSON schemas for test case draft files and immutable submitted test case/stage snapshot files, including schema version, event ID, team ID, session ID, stage ID, test case ID, updated timestamp, outcomes, notes, measurements, evidence metadata, validation summary, and recheck references.`
+
+Identify the core entities and relationships.
+
+Include:
+
+- Domain models, services, coordinators, views, documentation, fixtures, or validation artifacts involved
+- State boundaries and ownership
+- Persistence or accessibility identifiers where relevant
+- Test or validation entities
+- PR review entities: files, commit boundaries, and reviewer concerns
+
+Likely files or targets:
+
+- Draft and snapshot model files
+- schema fixtures
+- model tests
+
+Call out what can be validated through Swift Testing, static review, dedicated UI automation, or user-run manual validation.
+
+Context:
+
+- Macro-task: TASK#7 Session, Submission, and Recheck Flow
+- Subtask: TASK#7.3
+- Expected PR title: `TASK#7.3: Codable JSON Schemas`
+- Feature branch: `codex/inspection-event-session-flow`
+- Suggested task branch: `codex/inspection-event-session-flow-7-3-codable-json-schemas`
+- Operation summary: Define Codable v1 draft and submission snapshot schemas with explicit IDs, timestamps, validation, evidence, and recheck references.
+- Likely files or targets: Draft and snapshot model files; schema fixtures; model tests
+- Validation: Swift Testing Codable round-trip and malformed-payload checks.
+- Split trigger: Split if schema migration or compatibility logic grows beyond initial v1 shape.
+- Common instructions:
+- Start from OpenSpec design and the inspection_event_use_cases.feature file.
+- Keep Application Support JSON storage scoped by event, team, session, stage, and test case ID.
+- Use Swift Testing for unit and integration checks.
+- Use actor isolation for persistence, event-store, and mutable local state boundaries.
+- Keep submitted snapshots immutable; corrections flow through rechecks.
+- Use task-sized commits and split if the PR crosses more than 10 files or mixes unrelated review contexts.
+- Do not claim manual validation unless actual app evidence is recorded.

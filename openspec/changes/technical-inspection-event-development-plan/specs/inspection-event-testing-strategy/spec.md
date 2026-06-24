@@ -62,13 +62,13 @@ The system test plan SHALL cover post-core-flow step view UX improvements with t
 - **THEN** tests or manual validation verify start, stop, reset, manual override, range validation, draft persistence, and accessible announcements.
 
 ### Requirement: UI tests are integrated in a dedicated PR
-The system delivery plan SHALL introduce XCUITests and snapshot tests through a dedicated PR after accessibility identifiers and navigation hooks are stable.
+The system delivery plan SHALL introduce dedicated UI automation and snapshot tests through a dedicated PR after accessibility identifiers and navigation hooks are stable.
 
-#### Scenario: XCUITests cover accessible controls
+#### Scenario: UI automation covers accessible controls
 - **WHEN** the UI test PR is opened
 - **THEN** it verifies that session rows, stage rows, test case rows, test step controls, validation summaries, recheck actions, and submission controls are discoverable by accessibility identifier.
 
-#### Scenario: XCUITests cover positive, negative, and edge flows
+#### Scenario: UI automation covers positive, negative, and edge flows
 - **WHEN** the UI test PR is opened
 - **THEN** it covers at least one passing submission flow, one blocked submission flow, one invalid measurement flow, one evidence removal flow, one team switch flow, and one recheck resolution flow.
 

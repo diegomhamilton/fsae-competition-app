@@ -13,7 +13,7 @@ This change is a development plan, not the full implementation. The first implem
 - Define a Swift 6, SwiftUI, Concurrency-first architecture using MVC: Models, Views, Coordinators, and Services.
 - Preserve the existing SwiftUI screens as the starting UI shape while replacing mock state with domain-backed state over incremental PRs.
 - Use the `.feature` file as the primary acceptance source for every implementation phase and test scenario.
-- Define concrete classes, services, coordinators, unit tests, XCUITests, snapshot tests, documentation, agents, and skill files.
+- Define concrete classes, services, coordinators, Swift Testing unit/integration tests, dedicated UI automation, snapshot tests, documentation, agents, and skill files.
 - Separate UI test integration into a dedicated PR after the model/coordinator/service foundations are stable.
 - Require localizable strings through structured `Strings` enums in each view or component file.
 - Require accessibility identifiers and VoiceOver-complete flows from the first UI-facing slices.
@@ -129,7 +129,7 @@ Rationale:
 ### Use Feature File as Test Backbone
 
 Decision:
-- Unit, UI, and snapshot test names must reference the relevant `.feature` tags or scenario titles where practical.
+- Swift Testing, UI automation, and snapshot test names must reference the relevant `.feature` tags or scenario titles where practical.
 - Positive, negative, and edge cases must cover start/resume, validation blocking, measurements, evidence, team switching, history, offline stages, and energized badges.
 
 Rationale:
@@ -139,8 +139,8 @@ Rationale:
 ### Keep UI Tests in a Dedicated PR
 
 Decision:
-- Unit tests land with the code they prove.
-- XCUITests and snapshot coverage are integrated in a dedicated PR after identifiers, navigation, and mock data hooks are stable.
+- Swift Testing unit/integration tests land with the code they prove.
+- Dedicated UI automation and snapshot coverage are integrated in a dedicated PR after identifiers, navigation, and mock data hooks are stable.
 
 Rationale:
 - UI test setup can create project churn. Isolating it keeps implementation PRs reviewable and preserves a clean commit history.
@@ -196,7 +196,7 @@ Rationale:
 
 - [Risk] The current JSON schema does not encode every validation policy, such as required evidence or measurement ranges. -> Mitigation: add mock policy fixtures first, then introduce explicit metadata extensions only through reviewed specs.
 - [Risk] Coordinators can become too broad if every screen action is routed upward. -> Mitigation: keep coordinators focused on flow and intents; keep validation and persistence in services.
-- [Risk] Accessibility identifiers can drift from localized labels. -> Mitigation: identifiers must be stable constants separate from display strings and covered by XCUITests.
+- [Risk] Accessibility identifiers can drift from localized labels. -> Mitigation: identifiers must be stable constants separate from display strings and covered by dedicated UI automation.
 - [Risk] Snapshot tests can be brittle across simulator/runtime changes. -> Mitigation: limit snapshots to high-value states and keep them in the dedicated UI-test PR.
 - [Risk] Multi-agent documentation can become decorative. -> Mitigation: each agent file must list responsibilities, required inputs, expected outputs, and phase ownership.
 - [Risk] Recheck state can conflict with immutable submission history. -> Mitigation: submitted snapshots remain immutable; rechecks create review records that reference the failed test case and later accepted state.
@@ -211,7 +211,7 @@ Rationale:
 5. Implement the Test Case view slice by composing steps and validation summaries.
 6. Implement the Test Case list and stage views by loading bundled JSON through `InspectionContentService`.
 7. Add session selection, active team routing, Application Support JSON persistence, submissions, and rechecks incrementally after the stage list is stable.
-8. Add XCUITests and snapshot tests in a dedicated PR.
+8. Add dedicated UI automation and snapshot tests in a dedicated PR.
 9. Add step-view and general UX follow-up work for camera evidence capture, egress stopwatch timing, and inspection ergonomics after the core flow is stable.
 
 Rollback strategy:
@@ -247,6 +247,6 @@ Answer:
 - Which snapshot testing library should be adopted for Swift 6 once the test target is introduced?
 Answer:
 - Adopt `pointfreeco/swift-snapshot-testing` for the dedicated UI test and snapshot PR.
-- Rationale: it supports Swift Package Manager, Swift Testing and XCTest-style usage, image snapshots, textual snapshots, JSON/property-list snapshots, and custom strategies. Swift Package Index currently reports release `1.19.2`, Swift 6.0 through 6.3 build compatibility, and zero data race safety errors.
+- Rationale: it supports Swift Package Manager, Swift Testing usage, image snapshots, textual snapshots, JSON/property-list snapshots, and custom strategies. Swift Package Index currently reports release `1.19.2`, Swift 6.0 through 6.3 build compatibility, and zero data race safety errors.
 - Use it only from test targets. Start with a narrow set of high-value SwiftUI states: test step, test case, stage list, validation blocked, recheck required, and sticker eligible.
 - Pin the package with an up-to-next-major requirement from the latest compatible release available when the UI-test PR starts.

@@ -51,8 +51,8 @@
 - [x] 6.2 Implement `InspectionContentService` as an async service that loads the six bundled inspection JSON resources.
 - [x] 6.3 Implement the test case list view from bundled JSON content, grouped by stage sections and ordered by display order.
 - [ ] 6.4 Refactor `FullStageView` to render real stage content, stage progress, validation blockers, and submit controls from model state.
-- [ ] 6.5 Add energized dynamic test badge derivation for EV inspection steps and expose equivalent accessibility information.
-- [ ] 6.6 Add structured `Strings` enums and stable accessibility identifiers to the stage and test case list files.
+- [x] 6.5 Add energized dynamic test badge derivation for EV inspection steps and expose equivalent accessibility information.
+- [x] 6.6 Add structured `Strings` enums and stable accessibility identifiers to the stage and test case list files.
 - [ ] 6.7 Manually validate Garage, EV, Egress, and Rain stage content against `Design/Resources/InspectionEvent/*.json`.
 
 ## 7. Session, Submission, and Recheck Flow
@@ -73,9 +73,9 @@
 ## 8. Dedicated UI Test and Snapshot PR
 
 - [ ] 8.1 Open a dedicated UI test PR after accessibility identifiers and stable navigation hooks exist.
-- [ ] 8.2 Add XCUITest launch fixtures for positive, negative, and edge states using mock data.
-- [ ] 8.3 Add XCUITests for login, session selector, stage navigation, test case navigation, test step editing, validation blocking, team switching, recheck review, and sticker eligibility.
-- [ ] 8.4 Add XCUITests that assert required controls and statuses are accessible by stable identifiers rather than localized labels.
+- [ ] 8.2 Add dedicated UI automation launch fixtures for positive, negative, and edge states using mock data.
+- [ ] 8.3 Add dedicated UI automation coverage for login, session selector, stage navigation, test case navigation, test step editing, validation blocking, team switching, recheck review, and sticker eligibility.
+- [ ] 8.4 Add dedicated UI automation checks that assert required controls and statuses are accessible by stable identifiers rather than localized labels.
 - [ ] 8.5 Add snapshot tests for test step, test case, stage list, validation blocked, recheck required, and sticker eligible states where practical.
 - [ ] 8.6 Document UI test coverage back to the `.feature` scenarios and personas.
 
