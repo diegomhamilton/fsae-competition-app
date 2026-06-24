@@ -357,6 +357,14 @@ struct InspectionAccessibilityIdentifier: RawRepresentable, Equatable, Hashable,
     static func testCaseKeyboardDismissAction(testCaseID: String) -> Self {
         Self(rawValue: "inspection.testCase.\(testCaseID).keyboard.dismiss")
     }
+
+    static func stageSection(stageID: String, sectionID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).section.\(sectionID)")
+    }
+
+    static func stageTestCaseRow(stageID: String, testCaseID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).testCase.\(testCaseID).row")
+    }
 }
 
 enum InspectionTestStepStrings: Equatable {

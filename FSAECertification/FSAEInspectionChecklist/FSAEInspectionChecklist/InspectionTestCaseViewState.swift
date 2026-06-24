@@ -40,6 +40,35 @@ struct InspectionTestCaseViewState: Identifiable, Equatable, Sendable {
     }
 }
 
+extension InspectionTestCaseViewState {
+    init(testCase: InspectionTestCase) {
+        self.init(testCase: testCase, draft: TestCaseDraft(testCase: testCase))
+    }
+
+    init(
+        testCase: InspectionTestCase,
+        draft: TestCaseDraft
+    ) {
+        self.init(
+            id: testCase.id,
+            code: testCase.code,
+            title: testCase.title,
+            ruleReferences: testCase.allRuleReferences,
+            stepStates: testCase.orderedSteps.map { step in
+                let draft = draft.stepDraft(stepID: step.id)?.draft ?? TestStepDraft(step: step)
+                return InspectionTestCaseStepViewState(
+                    displayOrder: step.displayOrder,
+                    step: step,
+                    outcome: draft.outcome,
+                    notes: draft.notes,
+                    measurementInput: draft.measurementInput,
+                    evidenceAttachmentCount: draft.evidenceAttachments.count
+                )
+            }
+        )
+    }
+}
+
 struct InspectionTestCaseStepViewState: Identifiable, Equatable, Sendable {
     let displayOrder: Int
     let step: InspectionTestStep
