@@ -82,10 +82,9 @@ struct InspectionContentService: @unchecked Sendable {
         if let resourceURLs {
             url = resourceURLs[resource]
         } else {
-            url = bundle.url(
-                forResource: resource.fileName.deletingJSONExtension,
-                withExtension: "json",
-                subdirectory: resourceDirectory
+            url = bundle.inspectionContentURL(
+                resourceName: resource.fileName.deletingJSONExtension,
+                resourceDirectory: resourceDirectory
             )
         }
 
@@ -127,6 +126,32 @@ struct InspectionContentService: @unchecked Sendable {
             return .malformedJSON(resourceName: resourceName, details: context.debugDescription)
         @unknown default:
             return .malformedJSON(resourceName: resourceName, details: "\(decodingError)")
+        }
+    }
+}
+
+private extension Bundle {
+    func inspectionContentURL(
+        resourceName: String,
+        resourceDirectory: String
+    ) -> URL? {
+        if let url = url(
+            forResource: resourceName,
+            withExtension: "json",
+            subdirectory: resourceDirectory
+        ) {
+            return url
+        }
+
+        if let url = url(forResource: resourceName, withExtension: "json") {
+            return url
+        }
+
+        return urls(
+            forResourcesWithExtension: "json",
+            subdirectory: nil
+        )?.first { url in
+            url.lastPathComponent == "\(resourceName).json"
         }
     }
 }
