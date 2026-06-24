@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "BD6F3E8A-9165-4C97-B003-182F077C1CDE",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:FSAEInspectionChecklist.xcodeproj",
+      "identifier" : "9ECA43C02F80C1010083BF80",
+      "name" : "FSAEInspectionChecklist"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:FSAEInspectionChecklist.xcodeproj",
+        "identifier" : "9ECA43CF2F80C1030083BF80",
+        "name" : "FSAEInspectionChecklistTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:FSAEInspectionChecklist.xcodeproj",
+        "identifier" : "9ECA43D92F80C1030083BF80",
+        "name" : "FSAEInspectionChecklistUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
