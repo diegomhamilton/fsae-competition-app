@@ -26,7 +26,10 @@ Required operation coverage:
 - Add focused Swift Testing unit tests for failed outcome requiring a non-whitespace note.
 - Add focused Swift Testing unit tests for missing or invalid measurement input using `MeasurementValue`, including non-numeric format, precision exceeded, and outside valid range where supported by existing models.
 - Add focused Swift Testing unit tests for missing required evidence metadata.
+- Add focused Swift Testing expectations for validation issue localization keys and interpolation arguments.
 - Implement or update `InspectionValidationService` with deterministic issue codes and messages.
+- Refactor validation around issue/rule definitions that receive `InspectionTestStep` and `StepResult` and run their own validation handlers, so the service iterates rules rather than maintaining separate duplicated helper functions per issue type.
+- Shape evidence validation through a requirement/policy abstraction that can later express multiple required metadata records or counts by media type while preserving current `requiresEvidence` behavior.
 - Preserve compatibility for existing callers or tests if a simpler `ValidationService` exists.
 - Keep real submission/recheck creation out of scope.
 - Update the OpenSpec task checkbox only after service rules and tests are complete.

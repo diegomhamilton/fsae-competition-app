@@ -10,7 +10,8 @@ Check the proposed work against these norms:
 - Swift 6 and Concurrency-first boundaries
 - Sendable-safe value types for service inputs and outputs
 - Deterministic validation issue codes and messages suitable for UI summaries and tests
-- Stable accessibility identifiers and localized display strings are future UI work, not part of this service-only slice unless existing code already exposes summary text
+- Deterministic validation issue codes, localization keys, and interpolation arguments suitable for UI summaries and tests
+- Stable accessibility identifiers are future UI work; validation display text should be localization-ready in this service slice when existing code already exposes summary text
 - Feature scenarios `US-002`, `US-003`, and `US-004` as acceptance backbone
 - One feature branch / PR per major slice unless review context gets too broad
 - PR titles must start with `TASK#{TASK NUMBER}:`

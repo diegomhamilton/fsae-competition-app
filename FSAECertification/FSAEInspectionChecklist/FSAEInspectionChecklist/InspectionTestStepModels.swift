@@ -47,6 +47,26 @@ struct InspectionTestStep: Identifiable, Codable, Hashable, Sendable {
     }
 }
 
+/// Step-scoped parse result for raw measurement input entered by a judge.
+///
+/// Keeping this helper near `InspectionTestStep` keeps measurement range knowledge
+/// with the step definition instead of duplicating it in coordinators.
+struct InspectionStepMeasurementInput: Equatable, Sendable {
+    let rawValue: String
+    let measurementValue: MeasurementValue?
+}
+
+extension InspectionTestStep {
+    func measurementInput(from input: String) -> InspectionStepMeasurementInput {
+        InspectionStepMeasurementInput(
+            rawValue: input,
+            measurementValue: measurementRange.flatMap { range in
+                try? MeasurementValue(rawValue: input, range: range)
+            }
+        )
+    }
+}
+
 enum InspectionTestStepType: String, Codable, CaseIterable, Hashable, Sendable {
     case check
     case measurement

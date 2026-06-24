@@ -13,6 +13,9 @@ struct InspectionValidationServiceTests {
         let issues = service.validateStep(step, result: StepResult(outcome: .pending))
 
         #expect(issues.map(\.code) == [.missingRequiredOutcome(stepID: "RT-08")])
+        #expect(issues.map(\.localizationKey) == [.missingRequiredOutcome])
+        #expect(issues.first?.localizationArguments["stepCode"] == "RT-08")
+        #expect(issues.first?.localizationArguments["stepTitle"] == "RML flashing")
         #expect(issues.map(\.message) == ["RT-08 requires an outcome."])
         #expect(issues.map(\.id) == ["missingRequiredOutcome.RT-08"])
     }
@@ -25,6 +28,8 @@ struct InspectionValidationServiceTests {
         let notedIssues = service.validateStep(step, result: StepResult(outcome: .fail, notes: "RML did not flash."))
 
         #expect(blankIssues.map(\.code) == [.missingInspectorNote(stepID: "RML")])
+        #expect(blankIssues.map(\.localizationKey) == [.missingInspectorNote])
+        #expect(blankIssues.first?.localizationArguments["stepID"] == "RML")
         #expect(blankIssues.map(\.message) == ["RML flashing failed and requires inspector notes."])
         #expect(notedIssues.isEmpty)
     }
@@ -36,6 +41,8 @@ struct InspectionValidationServiceTests {
         let issues = service.validateStep(step, result: StepResult(outcome: .pass, measurementInput: " "))
 
         #expect(issues.map(\.code) == [.missingMeasurement(stepID: "EG-14")])
+        #expect(issues.map(\.localizationKey) == [.missingMeasurement])
+        #expect(issues.first?.localizationArguments["unit"] == "s")
         #expect(issues.map(\.message) == ["Egress time requires a measurement in s."])
     }
 
@@ -49,13 +56,19 @@ struct InspectionValidationServiceTests {
         let valid = service.validateStep(step, result: StepResult(outcome: .pass, measurementInput: "4.38"))
 
         #expect(nonNumeric.map(\.code) == [.invalidMeasurement(stepID: "EG-14", error: .nonNumericFormat)])
+        #expect(nonNumeric.map(\.localizationKey) == [.invalidMeasurementNonNumeric])
         #expect(nonNumeric.map(\.message) == ["Measurement for Egress time must be numeric."])
         #expect(tooPrecise.map(\.code) == [.invalidMeasurement(stepID: "EG-14", error: .precisionExceeded)])
+        #expect(tooPrecise.map(\.localizationKey) == [.invalidMeasurementPrecision])
+        #expect(tooPrecise.first?.localizationArguments["maximumFractionDigits"] == "2")
         #expect(
             tooPrecise.map(\.message)
                 == ["Measurement for Egress time supports up to 2 decimal places."]
         )
         #expect(outOfRange.map(\.code) == [.invalidMeasurement(stepID: "EG-14", error: .outsideAllowedRange)])
+        #expect(outOfRange.map(\.localizationKey) == [.invalidMeasurementRange])
+        #expect(outOfRange.first?.localizationArguments["minimum"] == "0")
+        #expect(outOfRange.first?.localizationArguments["maximum"] == "4.99")
         #expect(outOfRange.map(\.message) == ["Measurement for Egress time must be between 0 and 4.99 s."])
         #expect(valid.isEmpty)
     }
@@ -78,8 +91,25 @@ struct InspectionValidationServiceTests {
         )
 
         #expect(missingIssues.map(\.code) == [.missingRequiredEvidence(stepID: "RT-08")])
+        #expect(missingIssues.map(\.localizationKey) == [.missingRequiredEvidence])
+        #expect(missingIssues.first?.localizationArguments["minimumAttachmentCount"] == "1")
         #expect(missingIssues.map(\.message) == ["RML flashing requires evidence metadata."])
         #expect(validIssues.isEmpty)
+    }
+
+    @Test("US-004 evidence requirements can express counts by media type")
+    func us004EvidenceRequirementSupportsMediaTypeCounts() {
+        let requirement = EvidenceValidationRequirement(
+            minimumAttachmentCount: 2,
+            requiredMediaTypeCounts: [.photo: 1, .signature: 1]
+        )
+        let photo = evidence(id: "rml-photo", mediaType: .photo)
+        let signature = evidence(id: "judge-signature", mediaType: .signature)
+        let note = evidence(id: "inspector-note", mediaType: .note)
+
+        #expect(!requirement.isSatisfied(by: []))
+        #expect(!requirement.isSatisfied(by: [photo, note]))
+        #expect(requirement.isSatisfied(by: [photo, signature]))
     }
 
     @Test("US-002/US-003/US-004 returns issues in deterministic summary order")
@@ -95,6 +125,11 @@ struct InspectionValidationServiceTests {
             .missingRequiredOutcome(stepID: "EG-14"),
             .invalidMeasurement(stepID: "EG-14", error: .outsideAllowedRange),
             .missingRequiredEvidence(stepID: "EG-14")
+        ])
+        #expect(issues.map(\.localizationKey) == [
+            .missingRequiredOutcome,
+            .invalidMeasurementRange,
+            .missingRequiredEvidence
         ])
     }
 }
@@ -137,5 +172,18 @@ private func measurementStep(
             maximum: Decimal(string: "4.99")!,
             maximumFractionDigits: 2
         )
+    )
+}
+
+private func evidence(
+    id: String,
+    mediaType: EvidenceMediaType
+) -> EvidenceAttachmentMetadata {
+    EvidenceAttachmentMetadata(
+        id: id,
+        displayName: id,
+        mediaType: mediaType,
+        source: .mockAttachment,
+        createdAt: Date(timeIntervalSince1970: 1_780_000_000)
     )
 }

@@ -4,7 +4,7 @@ Task: `5.4 Implement InspectionValidationService rules for missing outcome, fail
 
 Branch: `codex/task-5.4-validation-service`
 
-Purpose: plan and constrain the validation-service slice before implementation so service rules, deterministic issue output, and Swift Testing coverage stay focused on US-002, US-003, and US-004.
+Purpose: plan and constrain the validation-service slice before implementation so service rules, deterministic issue output, handler-backed issue/rule definitions, and Swift Testing coverage stay focused on US-002, US-003, and US-004.
 
 Run these prompts in order:
 

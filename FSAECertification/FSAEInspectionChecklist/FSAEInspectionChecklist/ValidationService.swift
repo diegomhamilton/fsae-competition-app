@@ -1,6 +1,16 @@
 import Foundation
 
 struct ValidationIssue: Equatable, Identifiable, Sendable {
+    enum LocalizationKey: String, Equatable, Sendable {
+        case missingRequiredOutcome = "inspection.validation.missingRequiredOutcome"
+        case missingInspectorNote = "inspection.validation.missingInspectorNote"
+        case missingMeasurement = "inspection.validation.missingMeasurement"
+        case invalidMeasurementNonNumeric = "inspection.validation.invalidMeasurement.nonNumericFormat"
+        case invalidMeasurementPrecision = "inspection.validation.invalidMeasurement.precisionExceeded"
+        case invalidMeasurementRange = "inspection.validation.invalidMeasurement.outsideAllowedRange"
+        case missingRequiredEvidence = "inspection.validation.missingRequiredEvidence"
+    }
+
     enum Code: Equatable, Sendable {
         case missingRequiredOutcome(stepID: String)
         case missingInspectorNote(stepID: String)
@@ -10,6 +20,8 @@ struct ValidationIssue: Equatable, Identifiable, Sendable {
     }
 
     let code: Code
+    let localizationKey: LocalizationKey
+    let localizationArguments: [String: String]
     let message: String
 
     var id: String {
@@ -29,18 +41,47 @@ struct ValidationIssue: Equatable, Identifiable, Sendable {
 }
 
 struct InspectionValidationService: Sendable {
-    func validateStep(_ step: InspectionTestStep, result: StepResult) -> [ValidationIssue] {
-        var issues: [ValidationIssue] = []
+    private let rules: [InspectionValidationRule]
 
-        issues.append(contentsOf: outcomeIssues(for: step, result: result))
-        issues.append(contentsOf: inspectorNoteIssues(for: step, result: result))
-        issues.append(contentsOf: measurementIssues(for: step, result: result))
-        issues.append(contentsOf: evidenceIssues(for: step, result: result))
-
-        return issues
+    init(rules: [InspectionValidationRule] = .defaultRules) {
+        self.rules = rules
     }
 
-    private func outcomeIssues(for step: InspectionTestStep, result: StepResult) -> [ValidationIssue] {
+    func validateStep(_ step: InspectionTestStep, result: StepResult) -> [ValidationIssue] {
+        rules.flatMap { rule in
+            rule.validate(step, result: result)
+        }
+    }
+}
+
+struct InspectionValidationRule: Sendable {
+    let id: String
+    private let handler: @Sendable (InspectionTestStep, StepResult) -> [ValidationIssue]
+
+    init(
+        id: String,
+        handler: @escaping @Sendable (InspectionTestStep, StepResult) -> [ValidationIssue]
+    ) {
+        self.id = id
+        self.handler = handler
+    }
+
+    func validate(_ step: InspectionTestStep, result: StepResult) -> [ValidationIssue] {
+        handler(step, result)
+    }
+}
+
+extension Array where Element == InspectionValidationRule {
+    static let defaultRules: [InspectionValidationRule] = [
+        .requiredOutcome,
+        .failedOutcomeInspectorNote,
+        .measurement,
+        .evidence
+    ]
+}
+
+private extension InspectionValidationRule {
+    static let requiredOutcome = InspectionValidationRule(id: "requiredOutcome") { step, result in
         guard step.requiredOutcome, !result.outcome.satisfiesRequiredOutcome else {
             return []
         }
@@ -48,12 +89,18 @@ struct InspectionValidationService: Sendable {
         return [
             ValidationIssue(
                 code: .missingRequiredOutcome(stepID: step.id),
+                localizationKey: .missingRequiredOutcome,
+                localizationArguments: [
+                    "stepID": step.id,
+                    "stepCode": step.code,
+                    "stepTitle": step.title
+                ],
                 message: "\(step.code) requires an outcome."
             )
         ]
     }
 
-    private func inspectorNoteIssues(for step: InspectionTestStep, result: StepResult) -> [ValidationIssue] {
+    static let failedOutcomeInspectorNote = InspectionValidationRule(id: "failedOutcomeInspectorNote") { step, result in
         guard result.outcome.requiresInspectorNote else {
             return []
         }
@@ -66,12 +113,18 @@ struct InspectionValidationService: Sendable {
         return [
             ValidationIssue(
                 code: .missingInspectorNote(stepID: step.id),
+                localizationKey: .missingInspectorNote,
+                localizationArguments: [
+                    "stepID": step.id,
+                    "stepCode": step.code,
+                    "stepTitle": step.title
+                ],
                 message: "\(step.title) failed and requires inspector notes."
             )
         ]
     }
 
-    private func measurementIssues(for step: InspectionTestStep, result: StepResult) -> [ValidationIssue] {
+    static let measurement = InspectionValidationRule(id: "measurement") { step, result in
         guard step.type == .measurement, let range = step.measurementRange else {
             return []
         }
@@ -81,6 +134,8 @@ struct InspectionValidationService: Sendable {
             return [
                 ValidationIssue(
                     code: .missingMeasurement(stepID: step.id),
+                    localizationKey: .missingMeasurement,
+                    localizationArguments: measurementArguments(step: step, range: range),
                     message: "\(step.title) requires a measurement in \(range.unit.symbol)."
                 )
             ]
@@ -93,6 +148,8 @@ struct InspectionValidationService: Sendable {
             return [
                 ValidationIssue(
                     code: .invalidMeasurement(stepID: step.id, error: error),
+                    localizationKey: localizationKey(for: error),
+                    localizationArguments: measurementArguments(step: step, range: range),
                     message: message(for: error, step: step, range: range)
                 )
             ]
@@ -100,38 +157,114 @@ struct InspectionValidationService: Sendable {
             return [
                 ValidationIssue(
                     code: .invalidMeasurement(stepID: step.id, error: .nonNumericFormat),
+                    localizationKey: localizationKey(for: .nonNumericFormat),
+                    localizationArguments: measurementArguments(step: step, range: range),
                     message: message(for: .nonNumericFormat, step: step, range: range)
                 )
             ]
         }
     }
 
-    private func evidenceIssues(for step: InspectionTestStep, result: StepResult) -> [ValidationIssue] {
-        guard step.requiresEvidence, result.evidenceAttachments.isEmpty else {
+    static let evidence = InspectionValidationRule(id: "evidence") { step, result in
+        guard let requirement = step.evidenceValidationRequirement,
+              !requirement.isSatisfied(by: result.evidenceAttachments) else {
             return []
         }
 
         return [
             ValidationIssue(
                 code: .missingRequiredEvidence(stepID: step.id),
+                localizationKey: .missingRequiredEvidence,
+                localizationArguments: [
+                    "stepID": step.id,
+                    "stepCode": step.code,
+                    "stepTitle": step.title,
+                    "minimumAttachmentCount": "\(requirement.minimumAttachmentCount)"
+                ],
                 message: "\(step.title) requires evidence metadata."
             )
         ]
     }
+}
 
-    private func message(
-        for error: MeasurementValue.ValidationError,
-        step: InspectionTestStep,
-        range: MeasurementRange
-    ) -> String {
-        switch error {
-        case .nonNumericFormat:
-            "Measurement for \(step.title) must be numeric."
-        case .precisionExceeded:
-            "Measurement for \(step.title) supports up to \(range.maximumFractionDigits) decimal places."
-        case .outsideAllowedRange:
-            "Measurement for \(step.title) must be between \(range.minimum) and \(range.maximum) \(range.unit.symbol)."
+struct EvidenceValidationRequirement: Equatable, Sendable {
+    let minimumAttachmentCount: Int
+    let requiredMediaTypeCounts: [EvidenceMediaType: Int]
+
+    init(
+        minimumAttachmentCount: Int = 1,
+        requiredMediaTypeCounts: [EvidenceMediaType: Int] = [:]
+    ) {
+        self.minimumAttachmentCount = minimumAttachmentCount
+        self.requiredMediaTypeCounts = requiredMediaTypeCounts
+    }
+
+    func isSatisfied(by attachments: [EvidenceAttachmentMetadata]) -> Bool {
+        guard attachments.count >= minimumAttachmentCount else {
+            return false
         }
+
+        for (mediaType, requiredCount) in requiredMediaTypeCounts {
+            let actualCount = attachments.filter { $0.mediaType == mediaType }.count
+            guard actualCount >= requiredCount else {
+                return false
+            }
+        }
+
+        return true
+    }
+}
+
+private extension InspectionTestStep {
+    var evidenceValidationRequirement: EvidenceValidationRequirement? {
+        guard requiresEvidence else {
+            return nil
+        }
+
+        return EvidenceValidationRequirement(minimumAttachmentCount: 1)
+    }
+}
+
+private func measurementArguments(
+    step: InspectionTestStep,
+    range: MeasurementRange
+) -> [String: String] {
+    [
+        "stepID": step.id,
+        "stepCode": step.code,
+        "stepTitle": step.title,
+        "unit": range.unit.symbol,
+        "minimum": "\(range.minimum)",
+        "maximum": "\(range.maximum)",
+        "maximumFractionDigits": "\(range.maximumFractionDigits)"
+    ]
+}
+
+private func localizationKey(
+    for error: MeasurementValue.ValidationError
+) -> ValidationIssue.LocalizationKey {
+    switch error {
+    case .nonNumericFormat:
+        .invalidMeasurementNonNumeric
+    case .precisionExceeded:
+        .invalidMeasurementPrecision
+    case .outsideAllowedRange:
+        .invalidMeasurementRange
+    }
+}
+
+private func message(
+    for error: MeasurementValue.ValidationError,
+    step: InspectionTestStep,
+    range: MeasurementRange
+) -> String {
+    switch error {
+    case .nonNumericFormat:
+        "Measurement for \(step.title) must be numeric."
+    case .precisionExceeded:
+        "Measurement for \(step.title) supports up to \(range.maximumFractionDigits) decimal places."
+    case .outsideAllowedRange:
+        "Measurement for \(step.title) must be between \(range.minimum) and \(range.maximum) \(range.unit.symbol)."
     }
 }
 

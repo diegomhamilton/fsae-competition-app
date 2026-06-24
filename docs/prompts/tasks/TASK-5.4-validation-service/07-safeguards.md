@@ -11,11 +11,13 @@ Review for:
 - Scope creep beyond validation service rules and focused tests
 - Missing failing tests for any required rule
 - Missing deterministic issue codes or messages
+- Missing localization keys or interpolation arguments for validation issues
 - Accidental UI refactors or submission/recheck creation
 - Breaking existing `ValidationService` callers if a rename is needed
 - Measurement validation bypassing `MeasurementValue`
 - Treating whitespace-only notes as valid for failed outcomes
 - Treating empty evidence metadata as satisfying required evidence
+- Hard-coding evidence validation so future minimum counts or media-type-specific counts cannot be added locally to the evidence rule
 - JSON fixture/schema assumptions not supported by current models
 - Unsafe concurrency or shared mutable state
 - Accessibility or localization regressions in existing surfaces

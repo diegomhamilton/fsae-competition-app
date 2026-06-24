@@ -39,13 +39,39 @@ final class StageExecutionViewModel {
     init(
         stage: InspectionStage,
         steps: [InspectionTestStep],
-        draftStore: InMemoryDraftStore = InMemoryDraftStore(),
-        validationService: ValidationService = ValidationService()
+        draftStore: InMemoryDraftStore,
+        validationService: ValidationService
     ) {
         self.stage = stage
         self.steps = steps
         self.draftStore = draftStore
         self.validationService = validationService
+    }
+    
+    @MainActor
+    convenience init(
+        stage: InspectionStage,
+        steps: [InspectionTestStep]
+    ) {
+        self.init(
+            stage: stage,
+            steps: steps,
+            draftStore: InMemoryDraftStore(),
+            validationService: ValidationService()
+        )
+    }
+    
+    @MainActor
+    static func make(
+        stage: InspectionStage,
+        steps: [InspectionTestStep]
+    ) -> StageExecutionViewModel {
+        StageExecutionViewModel(
+            stage: stage,
+            steps: steps,
+            draftStore: InMemoryDraftStore(),
+            validationService: ValidationService()
+        )
     }
 
     var rows: [StageExecutionStepRowState] {
