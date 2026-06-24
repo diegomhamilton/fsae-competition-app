@@ -160,11 +160,7 @@ private struct EvidenceOverview: View {
                     .font(.footnote)
                     .foregroundStyle(Color.fsaeSecondaryText)
             } else {
-                HStack(spacing: 12) {
-                    ForEach(attachments) { attachment in
-                        EvidenceAttachment(metadata: attachment)
-                    }
-                }
+                EvidenceAttachmentGrid(attachments: attachments)
             }
 
             Button {
@@ -187,6 +183,24 @@ private struct EvidenceOverview: View {
     }
 }
 
+private struct EvidenceAttachmentGrid: View {
+    let attachments: [EvidenceAttachmentMetadata]
+
+    private let columns = [
+        GridItem(.adaptive(minimum: 150, maximum: 220), spacing: 12, alignment: .top)
+    ]
+
+    var body: some View {
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
+            ForEach(attachments) { attachment in
+                EvidenceAttachment(metadata: attachment)
+                    .frame(maxWidth: .infinity, minHeight: 92, alignment: .leading)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
 private struct EvidenceAttachment: View {
     let metadata: EvidenceAttachmentMetadata
 
@@ -198,6 +212,8 @@ private struct EvidenceAttachment: View {
             Text(metadata.displayName)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Color.fsaeText)
+                .lineLimit(2)
+                .truncationMode(.middle)
             Text(metadata.mediaType.rawValue.capitalized)
                 .font(.caption)
                 .foregroundStyle(Color.fsaeSecondaryText)
