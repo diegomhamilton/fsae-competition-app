@@ -64,10 +64,44 @@ Proposed Services:
 - `AuthenticationService`: async mock login boundary for now.
 - `InspectionContentService`: async load/decode bundled `InspectionEvent/*.json`.
 - `InspectionValidationService`: validates required outcomes, failed-step notes, measurement ranges, and evidence requirements.
-- `InspectionEventStore`: actor-isolated event/session source of truth with scoped queries by event, team, session, and user access.
+- `InspectionEventStore`: actor-isolated event/session source of truth with scoped queries by event, team, session, user access, and durable local JSON persistence.
+- `TestCaseJSONPersistenceService`: reads and writes one JSON file per in-progress test case under Application Support and groups submitted snapshots by team.
 - `SubmissionSnapshotService`: creates immutable submitted stage snapshots.
 - `RecheckService`: derives and updates recheck items from failed test cases.
 - `AccessibilityAuditSupport`: centralizes identifier conventions for tests without leaking test logic into views.
+
+### Persist Test Cases as Application Support JSON
+
+Decision:
+- In-progress test case drafts are persisted as individual JSON files in `FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)`.
+- The storage layout is scoped by event, team, session, stage, and test case so draft state can be restored after app relaunch without leaking between teams.
+- Submitted stage/test case snapshots are immutable JSON records stored in a team-specific submissions folder.
+- A representative layout is:
+
+```text
+Application Support/
+  FSAEInspectionChecklist/
+    events/<event-id>/
+      teams/<team-id>/
+        sessions/<session-id>/
+          drafts/<stage-id>/<test-case-id>.json
+          submissions/<submission-id>/
+            stage-snapshot.json
+            test-cases/<test-case-id>.json
+          rechecks/<recheck-id>.json
+```
+
+Rationale:
+- One file per test case makes autosave, restore, diffing, and corruption recovery easier to reason about than one large mutable session blob.
+- Application Support is the correct local app-owned location for durable operational data that should survive relaunch but is not user-facing document content.
+- Team-specific folders make manual debugging and future sync/export work safer because team context is encoded in the path as well as the JSON payload.
+- JSON keeps the initial storage inspectable while preserving a migration path to SwiftData, SQLite, or remote sync behind the same service boundary later.
+
+Implementation notes:
+- JSON payloads include a schema version, event ID, team ID, session ID, stage ID, test case ID, updated timestamp, step outcomes, notes, measurement values, evidence metadata, validation summary, and relevant recheck references.
+- Writes should be atomic and actor-isolated.
+- App relaunch restore should rebuild active session draft state from these files before coordinators present resumable teams.
+- Submitted snapshot files are append-only from the user's perspective; corrections happen through recheck records and later accepted submissions, not by mutating historical snapshots.
 
 ### Build in Three Manual Validation Slices First
 
@@ -176,8 +210,9 @@ Rationale:
 4. Implement the Test Step view slice with mock JSON fixtures, models, coordinator intent tests, view helper tests, accessibility identifiers, and localized string enums.
 5. Implement the Test Case view slice by composing steps and validation summaries.
 6. Implement the Test Case list and stage views by loading bundled JSON through `InspectionContentService`.
-7. Add session selection, active team routing, submissions, and rechecks incrementally after the stage list is stable.
+7. Add session selection, active team routing, Application Support JSON persistence, submissions, and rechecks incrementally after the stage list is stable.
 8. Add XCUITests and snapshot tests in a dedicated PR.
+9. Add step-view and general UX follow-up work for camera evidence capture, egress stopwatch timing, and inspection ergonomics after the core flow is stable.
 
 Rollback strategy:
 - Planning PRs can be reverted independently.

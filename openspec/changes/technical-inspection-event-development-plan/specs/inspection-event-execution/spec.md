@@ -30,6 +30,25 @@ The system SHALL allow a judge to navigate from active team dashboard to stage, 
 - **WHEN** the judge selects a test step
 - **THEN** the system displays the test step detail using the active session draft values and returns edits to the parent test case and stage views.
 
+### Requirement: In-progress test cases are stored as local JSON files
+The system SHALL persist each in-progress inspection test case as an individual JSON file in the app's Application Support directory, scoped by event, team, session, stage, and test case.
+
+#### Scenario: Save one draft file per test case
+- **WHEN** a judge records an outcome, note, measurement, or evidence metadata value in a test case
+- **THEN** the system writes the updated draft to a single JSON file for that test case under `applicationSupportDirectory`.
+
+#### Scenario: Restore draft files after app relaunch
+- **WHEN** the app relaunches and the judge resumes an in-progress inspection session
+- **THEN** the system restores the prior active stage, nearest valid step context, and draft values from the locally stored test case JSON files.
+
+#### Scenario: Keep test case files isolated by team and session
+- **WHEN** two teams have draft data for the same stage or test case identifier
+- **THEN** each team's draft values are stored in separate team/session folders and no notes, outcomes, measurements, evidence metadata, submissions, or rechecks leak across teams.
+
+#### Scenario: Group team submissions in local storage
+- **WHEN** a stage or test case is submitted
+- **THEN** the system stores immutable submission JSON files in a team-specific submissions folder under `applicationSupportDirectory`.
+
 ### Requirement: Stage submission is validation gated
 The system SHALL block stage submission until required outcomes, failed-step notes, valid measurements, and required evidence are complete.
 
