@@ -10,12 +10,12 @@ enum OfficialInspectionResource: String, CaseIterable, Hashable, Sendable {
 
     var fileName: String {
         switch self {
-        case .garage: "01_garage_inspection.json"
-        case .body: "02_body_inspection.json"
-        case .chassis: "03_chassis_inspection.json"
-        case .ev: "04_ev_inspection.json"
-        case .egress: "05_egress_test.json"
-        case .rain: "06_rain_test.json"
+        case .garage: "01_garage_inspection"
+        case .body: "02_body_inspection"
+        case .chassis: "03_chassis_inspection"
+        case .ev: "04_ev_inspection"
+        case .egress: "05_egress_test"
+        case .rain: "06_rain_test"
         }
     }
 }
@@ -83,9 +83,8 @@ struct InspectionContentService: @unchecked Sendable {
             url = resourceURLs[resource]
         } else {
             url = bundle.url(
-                forResource: resource.fileName.deletingJSONExtension,
+                forResource: resource.fileName,
                 withExtension: "json",
-                subdirectory: resourceDirectory
             )
         }
 
