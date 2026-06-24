@@ -255,6 +255,34 @@ struct InspectionAccessibilityIdentifier: RawRepresentable, Equatable, Hashable,
     static func doneAction(stepID: String) -> Self {
         Self(rawValue: "inspection.testStep.\(stepID).done")
     }
+
+    static func testCaseValidationSummary(testCaseID: String) -> Self {
+        Self(rawValue: "inspection.testCase.\(testCaseID).validation.summary")
+    }
+
+    static func testCaseStepRow(testCaseID: String, stepID: String) -> Self {
+        Self(rawValue: "inspection.testCase.\(testCaseID).step.\(stepID).row")
+    }
+
+    static func testCaseStepOpenAction(testCaseID: String, stepID: String) -> Self {
+        Self(rawValue: "inspection.testCase.\(testCaseID).step.\(stepID).open")
+    }
+
+    static func testCaseStepStatus(testCaseID: String, stepID: String) -> Self {
+        Self(rawValue: "inspection.testCase.\(testCaseID).step.\(stepID).status")
+    }
+
+    static func testCaseNotesField(testCaseID: String, stepID: String) -> Self {
+        Self(rawValue: "inspection.testCase.\(testCaseID).step.\(stepID).notes")
+    }
+
+    static func testCaseEvidenceAction(testCaseID: String, stepID: String) -> Self {
+        Self(rawValue: "inspection.testCase.\(testCaseID).step.\(stepID).evidence.action")
+    }
+
+    static func testCaseKeyboardDismissAction(testCaseID: String) -> Self {
+        Self(rawValue: "inspection.testCase.\(testCaseID).keyboard.dismiss")
+    }
 }
 
 enum InspectionTestStepStrings: Equatable {
