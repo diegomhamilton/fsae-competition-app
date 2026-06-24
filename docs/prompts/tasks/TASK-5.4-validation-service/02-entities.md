@@ -22,6 +22,7 @@ Include at least:
 - `MeasurementValue`
 - `MeasurementRange`
 - `EvidenceAttachmentMetadata`
+- Evidence requirement/policy derived from current step metadata, allowing a minimum attachment count and future counts by evidence media type
 - Draft step state such as `StepResult` or `TestStepDraft`
 - `ValidationIssue`
 - Validation issue/rule definition carrying step/result context and a validation handler
