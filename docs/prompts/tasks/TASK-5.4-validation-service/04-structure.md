@@ -12,6 +12,7 @@ Include:
 
 - Models and draft state involved
 - Services involved, including whether `InspectionValidationService` replaces or wraps `ValidationService`
+- Validation issue/rule structure that receives `InspectionTestStep` and `StepResult` and owns the validation handler for its own rule
 - Tests involved and exact rule coverage
 - Dependencies between immutable step content, mutable draft state, `MeasurementValue`, evidence metadata, and validation issues
 - Suggested commit boundaries

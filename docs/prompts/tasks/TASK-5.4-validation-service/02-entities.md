@@ -24,6 +24,7 @@ Include at least:
 - `EvidenceAttachmentMetadata`
 - Draft step state such as `StepResult` or `TestStepDraft`
 - `ValidationIssue`
+- Validation issue/rule definition carrying step/result context and a validation handler
 - `InspectionValidationService`
 - Existing `ValidationService` compatibility surface, if present
 
