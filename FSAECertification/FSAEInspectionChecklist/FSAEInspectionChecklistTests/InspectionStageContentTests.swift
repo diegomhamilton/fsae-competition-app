@@ -126,7 +126,7 @@ struct InspectionStageContentTests {
             capturedError = nil
         }
 
-        #expect(capturedError == .missingResource("01_garage_inspection.json"))
+        #expect(capturedError == .missingResource("01_garage_inspection"))
     }
 }
 
@@ -173,16 +173,12 @@ private func inspectionTestCase(
 }
 
 private func officialInspectionResourceURLs() -> [OfficialInspectionResource: URL] {
-    let testFile = URL(fileURLWithPath: #filePath)
-    let repoRoot = testFile
-        .deletingLastPathComponent()
-        .deletingLastPathComponent()
-        .deletingLastPathComponent()
-        .deletingLastPathComponent()
-    let resourceRoot = repoRoot.appendingPathComponent("Design/Resources/InspectionEvent")
 
     return OfficialInspectionResource.allCases.reduce(into: [:]) { urls, resource in
-        urls[resource] = resourceRoot.appendingPathComponent(resource.fileName)
+        urls[resource] = Bundle.main.url(
+            forResource: resource.fileName,
+            withExtension: "json",
+        )
     }
 }
 

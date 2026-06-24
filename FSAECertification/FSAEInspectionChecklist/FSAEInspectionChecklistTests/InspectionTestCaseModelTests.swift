@@ -71,7 +71,13 @@ struct InspectionTestCaseModelTests {
             ruleReferences: ["EV.6.1", "VE.5"],
             steps: [
                 inspectionStep(id: "RT-08", displayOrder: 10, title: "RML flashing", requiresEvidence: true),
-                inspectionStep(id: "EG-14", displayOrder: 20, type: .measurement, title: "Egress time"),
+                inspectionStep(
+                    id: "EG-14",
+                    displayOrder: 20,
+                    type: .measurement,
+                    title: "Egress time",
+                    measurementRange: egressMeasurementRange()
+                ),
                 inspectionStep(id: "BP-01", displayOrder: 30, title: "Brake pedal travel"),
                 inspectionStep(id: "NF-01", displayOrder: 40, title: "Notes required")
             ]
