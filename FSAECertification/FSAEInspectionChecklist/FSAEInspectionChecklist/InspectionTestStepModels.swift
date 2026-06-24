@@ -4,6 +4,7 @@ import SwiftUI
 struct InspectionTestStep: Identifiable, Codable, Hashable, Sendable {
     let id: String
     let code: String
+    let displayOrder: Int
     let ruleReference: String
     let title: String
     let type: InspectionTestStepType
@@ -19,6 +20,7 @@ struct InspectionTestStep: Identifiable, Codable, Hashable, Sendable {
     init(
         id: String,
         code: String,
+        displayOrder: Int = 0,
         ruleReference: String,
         title: String,
         type: InspectionTestStepType,
@@ -33,6 +35,7 @@ struct InspectionTestStep: Identifiable, Codable, Hashable, Sendable {
     ) {
         self.id = id
         self.code = code
+        self.displayOrder = displayOrder
         self.ruleReference = ruleReference
         self.title = title
         self.type = type
@@ -44,6 +47,44 @@ struct InspectionTestStep: Identifiable, Codable, Hashable, Sendable {
         self.defaultNote = defaultNote
         self.measurementRange = measurementRange
         self.evidenceAttachments = evidenceAttachments
+    }
+}
+
+extension InspectionTestStep {
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case code
+        case displayOrder
+        case ruleReference
+        case title
+        case type
+        case content
+        case requiredOutcome
+        case requiresEvidence
+        case safetyBadges
+        case defaultOutcome
+        case defaultNote
+        case measurementRange
+        case evidenceAttachments
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decode(String.self, forKey: .id)
+        code = try container.decode(String.self, forKey: .code)
+        displayOrder = try container.decodeIfPresent(Int.self, forKey: .displayOrder) ?? 0
+        ruleReference = try container.decode(String.self, forKey: .ruleReference)
+        title = try container.decode(String.self, forKey: .title)
+        type = try container.decode(InspectionTestStepType.self, forKey: .type)
+        content = try container.decode(String.self, forKey: .content)
+        requiredOutcome = try container.decodeIfPresent(Bool.self, forKey: .requiredOutcome) ?? true
+        requiresEvidence = try container.decodeIfPresent(Bool.self, forKey: .requiresEvidence) ?? false
+        safetyBadges = try container.decodeIfPresent([InspectionSafetyBadge].self, forKey: .safetyBadges) ?? []
+        defaultOutcome = try container.decodeIfPresent(InspectionOutcome.self, forKey: .defaultOutcome) ?? .pending
+        defaultNote = try container.decodeIfPresent(String.self, forKey: .defaultNote) ?? ""
+        measurementRange = try container.decodeIfPresent(MeasurementRange.self, forKey: .measurementRange)
+        evidenceAttachments = try container.decodeIfPresent([EvidenceAttachmentMetadata].self, forKey: .evidenceAttachments) ?? []
     }
 }
 
@@ -99,6 +140,22 @@ enum InspectionTestStepType: String, Codable, CaseIterable, Hashable, Sendable {
     }
 }
 
+extension InspectionTestStepType {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+
+        guard let stepType = Self(rawValue: rawValue) else {
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Unsupported inspection step type: \(rawValue)"
+            )
+        }
+
+        self = stepType
+    }
+}
+
 enum InspectionSafetyBadge: String, Codable, Hashable, Sendable {
     case energized
 
@@ -111,6 +168,23 @@ enum InspectionSafetyBadge: String, Codable, Hashable, Sendable {
     var accessibilityLabel: String {
         switch self {
         case .energized: "Caution, energized dynamic test step"
+        }
+    }
+}
+
+extension InspectionSafetyBadge {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+
+        switch rawValue {
+        case Self.energized.rawValue, Self.energized.displayName:
+            self = .energized
+        default:
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Unsupported inspection safety badge: \(rawValue)"
+            )
         }
     }
 }
@@ -282,6 +356,14 @@ struct InspectionAccessibilityIdentifier: RawRepresentable, Equatable, Hashable,
 
     static func testCaseKeyboardDismissAction(testCaseID: String) -> Self {
         Self(rawValue: "inspection.testCase.\(testCaseID).keyboard.dismiss")
+    }
+
+    static func stageSection(stageID: String, sectionID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).section.\(sectionID)")
+    }
+
+    static func stageTestCaseRow(stageID: String, testCaseID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).testCase.\(testCaseID).row")
     }
 }
 

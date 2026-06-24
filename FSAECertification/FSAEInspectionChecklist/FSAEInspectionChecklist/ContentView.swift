@@ -5,6 +5,7 @@ struct ContentView: View {
     @State private var selectedStage = MockInspectionData.stages[0]
     @State private var selectedTestCase = MockInspectionData.testCases[0]
     @State private var selectedStep = MockInspectionData.steps[0]
+    @State private var stages = MockInspectionData.stages
     @State private var selectedScreen: ProposedScreen = .sessionSelector
     @State private var showingSwitchConfirmation = false
 
@@ -25,7 +26,7 @@ struct ContentView: View {
             NavigationStack {
                 ActiveTeamDashboardView(
                     team: selectedTeam,
-                    stages: MockInspectionData.stages,
+                    stages: stages,
                     selectedStage: $selectedStage,
                     selectedScreen: $selectedScreen,
                     showingSwitchConfirmation: $showingSwitchConfirmation
@@ -37,13 +38,14 @@ struct ContentView: View {
             .tag(ProposedScreen.dashboard)
 
             NavigationStack {
-                FullStageView(
+                StageChecklistView(
                     team: selectedTeam,
-                    stage: selectedStage,
-                    steps: MockInspectionData.steps,
-                    selectedStep: $selectedStep,
-                    selectedScreen: $selectedScreen
-                )
+                    stage: selectedStage
+                ) { testCase in
+                    selectedTestCase = InspectionTestCaseViewState(testCase: testCase)
+                    selectedStep = testCase.orderedSteps.first ?? selectedStep
+                    selectedScreen = .testCase
+                }
             }
             .tabItem {
                 Label("Stage", systemImage: "checklist")
@@ -77,6 +79,9 @@ struct ContentView: View {
         }
         .tint(Color.fsaePrimary)
         .preferredColorScheme(.light)
+        .task {
+            await loadInspectionContent()
+        }
         .sheet(isPresented: $showingSwitchConfirmation) {
             TeamSwitchConfirmationView(
                 currentTeam: selectedTeam,
@@ -86,6 +91,24 @@ struct ContentView: View {
                 selectedScreen: $selectedScreen
             )
             .presentationDetents([.medium])
+        }
+    }
+
+    private func loadInspectionContent() async {
+        do {
+            let loadedStages = try await InspectionContentService().loadOfficialStages()
+            guard let firstStage = loadedStages.first else {
+                return
+            }
+
+            stages = loadedStages
+            selectedStage = firstStage
+            if let firstTestCase = firstStage.orderedSections.first?.orderedTestCases.first {
+                selectedTestCase = InspectionTestCaseViewState(testCase: firstTestCase)
+                selectedStep = firstTestCase.orderedSteps.first ?? selectedStep
+            }
+        } catch {
+            stages = MockInspectionData.stages
         }
     }
 }
