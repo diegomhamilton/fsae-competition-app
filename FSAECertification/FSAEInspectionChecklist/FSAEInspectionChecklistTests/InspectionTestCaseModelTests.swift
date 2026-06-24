@@ -54,7 +54,7 @@ struct InspectionTestCaseModelTests {
 
         let aggregate = draft.aggregate
 
-        #expect(aggregate.outcomesByStepID["RT-08"] == .fail)
+        #expect(aggregate.outcomesByStepID["RT-08"] == InspectionOutcome.fail)
         #expect(aggregate.notesByStepID["RT-08"] == "RML did not flash after TS activation.")
         #expect(aggregate.measurementsByStepID["EG-14"] == measurement)
         #expect(aggregate.evidenceAttachmentsByStepID["RT-08"] == [evidence])
@@ -70,7 +70,7 @@ struct InspectionTestCaseModelTests {
             title: "Blocked submission examples",
             ruleReferences: ["EV.6.1", "VE.5"],
             steps: [
-                inspectionStep(id: "RT-08", displayOrder: 10, requiresEvidence: true, title: "RML flashing"),
+                inspectionStep(id: "RT-08", displayOrder: 10, title: "RML flashing", requiresEvidence: true),
                 inspectionStep(id: "EG-14", displayOrder: 20, type: .measurement, title: "Egress time"),
                 inspectionStep(id: "BP-01", displayOrder: 30, title: "Brake pedal travel"),
                 inspectionStep(id: "NF-01", displayOrder: 40, title: "Notes required")
@@ -89,12 +89,13 @@ struct InspectionTestCaseModelTests {
         let summary = draft.validationSummary(for: testCase)
 
         #expect(summary.blockerCount == 4)
-        #expect(summary.issues.map(\.code) == [
+        let expectedIssueCodes: [ValidationIssue.Code] = [
             .missingRequiredEvidence(stepID: "RT-08"),
             .invalidMeasurement(stepID: "EG-14", error: .outsideAllowedRange),
             .missingRequiredOutcome(stepID: "BP-01"),
             .missingInspectorNote(stepID: "NF-01")
-        ])
+        ]
+        #expect(summary.issues.map(\.code) == expectedIssueCodes)
         #expect(summary.firstBlockingStepID == "RT-08")
     }
 
@@ -147,7 +148,7 @@ struct InspectionTestCaseModelTests {
             title: "Rain test RML behavior",
             ruleReferences: ["EV.6.1"],
             steps: [
-                inspectionStep(id: "RT-08", displayOrder: 10, requiresEvidence: true, title: "RML flashing")
+                inspectionStep(id: "RT-08", displayOrder: 10, title: "RML flashing", requiresEvidence: true)
             ]
         )
         let draft = TestCaseDraft(
@@ -165,7 +166,8 @@ struct InspectionTestCaseModelTests {
         #expect(progress.blockedStepCount == 1)
         #expect(progress.pendingStepCount == 0)
         #expect(summary.blockerCount == 1)
-        #expect(summary.issues.map(\.code) == [.missingRequiredEvidence(stepID: "RT-08")])
+        let expectedIssueCodes: [ValidationIssue.Code] = [.missingRequiredEvidence(stepID: "RT-08")]
+        #expect(summary.issues.map(\.code) == expectedIssueCodes)
     }
 }
 

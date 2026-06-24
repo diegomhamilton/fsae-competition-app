@@ -52,7 +52,7 @@ struct InspectionTestCase: Identifiable, Codable, Hashable, Sendable {
                 return false
             }
 
-            seenRuleReferences.insert(ruleReference).inserted
+            return seenRuleReferences.insert(ruleReference).inserted
         }
     }
 }
@@ -101,6 +101,17 @@ extension InspectionTestCase {
             )
         }
     }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(code, forKey: .code)
+        try container.encode(displayOrder, forKey: .displayOrder)
+        try container.encode(title, forKey: .title)
+        try container.encode(ruleReferences, forKey: .ruleReferences)
+        try container.encode(safetyBadges, forKey: .safetyBadges)
+        try container.encode(steps, forKey: .steps)
+    }
 }
 
 private struct DecodedInspectionStep: Decodable {
@@ -146,7 +157,7 @@ private struct DecodedInspectionStep: Decodable {
     ) -> InspectionTestStep {
         let stableDisplayOrder = displayOrder ?? fallbackDisplayOrder
 
-        InspectionTestStep(
+        return InspectionTestStep(
             id: id ?? "\(testCaseID).step.\(stableDisplayOrder)",
             code: code ?? "\(testCaseCode)-\(stableDisplayOrder)",
             displayOrder: stableDisplayOrder,
