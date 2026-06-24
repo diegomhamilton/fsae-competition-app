@@ -91,6 +91,38 @@ struct ComposedTestStepDraft: Identifiable, Codable, Hashable, Sendable {
     var id: String {
         step.id
     }
+
+    var isComplete: Bool {
+        if step.requiredOutcome && !draft.outcome.satisfiesRequiredOutcome {
+            return false
+        }
+
+        if step.requiredOutcome && step.type == .measurement && draft.measurementValue == nil {
+            return false
+        }
+
+        if step.requiresEvidence && draft.evidenceAttachments.isEmpty {
+            return false
+        }
+
+        return true
+    }
+}
+
+struct InspectionTestCaseProgress: Codable, Hashable, Sendable {
+    let completedStepCount: Int
+    let totalStepCount: Int
+    let blockerCount: Int
+
+    var fractionComplete: Double {
+        guard totalStepCount > 0 else {
+            return 1
+        }
+
+        return Double(completedStepCount) / Double(totalStepCount)
+    }
+}
+
 }
 
 /// Mutable draft aggregation for all steps in one active test case.
@@ -120,6 +152,17 @@ struct TestCaseDraft: Identifiable, Codable, Hashable, Sendable {
 
     var id: String {
         testCase.id
+    }
+
+    var progress: InspectionTestCaseProgress {
+        let completedStepCount = steps.filter(\.isComplete).count
+        let totalStepCount = steps.count
+
+        return InspectionTestCaseProgress(
+            completedStepCount: completedStepCount,
+            totalStepCount: totalStepCount,
+            blockerCount: totalStepCount - completedStepCount
+        )
     }
 
     func stepDraft(stepID: String) -> ComposedTestStepDraft? {
