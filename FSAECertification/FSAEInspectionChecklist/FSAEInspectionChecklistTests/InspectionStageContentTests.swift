@@ -73,7 +73,7 @@ struct InspectionStageContentTests {
         let energizedCase = try #require(ev.orderedSections.flatMap(\.orderedTestCases).first { $0.id == "EV101" })
 
         #expect(garageSection.title == "Driver Equipment")
-        #expect(garageSection.orderedTestCases.map(\.id).prefix(3) == ["G1", "G2", "G3"])
+        #expect(Array(garageSection.orderedTestCases.map(\.id).prefix(3)) == ["G1", "G2", "G3"])
         #expect(firstGarageCase.code == "G1")
         #expect(firstGarageCase.ruleReferences == ["VE.3.2"])
         #expect(firstGarageCase.orderedSteps.map(\.type) == [.check])
@@ -109,6 +109,24 @@ struct InspectionStageContentTests {
                 resourceName: "missing_title.json"
             )
         }
+    }
+
+    @Test("inspection-data missing bundled resources fail before returning partial official content")
+    func inspectionDataMissingBundledResourcesFailBeforeReturningPartialOfficialContent() async {
+        let service = InspectionContentService(resourceURLs: [
+            .garage: URL(fileURLWithPath: "/tmp/missing-garage-inspection.json")
+        ])
+
+        var capturedError: InspectionContentLoadingError?
+        do {
+            _ = try await service.loadOfficialStages()
+        } catch let error as InspectionContentLoadingError {
+            capturedError = error
+        } catch {
+            capturedError = nil
+        }
+
+        #expect(capturedError == .missingResource("01_garage_inspection.json"))
     }
 }
 

@@ -23,12 +23,162 @@ enum SessionStatus: String, Hashable {
     }
 }
 
-struct InspectionStage: Identifiable, Hashable {
-    let id: Int
+struct InspectionStage: Identifiable, Codable, Hashable, Sendable {
+    let id: String
+    let code: String
     let title: String
+    let displayOrder: Int
     let subtitle: String
     let progress: Double
     let requiredOpenItems: Int
+    let sections: [InspectionSection]
+
+    init(
+        id: String,
+        code: String? = nil,
+        title: String,
+        displayOrder: Int,
+        subtitle: String = "",
+        progress: Double = 0,
+        requiredOpenItems: Int = 0,
+        sections: [InspectionSection] = []
+    ) {
+        self.id = id
+        self.code = code ?? id
+        self.title = title
+        self.displayOrder = displayOrder
+        self.subtitle = subtitle
+        self.progress = progress
+        self.requiredOpenItems = requiredOpenItems
+        self.sections = sections
+    }
+
+    init(
+        id: Int,
+        title: String,
+        subtitle: String,
+        progress: Double,
+        requiredOpenItems: Int
+    ) {
+        self.init(
+            id: String(id),
+            code: String(id),
+            title: title,
+            displayOrder: id,
+            subtitle: subtitle,
+            progress: progress,
+            requiredOpenItems: requiredOpenItems,
+            sections: []
+        )
+    }
+
+    var orderedSections: [InspectionSection] {
+        sections.sorted { lhs, rhs in
+            if lhs.displayOrder == rhs.displayOrder {
+                lhs.title < rhs.title
+            } else {
+                lhs.displayOrder < rhs.displayOrder
+            }
+        }
+    }
+
+    var sectionIDs: [String] {
+        orderedSections.map(\.id)
+    }
+}
+
+extension InspectionStage {
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case code
+        case title
+        case displayOrder
+        case subtitle
+        case progress
+        case requiredOpenItems
+        case sections
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedCode = try container.decode(String.self, forKey: .code)
+
+        id = try container.decodeIfPresent(String.self, forKey: .id) ?? decodedCode
+        code = decodedCode
+        title = try container.decode(String.self, forKey: .title)
+        displayOrder = try container.decode(Int.self, forKey: .displayOrder)
+        subtitle = try container.decodeIfPresent(String.self, forKey: .subtitle) ?? ""
+        progress = try container.decodeIfPresent(Double.self, forKey: .progress) ?? 0
+        requiredOpenItems = try container.decodeIfPresent(Int.self, forKey: .requiredOpenItems) ?? 0
+        sections = try container.decode([InspectionSection].self, forKey: .sections)
+    }
+}
+
+struct InspectionSection: Identifiable, Codable, Hashable, Sendable {
+    let id: String
+    let title: String
+    let displayOrder: Int
+    let testCases: [InspectionTestCase]
+
+    init(
+        id: String,
+        title: String,
+        displayOrder: Int,
+        testCases: [InspectionTestCase]
+    ) {
+        self.id = id
+        self.title = title
+        self.displayOrder = displayOrder
+        self.testCases = testCases
+    }
+
+    var orderedTestCases: [InspectionTestCase] {
+        testCases.sorted { lhs, rhs in
+            if lhs.displayOrder == rhs.displayOrder {
+                lhs.code < rhs.code
+            } else {
+                lhs.displayOrder < rhs.displayOrder
+            }
+        }
+    }
+
+    var testCaseIDs: [String] {
+        orderedTestCases.map(\.id)
+    }
+}
+
+extension InspectionSection {
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case displayOrder
+        case testCases
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        title = try container.decode(String.self, forKey: .title)
+        displayOrder = try container.decode(Int.self, forKey: .displayOrder)
+        id = try container.decodeIfPresent(String.self, forKey: .id)
+            ?? "\(displayOrder).\(title.stableInspectionIdentifierComponent)"
+        testCases = try container.decode([InspectionTestCase].self, forKey: .testCases)
+    }
+}
+
+extension String {
+    var stableInspectionIdentifierComponent: String {
+        let allowed = CharacterSet.alphanumerics
+        return lowercased()
+            .unicodeScalars
+            .map { allowed.contains($0) ? Character($0) : "-" }
+            .reduce(into: "") { result, character in
+                if character == "-", result.last == "-" {
+                    return
+                }
+                result.append(character)
+            }
+            .trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+    }
 }
 
 struct InspectionStep: Identifiable, Hashable {
