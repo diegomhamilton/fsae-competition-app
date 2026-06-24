@@ -123,8 +123,6 @@ struct InspectionTestCaseProgress: Codable, Hashable, Sendable {
     }
 }
 
-}
-
 /// Mutable draft aggregation for all steps in one active test case.
 ///
 /// The draft keeps step order aligned with immutable test case content while
