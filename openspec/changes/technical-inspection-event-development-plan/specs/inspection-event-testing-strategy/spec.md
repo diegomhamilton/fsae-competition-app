@@ -15,6 +15,10 @@ The system implementation SHALL add failing tests before behavior for domain mod
 - **WHEN** validation services are implemented
 - **THEN** unit tests verify missing outcomes, failed-note requirements, measurement parsing, measurement precision, range failures, evidence requirements, and recheck creation.
 
+#### Scenario: Persistence service tests cover local JSON files
+- **WHEN** Application Support JSON persistence is implemented
+- **THEN** unit tests verify per-test-case draft file creation, atomic update behavior, restore after relaunch, team/session isolation, submitted snapshot grouping, and malformed local file handling.
+
 #### Scenario: View helper tests cover presentation logic
 - **WHEN** view helpers are implemented
 - **THEN** unit tests verify progress summaries, blocker counts, status text, accessibility identifier construction, and localizable string key selection.
@@ -33,6 +37,29 @@ The system test plan SHALL map positive, negative, and edge cases back to `inspe
 #### Scenario: Edge cases map to feature scenarios
 - **WHEN** tests cover empty history, no started session, blocked team, removing required evidence, or restoring previous team context
 - **THEN** the test names or documentation reference the related feature scenario.
+
+### Requirement: Step view UX follow-up has focused validation
+The system test plan SHALL cover post-core-flow step view UX improvements with targeted automated and manual validation.
+
+#### Scenario: Local stored judge experience is validated
+- **WHEN** Task 10 UX follow-up is implemented after local JSON persistence
+- **THEN** tests or manual validation verify restored event, team, stage, test case, validation, notes, evidence, measurement, and navigation state are understandable after app relaunch.
+
+#### Scenario: Actionable validation focus is validated
+- **WHEN** validation blockers are displayed for missing outcomes, notes, measurements, or evidence
+- **THEN** tests or manual validation verify selecting a blocker focuses the missing control and persists the corrected draft value to local JSON.
+
+#### Scenario: Outcome semantics are validated
+- **WHEN** required step outcomes are incomplete
+- **THEN** tests or manual validation verify incomplete state is presented clearly without making `Pending` look like a judge-selected pass/fail/N/A decision.
+
+#### Scenario: Camera evidence flow is validated
+- **WHEN** picture capture support is added for evidence-required steps
+- **THEN** tests or manual validation verify capture intent, metadata persistence in the test case JSON draft, removal behavior, validation blocking, and accessible controls.
+
+#### Scenario: Egress stopwatch flow is validated
+- **WHEN** stopwatch timing is added for egress-test measurement steps
+- **THEN** tests or manual validation verify start, stop, reset, manual override, range validation, draft persistence, and accessible announcements.
 
 ### Requirement: UI tests are integrated in a dedicated PR
 The system delivery plan SHALL introduce XCUITests and snapshot tests through a dedicated PR after accessibility identifiers and navigation hooks are stable.
