@@ -1,0 +1,25 @@
+{
+  "id": "TC-GARAGE-001",
+  "code": "GARAGE-001",
+  "displayOrder": 1,
+  "title": "Ready-to-inspect PPE",
+  "ruleReferences": ["IN.4.1"],
+  "safetyBadges": [],
+  "steps": [
+    {
+      "id": "PPE-PASS",
+      "code": "RT-01",
+      "ruleReference": "IN.4.1",
+      "title": "PPE verified",
+      "type": "precondition",
+      "content": "All accompanying members must be using PPE before energized work begins.",
+      "requiredOutcome": true,
+      "requiresEvidence": false,
+      "safetyBadges": [],
+      "defaultOutcome": "pass",
+      "defaultNote": "ESO and two team members present.",
+      "measurementRange": null,
+      "evidenceAttachments": []
+    }
+  ]
+}

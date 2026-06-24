@@ -1,0 +1,40 @@
+{
+  "id": "TC-EV-006",
+  "code": "EV-006",
+  "displayOrder": 2,
+  "title": "Ready-to-move tractive system checks",
+  "ruleReferences": ["EV.6.1", "EV.6.2"],
+  "safetyBadges": [],
+  "steps": [
+    {
+      "id": "RT-08",
+      "code": "RT-08",
+      "ruleReference": "EV.6.1",
+      "title": "RML flashing",
+      "type": "check",
+      "content": "Verify the RML is flashing after TS activation.",
+      "requiredOutcome": true,
+      "requiresEvidence": false,
+      "safetyBadges": [],
+      "defaultOutcome": "pending",
+      "defaultNote": "",
+      "measurementRange": null,
+      "evidenceAttachments": []
+    },
+    {
+      "id": "RT-PENDING",
+      "code": "RT-09",
+      "ruleReference": "EV.6.2",
+      "title": "Shutdown indicator pending",
+      "type": "check",
+      "content": "Verify the shutdown indicator state before stage submission.",
+      "requiredOutcome": true,
+      "requiresEvidence": false,
+      "safetyBadges": [],
+      "defaultOutcome": "pending",
+      "defaultNote": "",
+      "measurementRange": null,
+      "evidenceAttachments": []
+    }
+  ]
+}
