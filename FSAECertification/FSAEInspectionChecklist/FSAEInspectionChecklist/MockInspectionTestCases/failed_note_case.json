@@ -1,0 +1,25 @@
+{
+  "id": "TC-EV-FAILED-NOTE-001",
+  "code": "EV-FAILED-NOTE-001",
+  "displayOrder": 5,
+  "title": "Failed RML requires judge notes",
+  "ruleReferences": ["EV.6.1"],
+  "safetyBadges": [],
+  "steps": [
+    {
+      "id": "RML-FAIL-MISSING-NOTE",
+      "code": "RT-08",
+      "ruleReference": "EV.6.1",
+      "title": "RML failed without notes",
+      "type": "check",
+      "content": "Verify the RML is flashing after TS activation.",
+      "requiredOutcome": true,
+      "requiresEvidence": false,
+      "safetyBadges": [],
+      "defaultOutcome": "fail",
+      "defaultNote": "",
+      "measurementRange": null,
+      "evidenceAttachments": []
+    }
+  ]
+}
