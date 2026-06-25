@@ -70,6 +70,27 @@ Proposed Services:
 - `RecheckService`: derives and updates recheck items from failed test cases.
 - `AccessibilityAuditSupport`: centralizes identifier conventions for tests without leaking test logic into views.
 
+### Keep Domain and Storage Value Types Nonisolated
+
+Decision:
+- The app target may use `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` so SwiftUI views, view models, and UI coordinators are main-actor-first by default.
+- Pure inspection domain models, validation value types, and JSON schema structs should be explicitly `nonisolated` when they need to cross actor boundaries or satisfy synchronous protocol conformances such as `Codable`, `Hashable`, `CaseIterable`, and `Sendable`.
+- Actor-isolated services such as `TestCaseJSONPersistenceService` should work with those nonisolated value types off the main actor while preserving main-actor isolation for UI state and navigation.
+
+Rationale:
+- Inspection content, draft state, validation summaries, evidence metadata, and submitted snapshots are portable values rather than UI state. Treating them as main-actor-isolated would unnecessarily couple persistence and validation work to the UI executor.
+- Swift Evolution SE-0466 describes default actor isolation as a module-level choice and notes that code which "really wants concurrency" can explicitly opt out with `nonisolated` or live in a module without main-actor default isolation.
+- Swift Evolution SE-0449 allows `nonisolated` on classes, structs, and enums to prevent global actor inference from propagating onto pure value declarations and their members.
+- Swift Evolution SE-0313 explains that nonisolated declarations are appropriate when code does not access actor-isolated mutable state and must satisfy synchronous protocol requirements.
+
+References:
+- SE-0466: `https://github.com/swiftlang/swift-evolution/blob/main/proposals/0466-control-default-actor-isolation.md`
+- SE-0449: `https://github.com/swiftlang/swift-evolution/blob/main/proposals/0449-nonisolated-for-global-actor-cutoff.md`
+- SE-0313: `https://github.com/swiftlang/swift-evolution/blob/main/proposals/0313-actor-isolation-control.md`
+
+Future direction:
+- If the app grows enough to justify module boundaries, move domain and storage models into a dedicated target whose default actor isolation is nonisolated, while keeping the SwiftUI app target main-actor-first.
+
 ### Persist Test Cases as Application Support JSON
 
 Decision:
