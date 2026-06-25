@@ -102,7 +102,7 @@
 - [ ] 10.10 Add focused tests and manual validation for relaunch restore UX, actionable validation focus, camera evidence metadata, stopwatch timing, keyboard dismissal, VoiceOver operation, and common judge recovery paths.
 
 ## 11. Parking Lot: Future EV Inspection Enhancements
-
+- [ ] 11.0 Review token usage for each session to solve tasks 1 - 10. Compare peak usages, code SHA at that time, and how that specific part of code changed since then to identify gaps in the prompts. Propose changes in my workflow to reduce token usage to get similar or better output. Use "~/.codex/sessions" .jsonl files to get details about sessions. This is a purely process task. DO NOT OUTPUT code, you can still use code/scripts to specific tasks such as parsing data from files.
 - [ ] 11.1 Map EV safety context by test case and step, including energized warnings, accumulator-related cautions, and required PPE guidance where the inspection content or rule metadata supports it.
 - [ ] 11.2 Design expandable rule reference presentation so long references such as `EV.7.5.5 / BR.4.6.1.1` can be reviewed without squeezing into small chips.
 - [ ] 11.3 Add optional "Why this matters" or inspection hint content for dense EV checks, starting with temperature monitoring and maintenance plug foolproof-connection cases.
