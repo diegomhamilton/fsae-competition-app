@@ -65,7 +65,7 @@
 - [ ] 7.6 Break each coordinator into a different task PR: Implement `AppCoordinator`, `InspectionEventCoordinator`, `SessionSelectionCoordinator`, and `InspectionExecutionCoordinator`.
 - [ ] 7.7 Implement `InspectionEventStore` as an actor-isolated event/session source of truth with scoped queries by event, team, session, user access, and the JSON file persistence service.
 - [ ] 7.8 Merge into 7.6 PRs w/ coordinator: Bind `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `StepOverviewView`, and `TeamSwitchConfirmationView` to coordinator-backed state.
-- [ ] 7.9 Implement `SubmissionSnapshotService` for immutable stage submission snapshots backed by the team submission JSON folder.
+- [x] 7.9 Implement `SubmissionSnapshotService` for immutable stage submission snapshots backed by the team submission JSON folder.
 - [ ] 7.10 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
 - [ ] 7.11 Implement sticker eligibility calculation from submitted stages and open rechecks.
 - [ ] 7.12 Manually validate start, resume after app relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team submission folders against the `.feature` file.
