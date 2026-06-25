@@ -114,6 +114,162 @@ struct TestCaseJSONPersistenceServiceTests {
         #expect(teamBDirectory.path.hasSuffix("/events/event-2026/teams/car-099/sessions/session-a/submissions"))
         #expect(teamADirectory != teamBDirectory)
     }
+
+    @Test("US-001 writes submitted test case snapshots under team folders and clears stale drafts")
+    func writesSubmittedTestCaseSnapshotAndClearsDraft() async throws {
+        let rootDirectory = try temporaryApplicationSupportDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let service = TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+        let context = InspectionPersistenceContext(
+            eventID: "event-2026",
+            teamID: "car-042",
+            sessionID: "session-a",
+            stageID: "garage"
+        )
+        let submittedAt = Date(timeIntervalSince1970: 1_780_000_200)
+        let draft = try completedDraft(notes: "Submitted garage inspection.")
+
+        let draftURL = try await service.saveDraft(draft, context: context)
+        let snapshotURL = try await service.saveSubmittedTestCaseSnapshot(
+            draft,
+            context: context,
+            submissionID: "submission-001",
+            submittedAt: submittedAt,
+            recheckReferences: ["recheck-garage-main"]
+        )
+        let restoredDraft = try await service.loadDraft(context: context, testCaseID: draft.id)
+        let submittedSnapshot = try await service.loadSubmittedTestCaseSnapshot(
+            context: context,
+            submissionID: "submission-001",
+            testCaseID: draft.id
+        )
+
+        #expect(snapshotURL.path.hasSuffix("/events/event-2026/teams/car-042/sessions/session-a/submissions/submission-001/test-cases/garage-main.json"))
+        #expect(FileManager.default.fileExists(atPath: snapshotURL.path))
+        #expect(!FileManager.default.fileExists(atPath: draftURL.path))
+        #expect(restoredDraft == nil)
+        #expect(submittedSnapshot?.schemaVersion == SubmittedTestCaseSnapshotFile.currentSchemaVersion)
+        #expect(submittedSnapshot?.submissionID == "submission-001")
+        #expect(submittedSnapshot?.eventID == "event-2026")
+        #expect(submittedSnapshot?.teamID == "car-042")
+        #expect(submittedSnapshot?.sessionID == "session-a")
+        #expect(submittedSnapshot?.stageID == "garage")
+        #expect(submittedSnapshot?.testCaseID == "garage-main")
+        #expect(submittedSnapshot?.submittedAt == submittedAt)
+        #expect(submittedSnapshot?.stepDrafts == draft.stepDrafts)
+        #expect(submittedSnapshot?.recheckReferences == ["recheck-garage-main"])
+    }
+
+    @Test("US-001 keeps submitted snapshots isolated by team-specific submission folders")
+    func keepsSubmittedSnapshotsIsolatedByTeamFolder() async throws {
+        let rootDirectory = try temporaryApplicationSupportDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let service = TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+        let teamAContext = InspectionPersistenceContext(
+            eventID: "event-2026",
+            teamID: "car-042",
+            sessionID: "session-a",
+            stageID: "garage"
+        )
+        let teamBContext = InspectionPersistenceContext(
+            eventID: "event-2026",
+            teamID: "car-099",
+            sessionID: "session-a",
+            stageID: "garage"
+        )
+
+        _ = try await service.saveSubmittedTestCaseSnapshot(
+            try completedDraft(notes: "Team 42 submitted."),
+            context: teamAContext,
+            submissionID: "submission-001"
+        )
+        _ = try await service.saveSubmittedTestCaseSnapshot(
+            try completedDraft(notes: "Team 99 submitted."),
+            context: teamBContext,
+            submissionID: "submission-001"
+        )
+
+        let teamASnapshot = try await service.loadSubmittedTestCaseSnapshot(
+            context: teamAContext,
+            submissionID: "submission-001",
+            testCaseID: "garage-main"
+        )
+        let teamBSnapshot = try await service.loadSubmittedTestCaseSnapshot(
+            context: teamBContext,
+            submissionID: "submission-001",
+            testCaseID: "garage-main"
+        )
+        let teamAURL = await service.submittedTestCaseFileURL(
+            context: teamAContext,
+            submissionID: "submission-001",
+            testCaseID: "garage-main"
+        )
+        let teamBURL = await service.submittedTestCaseFileURL(
+            context: teamBContext,
+            submissionID: "submission-001",
+            testCaseID: "garage-main"
+        )
+        let teamARechecksURL = await service.rechecksDirectoryURL(context: teamAContext)
+        let teamBRechecksURL = await service.rechecksDirectoryURL(context: teamBContext)
+
+        #expect(teamASnapshot?.stepDrafts.first(where: { $0.stepID == "G-02" })?.notes == "Team 42 submitted.")
+        #expect(teamBSnapshot?.stepDrafts.first(where: { $0.stepID == "G-02" })?.notes == "Team 99 submitted.")
+        #expect(teamAURL.path.contains("/teams/car-042/sessions/session-a/submissions/submission-001/"))
+        #expect(teamBURL.path.contains("/teams/car-099/sessions/session-a/submissions/submission-001/"))
+        #expect(teamAURL != teamBURL)
+        #expect(teamARechecksURL.path.hasSuffix("/events/event-2026/teams/car-042/sessions/session-a/rechecks"))
+        #expect(teamBRechecksURL.path.hasSuffix("/events/event-2026/teams/car-099/sessions/session-a/rechecks"))
+        #expect(teamARechecksURL != teamBRechecksURL)
+    }
+
+    @Test("US-001 writes immutable stage submission snapshots beside submitted test cases")
+    func writesStageSubmissionSnapshotInTeamSubmissionFolder() async throws {
+        let rootDirectory = try temporaryApplicationSupportDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let service = TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+        let context = InspectionPersistenceContext(
+            eventID: "event-2026",
+            teamID: "car-042",
+            sessionID: "session-a",
+            stageID: "garage"
+        )
+        let submittedAt = Date(timeIntervalSince1970: 1_780_000_300)
+        let draft = try completedDraft(notes: "Stage submitted.")
+        _ = try await service.saveSubmittedTestCaseSnapshot(
+            draft,
+            context: context,
+            submissionID: "submission-001",
+            submittedAt: submittedAt
+        )
+        let loadedTestCaseSnapshot = try await service.loadSubmittedTestCaseSnapshot(
+            context: context,
+            submissionID: "submission-001",
+            testCaseID: draft.id
+        )
+        let testCaseSnapshot = try #require(loadedTestCaseSnapshot)
+
+        let stageURL = try await service.saveSubmittedStageSnapshot(
+            submissionID: "submission-001",
+            context: context,
+            submittedAt: submittedAt,
+            testCases: [testCaseSnapshot],
+            validationSummary: testCaseSnapshot.validationSummary,
+            recheckReferences: ["recheck-garage-main"]
+        )
+        let stageSnapshot = try await service.loadSubmittedStageSnapshot(
+            context: context,
+            submissionID: "submission-001"
+        )
+
+        #expect(stageURL.path.hasSuffix("/events/event-2026/teams/car-042/sessions/session-a/submissions/submission-001/stage-snapshot.json"))
+        #expect(FileManager.default.fileExists(atPath: stageURL.path))
+        #expect(stageSnapshot?.schemaVersion == SubmittedStageSnapshotFile.currentSchemaVersion)
+        #expect(stageSnapshot?.submissionID == "submission-001")
+        #expect(stageSnapshot?.stageID == "garage")
+        #expect(stageSnapshot?.submittedAt == submittedAt)
+        #expect(stageSnapshot?.testCases.map(\.testCaseID) == ["garage-main"])
+        #expect(stageSnapshot?.recheckReferences == ["recheck-garage-main"])
+    }
 }
 
 private func temporaryApplicationSupportDirectory() throws -> URL {

@@ -126,6 +126,26 @@ nonisolated struct SubmittedStageSnapshotFile: Codable, Hashable, Sendable {
     let testCases: [SubmittedTestCaseSnapshotFile]
     let validationSummary: [PersistedValidationIssue]
     let recheckReferences: [String]
+
+    init(
+        submissionID: String,
+        context: InspectionPersistenceContext,
+        submittedAt: Date,
+        testCases: [SubmittedTestCaseSnapshotFile],
+        validationSummary: [PersistedValidationIssue],
+        recheckReferences: [String] = []
+    ) {
+        schemaVersion = Self.currentSchemaVersion
+        self.submissionID = submissionID
+        eventID = context.eventID
+        teamID = context.teamID
+        sessionID = context.sessionID
+        stageID = context.stageID
+        self.submittedAt = submittedAt
+        self.testCases = testCases
+        self.validationSummary = validationSummary
+        self.recheckReferences = recheckReferences
+    }
 }
 
 actor TestCaseJSONPersistenceService {
@@ -215,15 +235,145 @@ actor TestCaseJSONPersistenceService {
         try fileManager.removeItem(at: fileURL)
     }
 
+    func saveSubmittedTestCaseSnapshot(
+        _ draft: TestCaseDraft,
+        context: InspectionPersistenceContext,
+        submissionID: String,
+        submittedAt: Date = Date(),
+        recheckReferences: [String] = [],
+        removeDraft: Bool = true
+    ) throws -> URL {
+        let file = SubmittedTestCaseSnapshotFile(
+            submissionID: submissionID,
+            context: context,
+            draft: draft,
+            submittedAt: submittedAt,
+            validationSummary: draft.validationSummary(for: draft.testCase).issues.map(PersistedValidationIssue.init),
+            recheckReferences: recheckReferences
+        )
+        let directoryURL = submittedTestCasesDirectoryURL(context: context, submissionID: submissionID)
+        try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+
+        let fileURL = submittedTestCaseFileURL(
+            context: context,
+            submissionID: submissionID,
+            testCaseID: draft.id
+        )
+        let data = try encoder.encode(file)
+        try data.write(to: fileURL, options: .atomic)
+
+        if removeDraft {
+            try deleteDraft(context: context, testCaseID: draft.id)
+        }
+
+        return fileURL
+    }
+
+    func saveSubmittedStageSnapshot(
+        submissionID: String,
+        context: InspectionPersistenceContext,
+        submittedAt: Date = Date(),
+        testCases: [SubmittedTestCaseSnapshotFile],
+        validationSummary: [PersistedValidationIssue],
+        recheckReferences: [String] = []
+    ) throws -> URL {
+        let file = SubmittedStageSnapshotFile(
+            submissionID: submissionID,
+            context: context,
+            submittedAt: submittedAt,
+            testCases: testCases,
+            validationSummary: validationSummary,
+            recheckReferences: recheckReferences
+        )
+        let directoryURL = submissionDirectoryURL(context: context, submissionID: submissionID)
+        try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+
+        let fileURL = submittedStageSnapshotFileURL(context: context, submissionID: submissionID)
+        let data = try encoder.encode(file)
+        try data.write(to: fileURL, options: .atomic)
+        return fileURL
+    }
+
+    func loadSubmittedTestCaseSnapshot(
+        context: InspectionPersistenceContext,
+        submissionID: String,
+        testCaseID: String
+    ) throws -> SubmittedTestCaseSnapshotFile? {
+        let fileURL = submittedTestCaseFileURL(
+            context: context,
+            submissionID: submissionID,
+            testCaseID: testCaseID
+        )
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            return nil
+        }
+
+        let data = try Data(contentsOf: fileURL)
+        return try decoder.decode(SubmittedTestCaseSnapshotFile.self, from: data)
+    }
+
+    func loadSubmittedStageSnapshot(
+        context: InspectionPersistenceContext,
+        submissionID: String
+    ) throws -> SubmittedStageSnapshotFile? {
+        let fileURL = submittedStageSnapshotFileURL(context: context, submissionID: submissionID)
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            return nil
+        }
+
+        let data = try Data(contentsOf: fileURL)
+        return try decoder.decode(SubmittedStageSnapshotFile.self, from: data)
+    }
+
     func submissionsDirectoryURL(context: InspectionPersistenceContext) -> URL {
         sessionDirectoryURL(context: context)
             .appendingPathComponent("submissions")
+    }
+
+    func submissionDirectoryURL(
+        context: InspectionPersistenceContext,
+        submissionID: String
+    ) -> URL {
+        submissionsDirectoryURL(context: context)
+            .appendingPathComponent(Self.pathComponent(for: submissionID))
+    }
+
+    func submittedStageSnapshotFileURL(
+        context: InspectionPersistenceContext,
+        submissionID: String
+    ) -> URL {
+        submissionDirectoryURL(context: context, submissionID: submissionID)
+            .appendingPathComponent("stage-snapshot")
+            .appendingPathExtension("json")
+    }
+
+    func submittedTestCaseFileURL(
+        context: InspectionPersistenceContext,
+        submissionID: String,
+        testCaseID: String
+    ) -> URL {
+        submittedTestCasesDirectoryURL(context: context, submissionID: submissionID)
+            .appendingPathComponent(Self.pathComponent(for: testCaseID))
+            .appendingPathExtension("json")
+    }
+
+    func rechecksDirectoryURL(context: InspectionPersistenceContext) -> URL {
+        sessionDirectoryURL(context: context)
+            .appendingPathComponent("rechecks")
     }
 
     private func draftDirectoryURL(context: InspectionPersistenceContext) -> URL {
         sessionDirectoryURL(context: context)
             .appendingPathComponent("drafts")
             .appendingPathComponent(Self.pathComponent(for: context.stageID))
+    }
+
+    private func submittedTestCasesDirectoryURL(
+        context: InspectionPersistenceContext,
+        submissionID: String
+    ) -> URL {
+        submissionDirectoryURL(context: context, submissionID: submissionID)
+            .appendingPathComponent("test-cases")
     }
 
     private func sessionDirectoryURL(context: InspectionPersistenceContext) -> URL {
