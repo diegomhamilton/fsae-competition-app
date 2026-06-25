@@ -1,6 +1,6 @@
 import Foundation
 
-struct ValidationIssue: Equatable, Identifiable, Sendable {
+nonisolated struct ValidationIssue: Equatable, Identifiable, Sendable {
     enum LocalizationKey: String, Equatable, Sendable {
         case missingRequiredOutcome = "inspection.validation.missingRequiredOutcome"
         case missingInspectorNote = "inspection.validation.missingInspectorNote"
@@ -40,7 +40,7 @@ struct ValidationIssue: Equatable, Identifiable, Sendable {
     }
 }
 
-struct InspectionValidationService: Sendable {
+nonisolated struct InspectionValidationService: Sendable {
     private let rules: [InspectionValidationRule]
 
     init(rules: [InspectionValidationRule] = .defaultRules) {
@@ -54,7 +54,7 @@ struct InspectionValidationService: Sendable {
     }
 }
 
-struct InspectionValidationRule: Sendable {
+nonisolated struct InspectionValidationRule: Sendable {
     let id: String
     private let handler: @Sendable (InspectionTestStep, StepResult) -> [ValidationIssue]
 
@@ -187,7 +187,7 @@ private extension InspectionValidationRule {
     }
 }
 
-struct EvidenceValidationRequirement: Equatable, Sendable {
+nonisolated struct EvidenceValidationRequirement: Equatable, Sendable {
     let minimumAttachmentCount: Int
     let requiredMediaTypeCounts: [EvidenceMediaType: Int]
 

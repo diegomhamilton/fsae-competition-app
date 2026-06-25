@@ -4,7 +4,7 @@ import Foundation
 ///
 /// A test case groups ordered inspection steps with the rule references judges need
 /// while executing that slice of a stage.
-struct InspectionTestCase: Identifiable, Codable, Hashable, Sendable {
+nonisolated struct InspectionTestCase: Identifiable, Codable, Hashable, Sendable {
     let id: String
     let code: String
     let displayOrder: Int
@@ -65,7 +65,7 @@ struct InspectionTestCase: Identifiable, Codable, Hashable, Sendable {
     }
 }
 
-enum InspectionSafetyBadgeDerivation {
+nonisolated enum InspectionSafetyBadgeDerivation {
     static func badges(for testCase: InspectionTestCase) -> [InspectionSafetyBadge] {
         guard testCase.isEVEnergizedDynamicTest else {
             return []
@@ -205,7 +205,7 @@ private struct DecodedInspectionStep: Decodable {
 /// The draft mirrors editable judge input only. It does not own immutable step
 /// content, and it is intentionally small enough to hand between coordinator
 /// routes without pulling in broader session state.
-struct TestStepDraft: Codable, Hashable, Sendable {
+nonisolated struct TestStepDraft: Codable, Hashable, Sendable {
     let stepID: String
     var outcome: InspectionOutcome
     var notes: String
@@ -243,7 +243,7 @@ struct TestStepDraft: Codable, Hashable, Sendable {
 ///
 /// Parent test case drafts use this composition so views and coordinators can read
 /// official step content and judge-entered values from one ordered collection.
-struct ComposedTestStepDraft: Identifiable, Codable, Hashable, Sendable {
+nonisolated struct ComposedTestStepDraft: Identifiable, Codable, Hashable, Sendable {
     let step: InspectionTestStep
     var draft: TestStepDraft
 
@@ -268,7 +268,7 @@ struct ComposedTestStepDraft: Identifiable, Codable, Hashable, Sendable {
     }
 }
 
-struct InspectionTestCaseProgress: Codable, Hashable, Sendable {
+nonisolated struct InspectionTestCaseProgress: Codable, Hashable, Sendable {
     let completedStepCount: Int
     let totalStepCount: Int
     let blockerCount: Int
@@ -287,7 +287,7 @@ struct InspectionTestCaseProgress: Codable, Hashable, Sendable {
 /// The draft keeps step order aligned with immutable test case content while
 /// allowing a child test step route to edit a single `TestStepDraft` and return it
 /// to the parent test case.
-struct TestCaseDraft: Identifiable, Codable, Hashable, Sendable {
+nonisolated struct TestCaseDraft: Identifiable, Codable, Hashable, Sendable {
     let testCase: InspectionTestCase
     private(set) var steps: [ComposedTestStepDraft]
     private var standaloneStepDrafts: [TestStepDraft]
@@ -351,6 +351,10 @@ struct TestCaseDraft: Identifiable, Codable, Hashable, Sendable {
         TestCaseDraftAggregate(stepDrafts: allStepDrafts)
     }
 
+    var stepDrafts: [TestStepDraft] {
+        allStepDrafts
+    }
+
     func validationSummary(for testCase: InspectionTestCase) -> TestCaseDraftValidationSummary {
         let service = InspectionValidationService()
         let draftsByStepID = allStepDrafts.reduce(into: [String: TestStepDraft]()) { result, draft in
@@ -399,7 +403,7 @@ struct TestCaseDraft: Identifiable, Codable, Hashable, Sendable {
     }
 }
 
-struct TestCaseDraftAggregate: Equatable, Sendable {
+nonisolated struct TestCaseDraftAggregate: Equatable, Sendable {
     let outcomesByStepID: [String: InspectionOutcome]
     let notesByStepID: [String: String]
     let measurementsByStepID: [String: MeasurementValue]
@@ -423,7 +427,7 @@ struct TestCaseDraftAggregate: Equatable, Sendable {
     }
 }
 
-struct TestCaseDraftValidationSummary: Equatable, Sendable {
+nonisolated struct TestCaseDraftValidationSummary: Equatable, Sendable {
     let issues: [ValidationIssue]
 
     var blockerCount: Int {

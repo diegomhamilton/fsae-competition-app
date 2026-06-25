@@ -53,7 +53,7 @@
 - [x] 6.4 Refactor `FullStageView` to render real stage content, stage progress, validation blockers, and submit controls from model state.
 - [x] 6.5 Add energized dynamic test badge derivation for EV inspection steps and expose equivalent accessibility information.
 - [x] 6.6 Add structured `Strings` enums and stable accessibility identifiers to the stage and test case list files.
-- [ ] 6.7 Manually validate Garage, EV, Egress, and Rain stage content against `Design/Resources/InspectionEvent/*.json`.
+- [x] 6.7 Manually validate Garage, EV, Egress, and Rain stage content against `Design/Resources/InspectionEvent/*.json`.
 
 ## 7. Session, Submission, and Recheck Flow
 
