@@ -53,15 +53,15 @@
 - [x] 6.4 Refactor `FullStageView` to render real stage content, stage progress, validation blockers, and submit controls from model state.
 - [x] 6.5 Add energized dynamic test badge derivation for EV inspection steps and expose equivalent accessibility information.
 - [x] 6.6 Add structured `Strings` enums and stable accessibility identifiers to the stage and test case list files.
-- [ ] 6.7 Manually validate Garage, EV, Egress, and Rain stage content against `Design/Resources/InspectionEvent/*.json`.
+- [x] 6.7 Manually validate Garage, EV, Egress, and Rain stage content against `Design/Resources/InspectionEvent/*.json`.
 
 ## 7. Session, Submission, and Recheck Flow
 
 - [ ] 7.1 Add failing coordinator tests for mock login completion, session selector routing, start session, resume session, stage selection, team switching, and restored context.
-- [ ] 7.2 Add failing persistence tests for storing each in-progress test case as its own JSON file under `FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)`, scoped by event, team, session, stage, and test case ID.
-- [ ] 7.3 Define Codable JSON schemas for test case draft files and immutable submitted test case/stage snapshot files, including schema version, event ID, team ID, session ID, stage ID, test case ID, updated timestamp, outcomes, notes, measurements, evidence metadata, validation summary, and recheck references.
-- [ ] 7.4 Implement an actor-isolated JSON file persistence service that creates the Application Support folder tree, writes each test case draft atomically, deletes or archives stale draft files after submission, and restores drafts after app relaunch.
-- [ ] 7.5 Group each team's submission files in a team-specific Application Support folder so submitted snapshots, rechecks, and sticker eligibility can be reviewed without mixing team contexts.
+- [x] 7.2 Add failing persistence tests for storing each in-progress test case as its own JSON file under `FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)`, scoped by event, team, session, stage, and test case ID.
+- [x] 7.3 Define Codable JSON schemas for test case draft files and immutable submitted test case/stage snapshot files, including schema version, event ID, team ID, session ID, stage ID, test case ID, updated timestamp, outcomes, notes, measurements, evidence metadata, validation summary, and recheck references.
+- [x] 7.4 Implement an actor-isolated JSON file persistence service that creates the Application Support folder tree, writes each test case draft atomically, deletes or archives stale draft files after submission, and restores drafts after app relaunch.
+- [x] 7.5 Group each team's submission files in a team-specific Application Support folder so submitted snapshots, rechecks, and sticker eligibility can be reviewed without mixing team contexts.
 - [ ] 7.6 Break each coordinator into a different task PR: Implement `AppCoordinator`, `InspectionEventCoordinator`, `SessionSelectionCoordinator`, and `InspectionExecutionCoordinator`.
 - [ ] 7.7 Implement `InspectionEventStore` as an actor-isolated event/session source of truth with scoped queries by event, team, session, user access, and the JSON file persistence service.
 - [ ] 7.8 Merge into 7.6 PRs w/ coordinator: Bind `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `StepOverviewView`, and `TeamSwitchConfirmationView` to coordinator-backed state.
@@ -102,7 +102,7 @@
 - [ ] 10.10 Add focused tests and manual validation for relaunch restore UX, actionable validation focus, camera evidence metadata, stopwatch timing, keyboard dismissal, VoiceOver operation, and common judge recovery paths.
 
 ## 11. Parking Lot: Future EV Inspection Enhancements
-
+- [ ] 11.0 Review token usage for each session to solve tasks 1 - 10. Compare peak usages, code SHA at that time, and how that specific part of code changed since then to identify gaps in the prompts. Propose changes in my workflow to reduce token usage to get similar or better output. Use "~/.codex/sessions" .jsonl files to get details about sessions. This is a purely process task. DO NOT OUTPUT code, you can still use code/scripts to specific tasks such as parsing data from files.
 - [ ] 11.1 Map EV safety context by test case and step, including energized warnings, accumulator-related cautions, and required PPE guidance where the inspection content or rule metadata supports it.
 - [ ] 11.2 Design expandable rule reference presentation so long references such as `EV.7.5.5 / BR.4.6.1.1` can be reviewed without squeezing into small chips.
 - [ ] 11.3 Add optional "Why this matters" or inspection hint content for dense EV checks, starting with temperature monitoring and maintenance plug foolproof-connection cases.

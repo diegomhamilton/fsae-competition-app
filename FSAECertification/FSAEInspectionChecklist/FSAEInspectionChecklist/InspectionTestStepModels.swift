@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct InspectionTestStep: Identifiable, Codable, Hashable, Sendable {
+nonisolated struct InspectionTestStep: Identifiable, Codable, Hashable, Sendable {
     let id: String
     let code: String
     let displayOrder: Int
@@ -92,7 +92,7 @@ extension InspectionTestStep {
 ///
 /// Keeping this helper near `InspectionTestStep` keeps measurement range knowledge
 /// with the step definition instead of duplicating it in coordinators.
-struct InspectionStepMeasurementInput: Equatable, Sendable {
+nonisolated struct InspectionStepMeasurementInput: Equatable, Sendable {
     let rawValue: String
     let measurementValue: MeasurementValue?
 }
@@ -108,7 +108,7 @@ extension InspectionTestStep {
     }
 }
 
-enum InspectionTestStepType: String, Codable, CaseIterable, Hashable, Sendable {
+nonisolated enum InspectionTestStepType: String, Codable, CaseIterable, Hashable, Sendable {
     case check
     case measurement
     case precondition
@@ -156,7 +156,7 @@ extension InspectionTestStepType {
     }
 }
 
-enum InspectionSafetyBadge: String, Codable, Hashable, Sendable {
+nonisolated enum InspectionSafetyBadge: String, Codable, Hashable, Sendable {
     case energized
 
     var displayName: String {
@@ -208,7 +208,7 @@ extension InspectionSafetyBadge {
     }
 }
 
-enum InspectionOutcome: String, Codable, CaseIterable, Hashable, Sendable {
+nonisolated enum InspectionOutcome: String, Codable, CaseIterable, Hashable, Sendable {
     case pass
     case fail
     case notApplicable
@@ -241,7 +241,7 @@ enum InspectionOutcome: String, Codable, CaseIterable, Hashable, Sendable {
     }
 }
 
-struct MeasurementRange: Codable, Hashable, Sendable {
+nonisolated struct MeasurementRange: Codable, Hashable, Sendable {
     let unit: MeasurementUnit
     let minimum: Decimal
     let maximum: Decimal
@@ -252,7 +252,7 @@ struct MeasurementRange: Codable, Hashable, Sendable {
     }
 }
 
-struct MeasurementValue: Codable, Hashable, Sendable {
+nonisolated struct MeasurementValue: Codable, Hashable, Sendable {
     enum ValidationError: Error, Equatable, Sendable {
         case nonNumericFormat
         case precisionExceeded
@@ -286,7 +286,7 @@ struct MeasurementValue: Codable, Hashable, Sendable {
     }
 }
 
-enum MeasurementUnit: String, Codable, Hashable, Sendable {
+nonisolated enum MeasurementUnit: String, Codable, Hashable, Sendable {
     case seconds
 
     var symbol: String {
@@ -296,7 +296,7 @@ enum MeasurementUnit: String, Codable, Hashable, Sendable {
     }
 }
 
-struct EvidenceAttachmentMetadata: Identifiable, Codable, Hashable, Sendable {
+nonisolated struct EvidenceAttachmentMetadata: Identifiable, Codable, Hashable, Sendable {
     let id: String
     let displayName: String
     let mediaType: EvidenceMediaType
@@ -308,17 +308,17 @@ struct EvidenceAttachmentMetadata: Identifiable, Codable, Hashable, Sendable {
     }
 }
 
-enum EvidenceMediaType: String, Codable, Hashable, Sendable {
+nonisolated enum EvidenceMediaType: String, Codable, Hashable, Sendable {
     case photo
     case signature
     case note
 }
 
-enum EvidenceAttachmentSource: String, Codable, Hashable, Sendable {
+nonisolated enum EvidenceAttachmentSource: String, Codable, Hashable, Sendable {
     case mockAttachment
 }
 
-struct InspectionAccessibilityIdentifier: RawRepresentable, Equatable, Hashable, Sendable {
+nonisolated struct InspectionAccessibilityIdentifier: RawRepresentable, Equatable, Hashable, Sendable {
     let rawValue: String
 
     init(rawValue: String) {
