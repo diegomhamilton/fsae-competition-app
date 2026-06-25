@@ -17,6 +17,7 @@ struct StepOverviewView: View {
     }
 
     let step: InspectionTestStep
+    let safetyBadges: [InspectionSafetyBadge]
     @Binding var selectedScreen: ProposedScreen
     @State private var selectedOutcome = InspectionOutcome.pending
     @State private var measurementValue = "4.72"
@@ -39,9 +40,10 @@ struct StepOverviewView: View {
                         HStack {
                             StatusPill(text: step.type.label, color: step.type.color)
                             StatusPill(text: step.ruleReference, color: .fsaeGray)
-                            ForEach(step.safetyBadges, id: \.self) { badge in
+                            ForEach(safetyBadges, id: \.self) { badge in
                                 StatusPill(text: badge.displayName, color: .fsaeRed)
                                     .accessibilityLabel(badge.accessibilityLabel)
+                                    .accessibilityValue(badge.accessibilityLabel)
                             }
                         }
                         Text(step.content)
@@ -73,7 +75,7 @@ struct StepOverviewView: View {
                     HStack {
                         TextField(Strings.measurementValue, text: $measurementValue)
                             .textFieldStyle(.roundedBorder)
-                            .keyboardType(.decimalPad)
+                            .measurementKeyboard()
                             .accessibilityIdentifier(InspectionAccessibilityIdentifier.measurementField(stepID: step.id).rawValue)
                         Text(step.measurementRange?.unit.rawValue ?? "value")
                             .foregroundStyle(Color.fsaeSecondaryText)

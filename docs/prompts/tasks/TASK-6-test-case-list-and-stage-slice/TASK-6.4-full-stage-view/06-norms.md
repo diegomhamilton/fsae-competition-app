@@ -11,7 +11,7 @@ Check the proposed work against these norms:
 - TDD for extracted view helpers and validation summary helpers
 - Validation rules stay in `InspectionValidationService`
 - Submit controls are model-driven and coordinator-ready
-- FullStageView should not be massive, specific logics or components should have its own file
+- `FullStageView` should not be massive, specific logics or components should have its own file
 - Feature scenarios as acceptance backbone
 - Status and blocked-submit states must not rely on color alone
 - Strings/accessibility cleanup belongs to TASK#6.6 unless new code needs local constants immediately

@@ -59,6 +59,7 @@ extension InspectionTestCaseViewState {
                 return InspectionTestCaseStepViewState(
                     displayOrder: step.displayOrder,
                     step: step,
+                    inheritedSafetyBadges: testCase.displaySafetyBadges,
                     outcome: draft.outcome,
                     notes: draft.notes,
                     measurementInput: draft.measurementInput,
@@ -72,6 +73,7 @@ extension InspectionTestCaseViewState {
 struct InspectionTestCaseStepViewState: Identifiable, Equatable, Sendable {
     let displayOrder: Int
     let step: InspectionTestStep
+    let inheritedSafetyBadges: [InspectionSafetyBadge]
     let outcome: InspectionOutcome
     let notes: String
     let measurementInput: String
@@ -83,6 +85,10 @@ struct InspectionTestCaseStepViewState: Identifiable, Equatable, Sendable {
 
     var validationIssues: [InspectionTestCaseValidationIssue] {
         InspectionTestCaseValidationIssue.issues(for: self)
+    }
+
+    var safetyBadges: [InspectionSafetyBadge] {
+        step.safetyBadges.merging(inheritedSafetyBadges)
     }
 
     var isComplete: Bool {
@@ -156,7 +162,7 @@ struct InspectionTestCaseValidationIssue: Identifiable, Equatable, Sendable {
     let code: Code
 
     var id: String {
-        "\(stepID).\(code.identifierSuffix)"
+        "\(code.identifierSuffix).\(stepID)"
     }
 
     static func issues(for state: InspectionTestCaseStepViewState) -> [Self] {

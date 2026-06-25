@@ -55,6 +55,30 @@ struct InspectionTestCase: Identifiable, Codable, Hashable, Sendable {
             return seenRuleReferences.insert(ruleReference).inserted
         }
     }
+
+    var derivedSafetyBadges: [InspectionSafetyBadge] {
+        InspectionSafetyBadgeDerivation.badges(for: self)
+    }
+
+    var displaySafetyBadges: [InspectionSafetyBadge] {
+        safetyBadges.merging(derivedSafetyBadges)
+    }
+}
+
+enum InspectionSafetyBadgeDerivation {
+    static func badges(for testCase: InspectionTestCase) -> [InspectionSafetyBadge] {
+        guard testCase.isEVEnergizedDynamicTest else {
+            return []
+        }
+
+        return [.energized]
+    }
+}
+
+private extension InspectionTestCase {
+    var isEVEnergizedDynamicTest: Bool {
+        code.hasPrefix("EV") && (100...117).contains(displayOrder)
+    }
 }
 
 extension InspectionTestCase {

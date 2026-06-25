@@ -4,7 +4,7 @@ Task: `6.7 Manually validate Garage, EV, Egress, and Rain stage content against 
 
 Build policy: user-run. Do not mark this task complete until actual app evidence is recorded.
 
-Status: prepared for manual validation. Source review was performed against the bundled JSON and current stage/list code, but no app build, simulator run, screenshot, or VoiceOver pass has been observed for TASK#6.7.
+Status: prepared for manual validation. Source review was re-run against the bundled JSON and current stage/list code, but no app build, simulator run, screenshot, or VoiceOver pass has been observed for TASK#6.7.
 
 Acceptance sources:
 
@@ -26,7 +26,7 @@ Acceptance sources:
 Prerequisite notes:
 
 ```text
-OpenSpec `tasks.md` still lists TASK#6.4, TASK#6.5, TASK#6.6, and TASK#6.7 unchecked. Treat this checklist as ready-to-run validation until those implementation slices have observed app evidence.
+OpenSpec `tasks.md` still lists TASK#6.4, TASK#6.5, TASK#6.6, and TASK#6.7 unchecked. Treat this checklist as ready-to-run validation until those implementation slices have observed app evidence. This checklist is source-backed only until the user runs the app and records evidence.
 ```
 
 ## User-Run Signal
@@ -54,11 +54,12 @@ Evidence links or attachments:
 Run these source-review checks before or alongside manual app validation:
 
 - [x] Official stage order in JSON is Garage Inspection, Body Inspection, Chassis Inspection, EV Inspection, Egress Test, Rain Test.
-- [x] Garage source has 1 section, 9 test cases, 9 steps, and 1 measurement step.
-- [x] EV source has 8 sections, 119 test cases, 165 steps, 16 measurement steps, and 17 energized badged test cases.
-- [x] Egress source has 1 section, 1 test case, 21 steps, and 4 measurement steps.
-- [x] Rain source has 1 section, 1 energized badged test case, 22 steps, and 3 measurement steps.
+- [x] Garage source has `displayOrder: 1`, 1 section, 9 test cases, 9 steps, and 1 measurement step.
+- [x] EV source has `displayOrder: 4`, 8 sections, 119 test cases, 165 steps, 16 measurement steps, and 17 energized badged test cases.
+- [x] Egress source has `displayOrder: 5`, 1 section, 1 test case, 21 steps, and 4 measurement steps.
+- [x] Rain source has `displayOrder: 6`, 1 section, 1 energized badged test case, 22 steps, and 3 measurement steps.
 - [x] Source review found no `requiresEvidence: true` fields in the four bundled JSON files. Evidence-gating app checks should be recorded only if current implementation derives evidence requirements from another reviewed policy source or if a later content update adds evidence metadata.
+- [x] Source review confirmed `CAUTION: ENERGIZED` badges in EV and Rain JSON content, including EV energized cases `EV101` through `EV118` and the Rain test case.
 
 ## Garage Inspection
 
@@ -78,7 +79,7 @@ Expected JSON shape: stage order `1`, title `Garage Inspection`, section `Driver
 Observed result:
 
 ```text
-[not run]
+[not run; no app evidence captured for TASK#6.7]
 ```
 
 ## EV Inspection
@@ -108,7 +109,7 @@ Expected JSON shape: stage order `4`, title `EV Inspection`, 8 sections, 119 cas
 Observed result:
 
 ```text
-[not run]
+[not run; no app evidence captured for TASK#6.7]
 ```
 
 ## Egress Test
@@ -128,7 +129,7 @@ Expected JSON shape: stage order `5`, title `Egress Test`, section `Egress Proce
 Observed result:
 
 ```text
-[not run]
+[not run; no app evidence captured for TASK#6.7]
 ```
 
 ## Rain Test
@@ -151,7 +152,7 @@ Expected JSON shape: stage order `6`, title `Rain Test`, section `Rain Test Proc
 Observed result:
 
 ```text
-[not run]
+[not run; no app evidence captured for TASK#6.7]
 ```
 
 ## Feature Scenario Mapping

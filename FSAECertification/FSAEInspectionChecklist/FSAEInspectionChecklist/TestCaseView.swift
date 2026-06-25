@@ -25,6 +25,14 @@ struct TestCaseView: View {
         static let missingRequiredEvidence = "Required evidence metadata is missing."
         static let missingMeasurement = "Measurement value is required."
         static let invalidMeasurement = "Measurement is outside the allowed format or range."
+
+        enum Accessibility {
+            static let stageTitle = "Stage title"
+            static let validationSummary = "Test case validation summary"
+            static let stepRow = "Test case step"
+            static let status = "Step status"
+            static let energizedBadge = "Caution, energized dynamic test step"
+        }
     }
 
     let team: InspectionTeam
@@ -47,6 +55,7 @@ struct TestCaseView: View {
             VStack(spacing: 14) {
                 ForEach(testCase.steps) { stepState in
                     TestCaseStepCard(
+                        stageID: stage.id,
                         testCaseID: testCase.id,
                         state: stepState,
                         focusedNoteStepID: $focusedNoteStepID
@@ -95,6 +104,7 @@ private struct TestCaseHeader: View {
             ProgressView(value: testCase.progressSummary.fractionComplete)
                 .tint(testCase.validationSummary.isPassing ? Color.fsaeGreen : Color.fsaePrimary)
                 .accessibilityLabel(TestCaseView.Strings.stepProgress)
+                .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseValidationSummary(testCaseID: testCase.id).rawValue)
         }
     }
 }
@@ -137,9 +147,9 @@ private struct TestCaseValidationSummaryPanel: View {
                     .foregroundStyle(Color.fsaeSecondaryText)
             } else {
                 VStack(alignment: .leading, spacing: 8) {
-                    ForEach(testCase.validationSummary.issues) { issue in
+                    ForEach(testCase.validationSummary.issues, id: \.id) { issue in
                         Label {
-                            Text("\(issue.stepTitle): \(issue.message)")
+                            Text("\(issue.stepTitle): \(issue.localizedMessage)")
                         } icon: {
                             Image(systemName: "exclamationmark.triangle.fill")
                         }
@@ -155,6 +165,7 @@ private struct TestCaseValidationSummaryPanel: View {
 }
 
 private struct TestCaseStepCard: View {
+    let stageID: String
     let testCaseID: String
     let state: InspectionTestCaseStepViewState
     let focusedNoteStepID: FocusState<String?>.Binding
@@ -164,11 +175,13 @@ private struct TestCaseStepCard: View {
     @State private var measurementValue: String
 
     init(
+        stageID: String,
         testCaseID: String,
         state: InspectionTestCaseStepViewState,
         focusedNoteStepID: FocusState<String?>.Binding,
         openStepDetail: @escaping () -> Void
     ) {
+        self.stageID = stageID
         self.testCaseID = testCaseID
         self.state = state
         self.focusedNoteStepID = focusedNoteStepID
@@ -195,6 +208,17 @@ private struct TestCaseStepCard: View {
                         StatusPill(text: state.step.ruleReference, color: .fsaeGray)
                         if state.step.requiresEvidence {
                             StatusPill(text: TestCaseView.Strings.evidence, color: Color.fsaeBlue)
+                        }
+                        ForEach(state.safetyBadges, id: \.self) { badge in
+                            StatusPill(text: badge.displayName, color: .fsaeRed)
+                                .accessibilityLabel(badge.accessibilityLabel)
+                                .accessibilityValue(badge.accessibilityLabel)
+                                .accessibilityIdentifier(
+                                    InspectionAccessibilityIdentifier.testCaseStageEnergizedBadge(
+                                        stageID: stageID,
+                                        testCaseID: testCaseID
+                                    ).rawValue
+                                )
                         }
                     }
                     Text(state.step.title)
@@ -244,7 +268,7 @@ private struct TestCaseStepCard: View {
                 HStack {
                     TextField(TestCaseView.Strings.measurementValue, text: $measurementValue)
                         .textFieldStyle(.roundedBorder)
-                        .keyboardType(.decimalPad)
+                        .measurementKeyboard()
                         .accessibilityIdentifier(InspectionAccessibilityIdentifier.measurementField(stepID: state.id).rawValue)
                     Text(state.step.measurementRange?.unit.rawValue ?? "value")
                         .font(.subheadline)
@@ -314,8 +338,8 @@ private extension InspectionTestCaseStepStatus {
     }
 }
 
-private extension InspectionTestCaseValidationIssue {
-    var message: String {
+extension InspectionTestCaseValidationIssue {
+    var localizedMessage: String {
         switch code {
         case .missingRequiredOutcome: TestCaseView.Strings.missingRequiredOutcome
         case .missingInspectorNote: TestCaseView.Strings.missingInspectorNote

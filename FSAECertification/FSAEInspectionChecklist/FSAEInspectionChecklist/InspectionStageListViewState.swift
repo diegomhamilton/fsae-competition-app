@@ -82,7 +82,7 @@ struct InspectionStageTestCaseRowState: Identifiable, Equatable, Sendable {
     }
 
     var safetyBadges: [InspectionSafetyBadge] {
-        testCase.safetyBadges
+        testCase.displaySafetyBadges
     }
 
     var progressText: String {

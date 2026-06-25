@@ -172,6 +172,25 @@ enum InspectionSafetyBadge: String, Codable, Hashable, Sendable {
     }
 }
 
+extension Collection where Element == InspectionSafetyBadge {
+    func merging(_ badges: [InspectionSafetyBadge]) -> [InspectionSafetyBadge] {
+        var merged: [InspectionSafetyBadge] = []
+        for badge in self {
+            if !merged.contains(badge) {
+                merged.append(badge)
+            }
+        }
+
+        for badge in badges {
+            if !merged.contains(badge) {
+                merged.append(badge)
+            }
+        }
+
+        return merged
+    }
+}
+
 extension InspectionSafetyBadge {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -332,6 +351,38 @@ struct InspectionAccessibilityIdentifier: RawRepresentable, Equatable, Hashable,
 
     static func testCaseValidationSummary(testCaseID: String) -> Self {
         Self(rawValue: "inspection.testCase.\(testCaseID).validation.summary")
+    }
+
+    static func testCaseStageSummary(stageID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).summary")
+    }
+
+    static func testCaseStageValidationSummary(stageID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).validation.summary")
+    }
+
+    static func testCaseStageSubmitAction(stageID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).submit")
+    }
+
+    static func testCaseStageBlockedSubmitAction(stageID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).submit.blocked")
+    }
+
+    static func testCaseStageSection(stageID: String, sectionID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).section.\(sectionID)")
+    }
+
+    static func testCaseStageRow(stageID: String, testCaseID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).testCase.\(testCaseID).row")
+    }
+
+    static func testCaseStageStatus(stageID: String, testCaseID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).testCase.\(testCaseID).status")
+    }
+
+    static func testCaseStageEnergizedBadge(stageID: String, testCaseID: String) -> Self {
+        Self(rawValue: "inspection.stage.\(stageID).testCase.\(testCaseID).badge.energized")
     }
 
     static func testCaseStepRow(testCaseID: String, stepID: String) -> Self {
