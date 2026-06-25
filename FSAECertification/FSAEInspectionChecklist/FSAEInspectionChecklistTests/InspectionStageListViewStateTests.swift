@@ -68,6 +68,47 @@ struct InspectionStageListViewStateTests {
         #expect(row.ruleReferences == ["EV.8.1"])
         #expect(row.safetyBadges == [.energized])
     }
+
+    @Test("inspection-data stage list rows expose stable stage and test case identifiers")
+    func inspectionDataStageListRowsExposeStableStageAndTestCaseIdentifiers() {
+        let caseUnderTest = testCase(id: "EV101", displayOrder: 1)
+        let row = InspectionStageTestCaseRowState(
+            stageID: "04_ev",
+            testCase: caseUnderTest,
+            draft: TestCaseDraft(testCase: caseUnderTest)
+        )
+
+        #expect(
+            InspectionAccessibilityIdentifier.testCaseStageSection(stageID: "04_ev", sectionID: "04_ev.external").rawValue
+                == "inspection.stage.04_ev.section.04_ev.external"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.testCaseStageRow(stageID: "04_ev", testCaseID: "EV101").rawValue
+                == "inspection.stage.04_ev.testCase.EV101.row"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.testCaseStageStatus(stageID: "04_ev", testCaseID: "EV101").rawValue
+                == "inspection.stage.04_ev.testCase.EV101.status"
+        )
+        #expect(row.id == "EV101")
+    }
+
+    @Test("inspection-data stage list rows do not derive energized badges for non-EV test cases")
+    func inspectionDataStageListRowsDoNotDeriveEnergizedBadgesForNonEVTestCases() {
+        let caseUnderTest = testCase(
+            id: "RT08",
+            displayOrder: 8,
+            ruleReferences: ["EV.6.1"],
+            safetyBadges: []
+        )
+        let row = InspectionStageTestCaseRowState(
+            stageID: "01_garage",
+            testCase: caseUnderTest,
+            draft: TestCaseDraft(testCase: caseUnderTest)
+        )
+
+        #expect(row.safetyBadges.isEmpty)
+    }
 }
 
 private func section(

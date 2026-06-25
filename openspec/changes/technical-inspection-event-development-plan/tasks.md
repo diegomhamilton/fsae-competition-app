@@ -50,7 +50,7 @@
 - [x] 6.1 Add failing unit tests for `InspectionStage`, `InspectionSection`, bundled JSON decoding, display ordering, stable IDs, unsupported step type errors, and malformed JSON failures.
 - [x] 6.2 Implement `InspectionContentService` as an async service that loads the six bundled inspection JSON resources.
 - [x] 6.3 Implement the test case list view from bundled JSON content, grouped by stage sections and ordered by display order.
-- [ ] 6.4 Refactor `FullStageView` to render real stage content, stage progress, validation blockers, and submit controls from model state.
+- [x] 6.4 Refactor `FullStageView` to render real stage content, stage progress, validation blockers, and submit controls from model state.
 - [x] 6.5 Add energized dynamic test badge derivation for EV inspection steps and expose equivalent accessibility information.
 - [x] 6.6 Add structured `Strings` enums and stable accessibility identifiers to the stage and test case list files.
 - [ ] 6.7 Manually validate Garage, EV, Egress, and Rain stage content against `Design/Resources/InspectionEvent/*.json`.

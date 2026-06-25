@@ -89,3 +89,14 @@ struct MetricTile: View {
         }
     }
 }
+
+extension View {
+    @ViewBuilder
+    func measurementKeyboard() -> some View {
+        #if os(iOS)
+        keyboardType(.decimalPad)
+        #else
+        self
+        #endif
+    }
+}

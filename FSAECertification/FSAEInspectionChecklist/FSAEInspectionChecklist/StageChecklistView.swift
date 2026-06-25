@@ -49,6 +49,7 @@ struct StageChecklistView: View {
                 }
             }
         }
+        .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseStageSummary(stageID: stage.id).rawValue)
         .navigationTitle("Stage")
     }
 }
@@ -101,7 +102,7 @@ private struct StageSectionBlock: View {
                 .font(.headline)
                 .foregroundStyle(Color.fsaeText)
                 .accessibilityIdentifier(
-                    InspectionAccessibilityIdentifier.stageSection(
+                    InspectionAccessibilityIdentifier.testCaseStageSection(
                         stageID: section.rows.first?.stageID ?? "",
                         sectionID: section.id
                     ).rawValue
@@ -116,7 +117,7 @@ private struct StageSectionBlock: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier(
-                        InspectionAccessibilityIdentifier.stageTestCaseRow(
+                        InspectionAccessibilityIdentifier.testCaseStageRow(
                             stageID: row.stageID,
                             testCaseID: row.id
                         ).rawValue
@@ -204,6 +205,8 @@ private struct StageTestCaseRow: View {
             StatusPill(text: row.status.displayName, color: row.status.color)
             ForEach(row.safetyBadges, id: \.self) { badge in
                 StatusPill(text: badge.displayName, color: .fsaeRed)
+                    .accessibilityLabel(badge.accessibilityLabel)
+                    .accessibilityValue(badge.accessibilityLabel)
             }
         }
     }

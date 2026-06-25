@@ -11,71 +11,62 @@ struct ContentView: View {
 
     var body: some View {
         TabView(selection: $selectedScreen) {
-            NavigationStack {
-                SessionSelectorView(
-                    teams: MockInspectionData.teams,
-                    selectedTeam: $selectedTeam,
-                    selectedScreen: $selectedScreen
-                )
-            }
-            .tabItem {
-                Label("Sessions", systemImage: "person.2")
-            }
-            .tag(ProposedScreen.sessionSelector)
-
-            NavigationStack {
-                ActiveTeamDashboardView(
-                    team: selectedTeam,
-                    stages: stages,
-                    selectedStage: $selectedStage,
-                    selectedScreen: $selectedScreen,
-                    showingSwitchConfirmation: $showingSwitchConfirmation
-                )
-            }
-            .tabItem {
-                Label("Team", systemImage: "gauge.with.dots.needle.50percent")
-            }
-            .tag(ProposedScreen.dashboard)
-
-            NavigationStack {
-                StageChecklistView(
-                    team: selectedTeam,
-                    stage: selectedStage
-                ) { testCase in
-                    selectedTestCase = InspectionTestCaseViewState(testCase: testCase)
-                    selectedStep = testCase.orderedSteps.first ?? selectedStep
-                    selectedScreen = .testCase
+            Tab("Sessions", systemImage: "person.2", value: .sessionSelector) {
+                NavigationStack {
+                    SessionSelectorView(
+                        teams: MockInspectionData.teams,
+                        selectedTeam: $selectedTeam,
+                        selectedScreen: $selectedScreen
+                    )
                 }
             }
-            .tabItem {
-                Label("Stage", systemImage: "checklist")
-            }
-            .tag(ProposedScreen.stageChecklist)
 
-            NavigationStack {
-                TestCaseView(
-                    team: selectedTeam,
-                    stage: selectedStage,
-                    testCase: selectedTestCase,
-                    selectedStep: $selectedStep,
-                    selectedScreen: $selectedScreen
-                )
+            Tab("Team", systemImage: "gauge.with.dots.needle.50percent", value: .dashboard) {
+                NavigationStack {
+                    ActiveTeamDashboardView(
+                        team: selectedTeam,
+                        stages: stages,
+                        selectedStage: $selectedStage,
+                        selectedScreen: $selectedScreen,
+                        showingSwitchConfirmation: $showingSwitchConfirmation
+                    )
+                }
             }
-            .tabItem {
-                Label("Case", systemImage: "list.bullet.rectangle")
-            }
-            .tag(ProposedScreen.testCase)
 
-            NavigationStack {
-                StepOverviewView(
-                    step: selectedStep,
-                    selectedScreen: $selectedScreen
-                )
+            Tab("Stage", systemImage: "checklist", value: .stageChecklist) {
+                NavigationStack {
+                    StageChecklistView(
+                        team: selectedTeam,
+                        stage: selectedStage
+                    ) { testCase in
+                        selectedTestCase = InspectionTestCaseViewState(testCase: testCase)
+                        selectedStep = testCase.orderedSteps.first ?? selectedStep
+                        selectedScreen = .testCase
+                    }
+                }
             }
-            .tabItem {
-                Label("Step", systemImage: "square.and.pencil")
+
+            Tab("Case", systemImage: "list.bullet.rectangle", value: .testCase) {
+                NavigationStack {
+                    TestCaseView(
+                        team: selectedTeam,
+                        stage: selectedStage,
+                        testCase: selectedTestCase,
+                        selectedStep: $selectedStep,
+                        selectedScreen: $selectedScreen
+                    )
+                }
             }
-            .tag(ProposedScreen.stepDetail)
+
+            Tab("Step", systemImage: "square.and.pencil", value: .stepDetail) {
+                NavigationStack {
+                    StepOverviewView(
+                        step: selectedStep,
+                        safetyBadges: selectedStep.safetyBadges,
+                        selectedScreen: $selectedScreen
+                    )
+                }
+            }
         }
         .tint(Color.fsaePrimary)
         .preferredColorScheme(.light)

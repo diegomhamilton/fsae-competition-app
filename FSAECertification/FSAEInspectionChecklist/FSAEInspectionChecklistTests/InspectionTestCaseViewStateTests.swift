@@ -81,6 +81,38 @@ struct InspectionTestCaseViewStateTests {
                 == "inspection.testCase.rain-rml.validation.summary"
         )
         #expect(
+            InspectionAccessibilityIdentifier.testCaseStageSummary(stageID: "06_rain").rawValue
+                == "inspection.stage.06_rain.summary"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.testCaseStageValidationSummary(stageID: "06_rain").rawValue
+                == "inspection.stage.06_rain.validation.summary"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.testCaseStageSubmitAction(stageID: "06_rain").rawValue
+                == "inspection.stage.06_rain.submit"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.testCaseStageBlockedSubmitAction(stageID: "06_rain").rawValue
+                == "inspection.stage.06_rain.submit.blocked"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.testCaseStageSection(stageID: "06_rain", sectionID: "rain.primary").rawValue
+                == "inspection.stage.06_rain.section.rain.primary"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.testCaseStageRow(stageID: "06_rain", testCaseID: "rain-rml").rawValue
+                == "inspection.stage.06_rain.testCase.rain-rml.row"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.testCaseStageStatus(stageID: "06_rain", testCaseID: "rain-rml").rawValue
+                == "inspection.stage.06_rain.testCase.rain-rml.status"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.testCaseStageEnergizedBadge(stageID: "06_rain", testCaseID: "rain-rml").rawValue
+                == "inspection.stage.06_rain.testCase.rain-rml.badge.energized"
+        )
+        #expect(
             InspectionAccessibilityIdentifier.testCaseStepRow(testCaseID: "rain-rml", stepID: "RT-08").rawValue
                 == "inspection.testCase.rain-rml.step.RT-08.row"
         )
@@ -103,6 +135,32 @@ struct InspectionTestCaseViewStateTests {
         #expect(InspectionTestCaseStrings.title.key == "inspection.testCase.title")
         #expect(InspectionTestCaseStrings.validationSummary.key == "inspection.testCase.validationSummary")
         #expect(InspectionTestCaseStrings.stepStatus.key(for: "RT-08") == "inspection.testCase.RT-08.stepStatus")
+    }
+
+    @Test("inspection-data test case step view state inherits energized safety badges from EV content")
+    func inspectionDataTestCaseStepViewStateInheritsEnergizedSafetyBadgesFromEVContent() {
+        let step = InspectionTestStep(
+            id: "EV101.1",
+            code: "EV101-1",
+            displayOrder: 1,
+            ruleReference: "EV.7.6",
+            title: "Measure response",
+            type: .measurement,
+            content: "Measure response under energized conditions.",
+            requiredOutcome: true,
+            requiresEvidence: false
+        )
+        let state = InspectionTestCaseStepViewState(
+            displayOrder: 1,
+            step: step,
+            inheritedSafetyBadges: [.energized],
+            outcome: .pending,
+            notes: "",
+            measurementInput: "",
+            evidenceAttachmentCount: 0
+        )
+
+        #expect(state.safetyBadges == [.energized])
     }
 }
 
@@ -130,6 +188,7 @@ private func stepState(
             requiresEvidence: requiresEvidence,
             measurementRange: measurementRange
         ),
+        inheritedSafetyBadges: [],
         outcome: outcome,
         notes: notes,
         measurementInput: measurementInput,

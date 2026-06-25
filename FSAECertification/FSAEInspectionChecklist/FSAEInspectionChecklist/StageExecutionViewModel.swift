@@ -1,5 +1,4 @@
 import Foundation
-import Observation
 
 struct StageExecutionStepRowState: Identifiable, Equatable {
     let step: InspectionTestStep
@@ -29,7 +28,6 @@ struct StageExecutionStepRowState: Identifiable, Equatable {
 }
 
 @MainActor
-@Observable
 final class StageExecutionViewModel {
     let stage: InspectionStage
     private let steps: [InspectionTestStep]

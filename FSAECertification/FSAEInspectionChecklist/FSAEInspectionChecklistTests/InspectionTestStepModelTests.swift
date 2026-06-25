@@ -38,6 +38,36 @@ struct InspectionTestStepModelTests {
         #expect(step.safetyBadges == [.energized])
     }
 
+    @Test("Energized badge derivation preserves explicit badges and accessibility text")
+    func energizedBadgeDerivationPreservesExplicitBadgesAndAccessibilityText() {
+        let testCase = InspectionTestCase(
+            id: "EV101",
+            code: "EV101",
+            displayOrder: 100,
+            title: "IMD SHUTDOWN TEST",
+            ruleReferences: ["EV.7.6 / EV.5.11"],
+            safetyBadges: [.energized],
+            steps: [
+                InspectionTestStep(
+                    id: "EV101.1",
+                    code: "EV101-1",
+                    displayOrder: 1,
+                    ruleReference: "EV.7.6",
+                    title: "Measure response",
+                    type: .measurement,
+                    content: "Measure response under energized conditions.",
+                    requiredOutcome: true,
+                    requiresEvidence: false
+                )
+            ]
+        )
+
+        #expect(testCase.derivedSafetyBadges == [.energized])
+        #expect(testCase.displaySafetyBadges == [.energized])
+        #expect(InspectionSafetyBadge.energized.displayName == "CAUTION: ENERGIZED")
+        #expect(InspectionSafetyBadge.energized.accessibilityLabel == "Caution, energized dynamic test step")
+    }
+
     @Test("US-002 inspection outcomes model required completion and failed-note policy")
     func us002InspectionOutcomeModelsSubmissionAndFailedNotePolicy() {
         #expect(InspectionOutcome.pass.satisfiesRequiredOutcome)

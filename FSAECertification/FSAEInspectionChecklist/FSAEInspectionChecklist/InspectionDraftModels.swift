@@ -1,5 +1,4 @@
 import Foundation
-import Observation
 
 struct StepResult: Equatable, Sendable {
     var outcome: InspectionOutcome
@@ -28,7 +27,6 @@ struct StepResult: Equatable, Sendable {
 }
 
 @MainActor
-@Observable
 final class InMemoryDraftStore {
     private var resultsByStepID: [String: StepResult] = [:]
 

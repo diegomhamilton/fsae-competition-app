@@ -275,6 +275,7 @@ enum MockInspectionData {
                 InspectionTestCaseStepViewState(
                     displayOrder: 30,
                     step: steps[2],
+                    inheritedSafetyBadges: [],
                     outcome: steps[2].defaultOutcome,
                     notes: steps[2].defaultNote,
                     measurementInput: "",
@@ -283,6 +284,7 @@ enum MockInspectionData {
                 InspectionTestCaseStepViewState(
                     displayOrder: 10,
                     step: steps[0],
+                    inheritedSafetyBadges: [],
                     outcome: steps[0].defaultOutcome,
                     notes: steps[0].defaultNote,
                     measurementInput: "",
@@ -291,6 +293,7 @@ enum MockInspectionData {
                 InspectionTestCaseStepViewState(
                     displayOrder: 20,
                     step: steps[1],
+                    inheritedSafetyBadges: [],
                     outcome: steps[1].defaultOutcome,
                     notes: steps[1].defaultNote,
                     measurementInput: "",
@@ -299,6 +302,7 @@ enum MockInspectionData {
                 InspectionTestCaseStepViewState(
                     displayOrder: 40,
                     step: steps[3],
+                    inheritedSafetyBadges: [],
                     outcome: steps[3].defaultOutcome,
                     notes: steps[3].defaultNote,
                     measurementInput: "5.40",
