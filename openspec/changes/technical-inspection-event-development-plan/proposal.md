@@ -23,7 +23,7 @@ The inspection event workflow needs a concrete implementation plan that can rebu
 - `inspection-event-execution`: Covers login-to-session selection, active team inspection, stage/test case/test step navigation, Application Support JSON draft persistence, submission validation, snapshots, and recheck state transitions for technical inspection.
 - `inspection-event-json-content`: Covers loading, decoding, validating, and presenting bundled inspection stage JSON files as the offline source of truth.
 - `inspection-event-agent-workflow`: Covers the planned multi-agent implementation workflow, PR sequence, agent responsibilities, skills, persona usage, and git hygiene.
-- `inspection-event-accessibility-localization`: Covers accessibility identifiers, VoiceOver navigation, color/contrast requirements, XCUITest accessibility coverage, and localizable structured string constants.
+- `inspection-event-accessibility-localization`: Covers accessibility identifiers, VoiceOver navigation, color/contrast requirements, dedicated UI automation accessibility coverage, and localizable structured string constants.
 - `inspection-event-testing-strategy`: Covers TDD requirements, unit test scope, UI test scope, snapshot testing, mock JSON fixtures, positive/negative/edge cases, and the dedicated UI-test PR.
 
 ### Modified Capabilities
@@ -38,4 +38,4 @@ The inspection event workflow needs a concrete implementation plan that can rebu
 - Acceptance scenarios in `Design/UserStories/InspectionEvents/features/inspection_event_use_cases.feature`.
 - Local JSON files written under the app's Application Support directory during session/submission implementation.
 - Future documentation and planning files for `.agents/`, skill definitions, persona files, and implementation PR workflow.
-- Test targets for unit tests, XCUITests, and snapshot tests once the Xcode project/test structure is introduced.
+- Test targets for Swift Testing unit/integration tests, dedicated UI automation, and snapshot tests once the Xcode project/test structure is introduced.

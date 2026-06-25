@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inspection Event PR Review Plan</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #162026;
+      --muted: #5b6870;
+      --line: #ccd6dc;
+      --panel: #f6f8f9;
+      --accent: #0c6b58;
+      --warn: #a14d00;
+      --code: #eef3f1;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #ffffff;
+      line-height: 1.48;
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: 34px;
+      margin: 0 0 10px;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin: 34px 0 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin: 22px 0 8px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .lede {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 860px;
+    }
+
+    .band {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 18px 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #ffffff;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 12px 0 22px;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      background: var(--code);
+      font-weight: 700;
+    }
+
+    code {
+      background: var(--code);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+
+    ul {
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .accent {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .warn {
+      color: var(--warn);
+      font-weight: 700;
+    }
+
+    @media (max-width: 720px) {
+      main {
+        padding: 22px 14px 36px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        table-layout: auto;
+      }
+
+      th, td {
+        min-width: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Inspection Event PR Review Plan</h1>
+    <p class="lede">Use operations-first SPDD prompts to keep feature work reviewable without forcing every subtask into a tiny PR. The default is one feature branch and one PR per major feature, with task-sized commits and task branches only when review scope gets too broad.</p>
+
+    <section class="band">
+      <h2>Decision Rule</h2>
+      <div class="grid">
+        <div class="metric">
+          <strong>Stay in one PR</strong>
+          One product outcome, fewer than 10 changed files, one main reviewer context, and validation can be explained in one concise PR description.
+        </div>
+        <div class="metric">
+          <strong>Split into task branches</strong>
+          More than 10 changed files, multiple domains such as persistence plus UI plus tests, project-file churn, or high-complexity async/coordinator behavior.
+        </div>
+        <div class="metric">
+          <strong>Squash back before review</strong>
+          Use task branches for development isolation, then squash them into the feature branch so the final PR remains one coherent story.
+        </div>
+      </div>
+    </section>
+
+    <h2>Common Operations Across Prompts</h2>
+    <ul>
+      <li>Use OpenSpec tasks, design, specs, and the feature file as the acceptance source.</li>
+      <li>Write the PR description with <code>Summary</code>, <code>Scope</code>, <code>Notes</code>, and <code>Validation</code>.</li>
+      <li>Keep commits task-sized, preferably one subtask or tightly related pair per commit.</li>
+      <li>Add failing tests before implementation for model, service, coordinator, persistence, and validation behavior.</li>
+      <li>Use stable accessibility identifiers rather than localized labels in UI tests.</li>
+      <li>Do not claim manual validation unless actual app evidence is recorded.</li>
+      <li>Split when one PR mixes unrelated reviewer questions, even if the file count is below 10.</li>
+    </ul>
+
+    <h2>TASK#7 PR Operations</h2>
+    <p><span class="accent">Feature branch:</span> <code>codex/inspection-event-session-flow</code></p>
+    <table>
+      <thead>
+        <tr>
+          <th>PR Slice</th>
+          <th>Operation Summary</th>
+          <th>Review Minimizer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Coordinator tests and coordinators</td>
+          <td>Start with failing tests for login, routing, session start/resume, stage selection, team switching, and restore. Implement coordinators in task branches if needed.</td>
+          <td>Keep each coordinator reviewable. Split when all four coordinators plus tests exceed 10 files.</td>
+        </tr>
+        <tr>
+          <td>JSON persistence and schemas</td>
+          <td>Define Codable draft/submission schemas, then implement actor-isolated Application Support JSON persistence with one draft file per test case.</td>
+          <td>Separate schema review from atomic file-write behavior if both are large.</td>
+        </tr>
+        <tr>
+          <td>Store, submissions, rechecks, stickers</td>
+          <td>Add actor-isolated event store, immutable submission snapshots, recheck lifecycle, and sticker eligibility calculation.</td>
+          <td>Keep service PR slices independent when APIs are still changing.</td>
+        </tr>
+        <tr>
+          <td>Coordinator-backed views and validation</td>
+          <td>Bind existing SwiftUI views to coordinator-backed state and manually validate start, restore, submit, blocked submit, team switch, rechecks, and sticker eligibility.</td>
+          <td>Split UI binding from service implementation if view changes obscure logic review.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>TASK#8 PR Operations</h2>
+    <p><span class="accent">Feature branch:</span> <code>codex/inspection-event-ui-tests</code></p>
+    <table>
+      <thead>
+        <tr>
+          <th>PR Slice</th>
+          <th>Operation Summary</th>
+          <th>Review Minimizer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Launch fixtures</td>
+          <td>Add positive, negative, and edge mock launch states after stable identifiers and navigation hooks exist.</td>
+          <td>Split fixture plumbing if it touches runtime app code and test project setup together.</td>
+        </tr>
+        <tr>
+          <td>UI automation flows</td>
+          <td>Cover login, session selector, stage navigation, case navigation, step editing, validation blocking, team switching, recheck review, and sticker eligibility.</td>
+          <td>Group flows by reviewer context and avoid one giant UI test file.</td>
+        </tr>
+        <tr>
+          <td>Identifier assertions</td>
+          <td>Assert required controls and statuses through stable accessibility identifiers instead of localized labels.</td>
+          <td>Split if app code needs identifier fixes before test assertions can land.</td>
+        </tr>
+        <tr>
+          <td>Snapshots and coverage docs</td>
+          <td>Add practical snapshots and document coverage back to feature scenarios and personas.</td>
+          <td>Split baselines or dependency setup if snapshot diffs dominate the PR.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>TASK#9 PR Operations</h2>
+    <p><span class="accent">Branch:</span> <code>codex/inspection-event-docs-review-hygiene</code></p>
+    <table>
+      <thead>
+        <tr>
+          <th>PR Slice</th>
+          <th>Operation Summary</th>
+          <th>Review Minimizer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Frontmatter and report</td>
+          <td>Add YAML frontmatter and write the technical report overview for architecture, rechecks, testing, accessibility, and localization.</td>
+          <td>Keep documentation-only unless code examples require tested changes.</td>
+        </tr>
+        <tr>
+          <td>Tutorials</td>
+          <td>Add short tutorials for JSON fixtures, validation rules, accessibility identifiers, and persona scenarios.</td>
+          <td>Split tutorials by topic if examples become implementation work.</td>
+        </tr>
+        <tr>
+          <td>PR template and branch hygiene</td>
+          <td>Ensure PRs use Summary, Scope, Notes, Validation, manual notes, test output, feature scenario links, and squash guidance.</td>
+          <td>Apply as a checklist to implementation PRs instead of mixing broad docs rewrites into code PRs.</td>
+        </tr>
+        <tr>
+          <td>Commit hygiene</td>
+          <td>Split tasks across distinct commits so each completed task or related pair has a reviewable checkpoint.</td>
+          <td>Use commits for history, task branches for review isolation, and one feature PR for final review.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>TASK#10 PR Operations</h2>
+    <p><span class="accent">Feature branch:</span> <code>codex/inspection-event-local-judge-ux</code></p>
+    <table>
+      <thead>
+        <tr>
+          <th>PR Slice</th>
+          <th>Operation Summary</th>
+          <th>Review Minimizer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>UX audit and context cleanup</td>
+          <td>Audit key screens, replace prototype copy, and show persisted event/team/stage/test case context after relaunch.</td>
+          <td>Keep audit separate when it identifies multiple UI workstreams.</td>
+        </tr>
+        <tr>
+          <td>Judge action clarity</td>
+          <td>Refine test case and step metadata layouts so the next action, status, and rule context are clear in compact width and Dynamic Type.</td>
+          <td>Split reusable layout components from screen-specific behavior.</td>
+        </tr>
+        <tr>
+          <td>Actionable blockers and state semantics</td>
+          <td>Make blockers focus controls, persist corrections immediately, and treat Pending as derived incomplete state rather than a judge choice.</td>
+          <td>Separate model semantics from UI focus routing if the combined diff is complex.</td>
+        </tr>
+        <tr>
+          <td>Evidence, stopwatch, and validation</td>
+          <td>Add evidence metadata capture, egress stopwatch timing, and focused tests/manual validation for restore, focus, camera metadata, timing, keyboard, VoiceOver, and recovery paths.</td>
+          <td><span class="warn">Split strongly recommended</span> if media permissions, timer behavior, and validation docs appear in the same PR.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Operational Template</h2>
+    <div class="band">
+      <p><code>Summary</code>: one sentence naming the user-visible operation.</p>
+      <p><code>Scope</code>: changed files grouped by reviewer concern, not by implementation chronology.</p>
+      <p><code>Notes</code>: design constraints, split decisions, known limitations, and follow-ups.</p>
+      <p><code>Validation</code>: test command output or explicit manual validation evidence. Use <code>not run</code> honestly when evidence is not available.</p>
+    </div>
+  </main>
+</body>
+</html>

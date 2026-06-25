@@ -73,9 +73,9 @@
 ## 8. Dedicated UI Test and Snapshot PR
 
 - [ ] 8.1 Open a dedicated UI test PR after accessibility identifiers and stable navigation hooks exist.
-- [ ] 8.2 Add XCUITest launch fixtures for positive, negative, and edge states using mock data.
-- [ ] 8.3 Add XCUITests for login, session selector, stage navigation, test case navigation, test step editing, validation blocking, team switching, recheck review, and sticker eligibility.
-- [ ] 8.4 Add XCUITests that assert required controls and statuses are accessible by stable identifiers rather than localized labels.
+- [ ] 8.2 Add dedicated UI automation launch fixtures for positive, negative, and edge states using mock data.
+- [ ] 8.3 Add dedicated UI automation coverage for login, session selector, stage navigation, test case navigation, test step editing, validation blocking, team switching, recheck review, and sticker eligibility.
+- [ ] 8.4 Add dedicated UI automation checks that assert required controls and statuses are accessible by stable identifiers rather than localized labels.
 - [ ] 8.5 Add snapshot tests for test step, test case, stage list, validation blocked, recheck required, and sticker eligible states where practical.
 - [ ] 8.6 Document UI test coverage back to the `.feature` scenarios and personas.
 

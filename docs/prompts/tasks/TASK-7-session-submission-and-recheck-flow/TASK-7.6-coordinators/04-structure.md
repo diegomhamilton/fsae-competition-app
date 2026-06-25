@@ -1,0 +1,34 @@
+# Structure Prompt
+
+For this task:
+
+Task: `7.6 Break each coordinator into a different task PR: Implement AppCoordinator, InspectionEventCoordinator, SessionSelectionCoordinator, and InspectionExecutionCoordinator.`
+
+Define the file and PR structure.
+
+Include:
+
+- Files to inspect first
+- Files that may be added or edited
+- Test files or validation artifacts
+- PR description sections: `Summary`, `Scope`, `Notes`, `Validation`
+- Commit boundaries
+- Split criteria
+
+Prompt folder:
+
+`docs/prompts/tasks/TASK-7-session-submission-and-recheck-flow/TASK-7.6-coordinators`
+
+Expected task files or targets:
+
+- AppCoordinator
+- InspectionEventCoordinator
+- SessionSelectionCoordinator
+- InspectionExecutionCoordinator
+- tests
+
+Recommended commit title:
+
+`7.6 coordinators`
+
+Return the proposed file tree and explain which files are implementation, tests, fixtures, docs, or validation artifacts.
