@@ -63,7 +63,7 @@
 - [x] 7.4 Implement an actor-isolated JSON file persistence service that creates the Application Support folder tree, writes each test case draft atomically, deletes or archives stale draft files after submission, and restores drafts after app relaunch.
 - [x] 7.5 Group each team's submission files in a team-specific Application Support folder so submitted snapshots, rechecks, and sticker eligibility can be reviewed without mixing team contexts.
 - [x] 7.6 Break each coordinator into a different task PR: Implement `AppCoordinator`, `InspectionEventCoordinator`, `SessionSelectionCoordinator`, and `InspectionExecutionCoordinator`.
-- [ ] 7.7 Implement `InspectionEventStore` as an actor-isolated event/session source of truth with scoped queries by event, team, session, user access, and the JSON file persistence service.
+- [x] 7.7 Implement `InspectionEventStore` as an actor-isolated event/session source of truth with scoped queries by event, team, session, user access, and the JSON file persistence service.
 - [ ] 7.8 Merge into 7.6 PRs w/ coordinator: Bind `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `StepOverviewView`, and `TeamSwitchConfirmationView` to coordinator-backed state.
 - [ ] 7.9 Implement `SubmissionSnapshotService` for immutable stage submission snapshots backed by the team submission JSON folder.
 - [ ] 7.10 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.

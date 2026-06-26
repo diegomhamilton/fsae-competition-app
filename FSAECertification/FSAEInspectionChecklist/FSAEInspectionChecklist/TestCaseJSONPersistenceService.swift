@@ -223,6 +223,26 @@ actor TestCaseJSONPersistenceService {
         return try decoder.decode(TestCaseDraftFile.self, from: data)
     }
 
+    func loadDraftFiles(context: InspectionPersistenceContext) throws -> [TestCaseDraftFile] {
+        let directoryURL = draftDirectoryURL(context: context)
+        guard fileManager.fileExists(atPath: directoryURL.path) else {
+            return []
+        }
+
+        let fileURLs = try fileManager.contentsOfDirectory(
+            at: directoryURL,
+            includingPropertiesForKeys: nil
+        )
+
+        return try fileURLs
+            .filter { $0.pathExtension == "json" }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+            .map { fileURL in
+                let data = try Data(contentsOf: fileURL)
+                return try decoder.decode(TestCaseDraftFile.self, from: data)
+            }
+    }
+
     func deleteDraft(
         context: InspectionPersistenceContext,
         testCaseID: String
