@@ -99,6 +99,32 @@ struct InspectionCoordinatorTests {
         #expect(switchedExecution.sessionContext.team.id == 28)
         #expect(switchedExecution.sessionContext.activeStageID == "garage")
     }
+
+    @Test("TASK#7.8 coordinator selected state feeds backed views")
+    func coordinatorSelectedStateFeedsBackedViews() throws {
+        let coordinator = AppCoordinator(teams: teams(), stages: stages())
+        coordinator.completeMockLogin()
+        #expect(coordinator.selectTeam(id: 28))
+
+        #expect(coordinator.openStage(id: "rain"))
+        let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        let stage = try #require(execution.activeStage)
+        let stageState = FullStageViewState(stage: stage)
+
+        #expect(stageState.stageID == "rain")
+        #expect(stageState.stageTitle == "Rain Test")
+
+        #expect(coordinator.openTestCase(id: "rain-rml"))
+        let testCase = try #require(execution.activeTestCase)
+        let testCaseState = InspectionTestCaseViewState(testCase: testCase)
+
+        #expect(testCaseState.id == "rain-rml")
+        #expect(testCaseState.steps.map(\.id) == ["RT-07", "RT-08"])
+
+        #expect(coordinator.openTestStep(id: "RT-08"))
+        #expect(execution.activeStep?.id == "RT-08")
+        #expect(coordinator.selectedScreen == .stepDetail)
+    }
 }
 
 private func teams() -> [InspectionTeam] {

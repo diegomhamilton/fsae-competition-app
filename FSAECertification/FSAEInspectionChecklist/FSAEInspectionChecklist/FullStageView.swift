@@ -28,8 +28,6 @@ struct FullStageView: View {
     let submitStage: () -> Void
     let openBlockingRoute: (FullStageBlockingRoute) -> Void
 
-    @State private var viewState: FullStageViewState
-
     init(
         team: InspectionTeam,
         stage: InspectionStage,
@@ -44,11 +42,10 @@ struct FullStageView: View {
         self.openTestCase = openTestCase
         self.submitStage = submitStage
         self.openBlockingRoute = openBlockingRoute
-        _viewState = State(initialValue: FullStageViewState(stage: stage, draftsByTestCaseID: draftsByTestCaseID))
     }
 
     var body: some View {
-        let state = viewState
+        let state = FullStageViewState(stage: stage, draftsByTestCaseID: draftsByTestCaseID)
 
         ScreenShell(
             eyebrow: Strings.eyebrow,

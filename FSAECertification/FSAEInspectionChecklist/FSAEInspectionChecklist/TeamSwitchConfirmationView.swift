@@ -1,13 +1,14 @@
 import SwiftUI
 
 struct TeamSwitchConfirmationView: View {
-    let currentTeam: InspectionTeam
-    let targetTeam: InspectionTeam
-    @Binding var isPresented: Bool
-    @Binding var selectedTeam: InspectionTeam
-    @Binding var selectedScreen: ProposedScreen
+    @ObservedObject var coordinator: InspectionExecutionCoordinator
+    let cancelSwitch: () -> Void
+    let confirmSwitch: () -> Void
 
     var body: some View {
+        let currentTeam = coordinator.activeTeam
+        let targetTeam = coordinator.pendingSwitchTarget ?? coordinator.activeTeam
+
         VStack(alignment: .leading, spacing: 20) {
             Capsule()
                 .fill(Color.black.opacity(0.18))
@@ -34,15 +35,13 @@ struct TeamSwitchConfirmationView: View {
 
             HStack {
                 Button("Cancel") {
-                    isPresented = false
+                    cancelSwitch()
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
 
                 Button {
-                    selectedTeam = targetTeam
-                    selectedScreen = .dashboard
-                    isPresented = false
+                    confirmSwitch()
                 } label: {
                     Label("Save & Switch", systemImage: "checkmark.circle.fill")
                 }

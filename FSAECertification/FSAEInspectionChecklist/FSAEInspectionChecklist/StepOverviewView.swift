@@ -16,9 +16,8 @@ struct StepOverviewView: View {
         static let optional = "Optional"
     }
 
-    let step: InspectionTestStep
-    let safetyBadges: [InspectionSafetyBadge]
-    @Binding var selectedScreen: ProposedScreen
+    @ObservedObject var coordinator: InspectionExecutionCoordinator
+    let completeStep: () -> Void
     @State private var selectedOutcome = InspectionOutcome.pending
     @State private var measurementValue = "4.72"
     @State private var noteText = "Observed by lead judge at station 3."
@@ -26,6 +25,8 @@ struct StepOverviewView: View {
     @FocusState private var isNotesFocused: Bool
 
     var body: some View {
+        let step = currentStep
+
         ScreenShell(
             eyebrow: Strings.eyebrow,
             title: step.title,
@@ -40,7 +41,7 @@ struct StepOverviewView: View {
                         HStack {
                             StatusPill(text: step.type.label, color: step.type.color)
                             StatusPill(text: step.ruleReference, color: .fsaeGray)
-                            ForEach(safetyBadges, id: \.self) { badge in
+                            ForEach(step.safetyBadges, id: \.self) { badge in
                                 StatusPill(text: badge.displayName, color: .fsaeRed)
                                     .accessibilityLabel(badge.accessibilityLabel)
                                     .accessibilityValue(badge.accessibilityLabel)
@@ -105,7 +106,7 @@ struct StepOverviewView: View {
             )
 
             Button {
-                selectedScreen = .stageChecklist
+                completeStep()
             } label: {
                 Label(Strings.done, systemImage: "checkmark.circle.fill")
                     .frame(maxWidth: .infinity)
@@ -129,7 +130,12 @@ struct StepOverviewView: View {
         .navigationTitle("Step")
     }
 
+    private var currentStep: InspectionTestStep {
+        coordinator.activeStep ?? MockInspectionData.steps[0]
+    }
+
     private var measurementHelpText: String {
+        let step = currentStep
         guard let range = step.measurementRange else {
             return "Mock schema: numeric value with precision and range validation."
         }

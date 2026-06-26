@@ -1,9 +1,8 @@
 import SwiftUI
 
 struct SessionSelectorView: View {
-    let teams: [InspectionTeam]
-    @Binding var selectedTeam: InspectionTeam
-    @Binding var selectedScreen: ProposedScreen
+    @ObservedObject var coordinator: SessionSelectionCoordinator
+    let selectTeam: (Int) -> Void
 
     var body: some View {
         ScreenShell(
@@ -12,10 +11,9 @@ struct SessionSelectorView: View {
             subtitle: "Judge-facing roster with clear resume status and current inspection position."
         ) {
             VStack(spacing: 12) {
-                ForEach(teams) { team in
+                ForEach(coordinator.teams) { team in
                     Button {
-                        selectedTeam = team
-                        selectedScreen = .dashboard
+                        selectTeam(team.id)
                     } label: {
                         HStack(spacing: 14) {
                             VStack(alignment: .leading, spacing: 6) {
@@ -43,7 +41,7 @@ struct SessionSelectorView: View {
                         .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))
                         .overlay {
                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(selectedTeam == team ? Color.fsaePrimary : Color.fsaeBorder, lineWidth: selectedTeam == team ? 2 : 1)
+                                .stroke(coordinator.selectedTeamID == team.id ? Color.fsaePrimary : Color.fsaeBorder, lineWidth: coordinator.selectedTeamID == team.id ? 2 : 1)
                         }
                     }
                     .buttonStyle(.plain)
