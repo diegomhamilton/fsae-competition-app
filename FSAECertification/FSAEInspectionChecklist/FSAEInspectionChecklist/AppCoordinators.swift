@@ -130,6 +130,7 @@ final class AppCoordinator: ObservableObject {
 
     func updateStages(_ stages: [InspectionStage]) {
         eventCoordinator.updateStages(stages)
+        objectWillChange.send()
     }
 }
 
