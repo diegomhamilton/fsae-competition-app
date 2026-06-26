@@ -345,6 +345,15 @@ actor TestCaseJSONPersistenceService {
         return try decoder.decode(SubmittedStageSnapshotFile.self, from: data)
     }
 
+    func submissionExists(
+        context: InspectionPersistenceContext,
+        submissionID: String
+    ) -> Bool {
+        fileManager.fileExists(
+            atPath: submissionDirectoryURL(context: context, submissionID: submissionID).path
+        )
+    }
+
     func submissionsDirectoryURL(context: InspectionPersistenceContext) -> URL {
         sessionDirectoryURL(context: context)
             .appendingPathComponent("submissions")
