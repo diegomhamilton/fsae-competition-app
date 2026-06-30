@@ -2,7 +2,7 @@
 
 Task: `7.10 Implement RecheckService so failed test cases create open recheck items and accepted reviews close them.`
 
-Purpose: Implement recheck lifecycle from failed test case to open item to accepted review closure.
+Purpose: Implement recheck lifecycle from failed test case to open item to accepted review closure after stage submission service boundaries are in place.
 
 Run these prompts in order:
 
@@ -18,7 +18,7 @@ Operation focus:
 
 - Likely files or targets: RecheckService; recheck models; tests
 - Validation: Swift Testing for failed case creation, open state, accepted review closure, and references.
-- Split trigger: Split if UI review flow is introduced with service behavior.
+- Split trigger: Split if UI review flow or coordinator/view draft integration is introduced with service behavior.
 
 Expected PR title:
 
@@ -34,6 +34,7 @@ Common instructions:
 - Keep Application Support JSON storage scoped by event, team, session, stage, and test case ID.
 - Use Swift Testing for unit and integration checks.
 - Use actor isolation for persistence, event-store, and mutable local state boundaries.
+- Do not use recheck work to backfill coordinator/view draft save/restore.
 - Keep submitted snapshots immutable; corrections flow through rechecks.
 - Use task-sized commits and split if the PR crosses more than 10 files or mixes unrelated review contexts.
 - Do not claim manual validation unless actual app evidence is recorded.

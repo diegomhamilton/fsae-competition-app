@@ -21,10 +21,10 @@ For each operation, include:
 
 Operation-first PR summary:
 
-- Summary: Implement immutable stage submission snapshot creation backed by team submission JSON folders.
+- Summary: Implement immutable stage submission snapshot creation backed by team submission JSON folders after coordinators/views already use InspectionEventStore for draft save/restore.
 - Scope: SubmissionSnapshotService; submission models; tests
-- Notes: Split if persistence cleanup or recheck creation gets mixed in.
-- Validation: Swift Testing for snapshot creation, immutability, and team path placement.
+- Notes: Split if persistence cleanup, recheck creation, or coordinator/view store integration gets mixed in.
+- Validation: Swift Testing for snapshot creation, immutability, and team path placement; do not backfill coordinator/view draft wiring here.
 
 Task-specific operation plan:
 

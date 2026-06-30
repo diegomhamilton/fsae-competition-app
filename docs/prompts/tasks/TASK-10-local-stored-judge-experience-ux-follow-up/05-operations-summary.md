@@ -4,7 +4,7 @@ Use this operation-first SPDD prompt for local stored judge experience UX follow
 
 | Task | PR Operation Summary | Likely Files | Validation | Split Trigger |
 | --- | --- | --- | --- | --- |
-| 10.1 | Audit session selector, dashboard, full stage, test case, step overview, and team switch views for minimum UX polish after TASK#7. | Audit doc, view notes, issue checklist | Manual audit mapped to judge flow. | Keep audit separate if it finds broad UI changes. |
+| 10.1 | Audit session selector, dashboard, full stage, test case, step overview, and team switch views for minimum UX polish after TASK#7 links coordinators/views to store-backed draft save/restore. | Audit doc, view notes, issue checklist | Manual audit mapped to judge flow. | Keep audit separate if it finds broad UI changes. |
 | 10.2 | Replace prototype headers/backgrounds and mock copy with persisted event/team/stage/test case context. | SwiftUI views, Strings enums, tests/previews | Relaunch restore shows clear active local session. | Split if visual treatment and state plumbing both change heavily. |
 | 10.3 | Refine test case screen so next judge action is dominant with compact summary, actionable validation, and focused one-step editor. | `TestCaseView`, view state/tests | Manual and unit checks for one-step and multi-step cases. | Split if editor refactor touches step models or persistence. |
 | 10.4 | Refactor step metadata layout for compact widths and Dynamic Type: ID/title/status first, rule references secondary, compact open action. | `StepOverviewView`, related components | Dynamic Type and compact width checks. | Split if rule reference presentation becomes a reusable component. |
@@ -31,6 +31,7 @@ Polishes the stored local judge workflow so the active inspection context, next 
 ## Notes
 
 - Prototype copy is replaced with persisted inspection context.
+- Stored context means coordinators/views are wired to the store, not only that a store type exists.
 - Validation corrections persist immediately to the local draft JSON.
 - Media capture remains metadata-first until storage policy is reviewed.
 

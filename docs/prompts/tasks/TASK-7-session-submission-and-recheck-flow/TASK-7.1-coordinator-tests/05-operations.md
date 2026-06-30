@@ -21,10 +21,10 @@ For each operation, include:
 
 Operation-first PR summary:
 
-- Summary: Add failing Swift Testing coverage for session-flow coordinator behavior before coordinator implementation.
-- Scope: FSAEInspectionChecklistTests/*CoordinatorTests.swift; coordinator fixtures/helpers
-- Notes: Split if coordinator fixtures or navigation helpers exceed one focused test file group.
-- Validation: Swift Testing failures first, then passing tests after coordinator implementation.
+- Summary: Add failing Swift Testing coverage for session-flow coordinator behavior before coordinator implementation, including store-backed draft save/restore.
+- Scope: FSAEInspectionChecklistTests/*CoordinatorTests.swift; coordinator fixtures/helpers; store-backed draft fixtures
+- Notes: Split if coordinator fixtures, store fixtures, or navigation helpers exceed one focused test file group; keep stage submission wiring out of scope.
+- Validation: Swift Testing failures first, then passing tests after coordinator/view store integration.
 
 Task-specific operation plan:
 

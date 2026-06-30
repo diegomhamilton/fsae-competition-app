@@ -2,7 +2,7 @@
 
 Task: `7.12 Manually validate start, resume after app relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team submission folders against the .feature file.`
 
-Purpose: Prepare and run manual validation for the full local session, submission, recheck, sticker, and JSON-folder workflow.
+Purpose: Prepare and run manual validation for the full local session, submission, recheck, sticker, and JSON-folder workflow, starting with proof that coordinators/views use InspectionEventStore for draft save/restore.
 
 Run these prompts in order:
 
@@ -17,7 +17,7 @@ Run these prompts in order:
 Operation focus:
 
 - Likely files or targets: Manual checklist; PR validation note; feature scenario map
-- Validation: User-run app evidence only; static review can prepare checklist.
+- Validation: User-run app evidence only; static review can prepare checklist. Confirm draft save/restore before validating submission/recheck/sticker flows.
 - Split trigger: Keep as documentation/validation PR if implementation evidence is not available.
 
 Expected PR title:
@@ -34,6 +34,7 @@ Common instructions:
 - Keep Application Support JSON storage scoped by event, team, session, stage, and test case ID.
 - Use Swift Testing for unit and integration checks.
 - Use actor isolation for persistence, event-store, and mutable local state boundaries.
+- Do not mark submission/recheck validation complete if coordinator/view draft save/restore is not wired.
 - Keep submitted snapshots immutable; corrections flow through rechecks.
 - Use task-sized commits and split if the PR crosses more than 10 files or mixes unrelated review contexts.
 - Do not claim manual validation unless actual app evidence is recorded.

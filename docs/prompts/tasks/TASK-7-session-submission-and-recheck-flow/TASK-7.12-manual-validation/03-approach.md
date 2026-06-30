@@ -18,11 +18,11 @@ Include:
 
 Preferred operation:
 
-Prepare and run manual validation for the full local session, submission, recheck, sticker, and JSON-folder workflow.
+Prepare and run manual validation for the full local session, submission, recheck, sticker, and JSON-folder workflow, starting with proof that coordinators/views use InspectionEventStore for draft save/restore.
 
 Validation expectation:
 
-User-run app evidence only; static review can prepare checklist.
+User-run app evidence only; static review can prepare checklist. Confirm draft save/restore before validating submission/recheck/sticker flows.
 
 Split trigger:
 

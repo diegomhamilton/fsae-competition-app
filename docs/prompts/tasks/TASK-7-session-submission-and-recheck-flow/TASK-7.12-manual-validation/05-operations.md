@@ -21,10 +21,10 @@ For each operation, include:
 
 Operation-first PR summary:
 
-- Summary: Prepare and run manual validation for the full local session, submission, recheck, sticker, and JSON-folder workflow.
+- Summary: Prepare and run manual validation for the full local session, submission, recheck, sticker, and JSON-folder workflow, starting with proof that coordinators/views use InspectionEventStore for draft save/restore.
 - Scope: Manual checklist; PR validation note; feature scenario map
 - Notes: Keep as documentation/validation PR if implementation evidence is not available.
-- Validation: User-run app evidence only; static review can prepare checklist.
+- Validation: User-run app evidence only; static review can prepare checklist. Confirm draft save/restore before validating submission/recheck/sticker flows.
 
 Task-specific operation plan:
 

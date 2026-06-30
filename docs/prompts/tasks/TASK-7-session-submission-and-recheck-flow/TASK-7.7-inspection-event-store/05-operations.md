@@ -21,10 +21,10 @@ For each operation, include:
 
 Operation-first PR summary:
 
-- Summary: Implement actor-isolated InspectionEventStore with scoped event/team/session/user queries backed by persistence.
+- Summary: Verify or implement actor-isolated InspectionEventStore with scoped event/team/session/user queries backed by persistence.
 - Scope: InspectionEventStore; query models; store tests
 - Notes: Split from coordinators if store APIs are still changing.
-- Validation: Swift Testing for scoped queries, access isolation, and async mutation behavior.
+- Validation: Swift Testing for scoped queries, access isolation, async mutation behavior, and explicit success events if success must be queried outside signpost intervals.
 
 Task-specific operation plan:
 

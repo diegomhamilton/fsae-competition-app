@@ -18,14 +18,14 @@ Include:
 
 Preferred operation:
 
-Bind existing SwiftUI views to coordinator-backed state without moving flow logic into views.
+Bind existing SwiftUI views through coordinators to store-backed draft save/restore without moving flow logic into views.
 
 Validation expectation:
 
-Swift Testing for view helpers or coordinator state; manual smoke notes for navigation.
+Swift Testing for view helpers or coordinator state; manual smoke notes for navigation and draft restore; exclude stage submission wiring.
 
 Split trigger:
 
-Split if more than two view files and two coordinator files change together.
+Split if more than two view files and two coordinator files change together, unless this is the first integration PR linking coordinators/views to the store.
 
 Do not build automatically unless explicitly asked.

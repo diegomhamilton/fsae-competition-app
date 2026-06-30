@@ -18,14 +18,14 @@ Include:
 
 Preferred operation:
 
-Add failing Swift Testing coverage for session-flow coordinator behavior before coordinator implementation.
+Add failing Swift Testing coverage for session-flow coordinator behavior before coordinator implementation, including store-backed draft save/restore.
 
 Validation expectation:
 
-Swift Testing failures first, then passing tests after coordinator implementation.
+Swift Testing failures first, then passing tests after coordinator/view store integration; stage submission wiring remains out of scope.
 
 Split trigger:
 
-Split if coordinator fixtures or navigation helpers exceed one focused test file group.
+Split if coordinator fixtures, store fixtures, or navigation helpers exceed one focused test file group.
 
 Do not build automatically unless explicitly asked.

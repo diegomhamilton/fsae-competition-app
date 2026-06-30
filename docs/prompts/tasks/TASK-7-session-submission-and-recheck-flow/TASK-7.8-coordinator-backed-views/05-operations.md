@@ -21,10 +21,10 @@ For each operation, include:
 
 Operation-first PR summary:
 
-- Summary: Bind existing SwiftUI views to coordinator-backed state without moving flow logic into views.
-- Scope: SessionSelectorView; ActiveTeamDashboardView; FullStageView; StepOverviewView; TeamSwitchConfirmationView; coordinators
-- Notes: Split if more than two view files and two coordinator files change together.
-- Validation: Swift Testing for view helpers or coordinator state; manual smoke notes for navigation.
+- Summary: Bind existing SwiftUI views through coordinators to store-backed draft save/restore without moving flow logic into views.
+- Scope: SessionSelectorView; ActiveTeamDashboardView; FullStageView; StepOverviewView; TeamSwitchConfirmationView; coordinators; InspectionEventStore integration
+- Notes: Split if more than two view files and two coordinator files change together, unless this is the first integration PR linking coordinators/views to the store; keep stage submission wiring out of scope.
+- Validation: Swift Testing for view helpers or coordinator state; manual smoke notes for navigation and draft restore.
 
 Task-specific operation plan:
 

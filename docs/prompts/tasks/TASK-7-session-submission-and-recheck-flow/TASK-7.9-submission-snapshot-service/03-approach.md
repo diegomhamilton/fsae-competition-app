@@ -18,14 +18,14 @@ Include:
 
 Preferred operation:
 
-Implement immutable stage submission snapshot creation backed by team submission JSON folders.
+Implement immutable stage submission snapshot creation backed by team submission JSON folders after coordinators/views already use InspectionEventStore for draft save/restore.
 
 Validation expectation:
 
-Swift Testing for snapshot creation, immutability, and team path placement.
+Swift Testing for snapshot creation, immutability, and team path placement; do not backfill coordinator/view draft wiring here.
 
 Split trigger:
 
-Split if persistence cleanup or recheck creation gets mixed in.
+Split if persistence cleanup, recheck creation, or coordinator/view store integration gets mixed in.
 
 Do not build automatically unless explicitly asked.

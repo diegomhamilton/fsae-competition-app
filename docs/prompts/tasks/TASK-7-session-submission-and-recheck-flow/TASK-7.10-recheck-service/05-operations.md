@@ -21,9 +21,9 @@ For each operation, include:
 
 Operation-first PR summary:
 
-- Summary: Implement recheck lifecycle from failed test case to open item to accepted review closure.
+- Summary: Implement recheck lifecycle from failed test case to open item to accepted review closure after stage submission service boundaries are in place.
 - Scope: RecheckService; recheck models; tests
-- Notes: Split if UI review flow is introduced with service behavior.
+- Notes: Split if UI review flow or coordinator/view draft integration is introduced with service behavior.
 - Validation: Swift Testing for failed case creation, open state, accepted review closure, and references.
 
 Task-specific operation plan:
