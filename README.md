@@ -6,6 +6,15 @@ This is based on the Inspection Sheet PDF document available in the `context/` f
 
 ---
 
+## Documentation
+
+- [Inspection event technical overview](docs/inspection-event/README.md)
+- [Inspection event tutorials](docs/inspection-event/tutorials.md)
+- [Review hygiene and PR rules](docs/inspection-event/review-hygiene.md)
+- [Tentpole 3 organization plan](docs/inspection-event/organization-plan.md)
+
+---
+
 ## Features
 
 - **6 inspection stages** covering the full FSAE EV technical inspection sequence
