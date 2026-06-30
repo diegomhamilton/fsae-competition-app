@@ -2,7 +2,11 @@
 
 Task group: Local Stored Judge Experience UX Follow-up
 
-Purpose: polish the fully local, stored judge workflow after TASK#7 so judges can complete inspections without prototype copy, unclear navigation, or dead-end states.
+Purpose: polish the fully local, stored judge workflow after the TASK#7 foundation so judges can complete inspections without prototype copy, unclear navigation, or dead-end states.
+
+Tentpole 2 scope note:
+
+- TASK#7.10 recheck service, TASK#7.11 sticker eligibility, and TASK#7.12 manual validation are executed under this tentpole because they complete judge-facing workflow and validation behavior.
 
 Primary prompt:
 
@@ -22,6 +26,9 @@ Start with an audit PR or commit, then split UX work into focused task branches 
 
 Child prompt runs:
 
+- `../TASK-7-session-submission-and-recheck-flow/TASK-7.10-recheck-service/`
+- `../TASK-7-session-submission-and-recheck-flow/TASK-7.11-sticker-eligibility/`
+- `../TASK-7-session-submission-and-recheck-flow/TASK-7.12-manual-validation/`
 - `TASK-10.1-ux-audit/`
 - `TASK-10.2-stable-context-copy/`
 - `TASK-10.3-test-case-next-action/`
@@ -32,4 +39,3 @@ Child prompt runs:
 - `TASK-10.8-camera-evidence-metadata/`
 - `TASK-10.9-egress-stopwatch/`
 - `TASK-10.10-focused-tests-manual-validation/`
-

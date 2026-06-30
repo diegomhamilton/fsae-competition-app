@@ -1,6 +1,8 @@
 # TASK#7 Operations Summary Prompt
 
-Use this as the operation-first SPDD prompt for TASK#7 subtasks. For each row, produce a PR-ready operation plan with exact edit scope, tests, manual validation notes, commit boundary, and review risk.
+Use this as the operation-first SPDD prompt for TASK#7 foundation subtasks. For each row, produce a PR-ready operation plan with exact edit scope, tests, manual validation notes, commit boundary, and review risk.
+
+Scope note: TASK#7 owns foundation work through 7.9. Items 7.10, 7.11, and 7.12 are retained here for traceability but are Tentpole 2 continuation work because they complete judge-facing recheck, sticker eligibility, and manual validation flows.
 
 | Task | PR Operation Summary | Likely Files | Validation | Split Trigger |
 | --- | --- | --- | --- | --- |
@@ -13,16 +15,16 @@ Use this as the operation-first SPDD prompt for TASK#7 subtasks. For each row, p
 | 7.7 | Verify or implement `InspectionEventStore` as actor-isolated source of truth with scoped queries by event, team, session, user access, and persistence service. | Store service, store tests, query models | Store query tests, access scoping tests, async mutation tests; add explicit success events if success must be queried as an event rather than inferred from signpost intervals. | Split from coordinators if store APIs are still changing. |
 | 7.8 | Bind session, dashboard, stage, step overview, and team switch views through coordinators to store-backed draft save/restore. | SwiftUI views, coordinators, store integration, previews/tests | UI-facing unit/view helper tests plus manual smoke notes for draft restore; exclude stage submission wiring. | Split if more than two view files and two coordinator files change together, unless this is the first integration PR linking coordinators/views to the store. |
 | 7.9 | Implement `SubmissionSnapshotService` for immutable stage submission snapshots backed by team submission JSON folders after store-backed draft save/restore is linked. | Submission service, models, tests | Snapshot creation tests and immutability tests; do not backfill coordinator/view draft wiring here. | Split if persistence cleanup, recheck creation, or coordinator/view integration gets mixed in. |
-| 7.10 | Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them after stage submission service boundaries are in place. | Recheck service, recheck models, tests | Failed case creates open item; accepted review closes item. | Split if UI review flow or coordinator/view draft integration is introduced with service behavior. |
-| 7.11 | Implement sticker eligibility from submitted stages and open rechecks after submission/recheck services are backed by persisted data. | Eligibility service/model, tests | Eligibility matrix tests for submitted/missing/open-recheck states. | Split if eligibility display UI or coordinator/view draft integration changes are included. |
-| 7.12 | Manually validate start, restore after relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team folders against the feature file. | Checklist, PR validation note | User-run app evidence only; confirm coordinators/views are linked to store-backed draft save/restore before validating submission/recheck flows. | Keep as documentation/validation PR if implementation evidence is not available. |
+| 7.10 | **Moved to Tentpole 2.** Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them after stage submission service boundaries are in place. | Recheck service, recheck models, tests, judge-facing recheck review surfaces as needed | Failed case creates open item; accepted review closes item; UX state maps to Task 10/Tentpole 2 recovery flow. | Split if service behavior and UI review flow cannot be reviewed together. |
+| 7.11 | **Moved to Tentpole 2.** Implement sticker eligibility from submitted stages and open rechecks after submission/recheck services are backed by persisted data. | Eligibility service/model, tests, team/stage eligibility display as needed | Eligibility matrix tests for submitted/missing/open-recheck states; judge-facing eligibility state is understandable. | Split if eligibility display UI and persistence/service behavior change together. |
+| 7.12 | **Moved to Tentpole 2.** Manually validate start, restore after relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team folders against the feature file. | Checklist, PR validation note, manual evidence | User-run app evidence only; validation covers the stage-first stored judge workflow. | Keep as documentation/validation PR if implementation evidence is not available. |
 
 Common PR summary language:
 
 ```md
 ## Summary
 
-Implements the next operation in the local session, submission, and recheck flow while preserving event/team/session scoping and per-test-case JSON draft persistence.
+Implements the next operation in the local session and submission foundation while preserving event/team/session scoping and per-test-case JSON draft persistence.
 
 ## Scope
 
@@ -34,7 +36,7 @@ Implements the next operation in the local session, submission, and recheck flow
 
 - Uses actor-isolated persistence or store APIs where mutable local state is involved.
 - Links coordinators/views to store-backed draft save/restore before stage submission wiring.
-- Keeps submitted snapshots immutable; corrections flow through rechecks.
+- Keeps submitted snapshots immutable; rechecks, sticker eligibility, and full manual validation continue under Tentpole 2.
 - Splits follow-up branches if this PR crosses more than 10 files or mixes unrelated review contexts.
 
 ## Validation
