@@ -45,12 +45,19 @@ final class AppCoordinator: ObservableObject {
     init(
         eventID: String = "fsae-brasil-2026-technical-inspection",
         teams: [InspectionTeam] = MockInspectionData.teams,
-        stages: [InspectionStage] = MockInspectionData.stages
+        stages: [InspectionStage] = MockInspectionData.stages,
+        store: InspectionEventStore? = nil
     ) {
-        eventCoordinator = InspectionEventCoordinator(
+        let eventStore = store ?? InspectionEventStore.appStore(
             eventID: eventID,
             teams: teams,
             stages: stages
+        )
+        eventCoordinator = InspectionEventCoordinator(
+            eventID: eventID,
+            teams: teams,
+            stages: stages,
+            store: eventStore
         )
     }
 
@@ -60,8 +67,8 @@ final class AppCoordinator: ObservableObject {
     }
 
     @discardableResult
-    func selectTeam(id teamID: Int) -> Bool {
-        guard eventCoordinator.startOrResumeSession(for: teamID) else {
+    func selectTeam(id teamID: Int) async -> Bool {
+        guard await eventCoordinator.startOrResumeSession(for: teamID) else {
             selectedScreen = .sessionSelector
             return false
         }
@@ -76,8 +83,9 @@ final class AppCoordinator: ObservableObject {
     }
 
     @discardableResult
-    func openStage(id stageID: String) -> Bool {
-        guard eventCoordinator.executionCoordinator?.openStage(id: stageID) == true else {
+    func openStage(id stageID: String) async -> Bool {
+        guard let executionCoordinator = eventCoordinator.executionCoordinator,
+              await executionCoordinator.openStage(id: stageID) else {
             return false
         }
 
@@ -106,6 +114,18 @@ final class AppCoordinator: ObservableObject {
     }
 
     @discardableResult
+    func saveStepDraft(_ stepDraft: TestStepDraft, testCaseID: String) async -> Bool {
+        guard let executionCoordinator = eventCoordinator.executionCoordinator else {
+            return false
+        }
+
+        return await executionCoordinator.saveStepDraft(
+            stepDraft,
+            testCaseID: testCaseID
+        )
+    }
+
+    @discardableResult
     func requestTeamSwitch(to targetTeamID: Int) -> Bool {
         guard eventCoordinator.executionCoordinator?.requestTeamSwitch(to: targetTeamID) == true else {
             return false
@@ -115,8 +135,8 @@ final class AppCoordinator: ObservableObject {
     }
 
     @discardableResult
-    func confirmTeamSwitch() -> Bool {
-        guard eventCoordinator.confirmPendingTeamSwitch() else {
+    func confirmTeamSwitch() async -> Bool {
+        guard await eventCoordinator.confirmPendingTeamSwitch() else {
             return false
         }
 
@@ -140,14 +160,27 @@ final class InspectionEventCoordinator: ObservableObject {
     @Published private(set) var sessionSelectionCoordinator: SessionSelectionCoordinator
     @Published private(set) var executionCoordinator: InspectionExecutionCoordinator?
     @Published private(set) var stages: [InspectionStage]
+    private let store: InspectionEventStore
+    private let access: InspectionEventUserAccess
 
     init(
         eventID: String,
         teams: [InspectionTeam],
-        stages: [InspectionStage]
+        stages: [InspectionStage],
+        store: InspectionEventStore? = nil,
+        access: InspectionEventUserAccess? = nil
     ) {
         self.eventID = eventID
         self.stages = stages
+        self.store = store ?? InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: teams,
+            stages: stages
+        )
+        self.access = access ?? InspectionEventUserAccess.appAccess(
+            eventID: eventID,
+            teams: teams
+        )
         sessionSelectionCoordinator = SessionSelectionCoordinator(teams: teams)
     }
 
@@ -160,7 +193,7 @@ final class InspectionEventCoordinator: ObservableObject {
     }
 
     @discardableResult
-    func startOrResumeSession(for teamID: Int) -> Bool {
+    func startOrResumeSession(for teamID: Int) async -> Bool {
         guard let intent = sessionSelectionCoordinator.selectTeam(id: teamID) else {
             return false
         }
@@ -169,10 +202,10 @@ final class InspectionEventCoordinator: ObservableObject {
         case .blocked:
             return false
         case .startNewSession(let team):
-            openSession(team: team, stageID: firstStageID)
+            await openSession(team: team, stageID: firstStageID)
             return true
         case .resumeSession(let team):
-            openSession(team: team, stageID: stageID(titled: team.currentStage) ?? firstStageID)
+            await openSession(team: team, stageID: stageID(titled: team.currentStage) ?? firstStageID)
             return true
         }
     }
@@ -191,32 +224,48 @@ final class InspectionEventCoordinator: ObservableObject {
         executionCoordinator = InspectionExecutionCoordinator(
             sessionContext: context,
             stages: stages,
-            teams: sessionSelectionCoordinator.teams
+            teams: sessionSelectionCoordinator.teams,
+            store: store,
+            access: access,
+            draftsByTestCaseID: executionCoordinator?.draftsByTestCaseID ?? [:]
         )
     }
 
     @discardableResult
-    func confirmPendingTeamSwitch() -> Bool {
+    func confirmPendingTeamSwitch() async -> Bool {
         guard let targetTeamID = executionCoordinator?.pendingSwitchTarget?.id else {
             return false
         }
 
-        return startOrResumeSession(for: targetTeamID)
+        return await startOrResumeSession(for: targetTeamID)
     }
 
-    private func openSession(team: InspectionTeam, stageID: String) {
+    private func openSession(team: InspectionTeam, stageID: String) async {
+        let sessionID = Self.sessionID(eventID: eventID, team: team)
+        let teamRecordID = Self.teamRecordID(team)
+        let session = try? await store.startSession(
+            eventID: eventID,
+            teamID: teamRecordID,
+            defaultStageID: stageID,
+            sessionID: sessionID,
+            access: access
+        )
         let context = InspectionSessionContext(
             eventID: eventID,
-            sessionID: "\(eventID)-team-\(team.id)",
+            sessionID: session?.id ?? sessionID,
             team: team,
-            activeStageID: stageID,
+            activeStageID: session?.currentStageID ?? stageID,
             hasUnsavedDraft: false
         )
-        executionCoordinator = InspectionExecutionCoordinator(
+        let coordinator = InspectionExecutionCoordinator(
             sessionContext: context,
             stages: stages,
-            teams: sessionSelectionCoordinator.teams
+            teams: sessionSelectionCoordinator.teams,
+            store: store,
+            access: access
         )
+        await coordinator.restoreDraftsForActiveStage()
+        executionCoordinator = coordinator
     }
 
     private var firstStageID: String {
@@ -225,6 +274,14 @@ final class InspectionEventCoordinator: ObservableObject {
 
     private func stageID(titled title: String) -> String? {
         stages.first { $0.title == title }?.id
+    }
+
+    nonisolated static func teamRecordID(_ team: InspectionTeam) -> String {
+        "car-\(team.carNumber)"
+    }
+
+    nonisolated static func sessionID(eventID: String, team: InspectionTeam) -> String {
+        "\(eventID)-\(teamRecordID(team))-local"
     }
 }
 
@@ -269,17 +326,26 @@ final class InspectionExecutionCoordinator: ObservableObject {
     @Published private(set) var sessionContext: InspectionSessionContext
     @Published private(set) var route: InspectionExecutionRoute = .dashboard
     @Published private(set) var pendingSwitchTarget: InspectionTeam?
+    @Published private(set) var draftsByTestCaseID: [String: TestCaseDraft]
     let stages: [InspectionStage]
     let teams: [InspectionTeam]
+    private let store: InspectionEventStore
+    private let access: InspectionEventUserAccess
 
     init(
         sessionContext: InspectionSessionContext,
         stages: [InspectionStage],
-        teams: [InspectionTeam]
+        teams: [InspectionTeam],
+        store: InspectionEventStore,
+        access: InspectionEventUserAccess,
+        draftsByTestCaseID: [String: TestCaseDraft] = [:]
     ) {
         self.sessionContext = sessionContext
         self.stages = stages
         self.teams = teams
+        self.store = store
+        self.access = access
+        self.draftsByTestCaseID = draftsByTestCaseID
     }
 
     var activeTeam: InspectionTeam {
@@ -311,18 +377,39 @@ final class InspectionExecutionCoordinator: ObservableObject {
         return activeTestCase?.orderedSteps.first { $0.id == stepID }
     }
 
+    var activeTestCaseDraft: TestCaseDraft? {
+        guard let activeTestCase else {
+            return nil
+        }
+
+        return draft(for: activeTestCase)
+    }
+
+    var activeStepDraft: TestStepDraft? {
+        guard let activeStep else {
+            return nil
+        }
+
+        return activeTestCaseDraft?.stepDraft(stepID: activeStep.id)?.draft
+    }
+
+    func draft(for testCase: InspectionTestCase) -> TestCaseDraft {
+        draftsByTestCaseID[testCase.id] ?? TestCaseDraft(testCase: testCase)
+    }
+
     func markUnsavedDraft(_ hasUnsavedDraft: Bool) {
         sessionContext.hasUnsavedDraft = hasUnsavedDraft
     }
 
     @discardableResult
-    func openStage(id stageID: String) -> Bool {
+    func openStage(id stageID: String) async -> Bool {
         guard stage(id: stageID) != nil else {
             return false
         }
 
         sessionContext.activeStageID = stageID
         route = .stage(stageID: stageID)
+        await restoreDraftsForActiveStage()
         return true
     }
 
@@ -371,6 +458,44 @@ final class InspectionExecutionCoordinator: ObservableObject {
         route = .dashboard
     }
 
+    func restoreDraftsForActiveStage() async {
+        do {
+            let draftFiles = try await store.draftFiles(
+                scope: activeScope,
+                access: access
+            )
+            draftsByTestCaseID = draftFiles.reduce(into: [:]) { result, file in
+                result[file.testCaseID] = file.draft
+            }
+        } catch {
+            draftsByTestCaseID = [:]
+        }
+    }
+
+    @discardableResult
+    func saveStepDraft(_ stepDraft: TestStepDraft, testCaseID: String) async -> Bool {
+        guard let testCase = testCase(id: testCaseID) else {
+            return false
+        }
+
+        var testCaseDraft = draft(for: testCase)
+        testCaseDraft.updateStepDraft(stepDraft)
+        draftsByTestCaseID[testCaseID] = testCaseDraft
+        sessionContext.hasUnsavedDraft = true
+
+        do {
+            _ = try await store.saveDraft(
+                testCaseDraft,
+                scope: activeScope,
+                access: access
+            )
+            sessionContext.hasUnsavedDraft = false
+            return true
+        } catch {
+            return false
+        }
+    }
+
     private func stage(id stageID: String) -> InspectionStage? {
         stages.first { $0.id == stageID }
     }
@@ -387,5 +512,58 @@ final class InspectionExecutionCoordinator: ObservableObject {
             .first { testCase in
                 testCase.orderedSteps.contains { $0.id == stepID }
             }
+    }
+
+    private var activeScope: InspectionSessionScope {
+        InspectionSessionScope(
+            eventID: sessionContext.eventID,
+            teamID: InspectionEventCoordinator.teamRecordID(sessionContext.team),
+            sessionID: sessionContext.sessionID,
+            stageID: sessionContext.activeStageID
+        )
+    }
+}
+
+extension InspectionEventStore {
+    static func appStore(
+        eventID: String,
+        teams: [InspectionTeam],
+        stages: [InspectionStage],
+        persistenceService: TestCaseJSONPersistenceService = TestCaseJSONPersistenceService()
+    ) -> InspectionEventStore {
+        InspectionEventStore(
+            events: [
+                InspectionEventDefinition(
+                    id: eventID,
+                    name: "FSAE Brasil Technical Inspection",
+                    stageIDs: stages.map(\.id)
+                )
+            ],
+            teams: teams.map { team in
+                InspectionEventTeamRecord(
+                    id: InspectionEventCoordinator.teamRecordID(team),
+                    eventID: eventID,
+                    displayName: team.school,
+                    carNumber: team.carNumber
+                )
+            },
+            persistenceService: persistenceService
+        )
+    }
+}
+
+extension InspectionEventUserAccess {
+    static func appAccess(
+        eventID: String,
+        teams: [InspectionTeam],
+        userID: String = "local-judge"
+    ) -> InspectionEventUserAccess {
+        InspectionEventUserAccess(
+            userID: userID,
+            permittedEventIDs: [eventID],
+            permittedTeamIDsByEventID: [
+                eventID: Set(teams.map(InspectionEventCoordinator.teamRecordID))
+            ]
+        )
     }
 }

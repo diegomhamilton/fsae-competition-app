@@ -16,11 +16,11 @@ struct InspectionCoordinatorTests {
     }
 
     @Test("US-001 start new team session opens Garage Inspection")
-    func startNewTeamSessionOpensGarageInspection() throws {
+    func startNewTeamSessionOpensGarageInspection() async throws {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())
         coordinator.completeMockLogin()
 
-        #expect(coordinator.selectTeam(id: 28))
+        #expect(await coordinator.selectTeam(id: 28))
 
         let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
         #expect(coordinator.route == .inspection)
@@ -32,14 +32,14 @@ struct InspectionCoordinatorTests {
     }
 
     @Test("US-001 resume team session restores prior stage")
-    func resumeTeamSessionRestoresPriorStage() throws {
+    func resumeTeamSessionRestoresPriorStage() async throws {
         let coordinator = InspectionEventCoordinator(
             eventID: "event-1",
             teams: teams(),
             stages: stages()
         )
 
-        #expect(coordinator.startOrResumeSession(for: 13))
+        #expect(await coordinator.startOrResumeSession(for: 13))
 
         let execution = try #require(coordinator.executionCoordinator)
         #expect(coordinator.sessionSelectionCoordinator.route == .resumeSession(teamID: 13))
@@ -49,11 +49,11 @@ struct InspectionCoordinatorTests {
     }
 
     @Test("US-001 blocked team does not open execution flow")
-    func blockedTeamDoesNotOpenExecutionFlow() {
+    func blockedTeamDoesNotOpenExecutionFlow() async {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())
         coordinator.completeMockLogin()
 
-        #expect(!coordinator.selectTeam(id: 41))
+        #expect(!((await coordinator.selectTeam(id: 41))))
 
         #expect(coordinator.route == .sessionSelector)
         #expect(coordinator.selectedScreen == .sessionSelector)
@@ -62,12 +62,12 @@ struct InspectionCoordinatorTests {
     }
 
     @Test("US-002 execution coordinator opens stage case and step routes")
-    func executionCoordinatorOpensStageCaseAndStepRoutes() throws {
+    func executionCoordinatorOpensStageCaseAndStepRoutes() async throws {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())
         coordinator.completeMockLogin()
-        #expect(coordinator.selectTeam(id: 28))
+        #expect(await coordinator.selectTeam(id: 28))
 
-        #expect(coordinator.openStage(id: "rain"))
+        #expect(await coordinator.openStage(id: "rain"))
         #expect(coordinator.openTestCase(id: "rain-rml"))
         #expect(coordinator.openTestStep(id: "RT-08"))
 
@@ -80,10 +80,10 @@ struct InspectionCoordinatorTests {
     }
 
     @Test("US-006 team switch routes through confirmation")
-    func teamSwitchRoutesThroughConfirmation() throws {
+    func teamSwitchRoutesThroughConfirmation() async throws {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())
         coordinator.completeMockLogin()
-        #expect(coordinator.selectTeam(id: 13))
+        #expect(await coordinator.selectTeam(id: 13))
 
         let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
         execution.markUnsavedDraft(true)
@@ -92,7 +92,7 @@ struct InspectionCoordinatorTests {
         #expect(execution.route == .teamSwitchConfirmation(currentTeamID: 13, targetTeamID: 28))
         #expect(execution.pendingSwitchTarget?.id == 28)
 
-        #expect(coordinator.confirmTeamSwitch())
+        #expect(await coordinator.confirmTeamSwitch())
 
         let switchedExecution = try #require(coordinator.eventCoordinator.executionCoordinator)
         #expect(coordinator.selectedScreen == .dashboard)
@@ -101,12 +101,12 @@ struct InspectionCoordinatorTests {
     }
 
     @Test("TASK#7.8 coordinator selected state feeds backed views")
-    func coordinatorSelectedStateFeedsBackedViews() throws {
+    func coordinatorSelectedStateFeedsBackedViews() async throws {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())
         coordinator.completeMockLogin()
-        #expect(coordinator.selectTeam(id: 28))
+        #expect(await coordinator.selectTeam(id: 28))
 
-        #expect(coordinator.openStage(id: "rain"))
+        #expect(await coordinator.openStage(id: "rain"))
         let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
         let stage = try #require(execution.activeStage)
         let stageState = FullStageViewState(stage: stage)
@@ -124,6 +124,74 @@ struct InspectionCoordinatorTests {
         #expect(coordinator.openTestStep(id: "RT-08"))
         #expect(execution.activeStep?.id == "RT-08")
         #expect(coordinator.selectedScreen == .stepDetail)
+    }
+
+    @Test("TASK#7.1 store-backed coordinator saves and restores draft values")
+    func storeBackedCoordinatorSavesAndRestoresDraftValues() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: teams(),
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+        )
+        let firstLaunch = AppCoordinator(
+            eventID: eventID,
+            teams: teams(),
+            stages: stages(),
+            store: store
+        )
+        firstLaunch.completeMockLogin()
+
+        #expect(await firstLaunch.selectTeam(id: 28))
+        #expect(await firstLaunch.openStage(id: "rain"))
+        #expect(firstLaunch.openTestCase(id: "rain-rml"))
+
+        let evidence = EvidenceAttachmentMetadata(
+            id: "rml-restored-photo",
+            displayName: "RML restored photo",
+            mediaType: .photo,
+            source: .mockAttachment,
+            createdAt: Date(timeIntervalSince1970: 1_780_002_000)
+        )
+        let stepDraft = TestStepDraft(
+            stepID: "RT-08",
+            outcome: .pass,
+            notes: "RML visible after TS activation.",
+            evidenceAttachments: [evidence]
+        )
+
+        #expect(await firstLaunch.saveStepDraft(stepDraft, testCaseID: "rain-rml"))
+
+        let relaunched = AppCoordinator(
+            eventID: eventID,
+            teams: teams(),
+            stages: stages(),
+            store: store
+        )
+        relaunched.completeMockLogin()
+
+        #expect(await relaunched.selectTeam(id: 28))
+        #expect(await relaunched.openStage(id: "rain"))
+
+        let execution = try #require(relaunched.eventCoordinator.executionCoordinator)
+        let restoredDraft = try #require(execution.draftsByTestCaseID["rain-rml"])
+        let restoredStep = try #require(restoredDraft.stepDraft(stepID: "RT-08")?.draft)
+
+        #expect(restoredStep.outcome == .pass)
+        #expect(restoredStep.notes == "RML visible after TS activation.")
+        #expect(restoredStep.evidenceAttachments == [evidence])
+
+        let testCase = try #require(execution.activeStage?.orderedSections.flatMap(\.orderedTestCases).first { $0.id == "rain-rml" })
+        let viewState = InspectionTestCaseViewState(testCase: testCase, draft: restoredDraft)
+        #expect(viewState.steps.first { $0.id == "RT-08" }?.notes == "RML visible after TS activation.")
+
+        #expect(await relaunched.selectTeam(id: 13))
+        #expect(await relaunched.openStage(id: "rain"))
+        let switchedExecution = try #require(relaunched.eventCoordinator.executionCoordinator)
+        #expect(switchedExecution.draftsByTestCaseID["rain-rml"] == nil)
     }
 }
 
@@ -228,4 +296,14 @@ private func inspectionStep(
         requiredOutcome: true,
         requiresEvidence: requiresEvidence
     )
+}
+
+private func temporaryStoreDirectory() throws -> URL {
+    let directory = FileManager.default.temporaryDirectory
+        .appendingPathComponent("FSAEInspectionChecklistTests")
+        .appendingPathComponent(UUID().uuidString)
+        .appendingPathComponent("Application Support")
+        .appendingPathComponent("FSAEInspectionChecklist")
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    return directory
 }

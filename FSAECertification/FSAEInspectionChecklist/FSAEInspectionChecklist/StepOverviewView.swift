@@ -106,6 +106,7 @@ struct StepOverviewView: View {
             )
 
             Button {
+                persistDraft()
                 completeStep()
             } label: {
                 Label(Strings.done, systemImage: "checkmark.circle.fill")
@@ -116,9 +117,23 @@ struct StepOverviewView: View {
             .accessibilityIdentifier(InspectionAccessibilityIdentifier.doneAction(stepID: step.id).rawValue)
         }
         .onAppear {
-            selectedOutcome = step.defaultOutcome
-            noteText = step.defaultNote.isEmpty ? noteText : step.defaultNote
-            evidenceAttachments = step.evidenceAttachments
+            let draft = coordinator.activeStepDraft
+            selectedOutcome = draft?.outcome ?? step.defaultOutcome
+            measurementValue = draft?.measurementInput ?? measurementValue
+            noteText = draft?.notes ?? (step.defaultNote.isEmpty ? noteText : step.defaultNote)
+            evidenceAttachments = draft?.evidenceAttachments ?? step.evidenceAttachments
+        }
+        .onChange(of: selectedOutcome) { _, _ in
+            persistDraft()
+        }
+        .onChange(of: measurementValue) { _, _ in
+            persistDraft()
+        }
+        .onChange(of: noteText) { _, _ in
+            persistDraft()
+        }
+        .onChange(of: evidenceAttachments) { _, _ in
+            persistDraft()
         }
         .safeAreaInset(edge: .bottom) {
             if isNotesFocused {
@@ -141,6 +156,26 @@ struct StepOverviewView: View {
         }
 
         return "Allowed range: \(range.minimum) to \(range.maximum) \(range.unit.rawValue)."
+    }
+
+    private func persistDraft() {
+        guard let testCaseID = coordinator.activeTestCase?.id else {
+            return
+        }
+
+        let measurementInput = currentStep.measurementInput(from: measurementValue)
+        let draft = TestStepDraft(
+            stepID: currentStep.id,
+            outcome: selectedOutcome,
+            notes: noteText,
+            measurementInput: measurementInput.rawValue,
+            measurementValue: measurementInput.measurementValue,
+            evidenceAttachments: evidenceAttachments
+        )
+
+        Task {
+            await coordinator.saveStepDraft(draft, testCaseID: testCaseID)
+        }
     }
 }
 

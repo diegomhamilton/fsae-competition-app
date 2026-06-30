@@ -40,6 +40,7 @@ struct TestCaseView: View {
     let testCase: InspectionTestCaseViewState
     @Binding var selectedStep: InspectionTestStep
     @Binding var selectedScreen: ProposedScreen
+    let updateStepDraft: (TestStepDraft) -> Void
     @FocusState private var focusedNoteStepID: String?
 
     var body: some View {
@@ -62,6 +63,8 @@ struct TestCaseView: View {
                     ) {
                         selectedStep = stepState.step
                         selectedScreen = .stepDetail
+                    } updateStepDraft: { stepDraft in
+                        updateStepDraft(stepDraft)
                     }
                 }
             }
@@ -173,23 +176,29 @@ private struct TestCaseStepCard: View {
     @State private var selectedOutcome: InspectionOutcome
     @State private var noteText: String
     @State private var measurementValue: String
+    @State private var evidenceAttachments: [EvidenceAttachmentMetadata]
 
     init(
         stageID: String,
         testCaseID: String,
         state: InspectionTestCaseStepViewState,
         focusedNoteStepID: FocusState<String?>.Binding,
-        openStepDetail: @escaping () -> Void
+        openStepDetail: @escaping () -> Void,
+        updateStepDraft: @escaping (TestStepDraft) -> Void
     ) {
         self.stageID = stageID
         self.testCaseID = testCaseID
         self.state = state
         self.focusedNoteStepID = focusedNoteStepID
         self.openStepDetail = openStepDetail
+        self.updateStepDraft = updateStepDraft
         _selectedOutcome = State(initialValue: state.outcome)
         _noteText = State(initialValue: state.notes)
         _measurementValue = State(initialValue: state.measurementInput)
+        _evidenceAttachments = State(initialValue: state.evidenceAttachments)
     }
+
+    private let updateStepDraft: (TestStepDraft) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -278,6 +287,16 @@ private struct TestCaseStepCard: View {
 
             HStack(spacing: 10) {
                 Button {
+                    evidenceAttachments.append(
+                        EvidenceAttachmentMetadata(
+                            id: "fake-attachment-\(evidenceAttachments.count + 1)",
+                            displayName: "Fake attachment \(evidenceAttachments.count + 1)",
+                            mediaType: .photo,
+                            source: .mockAttachment,
+                            createdAt: Date()
+                        )
+                    )
+                    persistDraft()
                 } label: {
                     Label(TestCaseView.Strings.evidence, systemImage: state.step.requiresEvidence ? "camera.fill" : "paperclip")
                         .frame(maxWidth: .infinity)
@@ -308,6 +327,15 @@ private struct TestCaseStepCard: View {
                     ).rawValue
                 )
         }
+        .onChange(of: selectedOutcome) { _, _ in
+            persistDraft()
+        }
+        .onChange(of: noteText) { _, _ in
+            persistDraft()
+        }
+        .onChange(of: measurementValue) { _, _ in
+            persistDraft()
+        }
         .padding(14)
         .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))
         .overlay {
@@ -315,6 +343,20 @@ private struct TestCaseStepCard: View {
                 .stroke(state.validationIssues.isEmpty ? Color.fsaeBorder : Color.fsaeRed.opacity(0.5))
         }
         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseStepRow(testCaseID: testCaseID, stepID: state.id).rawValue)
+    }
+
+    private func persistDraft() {
+        let measurementInput = state.step.measurementInput(from: measurementValue)
+        updateStepDraft(
+            TestStepDraft(
+                stepID: state.id,
+                outcome: selectedOutcome,
+                notes: noteText,
+                measurementInput: measurementInput.rawValue,
+                measurementValue: measurementInput.measurementValue,
+                evidenceAttachments: evidenceAttachments
+            )
+        )
     }
 }
 

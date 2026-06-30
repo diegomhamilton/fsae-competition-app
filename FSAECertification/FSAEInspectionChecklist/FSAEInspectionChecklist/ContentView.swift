@@ -10,7 +10,9 @@ struct ContentView: View {
                     SessionSelectorView(
                         coordinator: appCoordinator.eventCoordinator.sessionSelectionCoordinator
                     ) { teamID in
-                        appCoordinator.selectTeam(id: teamID)
+                        Task {
+                            await appCoordinator.selectTeam(id: teamID)
+                        }
                     }
                 }
             }
@@ -21,7 +23,9 @@ struct ContentView: View {
                         ActiveTeamDashboardView(
                             coordinator: executionCoordinator,
                             openStage: { stageID in
-                                appCoordinator.openStage(id: stageID)
+                                Task {
+                                    await appCoordinator.openStage(id: stageID)
+                                }
                             },
                             requestTeamSwitch: {
                                 if let targetTeamID = nextSwitchTeamID {
@@ -42,7 +46,7 @@ struct ContentView: View {
                         FullStageView(
                             team: executionCoordinator.activeTeam,
                             stage: stage,
-                            draftsByTestCaseID: [:],
+                            draftsByTestCaseID: executionCoordinator.draftsByTestCaseID,
                             openTestCase: { testCase in
                                 appCoordinator.openTestCase(id: testCase.id)
                             },
@@ -67,9 +71,20 @@ struct ContentView: View {
                         TestCaseView(
                             team: executionCoordinator.activeTeam,
                             stage: stage,
-                            testCase: InspectionTestCaseViewState(testCase: testCase),
+                            testCase: InspectionTestCaseViewState(
+                                testCase: testCase,
+                                draft: executionCoordinator.draft(for: testCase)
+                            ),
                             selectedStep: activeStepBinding,
-                            selectedScreen: selectedScreenBinding
+                            selectedScreen: selectedScreenBinding,
+                            updateStepDraft: { stepDraft in
+                                Task {
+                                    await appCoordinator.saveStepDraft(
+                                        stepDraft,
+                                        testCaseID: testCase.id
+                                    )
+                                }
+                            }
                         )
                     } else {
                         EmptyFlowState(title: "Open a test case from the active stage.")
@@ -106,7 +121,9 @@ struct ContentView: View {
                         appCoordinator.cancelTeamSwitch()
                     },
                     confirmSwitch: {
-                        appCoordinator.confirmTeamSwitch()
+                        Task {
+                            await appCoordinator.confirmTeamSwitch()
+                        }
                     }
                 )
                 .presentationDetents([.medium])

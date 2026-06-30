@@ -279,7 +279,7 @@ enum MockInspectionData {
                     outcome: steps[2].defaultOutcome,
                     notes: steps[2].defaultNote,
                     measurementInput: "",
-                    evidenceAttachmentCount: steps[2].evidenceAttachments.count
+                    evidenceAttachments: steps[2].evidenceAttachments
                 ),
                 InspectionTestCaseStepViewState(
                     displayOrder: 10,
@@ -288,7 +288,7 @@ enum MockInspectionData {
                     outcome: steps[0].defaultOutcome,
                     notes: steps[0].defaultNote,
                     measurementInput: "",
-                    evidenceAttachmentCount: steps[0].evidenceAttachments.count
+                    evidenceAttachments: steps[0].evidenceAttachments
                 ),
                 InspectionTestCaseStepViewState(
                     displayOrder: 20,
@@ -297,7 +297,7 @@ enum MockInspectionData {
                     outcome: steps[1].defaultOutcome,
                     notes: steps[1].defaultNote,
                     measurementInput: "",
-                    evidenceAttachmentCount: steps[1].evidenceAttachments.count
+                    evidenceAttachments: steps[1].evidenceAttachments
                 ),
                 InspectionTestCaseStepViewState(
                     displayOrder: 40,
@@ -306,7 +306,7 @@ enum MockInspectionData {
                     outcome: steps[3].defaultOutcome,
                     notes: steps[3].defaultNote,
                     measurementInput: "5.40",
-                    evidenceAttachmentCount: steps[3].evidenceAttachments.count
+                    evidenceAttachments: steps[3].evidenceAttachments
                 )
             ]
         )
