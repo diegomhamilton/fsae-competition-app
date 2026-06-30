@@ -2,8 +2,13 @@
 
 Use this operation-first SPDD prompt for local stored judge experience UX follow-up.
 
+Tentpole 2 also owns the TASK#7 continuation items for rechecks, sticker eligibility, and full manual validation because those items close the judge-facing workflow after the session/submission foundation is available.
+
 | Task | PR Operation Summary | Likely Files | Validation | Split Trigger |
 | --- | --- | --- | --- | --- |
+| 7.10 | Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them. | Recheck service, recheck models, tests, recheck review surfaces as needed | Failed case creates open item; accepted review closes item; judge can understand and recover from recheck state. | Split if service behavior and UI review flow cannot be reviewed together. |
+| 7.11 | Implement sticker eligibility calculation from submitted stages and open rechecks. | Eligibility service/model, tests, team/stage eligibility display as needed | Eligibility matrix tests for submitted/missing/open-recheck states; eligibility is clear in judge workflow. | Split if eligibility service and UI presentation create separate review contexts. |
+| 7.12 | Manually validate start, resume after app relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team submission folders against the `.feature` file. | Checklist, PR validation note, manual evidence | User-run app evidence only, mapped to Gherkin scenarios. | Keep as documentation/validation PR if implementation evidence is not available. |
 | 10.1 | Audit session selector, dashboard, full stage, test case, step overview, and team switch views for minimum UX polish after TASK#7 links coordinators/views to store-backed draft save/restore. | Audit doc, view notes, issue checklist | Manual audit mapped to judge flow. | Keep audit separate if it finds broad UI changes. |
 | 10.2 | Replace prototype headers/backgrounds and mock copy with persisted event/team/stage/test case context. | SwiftUI views, Strings enums, tests/previews | Relaunch restore shows clear active local session. | Split if visual treatment and state plumbing both change heavily. |
 | 10.3 | Refine test case screen so next judge action is dominant with compact summary, actionable validation, and focused one-step editor. | `TestCaseView`, view state/tests | Manual and unit checks for one-step and multi-step cases. | Split if editor refactor touches step models or persistence. |

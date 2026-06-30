@@ -55,7 +55,7 @@
 - [x] 6.6 Add structured `Strings` enums and stable accessibility identifiers to the stage and test case list files.
 - [x] 6.7 Manually validate Garage, EV, Egress, and Rain stage content against `Design/Resources/InspectionEvent/*.json`.
 
-## 7. Session, Submission, and Recheck Flow
+## 7. Session and Submission Flow Foundation
 
 - [ ] 7.1 Add failing coordinator tests for mock login completion, session selector routing, start session, resume session, stage selection, team switching, and restored context.
 - [x] 7.2 Add failing persistence tests for storing each in-progress test case as its own JSON file under `FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)`, scoped by event, team, session, stage, and test case ID.
@@ -66,9 +66,9 @@
 - [x] 7.7 Implement `InspectionEventStore` as an actor-isolated event/session source of truth with scoped queries by event, team, session, user access, and the JSON file persistence service.
 - [x] 7.8 Merge into 7.6 PRs w/ coordinator: Bind `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `StepOverviewView`, and `TeamSwitchConfirmationView` to coordinator-backed state.
 - [x] 7.9 Implement `SubmissionSnapshotService` for immutable stage submission snapshots backed by the team submission JSON folder.
-- [ ] 7.10 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
-- [ ] 7.11 Implement sticker eligibility calculation from submitted stages and open rechecks.
-- [ ] 7.12 Manually validate start, resume after app relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team submission folders against the `.feature` file.
+- [ ] 7.10 Moved to Tentpole 2: Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
+- [ ] 7.11 Moved to Tentpole 2: Implement sticker eligibility calculation from submitted stages and open rechecks.
+- [ ] 7.12 Moved to Tentpole 2: Manually validate start, resume after app relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team submission folders against the `.feature` file.
 
 ## 8. Dedicated UI Test and Snapshot PR
 
@@ -90,6 +90,7 @@
 
 ## 10. Local Stored Judge Experience UX Follow-up
 
+- [ ] 10.0 Track Tentpole 2 continuation items moved from Task 7: 7.10 recheck service, 7.11 sticker eligibility, and 7.12 manual validation.
 - [ ] 10.1 Audit `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `TestCaseView`, `StepOverviewView`, and `TeamSwitchConfirmationView` for the minimum UX polish needed after Task 7 so a judge can complete a fully local, stored inspection without prototype copy, unclear navigation, or dead-end states.
 - [ ] 10.2 Replace prototype header/background treatment and "mock state" copy with stable event, team, stage, and test case context that survives relaunch restore and makes the active local session obvious.
 - [ ] 10.3 Refine the test case screen so the primary next judge action is visually dominant: compact case summary, actionable validation message, and focused step editor for one-step cases.

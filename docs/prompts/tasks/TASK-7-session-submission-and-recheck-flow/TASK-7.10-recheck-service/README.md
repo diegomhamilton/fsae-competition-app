@@ -4,6 +4,8 @@ Task: `7.10 Implement RecheckService so failed test cases create open recheck it
 
 Purpose: Implement recheck lifecycle from failed test case to open item to accepted review closure after stage submission service boundaries are in place.
 
+Tentpole scope: this task is executed under Tentpole 2 because it closes a judge-facing recovery workflow. The `7.10` ID is retained for OpenSpec traceability.
+
 Run these prompts in order:
 
 1. `01-requirements.md`
