@@ -63,7 +63,7 @@ extension InspectionTestCaseViewState {
                     outcome: draft.outcome,
                     notes: draft.notes,
                     measurementInput: draft.measurementInput,
-                    evidenceAttachmentCount: draft.evidenceAttachments.count
+                    evidenceAttachments: draft.evidenceAttachments
                 )
             }
         )
@@ -77,10 +77,14 @@ struct InspectionTestCaseStepViewState: Identifiable, Equatable, Sendable {
     let outcome: InspectionOutcome
     let notes: String
     let measurementInput: String
-    let evidenceAttachmentCount: Int
+    let evidenceAttachments: [EvidenceAttachmentMetadata]
 
     var id: String {
         step.id
+    }
+
+    var evidenceAttachmentCount: Int {
+        evidenceAttachments.count
     }
 
     var validationIssues: [InspectionTestCaseValidationIssue] {

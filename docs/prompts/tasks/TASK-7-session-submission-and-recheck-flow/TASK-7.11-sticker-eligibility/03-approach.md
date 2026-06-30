@@ -18,7 +18,7 @@ Include:
 
 Preferred operation:
 
-Implement sticker eligibility calculation from submitted stages and unresolved rechecks.
+Implement sticker eligibility calculation from submitted stages and unresolved rechecks after submission/recheck services are backed by persisted data.
 
 Validation expectation:
 
@@ -26,6 +26,6 @@ Swift Testing matrix for submitted, missing, open-recheck, and eligible states.
 
 Split trigger:
 
-Split if eligibility display UI changes are included.
+Split if eligibility display UI or coordinator/view draft integration changes are included.
 
 Do not build automatically unless explicitly asked.

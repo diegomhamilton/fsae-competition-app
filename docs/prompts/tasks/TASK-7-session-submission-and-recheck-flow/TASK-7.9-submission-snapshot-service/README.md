@@ -2,7 +2,7 @@
 
 Task: `7.9 Implement SubmissionSnapshotService for immutable stage submission snapshots backed by the team submission JSON folder.`
 
-Purpose: Implement immutable stage submission snapshot creation backed by team submission JSON folders.
+Purpose: Implement immutable stage submission snapshot creation backed by team submission JSON folders after coordinators/views already use InspectionEventStore for draft save/restore.
 
 Run these prompts in order:
 
@@ -17,8 +17,8 @@ Run these prompts in order:
 Operation focus:
 
 - Likely files or targets: SubmissionSnapshotService; submission models; tests
-- Validation: Swift Testing for snapshot creation, immutability, and team path placement.
-- Split trigger: Split if persistence cleanup or recheck creation gets mixed in.
+- Validation: Swift Testing for snapshot creation, immutability, and team path placement; do not backfill coordinator/view draft wiring here.
+- Split trigger: Split if persistence cleanup, recheck creation, or coordinator/view store integration gets mixed in.
 
 Expected PR title:
 
@@ -34,6 +34,7 @@ Common instructions:
 - Keep Application Support JSON storage scoped by event, team, session, stage, and test case ID.
 - Use Swift Testing for unit and integration checks.
 - Use actor isolation for persistence, event-store, and mutable local state boundaries.
+- Require store-backed coordinator/view draft save/restore before stage submission wiring.
 - Keep submitted snapshots immutable; corrections flow through rechecks.
 - Use task-sized commits and split if the PR crosses more than 10 files or mixes unrelated review contexts.
 - Do not claim manual validation unless actual app evidence is recorded.

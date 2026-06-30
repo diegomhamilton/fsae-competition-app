@@ -4,6 +4,8 @@ Task group: Session, Submission, and Recheck Flow
 
 Purpose: plan the local stored inspection workflow from mock login through session restore, per-test-case draft persistence, stage submission snapshots, rechecks, and sticker eligibility.
 
+Current integration note: `InspectionEventStore` may already exist in code, but Task 7 is not functionally complete until app coordinators and SwiftUI views use it for store-backed draft save/restore. Keep that first integration PR separate from stage submission wiring.
+
 Primary prompt:
 
 - `05-operations-summary.md`
@@ -33,7 +35,7 @@ Expected feature branch:
 
 Default PR strategy:
 
-Keep one feature PR for the session flow only if the branch remains reviewable. Split into task branches when coordinator, persistence, store, submission, recheck, and UI binding changes exceed 10 files or mix unrelated review contexts.
+Keep one feature PR for the session flow only if the branch remains reviewable. Split into task branches when coordinator, persistence, store, submission, recheck, and UI binding changes exceed 10 files or mix unrelated review contexts. The first integration PR should link coordinators/views to store-backed draft save/restore and explicitly leave stage submission wiring to later tasks.
 
 Child prompt runs:
 
@@ -49,4 +51,3 @@ Child prompt runs:
 - `TASK-7.10-recheck-service/`
 - `TASK-7.11-sticker-eligibility/`
 - `TASK-7.12-manual-validation/`
-

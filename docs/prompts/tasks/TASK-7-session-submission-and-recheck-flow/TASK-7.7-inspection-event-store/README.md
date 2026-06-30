@@ -1,8 +1,8 @@
 # TASK#7.7 SPDD Prompt Run
 
-Task: `7.7 Implement InspectionEventStore as an actor-isolated event/session source of truth with scoped queries by event, team, session, user access, and the JSON file persistence service.`
+Task: `7.7 Verify or implement InspectionEventStore as an actor-isolated event/session source of truth with scoped queries by event, team, session, user access, and the JSON file persistence service.`
 
-Purpose: Implement actor-isolated InspectionEventStore with scoped event/team/session/user queries backed by persistence.
+Purpose: Verify or implement actor-isolated InspectionEventStore with scoped event/team/session/user queries backed by persistence. If the store already exists, focus on missing APIs/tests needed by coordinator/view draft save/restore.
 
 Run these prompts in order:
 
@@ -17,7 +17,7 @@ Run these prompts in order:
 Operation focus:
 
 - Likely files or targets: InspectionEventStore; query models; store tests
-- Validation: Swift Testing for scoped queries, access isolation, and async mutation behavior.
+- Validation: Swift Testing for scoped queries, access isolation, async mutation behavior, and explicit success events if success must be queried outside signpost intervals.
 - Split trigger: Split from coordinators if store APIs are still changing.
 
 Expected PR title:
@@ -34,6 +34,7 @@ Common instructions:
 - Keep Application Support JSON storage scoped by event, team, session, stage, and test case ID.
 - Use Swift Testing for unit and integration checks.
 - Use actor isolation for persistence, event-store, and mutable local state boundaries.
+- Treat successful signposts as intervals unless explicit success events are added.
 - Keep submitted snapshots immutable; corrections flow through rechecks.
 - Use task-sized commits and split if the PR crosses more than 10 files or mixes unrelated review contexts.
 - Do not claim manual validation unless actual app evidence is recorded.

@@ -157,7 +157,7 @@ struct InspectionTestCaseViewStateTests {
             outcome: .pending,
             notes: "",
             measurementInput: "",
-            evidenceAttachmentCount: 0
+            evidenceAttachments: []
         )
 
         #expect(state.safetyBadges == [.energized])
@@ -192,7 +192,7 @@ private func stepState(
         outcome: outcome,
         notes: notes,
         measurementInput: measurementInput,
-        evidenceAttachmentCount: 0
+        evidenceAttachments: []
     )
 }
 

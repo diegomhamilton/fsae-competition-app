@@ -18,11 +18,11 @@ Include:
 
 Preferred operation:
 
-Implement actor-isolated InspectionEventStore with scoped event/team/session/user queries backed by persistence.
+Verify or implement actor-isolated InspectionEventStore with scoped event/team/session/user queries backed by persistence. If the store already exists, focus on missing APIs/tests needed by coordinator/view draft save/restore.
 
 Validation expectation:
 
-Swift Testing for scoped queries, access isolation, and async mutation behavior.
+Swift Testing for scoped queries, access isolation, async mutation behavior, and explicit success events if success must be queried outside signpost intervals.
 
 Split trigger:
 

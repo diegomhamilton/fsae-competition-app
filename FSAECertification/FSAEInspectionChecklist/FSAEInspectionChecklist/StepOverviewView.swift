@@ -16,9 +16,8 @@ struct StepOverviewView: View {
         static let optional = "Optional"
     }
 
-    let step: InspectionTestStep
-    let safetyBadges: [InspectionSafetyBadge]
-    @Binding var selectedScreen: ProposedScreen
+    @ObservedObject var coordinator: InspectionExecutionCoordinator
+    let completeStep: () -> Void
     @State private var selectedOutcome = InspectionOutcome.pending
     @State private var measurementValue = "4.72"
     @State private var noteText = "Observed by lead judge at station 3."
@@ -26,6 +25,8 @@ struct StepOverviewView: View {
     @FocusState private var isNotesFocused: Bool
 
     var body: some View {
+        let step = currentStep
+
         ScreenShell(
             eyebrow: Strings.eyebrow,
             title: step.title,
@@ -40,7 +41,7 @@ struct StepOverviewView: View {
                         HStack {
                             StatusPill(text: step.type.label, color: step.type.color)
                             StatusPill(text: step.ruleReference, color: .fsaeGray)
-                            ForEach(safetyBadges, id: \.self) { badge in
+                            ForEach(step.safetyBadges, id: \.self) { badge in
                                 StatusPill(text: badge.displayName, color: .fsaeRed)
                                     .accessibilityLabel(badge.accessibilityLabel)
                                     .accessibilityValue(badge.accessibilityLabel)
@@ -105,7 +106,8 @@ struct StepOverviewView: View {
             )
 
             Button {
-                selectedScreen = .stageChecklist
+                persistDraft()
+                completeStep()
             } label: {
                 Label(Strings.done, systemImage: "checkmark.circle.fill")
                     .frame(maxWidth: .infinity)
@@ -115,9 +117,23 @@ struct StepOverviewView: View {
             .accessibilityIdentifier(InspectionAccessibilityIdentifier.doneAction(stepID: step.id).rawValue)
         }
         .onAppear {
-            selectedOutcome = step.defaultOutcome
-            noteText = step.defaultNote.isEmpty ? noteText : step.defaultNote
-            evidenceAttachments = step.evidenceAttachments
+            let draft = coordinator.activeStepDraft
+            selectedOutcome = draft?.outcome ?? step.defaultOutcome
+            measurementValue = draft?.measurementInput ?? measurementValue
+            noteText = draft?.notes ?? (step.defaultNote.isEmpty ? noteText : step.defaultNote)
+            evidenceAttachments = draft?.evidenceAttachments ?? step.evidenceAttachments
+        }
+        .onChange(of: selectedOutcome) { _, _ in
+            persistDraft()
+        }
+        .onChange(of: measurementValue) { _, _ in
+            persistDraft()
+        }
+        .onChange(of: noteText) { _, _ in
+            persistDraft()
+        }
+        .onChange(of: evidenceAttachments) { _, _ in
+            persistDraft()
         }
         .safeAreaInset(edge: .bottom) {
             if isNotesFocused {
@@ -129,12 +145,37 @@ struct StepOverviewView: View {
         .navigationTitle("Step")
     }
 
+    private var currentStep: InspectionTestStep {
+        coordinator.activeStep ?? MockInspectionData.steps[0]
+    }
+
     private var measurementHelpText: String {
+        let step = currentStep
         guard let range = step.measurementRange else {
             return "Mock schema: numeric value with precision and range validation."
         }
 
         return "Allowed range: \(range.minimum) to \(range.maximum) \(range.unit.rawValue)."
+    }
+
+    private func persistDraft() {
+        guard let testCaseID = coordinator.activeTestCase?.id else {
+            return
+        }
+
+        let measurementInput = currentStep.measurementInput(from: measurementValue)
+        let draft = TestStepDraft(
+            stepID: currentStep.id,
+            outcome: selectedOutcome,
+            notes: noteText,
+            measurementInput: measurementInput.rawValue,
+            measurementValue: measurementInput.measurementValue,
+            evidenceAttachments: evidenceAttachments
+        )
+
+        Task {
+            await coordinator.saveStepDraft(draft, testCaseID: testCaseID)
+        }
     }
 }
 

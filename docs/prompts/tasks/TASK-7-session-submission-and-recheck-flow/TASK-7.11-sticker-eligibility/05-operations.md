@@ -21,9 +21,9 @@ For each operation, include:
 
 Operation-first PR summary:
 
-- Summary: Implement sticker eligibility calculation from submitted stages and unresolved rechecks.
+- Summary: Implement sticker eligibility calculation from submitted stages and unresolved rechecks after submission/recheck services are backed by persisted data.
 - Scope: Eligibility service/model; tests
-- Notes: Split if eligibility display UI changes are included.
+- Notes: Split if eligibility display UI or coordinator/view draft integration changes are included.
 - Validation: Swift Testing matrix for submitted, missing, open-recheck, and eligible states.
 
 Task-specific operation plan:

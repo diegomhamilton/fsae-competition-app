@@ -1,8 +1,8 @@
 # TASK#7.8 SPDD Prompt Run
 
-Task: `7.8 Merge into 7.6 PRs w/ coordinator: Bind SessionSelectorView, ActiveTeamDashboardView, FullStageView, StepOverviewView, and TeamSwitchConfirmationView to coordinator-backed state.`
+Task: `7.8 Merge into 7.6 PRs w/ coordinator: Bind SessionSelectorView, ActiveTeamDashboardView, FullStageView, StepOverviewView, and TeamSwitchConfirmationView through coordinators to store-backed draft save/restore.`
 
-Purpose: Bind existing SwiftUI views to coordinator-backed state without moving flow logic into views.
+Purpose: Bind existing SwiftUI views to coordinator-backed state without moving flow logic into views, and close the integration gap where the app does not yet use InspectionEventStore for draft save/restore.
 
 Run these prompts in order:
 
@@ -16,9 +16,9 @@ Run these prompts in order:
 
 Operation focus:
 
-- Likely files or targets: SessionSelectorView; ActiveTeamDashboardView; FullStageView; StepOverviewView; TeamSwitchConfirmationView; coordinators
-- Validation: Swift Testing for view helpers or coordinator state; manual smoke notes for navigation.
-- Split trigger: Split if more than two view files and two coordinator files change together.
+- Likely files or targets: SessionSelectorView; ActiveTeamDashboardView; FullStageView; StepOverviewView; TeamSwitchConfirmationView; coordinators; InspectionEventStore integration
+- Validation: Swift Testing for view helpers or coordinator state; manual smoke notes for navigation and draft restore; exclude stage submission wiring.
+- Split trigger: Split if more than two view files and two coordinator files change together, unless this is the first integration PR linking coordinators/views to the store.
 
 Expected PR title:
 
@@ -34,6 +34,7 @@ Common instructions:
 - Keep Application Support JSON storage scoped by event, team, session, stage, and test case ID.
 - Use Swift Testing for unit and integration checks.
 - Use actor isolation for persistence, event-store, and mutable local state boundaries.
+- Keep stage submission wiring out of the first coordinator/view/store draft integration PR.
 - Keep submitted snapshots immutable; corrections flow through rechecks.
 - Use task-sized commits and split if the PR crosses more than 10 files or mixes unrelated review contexts.
 - Do not claim manual validation unless actual app evidence is recorded.

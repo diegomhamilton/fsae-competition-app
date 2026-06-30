@@ -1,4 +1,8 @@
 import Foundation
+import os
+
+nonisolated private let persistenceSubsystem: String = Bundle(for: TestCaseJSONPersistenceService.self).bundleIdentifier ?? "Persistence"
+nonisolated private let persistenceSignposter = OSSignposter(subsystem: persistenceSubsystem, category: "TestCasePersistence")
 
 nonisolated struct InspectionPersistenceContext: Codable, Hashable, Sendable {
     let eventID: String
@@ -15,7 +19,7 @@ nonisolated struct PersistedValidationIssue: Codable, Hashable, Sendable {
     let localizationArguments: [String: String]
     let message: String
 
-    init(issue: ValidationIssue) {
+    @MainActor init(issue: ValidationIssue) {
         id = issue.id
         stepID = issue.code.stepID
         code = issue.code.storageCode
@@ -181,33 +185,59 @@ actor TestCaseJSONPersistenceService {
         updatedAt: Date = Date(),
         recheckReferences: [String] = []
     ) throws -> URL {
-        let file = TestCaseDraftFile(
-            context: context,
-            draft: draft,
-            updatedAt: updatedAt,
-            validationSummary: draft.validationSummary(for: draft.testCase).issues.map(PersistedValidationIssue.init),
-            recheckReferences: recheckReferences
-        )
-        let directoryURL = draftDirectoryURL(context: context)
-        try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        try persistenceSignposter.withIntervalSignpost(
+            "Save Draft",
+            "testCaseID=\(draft.id, privacy: .public) eventID=\(context.eventID, privacy: .public)"
+        ) {
+            do {
+                let file = TestCaseDraftFile(
+                    context: context,
+                    draft: draft,
+                    updatedAt: updatedAt,
+                    validationSummary: draft.validationSummary(for: draft.testCase).issues.map(PersistedValidationIssue.init),
+                    recheckReferences: recheckReferences
+                )
+                let directoryURL = draftDirectoryURL(context: context)
+                try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
 
-        let fileURL = draftFileURL(context: context, testCaseID: draft.id)
-        let data = try encoder.encode(file)
-        try data.write(to: fileURL, options: .atomic)
-        return fileURL
+                let fileURL = draftFileURL(context: context, testCaseID: draft.id)
+                let data = try encoder.encode(file)
+                try data.write(to: fileURL, options: .atomic)
+                return fileURL
+            } catch {
+                persistenceSignposter.emitEvent(
+                    "Save Draft Error",
+                    "testCaseID=\(draft.id, privacy: .public) eventID=\(context.eventID, privacy: .public) error=\(String(describing: error), privacy: .public)"
+                )
+                throw error
+            }
+        }
     }
 
     func loadDraft(
         context: InspectionPersistenceContext,
         testCaseID: String
     ) throws -> TestCaseDraft? {
-        let fileURL = draftFileURL(context: context, testCaseID: testCaseID)
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            return nil
-        }
+        try persistenceSignposter.withIntervalSignpost(
+            "Load Draft",
+            "testCaseID=\(testCaseID, privacy: .public) eventID=\(context.eventID, privacy: .public)"
+        ) {
+            do {
+                let fileURL = draftFileURL(context: context, testCaseID: testCaseID)
+                guard fileManager.fileExists(atPath: fileURL.path) else {
+                    return nil
+                }
 
-        let data = try Data(contentsOf: fileURL)
-        return try decoder.decode(TestCaseDraftFile.self, from: data).draft
+                let data = try Data(contentsOf: fileURL)
+                return try decoder.decode(TestCaseDraftFile.self, from: data).draft
+            } catch {
+                persistenceSignposter.emitEvent(
+                    "Load Draft Error",
+                    "testCaseID=\(testCaseID, privacy: .public) eventID=\(context.eventID, privacy: .public) error=\(String(describing: error), privacy: .public)"
+                )
+                throw error
+            }
+        }
     }
 
     func loadDraftFile(
@@ -223,16 +253,49 @@ actor TestCaseJSONPersistenceService {
         return try decoder.decode(TestCaseDraftFile.self, from: data)
     }
 
+    func loadDraftFiles(context: InspectionPersistenceContext) throws -> [TestCaseDraftFile] {
+        let directoryURL = draftDirectoryURL(context: context)
+        guard fileManager.fileExists(atPath: directoryURL.path) else {
+            return []
+        }
+
+        let fileURLs = try fileManager.contentsOfDirectory(
+            at: directoryURL,
+            includingPropertiesForKeys: nil
+        )
+
+        return try fileURLs
+            .filter { $0.pathExtension == "json" }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+            .map { fileURL in
+                let data = try Data(contentsOf: fileURL)
+                return try decoder.decode(TestCaseDraftFile.self, from: data)
+            }
+    }
+
     func deleteDraft(
         context: InspectionPersistenceContext,
         testCaseID: String
     ) throws {
-        let fileURL = draftFileURL(context: context, testCaseID: testCaseID)
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            return
-        }
+        try persistenceSignposter.withIntervalSignpost(
+            "Delete Draft",
+            "testCaseID=\(testCaseID, privacy: .public) eventID=\(context.eventID, privacy: .public)"
+        ) {
+            do {
+                let fileURL = draftFileURL(context: context, testCaseID: testCaseID)
+                guard fileManager.fileExists(atPath: fileURL.path) else {
+                    return
+                }
 
-        try fileManager.removeItem(at: fileURL)
+                try fileManager.removeItem(at: fileURL)
+            } catch {
+                persistenceSignposter.emitEvent(
+                    "Delete Draft Error",
+                    "testCaseID=\(testCaseID, privacy: .public) eventID=\(context.eventID, privacy: .public) error=\(String(describing: error), privacy: .public)"
+                )
+                throw error
+            }
+        }
     }
 
     func saveSubmittedTestCaseSnapshot(
@@ -243,30 +306,43 @@ actor TestCaseJSONPersistenceService {
         recheckReferences: [String] = [],
         removeDraft: Bool = true
     ) throws -> URL {
-        let file = SubmittedTestCaseSnapshotFile(
-            submissionID: submissionID,
-            context: context,
-            draft: draft,
-            submittedAt: submittedAt,
-            validationSummary: draft.validationSummary(for: draft.testCase).issues.map(PersistedValidationIssue.init),
-            recheckReferences: recheckReferences
-        )
-        let directoryURL = submittedTestCasesDirectoryURL(context: context, submissionID: submissionID)
-        try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        try persistenceSignposter.withIntervalSignpost(
+            "Save Submitted TestCase Snapshot",
+            "testCaseID=\(draft.id, privacy: .public) submissionID=\(submissionID, privacy: .public) eventID=\(context.eventID, privacy: .public)"
+        ) {
+            do {
+                let file = SubmittedTestCaseSnapshotFile(
+                    submissionID: submissionID,
+                    context: context,
+                    draft: draft,
+                    submittedAt: submittedAt,
+                    validationSummary: draft.validationSummary(for: draft.testCase).issues.map(PersistedValidationIssue.init),
+                    recheckReferences: recheckReferences
+                )
+                let directoryURL = submittedTestCasesDirectoryURL(context: context, submissionID: submissionID)
+                try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
 
-        let fileURL = submittedTestCaseFileURL(
-            context: context,
-            submissionID: submissionID,
-            testCaseID: draft.id
-        )
-        let data = try encoder.encode(file)
-        try data.write(to: fileURL, options: .atomic)
+                let fileURL = submittedTestCaseFileURL(
+                    context: context,
+                    submissionID: submissionID,
+                    testCaseID: draft.id
+                )
+                let data = try encoder.encode(file)
+                try data.write(to: fileURL, options: .atomic)
 
-        if removeDraft {
-            try deleteDraft(context: context, testCaseID: draft.id)
+                if removeDraft {
+                    try deleteDraft(context: context, testCaseID: draft.id)
+                }
+
+                return fileURL
+            } catch {
+                persistenceSignposter.emitEvent(
+                    "Save Submitted TestCase Snapshot Error",
+                    "testCaseID=\(draft.id, privacy: .public) submissionID=\(submissionID, privacy: .public) eventID=\(context.eventID, privacy: .public) error=\(String(describing: error), privacy: .public)"
+                )
+                throw error
+            }
         }
-
-        return fileURL
     }
 
     func saveSubmittedStageSnapshot(
@@ -277,21 +353,34 @@ actor TestCaseJSONPersistenceService {
         validationSummary: [PersistedValidationIssue],
         recheckReferences: [String] = []
     ) throws -> URL {
-        let file = SubmittedStageSnapshotFile(
-            submissionID: submissionID,
-            context: context,
-            submittedAt: submittedAt,
-            testCases: testCases,
-            validationSummary: validationSummary,
-            recheckReferences: recheckReferences
-        )
-        let directoryURL = submissionDirectoryURL(context: context, submissionID: submissionID)
-        try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        try persistenceSignposter.withIntervalSignpost(
+            "Save Submitted Stage Snapshot",
+            "submissionID=\(submissionID, privacy: .public) eventID=\(context.eventID, privacy: .public)"
+        ) {
+            do {
+                let file = SubmittedStageSnapshotFile(
+                    submissionID: submissionID,
+                    context: context,
+                    submittedAt: submittedAt,
+                    testCases: testCases,
+                    validationSummary: validationSummary,
+                    recheckReferences: recheckReferences
+                )
+                let directoryURL = submissionDirectoryURL(context: context, submissionID: submissionID)
+                try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
 
-        let fileURL = submittedStageSnapshotFileURL(context: context, submissionID: submissionID)
-        let data = try encoder.encode(file)
-        try data.write(to: fileURL, options: .atomic)
-        return fileURL
+                let fileURL = submittedStageSnapshotFileURL(context: context, submissionID: submissionID)
+                let data = try encoder.encode(file)
+                try data.write(to: fileURL, options: .atomic)
+                return fileURL
+            } catch {
+                persistenceSignposter.emitEvent(
+                    "Save Submitted Stage Snapshot Error",
+                    "submissionID=\(submissionID, privacy: .public) eventID=\(context.eventID, privacy: .public) error=\(String(describing: error), privacy: .public)"
+                )
+                throw error
+            }
+        }
     }
 
     func loadSubmittedTestCaseSnapshot(
@@ -299,30 +388,65 @@ actor TestCaseJSONPersistenceService {
         submissionID: String,
         testCaseID: String
     ) throws -> SubmittedTestCaseSnapshotFile? {
-        let fileURL = submittedTestCaseFileURL(
-            context: context,
-            submissionID: submissionID,
-            testCaseID: testCaseID
-        )
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            return nil
-        }
+        try persistenceSignposter.withIntervalSignpost(
+            "Load Submitted TestCase Snapshot",
+            "testCaseID=\(testCaseID, privacy: .public) submissionID=\(submissionID, privacy: .public) eventID=\(context.eventID, privacy: .public)"
+        ) {
+            do {
+                let fileURL = submittedTestCaseFileURL(
+                    context: context,
+                    submissionID: submissionID,
+                    testCaseID: testCaseID
+                )
+                guard fileManager.fileExists(atPath: fileURL.path) else {
+                    return nil
+                }
 
-        let data = try Data(contentsOf: fileURL)
-        return try decoder.decode(SubmittedTestCaseSnapshotFile.self, from: data)
+                let data = try Data(contentsOf: fileURL)
+                return try decoder.decode(SubmittedTestCaseSnapshotFile.self, from: data)
+            } catch {
+                persistenceSignposter.emitEvent(
+                    "Load Submitted TestCase Snapshot Error",
+                    "testCaseID=\(testCaseID, privacy: .public) submissionID=\(submissionID, privacy: .public) eventID=\(context.eventID, privacy: .public) error=\(String(describing: error), privacy: .public)"
+                )
+                throw error
+            }
+        }
     }
 
     func loadSubmittedStageSnapshot(
         context: InspectionPersistenceContext,
         submissionID: String
     ) throws -> SubmittedStageSnapshotFile? {
-        let fileURL = submittedStageSnapshotFileURL(context: context, submissionID: submissionID)
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            return nil
-        }
+        try persistenceSignposter.withIntervalSignpost(
+            "Load Submitted Stage Snapshot",
+            "submissionID=\(submissionID, privacy: .public) eventID=\(context.eventID, privacy: .public)"
+        ) {
+            do {
+                let fileURL = submittedStageSnapshotFileURL(context: context, submissionID: submissionID)
+                guard fileManager.fileExists(atPath: fileURL.path) else {
+                    return nil
+                }
 
-        let data = try Data(contentsOf: fileURL)
-        return try decoder.decode(SubmittedStageSnapshotFile.self, from: data)
+                let data = try Data(contentsOf: fileURL)
+                return try decoder.decode(SubmittedStageSnapshotFile.self, from: data)
+            } catch {
+                persistenceSignposter.emitEvent(
+                    "Load Submitted Stage Snapshot Error",
+                    "submissionID=\(submissionID, privacy: .public) eventID=\(context.eventID, privacy: .public) error=\(String(describing: error), privacy: .public)"
+                )
+                throw error
+            }
+        }
+    }
+
+    func submissionExists(
+        context: InspectionPersistenceContext,
+        submissionID: String
+    ) -> Bool {
+        fileManager.fileExists(
+            atPath: submissionDirectoryURL(context: context, submissionID: submissionID).path
+        )
     }
 
     func submissionsDirectoryURL(context: InspectionPersistenceContext) -> URL {

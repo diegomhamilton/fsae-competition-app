@@ -18,7 +18,7 @@ Include:
 
 Preferred operation:
 
-Implement recheck lifecycle from failed test case to open item to accepted review closure.
+Implement recheck lifecycle from failed test case to open item to accepted review closure after stage submission service boundaries are in place.
 
 Validation expectation:
 
@@ -26,6 +26,6 @@ Swift Testing for failed case creation, open state, accepted review closure, and
 
 Split trigger:
 
-Split if UI review flow is introduced with service behavior.
+Split if UI review flow or coordinator/view draft integration is introduced with service behavior.
 
 Do not build automatically unless explicitly asked.

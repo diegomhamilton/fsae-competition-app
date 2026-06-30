@@ -1,13 +1,15 @@
 import SwiftUI
 
 struct ActiveTeamDashboardView: View {
-    let team: InspectionTeam
-    let stages: [InspectionStage]
-    @Binding var selectedStage: InspectionStage
-    @Binding var selectedScreen: ProposedScreen
-    @Binding var showingSwitchConfirmation: Bool
+    @ObservedObject var coordinator: InspectionExecutionCoordinator
+    let openStage: (String) -> Void
+    let requestTeamSwitch: () -> Void
 
     var body: some View {
+        let team = coordinator.activeTeam
+        let stages = coordinator.stages
+        let selectedStageID = coordinator.activeStage?.id
+
         ScreenShell(
             eyebrow: "SC-002 Active Team Dashboard",
             title: "\(team.carNumber) \(team.school)",
@@ -26,7 +28,7 @@ struct ActiveTeamDashboardView: View {
                     }
                     Spacer()
                     Button {
-                        showingSwitchConfirmation = true
+                        requestTeamSwitch()
                     } label: {
                         Label("Switch", systemImage: "person.2.badge.gearshape")
                             .labelStyle(.iconOnly)
@@ -38,7 +40,7 @@ struct ActiveTeamDashboardView: View {
             }
 
             HStack(spacing: 12) {
-                MetricTile(value: "\(Int(stages.map(\.progress).reduce(0, +) / Double(stages.count) * 100))%", label: "Overall progress", systemImage: "chart.pie", color: .fsaeGreen)
+                MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: "Overall progress", systemImage: "chart.pie", color: .fsaeGreen)
                 MetricTile(value: "\(stages.map(\.requiredOpenItems).reduce(0, +))", label: "Open blockers", systemImage: "exclamationmark.triangle", color: .fsaeAmber)
             }
 
@@ -56,7 +58,9 @@ struct ActiveTeamDashboardView: View {
                     StatusPill(text: team.lastSaved, color: .fsaeBlue)
                 }
                 Button {
-                    selectedScreen = .stageChecklist
+                    if let stageID = selectedStageID {
+                        openStage(stageID)
+                    }
                 } label: {
                     Label("Open Stage", systemImage: "arrow.right.circle.fill")
                         .frame(maxWidth: .infinity)
@@ -71,10 +75,9 @@ struct ActiveTeamDashboardView: View {
                     .foregroundStyle(Color.fsaeText)
                 ForEach(stages) { stage in
                     Button {
-                        selectedStage = stage
-                        selectedScreen = .stageChecklist
+                        openStage(stage.id)
                     } label: {
-                        StageRow(stage: stage, isSelected: stage == selectedStage)
+                        StageRow(stage: stage, isSelected: stage.id == selectedStageID)
                     }
                     .buttonStyle(.plain)
                 }
@@ -82,6 +85,14 @@ struct ActiveTeamDashboardView: View {
 
         }
         .navigationTitle("Team")
+    }
+
+    private func overallProgressPercent(stages: [InspectionStage]) -> Int {
+        guard !stages.isEmpty else {
+            return 0
+        }
+
+        return Int(stages.map(\.progress).reduce(0, +) / Double(stages.count) * 100)
     }
 }
 

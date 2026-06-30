@@ -24,15 +24,16 @@ Context:
 - Expected PR title: `TASK#7.7: Inspection Event Store`
 - Feature branch: `codex/inspection-event-session-flow`
 - Suggested task branch: `codex/inspection-event-session-flow-7-7-inspection-event-store`
-- Operation summary: Implement actor-isolated InspectionEventStore with scoped event/team/session/user queries backed by persistence.
+- Operation summary: Verify or implement actor-isolated InspectionEventStore with scoped event/team/session/user queries backed by persistence.
 - Likely files or targets: InspectionEventStore; query models; store tests
-- Validation: Swift Testing for scoped queries, access isolation, and async mutation behavior.
+- Validation: Swift Testing for scoped queries, access isolation, async mutation behavior, and explicit success events if success must be queried outside signpost intervals.
 - Split trigger: Split from coordinators if store APIs are still changing.
 - Common instructions:
 - Start from OpenSpec design and the inspection_event_use_cases.feature file.
 - Keep Application Support JSON storage scoped by event, team, session, stage, and test case ID.
 - Use Swift Testing for unit and integration checks.
 - Use actor isolation for persistence, event-store, and mutable local state boundaries.
+- Treat successful signposts as intervals unless explicit success events are added.
 - Keep submitted snapshots immutable; corrections flow through rechecks.
 - Use task-sized commits and split if the PR crosses more than 10 files or mixes unrelated review contexts.
 - Do not claim manual validation unless actual app evidence is recorded.

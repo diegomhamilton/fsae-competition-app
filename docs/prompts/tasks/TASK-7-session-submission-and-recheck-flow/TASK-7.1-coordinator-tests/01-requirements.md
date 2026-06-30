@@ -24,15 +24,16 @@ Context:
 - Expected PR title: `TASK#7.1: Coordinator Tests`
 - Feature branch: `codex/inspection-event-session-flow`
 - Suggested task branch: `codex/inspection-event-session-flow-7-1-coordinator-tests`
-- Operation summary: Add failing Swift Testing coverage for session-flow coordinator behavior before coordinator implementation.
-- Likely files or targets: FSAEInspectionChecklistTests/*CoordinatorTests.swift; coordinator fixtures/helpers
-- Validation: Swift Testing failures first, then passing tests after coordinator implementation.
-- Split trigger: Split if coordinator fixtures or navigation helpers exceed one focused test file group.
+- Operation summary: Add failing Swift Testing coverage for session-flow coordinator behavior before coordinator implementation, including store-backed draft save/restore.
+- Likely files or targets: FSAEInspectionChecklistTests/*CoordinatorTests.swift; coordinator fixtures/helpers; store-backed draft fixtures
+- Validation: Swift Testing failures first, then passing tests after coordinator/view store integration; stage submission wiring remains out of scope.
+- Split trigger: Split if coordinator fixtures, store fixtures, or navigation helpers exceed one focused test file group.
 - Common instructions:
 - Start from OpenSpec design and the inspection_event_use_cases.feature file.
 - Keep Application Support JSON storage scoped by event, team, session, stage, and test case ID.
 - Use Swift Testing for unit and integration checks.
 - Use actor isolation for persistence, event-store, and mutable local state boundaries.
+- Link coordinators/views to InspectionEventStore for draft save/restore before submission/recheck tasks.
 - Keep submitted snapshots immutable; corrections flow through rechecks.
 - Use task-sized commits and split if the PR crosses more than 10 files or mixes unrelated review contexts.
 - Do not claim manual validation unless actual app evidence is recorded.
