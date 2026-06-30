@@ -4,6 +4,8 @@ Task: `7.11 Implement sticker eligibility calculation from submitted stages and 
 
 Purpose: Implement sticker eligibility calculation from submitted stages and unresolved rechecks after submission/recheck services are backed by persisted data.
 
+Tentpole scope: this task is executed under Tentpole 2 because sticker eligibility is a judge-facing readiness and recovery state. The `7.11` ID is retained for OpenSpec traceability.
+
 Run these prompts in order:
 
 1. `01-requirements.md`

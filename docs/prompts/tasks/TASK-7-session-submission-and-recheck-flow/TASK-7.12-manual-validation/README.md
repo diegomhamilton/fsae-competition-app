@@ -4,6 +4,8 @@ Task: `7.12 Manually validate start, resume after app relaunch, submit, blocked 
 
 Purpose: Prepare and run manual validation for the full local session, submission, recheck, sticker, and JSON-folder workflow, starting with proof that coordinators/views use InspectionEventStore for draft save/restore.
 
+Tentpole scope: this task is executed under Tentpole 2 because it validates the full stored judge workflow. The `7.12` ID is retained for OpenSpec traceability.
+
 Run these prompts in order:
 
 1. `01-requirements.md`

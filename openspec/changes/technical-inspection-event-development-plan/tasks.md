@@ -55,9 +55,9 @@
 - [x] 6.6 Add structured `Strings` enums and stable accessibility identifiers to the stage and test case list files.
 - [x] 6.7 Manually validate Garage, EV, Egress, and Rain stage content against `Design/Resources/InspectionEvent/*.json`.
 
-## 7. Session, Submission, and Recheck Flow
+## 7. Session and Submission Flow Foundation
 
-- [ ] 7.1 Add failing coordinator tests for mock login completion, session selector routing, start session, resume session, stage selection, team switching, and restored context.
+- [x] 7.1 Add failing coordinator tests for mock login completion, session selector routing, start session, resume session, stage selection, team switching, and restored context.
 - [x] 7.2 Add failing persistence tests for storing each in-progress test case as its own JSON file under `FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)`, scoped by event, team, session, stage, and test case ID.
 - [x] 7.3 Define Codable JSON schemas for test case draft files and immutable submitted test case/stage snapshot files, including schema version, event ID, team ID, session ID, stage ID, test case ID, updated timestamp, outcomes, notes, measurements, evidence metadata, validation summary, and recheck references.
 - [x] 7.4 Implement an actor-isolated JSON file persistence service that creates the Application Support folder tree, writes each test case draft atomically, deletes or archives stale draft files after submission, and restores drafts after app relaunch.
@@ -66,9 +66,9 @@
 - [x] 7.7 Implement `InspectionEventStore` as an actor-isolated event/session source of truth with scoped queries by event, team, session, user access, and the JSON file persistence service.
 - [x] 7.8 Merge into 7.6 PRs w/ coordinator: Bind `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `StepOverviewView`, and `TeamSwitchConfirmationView` to coordinator-backed state.
 - [x] 7.9 Implement `SubmissionSnapshotService` for immutable stage submission snapshots backed by the team submission JSON folder.
-- [ ] 7.10 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
-- [ ] 7.11 Implement sticker eligibility calculation from submitted stages and open rechecks.
-- [ ] 7.12 Manually validate start, resume after app relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team submission folders against the `.feature` file.
+- [x] 7.10 Moved to Tentpole 2: Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
+- [x] 7.11 Moved to Tentpole 2: Implement sticker eligibility calculation from submitted stages and open rechecks.
+- [x] 7.12 Moved to Tentpole 2: Manually validate start, resume after app relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team submission folders against the `.feature` file.
 
 ## 8. Dedicated UI Test and Snapshot PR
 
@@ -81,15 +81,21 @@
 
 ## 9. Documentation and Review Hygiene
 
+- [x] 9.0 Read Tentpole 3 from TASK-12 at `docs/prompts/tasks/TASK-12-spdd-2026-06-29-tentpoles` and update Task 9 tasks. Prioritize the new folder structure described in `### Organization Design`.
 - [ ] 9.1 Add or update documentation files with YAML frontmatter for title, domain, feature, status, owners, source files, and related scenarios.
 - [ ] 9.2 Write a technical report style overview of the inspection event architecture, recheck behavior, testing approach, accessibility conventions, and localization conventions.
 - [ ] 9.3 Add short tutorials for adding a new inspection JSON fixture, adding a new validation rule, adding a new accessibility identifier, and adding a new persona scenario.
 - [ ] 9.4 Ensure each implementation PR uses the PR 1 description template with `Summary`, `Scope`, `Notes`, and `Validation`, including manual validation notes, test command output, linked `.feature` scenarios, and squash-merge guidance.
-- [ ] 9.5 Keep one feature branch and one PR per major feature by default; split into task branches only when file changes or review contexts become too broad.
-- [ ] 9.6 Split tasks across distinct commits so each completed task or tightly related task pair has a reviewable checkpoint.
+- [ ] 9.5 Ensure rule "Keep one feature branch and one PR per major feature by default; split into task branches only when file changes or review contexts become too broad"
+- [ ] 9.6 Ensure rule "Split tasks across distinct commits so each completed task or tightly related task pair has a reviewable checkpoint."
+- [ ] 9.7 Add the Tentpole 3 organization plan with the target `App`, `Common`, `Features`, and `TestSupport` tree, plus a dry-run table mapping current files to proposed destinations, import risks, ownership risks, and validation checks.
+- [ ] 9.8 Perform the first behavior-neutral organization pass for `Common/UI`, starting with `DesignSystem.swift` and `KeyboardDismissBar.swift`, preserving public symbols and existing UI behavior.
+- [ ] 9.9 Split `AppCoordinators.swift` into smaller route and coordinator ownership files without changing route names, public intents, selected screen behavior, team switching, or stage/case/step routing.
+- [ ] 9.10 Split `ContentView.swift` into smaller root composition, tab composition, binding helper, and empty-state files without changing top-level tabs or current navigation behavior.
 
 ## 10. Local Stored Judge Experience UX Follow-up
 
+- [ ] 10.0 Track Tentpole 2 continuation items moved from Task 7: former 7.10 recheck service, 7.11 sticker eligibility, and 7.12 manual validation are sequenced as 10.9, 10.10, and 10.11.
 - [ ] 10.1 Audit `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `TestCaseView`, `StepOverviewView`, and `TeamSwitchConfirmationView` for the minimum UX polish needed after Task 7 so a judge can complete a fully local, stored inspection without prototype copy, unclear navigation, or dead-end states.
 - [ ] 10.2 Replace prototype header/background treatment and "mock state" copy with stable event, team, stage, and test case context that survives relaunch restore and makes the active local session obvious.
 - [ ] 10.3 Refine the test case screen so the primary next judge action is visually dominant: compact case summary, actionable validation message, and focused step editor for one-step cases.
@@ -98,8 +104,11 @@
 - [ ] 10.6 Review `Pending` semantics so incomplete required steps are represented as derived draft state rather than a confusing judge decision when Pass, Fail, and N/A are the actual choices.
 - [ ] 10.7 Clarify notes and evidence states with labels such as "Add Evidence", "1 Evidence", "Required Evidence Missing", "Add Note", and "Edit Note", and ensure each state round-trips through the local test case JSON draft.
 - [ ] 10.8 Add camera/photo capture support for evidence-required steps, persisting captured file metadata with the test case JSON draft while keeping full media storage behind a reviewed storage policy.
-- [ ] 10.9 Add stopwatch-style timing support for egress-test measurement steps, including start, stop, reset, manual override, validation against the allowed range, draft persistence, and accessible announcements.
-- [ ] 10.10 Add focused tests and manual validation for relaunch restore UX, actionable validation focus, camera evidence metadata, stopwatch timing, keyboard dismissal, VoiceOver operation, and common judge recovery paths.
+- [ ] 10.9 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
+- [ ] 10.10 Implement sticker eligibility calculation from submitted stages and open rechecks.
+- [ ] 10.11 Manually validate start, resume after app relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team submission folders against the `.feature` file.
+- [ ] 10.12 Add stopwatch-style timing support for egress-test measurement steps, including start, stop, reset, manual override, validation against the allowed range, draft persistence, and accessible announcements.
+- [ ] 10.13 Add focused tests and manual validation for relaunch restore UX, actionable validation focus, camera evidence metadata, stopwatch timing, keyboard dismissal, VoiceOver operation, and common judge recovery paths.
 
 ## 11. Parking Lot: Future EV Inspection Enhancements
 - [ ] 11.0 Review token usage for each session to solve tasks 1 - 10. Compare peak usages, code SHA at that time, and how that specific part of code changed since then to identify gaps in the prompts. Propose changes in my workflow to reduce token usage to get similar or better output. Use "~/.codex/sessions" .jsonl files to get details about sessions. This is a purely process task. DO NOT OUTPUT code, you can still use code/scripts to specific tasks such as parsing data from files.
