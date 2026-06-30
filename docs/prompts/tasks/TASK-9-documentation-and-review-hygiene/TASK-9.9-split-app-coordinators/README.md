@@ -1,6 +1,6 @@
-# TASK#9.7 SPDD Prompt Run
+# TASK#9.9 SPDD Prompt Run
 
-Task: `9.7 Split AppCoordinators.swift into smaller files by coordinator and route ownership without changing behavior.`
+Task: `9.9 Split AppCoordinators.swift into smaller files by coordinator and route ownership without changing behavior.`
 
 Purpose: make the app coordination layer easier to review by separating route enums, app-level coordination, event/session selection, and inspection execution coordination into smaller files.
 
@@ -22,11 +22,11 @@ Operation focus:
 
 Expected PR title:
 
-`TASK#9.7: Split App Coordinators`
+`TASK#9.9: Split App Coordinators`
 
 Branch:
 
-`codex/inspection-event-docs-review-hygiene-9-7-split-app-coordinators`
+`codex/inspection-event-docs-review-hygiene-9-9-split-app-coordinators`
 
 Common instructions:
 

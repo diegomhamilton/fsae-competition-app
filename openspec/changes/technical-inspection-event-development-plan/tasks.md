@@ -81,12 +81,17 @@
 
 ## 9. Documentation and Review Hygiene
 
+- [x] 9.0 Read Tentpole 3 from TASK-12 at `docs/prompts/tasks/TASK-12-spdd-2026-06-29-tentpoles` and update Task 9 tasks. Prioritize the new folder structure described in `### Organization Design`.
 - [ ] 9.1 Add or update documentation files with YAML frontmatter for title, domain, feature, status, owners, source files, and related scenarios.
 - [ ] 9.2 Write a technical report style overview of the inspection event architecture, recheck behavior, testing approach, accessibility conventions, and localization conventions.
 - [ ] 9.3 Add short tutorials for adding a new inspection JSON fixture, adding a new validation rule, adding a new accessibility identifier, and adding a new persona scenario.
 - [ ] 9.4 Ensure each implementation PR uses the PR 1 description template with `Summary`, `Scope`, `Notes`, and `Validation`, including manual validation notes, test command output, linked `.feature` scenarios, and squash-merge guidance.
-- [ ] 9.5 Keep one feature branch and one PR per major feature by default; split into task branches only when file changes or review contexts become too broad.
-- [ ] 9.6 Split tasks across distinct commits so each completed task or tightly related task pair has a reviewable checkpoint.
+- [ ] 9.5 Ensure rule "Keep one feature branch and one PR per major feature by default; split into task branches only when file changes or review contexts become too broad"
+- [ ] 9.6 Ensure rule "Split tasks across distinct commits so each completed task or tightly related task pair has a reviewable checkpoint."
+- [ ] 9.7 Add the Tentpole 3 organization plan with the target `App`, `Common`, `Features`, and `TestSupport` tree, plus a dry-run table mapping current files to proposed destinations, import risks, ownership risks, and validation checks.
+- [ ] 9.8 Perform the first behavior-neutral organization pass for `Common/UI`, starting with `DesignSystem.swift` and `KeyboardDismissBar.swift`, preserving public symbols and existing UI behavior.
+- [ ] 9.9 Split `AppCoordinators.swift` into smaller route and coordinator ownership files without changing route names, public intents, selected screen behavior, team switching, or stage/case/step routing.
+- [ ] 9.10 Split `ContentView.swift` into smaller root composition, tab composition, binding helper, and empty-state files without changing top-level tabs or current navigation behavior.
 
 ## 10. Local Stored Judge Experience UX Follow-up
 

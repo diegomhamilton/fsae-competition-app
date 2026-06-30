@@ -1,6 +1,6 @@
-# TASK#9.8 SPDD Prompt Run
+# TASK#9.10 SPDD Prompt Run
 
-Task: `9.8 Split ContentView.swift into smaller root composition, tab, binding, and empty-state files without changing behavior.`
+Task: `9.10 Split ContentView.swift into smaller root composition, tab, binding, and empty-state files without changing behavior.`
 
 Purpose: make root app composition easier to review by separating top-level tab declarations, coordinator bindings, loading/fallback states, and empty flow presentation.
 
@@ -22,11 +22,11 @@ Operation focus:
 
 Expected PR title:
 
-`TASK#9.8: Split Content View`
+`TASK#9.10: Split Content View`
 
 Branch:
 
-`codex/inspection-event-docs-review-hygiene-9-8-split-content-view`
+`codex/inspection-event-docs-review-hygiene-9-10-split-content-view`
 
 Common instructions:
 
