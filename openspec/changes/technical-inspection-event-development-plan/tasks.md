@@ -90,7 +90,7 @@
 
 ## 10. Local Stored Judge Experience UX Follow-up
 
-- [ ] 10.0 Track Tentpole 2 continuation items moved from Task 7: 7.10 recheck service, 7.11 sticker eligibility, and 7.12 manual validation.
+- [ ] 10.0 Track Tentpole 2 continuation items moved from Task 7: former 7.10 recheck service, 7.11 sticker eligibility, and 7.12 manual validation are sequenced as 10.9, 10.10, and 10.11.
 - [ ] 10.1 Audit `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `TestCaseView`, `StepOverviewView`, and `TeamSwitchConfirmationView` for the minimum UX polish needed after Task 7 so a judge can complete a fully local, stored inspection without prototype copy, unclear navigation, or dead-end states.
 - [ ] 10.2 Replace prototype header/background treatment and "mock state" copy with stable event, team, stage, and test case context that survives relaunch restore and makes the active local session obvious.
 - [ ] 10.3 Refine the test case screen so the primary next judge action is visually dominant: compact case summary, actionable validation message, and focused step editor for one-step cases.
@@ -99,8 +99,11 @@
 - [ ] 10.6 Review `Pending` semantics so incomplete required steps are represented as derived draft state rather than a confusing judge decision when Pass, Fail, and N/A are the actual choices.
 - [ ] 10.7 Clarify notes and evidence states with labels such as "Add Evidence", "1 Evidence", "Required Evidence Missing", "Add Note", and "Edit Note", and ensure each state round-trips through the local test case JSON draft.
 - [ ] 10.8 Add camera/photo capture support for evidence-required steps, persisting captured file metadata with the test case JSON draft while keeping full media storage behind a reviewed storage policy.
-- [ ] 10.9 Add stopwatch-style timing support for egress-test measurement steps, including start, stop, reset, manual override, validation against the allowed range, draft persistence, and accessible announcements.
-- [ ] 10.10 Add focused tests and manual validation for relaunch restore UX, actionable validation focus, camera evidence metadata, stopwatch timing, keyboard dismissal, VoiceOver operation, and common judge recovery paths.
+- [ ] 10.9 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
+- [ ] 10.10 Implement sticker eligibility calculation from submitted stages and open rechecks.
+- [ ] 10.11 Manually validate start, resume after app relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team submission folders against the `.feature` file.
+- [ ] 10.12 Add stopwatch-style timing support for egress-test measurement steps, including start, stop, reset, manual override, validation against the allowed range, draft persistence, and accessible announcements.
+- [ ] 10.13 Add focused tests and manual validation for relaunch restore UX, actionable validation focus, camera evidence metadata, stopwatch timing, keyboard dismissal, VoiceOver operation, and common judge recovery paths.
 
 ## 11. Parking Lot: Future EV Inspection Enhancements
 - [ ] 11.0 Review token usage for each session to solve tasks 1 - 10. Compare peak usages, code SHA at that time, and how that specific part of code changed since then to identify gaps in the prompts. Propose changes in my workflow to reduce token usage to get similar or better output. Use "~/.codex/sessions" .jsonl files to get details about sessions. This is a purely process task. DO NOT OUTPUT code, you can still use code/scripts to specific tasks such as parsing data from files.
