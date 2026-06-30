@@ -57,7 +57,7 @@
 
 ## 7. Session and Submission Flow Foundation
 
-- [ ] 7.1 Add failing coordinator tests for mock login completion, session selector routing, start session, resume session, stage selection, team switching, and restored context.
+- [x] 7.1 Add failing coordinator tests for mock login completion, session selector routing, start session, resume session, stage selection, team switching, and restored context.
 - [x] 7.2 Add failing persistence tests for storing each in-progress test case as its own JSON file under `FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)`, scoped by event, team, session, stage, and test case ID.
 - [x] 7.3 Define Codable JSON schemas for test case draft files and immutable submitted test case/stage snapshot files, including schema version, event ID, team ID, session ID, stage ID, test case ID, updated timestamp, outcomes, notes, measurements, evidence metadata, validation summary, and recheck references.
 - [x] 7.4 Implement an actor-isolated JSON file persistence service that creates the Application Support folder tree, writes each test case draft atomically, deletes or archives stale draft files after submission, and restores drafts after app relaunch.
