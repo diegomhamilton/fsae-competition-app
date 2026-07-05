@@ -77,7 +77,7 @@ nonisolated struct InspectionValidationRule: Sendable {
 }
 
 extension Array where Element == InspectionValidationRule {
-    static let defaultRules: [InspectionValidationRule] = [
+    nonisolated static let defaultRules: [InspectionValidationRule] = [
         .requiredOutcome,
         .failedOutcomeInspectorNote,
         .measurement,
@@ -86,7 +86,7 @@ extension Array where Element == InspectionValidationRule {
 }
 
 private extension InspectionValidationRule {
-    static let requiredOutcome = InspectionValidationRule(id: "requiredOutcome") { step, result in
+    nonisolated static let requiredOutcome = InspectionValidationRule(id: "requiredOutcome") { step, result in
         guard step.requiredOutcome, !result.outcome.satisfiesRequiredOutcome else {
             return []
         }
@@ -105,7 +105,7 @@ private extension InspectionValidationRule {
         ]
     }
 
-    static let failedOutcomeInspectorNote = InspectionValidationRule(id: "failedOutcomeInspectorNote") { step, result in
+    nonisolated static let failedOutcomeInspectorNote = InspectionValidationRule(id: "failedOutcomeInspectorNote") { step, result in
         guard result.outcome.requiresInspectorNote else {
             return []
         }
@@ -129,7 +129,7 @@ private extension InspectionValidationRule {
         ]
     }
 
-    static let measurement = InspectionValidationRule(id: "measurement") { step, result in
+    nonisolated static let measurement = InspectionValidationRule(id: "measurement") { step, result in
         guard step.type == .measurement, let range = step.measurementRange else {
             return []
         }
@@ -170,7 +170,7 @@ private extension InspectionValidationRule {
         }
     }
 
-    static let evidence = InspectionValidationRule(id: "evidence") { step, result in
+    nonisolated static let evidence = InspectionValidationRule(id: "evidence") { step, result in
         guard let requirement = step.evidenceValidationRequirement,
               !requirement.isSatisfied(by: result.evidenceAttachments) else {
             return []
@@ -221,7 +221,7 @@ nonisolated struct EvidenceValidationRequirement: Equatable, Sendable {
 }
 
 private extension InspectionTestStep {
-    var evidenceValidationRequirement: EvidenceValidationRequirement? {
+    nonisolated var evidenceValidationRequirement: EvidenceValidationRequirement? {
         guard requiresEvidence else {
             return nil
         }
@@ -230,7 +230,7 @@ private extension InspectionTestStep {
     }
 }
 
-private func measurementArguments(
+nonisolated private func measurementArguments(
     step: InspectionTestStep,
     range: MeasurementRange
 ) -> [String: String] {
@@ -245,7 +245,7 @@ private func measurementArguments(
     ]
 }
 
-private func localizationKey(
+nonisolated private func localizationKey(
     for error: MeasurementValue.ValidationError
 ) -> ValidationIssue.LocalizationKey {
     switch error {
@@ -258,7 +258,7 @@ private func localizationKey(
     }
 }
 
-private func message(
+nonisolated private func message(
     for error: MeasurementValue.ValidationError,
     step: InspectionTestStep,
     range: MeasurementRange

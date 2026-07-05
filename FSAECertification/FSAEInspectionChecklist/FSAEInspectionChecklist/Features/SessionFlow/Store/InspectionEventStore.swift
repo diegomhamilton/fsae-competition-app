@@ -379,12 +379,12 @@ actor InspectionEventStore {
     }
 }
 
-private struct SessionKey: Hashable, Sendable {
+nonisolated private struct SessionKey: Hashable, Sendable {
     let eventID: String
     let teamID: String
     let sessionID: String
 
-    init(
+    nonisolated init(
         eventID: String,
         teamID: String,
         sessionID: String
@@ -394,11 +394,11 @@ private struct SessionKey: Hashable, Sendable {
         self.sessionID = sessionID
     }
 
-    init(_ session: InspectionSessionRecord) {
+    nonisolated init(_ session: InspectionSessionRecord) {
         self.init(eventID: session.eventID, teamID: session.teamID, sessionID: session.id)
     }
 
-    init(scope: InspectionSessionScope) {
+    nonisolated init(scope: InspectionSessionScope) {
         self.init(eventID: scope.eventID, teamID: scope.teamID, sessionID: scope.sessionID)
     }
 }

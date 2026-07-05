@@ -81,7 +81,7 @@ nonisolated enum InspectionSafetyBadgeDerivation {
 }
 
 private extension InspectionTestCase {
-    var isEVEnergizedDynamicTest: Bool {
+    nonisolated var isEVEnergizedDynamicTest: Bool {
         code.hasPrefix("EV") && (100...117).contains(displayOrder)
     }
 }
@@ -100,7 +100,7 @@ extension InspectionTestCase {
         case steps
     }
 
-    init(from decoder: Decoder) throws {
+    nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let decodedID = try container.decodeIfPresent(String.self, forKey: .id)
             ?? container.decode(String.self, forKey: .itemID)
@@ -131,7 +131,7 @@ extension InspectionTestCase {
         }
     }
 
-    func encode(to encoder: Encoder) throws {
+    nonisolated func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(code, forKey: .code)
@@ -143,7 +143,7 @@ extension InspectionTestCase {
     }
 }
 
-private struct DecodedInspectionStep: Decodable {
+nonisolated private struct DecodedInspectionStep: Decodable {
     let id: String?
     let code: String?
     let displayOrder: Int?
@@ -176,7 +176,7 @@ private struct DecodedInspectionStep: Decodable {
         case evidenceAttachments
     }
 
-    func step(
+    nonisolated func step(
         fallbackDisplayOrder: Int,
         testCaseID: String,
         testCaseCode: String,
@@ -445,7 +445,7 @@ nonisolated struct TestCaseDraftValidationSummary: Equatable, Sendable {
 }
 
 private extension ValidationIssue {
-    var stepID: String {
+    nonisolated var stepID: String {
         switch code {
         case .missingRequiredOutcome(let stepID),
                 .missingInspectorNote(let stepID),

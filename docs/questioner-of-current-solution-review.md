@@ -35,3 +35,12 @@ The proposed direction is sound: most warnings are caused by pure value models a
 - Keep actor stress tests for concurrent draft saves and session isolation through `InspectionEventStore` and `TestCaseJSONPersistenceService`.
 - Add a compile-time smoke path where persistence maps `ValidationIssue` to `PersistedValidationIssue` inside the persistence actor without crossing MainActor.
 - Run Thread Sanitizer on persistence and store tests when available.
+
+## Applied Solution Review - 2026-07-05
+
+Verdict: accept with caveats.
+
+- No actor-boundary cheating was found in the applied diff. `StepResult` remains a value snapshot while `InMemoryDraftStore` remains `@MainActor`; `SessionKey` is pure actor-internal keying while `InspectionEventStore` remains an actor; persistence DTO mapping and validation helpers are value-only.
+- Codable changes preserve keys/defaults, and the saved build/test logs cover JSON decoding, validation ordering, persistence, sessions, and coordinator flows.
+- Caveat: UI/domain separation is improved but still porous. `InspectionTestStepType.color` and `InspectionOutcome.color` moved out of the domain model file, but they remain global SwiftUI extensions on domain enums in the design system. Older mock/session UI models in `InspectionModels.swift` still import SwiftUI and retain color-bearing enums/palette.
+- Caveat: verification supports zero Swift concurrency warnings for the recorded scheme/destination under the project’s current Swift 5 migration settings with default MainActor isolation and upcoming concurrency features. It is not a separate Swift 6 language-mode build.

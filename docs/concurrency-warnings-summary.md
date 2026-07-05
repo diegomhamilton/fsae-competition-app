@@ -36,3 +36,12 @@ The project is using default MainActor isolation while many domain, persistence,
 - Content decoding tests pass after Codable isolation fixes.
 - Inspection event store tests pass after `SessionKey` fixes.
 - View/coordinator tests or manual checks pass after moving color and display helpers into UI adapters.
+
+## Implementation Notes - 2026-07-05
+
+- Kept UI-owned coordinator state on `@MainActor`, but moved `AppCoordinator` mock fixture defaults into a MainActor convenience initializer so default argument evaluation no longer reaches mock data from a nonisolated context.
+- Kept persistence, validation, decoding, and session storage off MainActor by marking pure value witnesses/helpers `nonisolated`: custom `Codable` methods, `StepResult`, `PersistedValidationIssue.init(issue:)`, validation rule factories/helpers, and actor-internal `SessionKey`.
+- Moved `InspectionTestStepType.color` and `InspectionOutcome.color` out of Sendable domain models and into the SwiftUI design system. Domain models no longer import SwiftUI only for presentation colors.
+- Saved verification logs at `docs/concurrency-warden-build.log` and `docs/concurrency-warden-test.log`.
+- `xcodebuild build -scheme FSAEInspectionChecklist -project FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist.xcodeproj -destination 'platform=macOS' -derivedDataPath ./.DerivedData CODE_SIGNING_ALLOWED=NO` succeeded with no Swift concurrency warnings. The remaining `warning:` line is Xcode AppIntents metadata extraction noise.
+- `xcodebuild test -scheme FSAEInspectionChecklist -project FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist.xcodeproj -destination 'platform=macOS' -derivedDataPath ./.DerivedData CODE_SIGNING_ALLOWED=NO` succeeded after running outside the sandbox so the macOS test runner could communicate with `testmanagerd`.
