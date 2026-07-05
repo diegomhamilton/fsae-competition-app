@@ -341,6 +341,9 @@ private struct TestCaseStepCard: View {
         .onChange(of: measurementValue) { _, _ in
             persistDraft()
         }
+        .onChange(of: state) { _, newState in
+            syncLocalState(with: newState)
+        }
         .padding(14)
         .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))
         .overlay {
@@ -348,6 +351,24 @@ private struct TestCaseStepCard: View {
                 .stroke(state.validationIssues.isEmpty ? Color.fsaeBorder : Color.fsaeRed.opacity(0.5))
         }
         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseStepRow(testCaseID: testCaseID, stepID: state.id).rawValue)
+    }
+
+    private func syncLocalState(with state: InspectionTestCaseStepViewState) {
+        if selectedOutcome != state.outcome {
+            selectedOutcome = state.outcome
+        }
+
+        if noteText != state.notes {
+            noteText = state.notes
+        }
+
+        if measurementValue != state.measurementInput {
+            measurementValue = state.measurementInput
+        }
+
+        if evidenceAttachments != state.evidenceAttachments {
+            evidenceAttachments = state.evidenceAttachments
+        }
     }
 
     private func persistDraft() {
