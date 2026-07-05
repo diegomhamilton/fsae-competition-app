@@ -12,7 +12,12 @@ struct ActiveTeamDashboardView: View {
 
     var body: some View {
         let team = coordinator.activeTeam
-        let stages = coordinator.stages
+        let stageRows = coordinator.stages.map { stage in
+            ActiveTeamStageRowState(
+                stage: stage,
+                draftsByTestCaseID: coordinator.draftsByTestCaseID
+            )
+        }
         let selectedStageID = coordinator.activeStage?.id
 
         ScreenShell(
@@ -45,8 +50,8 @@ struct ActiveTeamDashboardView: View {
             }
 
             HStack(spacing: 12) {
-                MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: "Overall progress", systemImage: "chart.pie", color: .fsaeGreen)
-                MetricTile(value: "\(stages.map(\.requiredOpenItems).reduce(0, +))", label: "Open blockers", systemImage: "exclamationmark.triangle", color: .fsaeAmber)
+                MetricTile(value: "\(overallProgressPercent(stageRows: stageRows))%", label: "Overall progress", systemImage: "chart.pie", color: .fsaeGreen)
+                MetricTile(value: "\(stageRows.map(\.blockerCount).reduce(0, +))", label: "Open blockers", systemImage: "exclamationmark.triangle", color: .fsaeAmber)
             }
 
             ContentPanel {
@@ -78,11 +83,11 @@ struct ActiveTeamDashboardView: View {
                 Text("Stages")
                     .font(.headline)
                     .foregroundStyle(Color.fsaeText)
-                ForEach(stages) { stage in
+                ForEach(stageRows) { stageRow in
                     Button {
-                        openStage(stage.id)
+                        openStage(stageRow.id)
                     } label: {
-                        StageRow(stage: stage, isSelected: stage.id == selectedStageID)
+                        StageRow(stageRow: stageRow, isSelected: stageRow.id == selectedStageID)
                     }
                     .buttonStyle(.plain)
                 }
@@ -92,35 +97,122 @@ struct ActiveTeamDashboardView: View {
         .navigationTitle("Team")
     }
 
-    private func overallProgressPercent(stages: [InspectionStage]) -> Int {
-        guard !stages.isEmpty else {
+    private func overallProgressPercent(stageRows: [ActiveTeamStageRowState]) -> Int {
+        guard !stageRows.isEmpty else {
             return 0
         }
 
-        return Int(stages.map(\.progress).reduce(0, +) / Double(stages.count) * 100)
+        return Int(stageRows.map(\.progressFraction).reduce(0, +) / Double(stageRows.count) * 100)
+    }
+}
+
+struct ActiveTeamStageRowState: Identifiable, Equatable, Sendable {
+    let stage: InspectionStage
+    let completedStepCount: Int
+    let totalStepCount: Int
+    let blockerCount: Int
+
+    var id: String {
+        stage.id
+    }
+
+    var progressFraction: Double {
+        guard totalStepCount > 0 else {
+            return 0
+        }
+
+        return Double(completedStepCount) / Double(totalStepCount)
+    }
+
+    var status: ActiveTeamStageStatus {
+        if totalStepCount == 0 {
+            return .notStarted
+        }
+
+        if blockerCount > 0 {
+            return .blocked
+        }
+
+        return completedStepCount == totalStepCount ? .complete : .inProgress
+    }
+
+    var statusText: String {
+        switch status {
+        case .notStarted, .inProgress, .complete:
+            status.displayName
+        case .blocked:
+            switch blockerCount {
+            case 1: "1 blocker"
+            default: "\(blockerCount) blockers"
+            }
+        }
+    }
+
+    init(
+        stage: InspectionStage,
+        draftsByTestCaseID: [String: TestCaseDraft] = [:]
+    ) {
+        self.stage = stage
+
+        let testCases = stage.orderedSections.flatMap(\.orderedTestCases)
+        let summaries = testCases.map { testCase in
+            InspectionTestCaseViewState(
+                testCase: testCase,
+                draft: draftsByTestCaseID[testCase.id] ?? TestCaseDraft(testCase: testCase)
+            )
+        }
+
+        completedStepCount = summaries.map(\.progressSummary.completeStepCount).reduce(0, +)
+        totalStepCount = summaries.map(\.progressSummary.totalStepCount).reduce(0, +)
+        blockerCount = summaries.map(\.validationSummary.blockerCount).reduce(0, +)
+    }
+}
+
+enum ActiveTeamStageStatus: Equatable, Sendable {
+    case notStarted
+    case inProgress
+    case blocked
+    case complete
+
+    var displayName: String {
+        switch self {
+        case .notStarted: "Not Started"
+        case .inProgress: "In Progress"
+        case .blocked: "Blocked"
+        case .complete: "Complete"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .notStarted: .fsaeGray
+        case .inProgress: .fsaeBlue
+        case .blocked: .fsaeAmber
+        case .complete: .fsaeGreen
+        }
     }
 }
 
 private struct StageRow: View {
-    let stage: InspectionStage
+    let stageRow: ActiveTeamStageRowState
     let isSelected: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(stage.title)
+                    Text(stageRow.stage.title)
                         .font(.headline)
                         .foregroundStyle(Color.fsaeText)
-                    Text(stage.subtitle)
+                    Text(stageRow.stage.subtitle)
                         .font(.caption)
                         .foregroundStyle(Color.fsaeSecondaryText)
                 }
                 Spacer()
-                StatusPill(text: stage.requiredOpenItems == 0 ? "Complete" : "\(stage.requiredOpenItems) blocker", color: stage.requiredOpenItems == 0 ? Color.fsaeGreen : Color.fsaeAmber)
+                StatusPill(text: stageRow.statusText, color: stageRow.status.color)
             }
-            ProgressView(value: stage.progress)
-                .tint(stage.requiredOpenItems == 0 ? Color.fsaeGreen : Color.fsaePrimary)
+            ProgressView(value: stageRow.progressFraction)
+                .tint(stageRow.status == .complete ? Color.fsaeGreen : Color.fsaePrimary)
         }
         .padding(14)
         .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))
