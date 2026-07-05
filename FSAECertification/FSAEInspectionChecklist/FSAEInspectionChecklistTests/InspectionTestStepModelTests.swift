@@ -112,6 +112,39 @@ struct InspectionTestStepModelTests {
         }
     }
 
+    @Test("US-003 measurement values accept inclusive bounds")
+    func us003MeasurementValueAcceptsInclusiveBounds() throws {
+        let range = MeasurementRange(
+            unit: .seconds,
+            minimum: Decimal(string: "0.00")!,
+            maximum: Decimal(string: "4.99")!,
+            maximumFractionDigits: 2
+        )
+
+        let minimum = try MeasurementValue(rawValue: "0.00", range: range)
+        let maximum = try MeasurementValue(rawValue: "4.99", range: range)
+
+        #expect(minimum.value == Decimal(string: "0.00")!)
+        #expect(minimum.unit == .seconds)
+        #expect(maximum.value == Decimal(string: "4.99")!)
+        #expect(maximum.unit == .seconds)
+    }
+
+    @Test("US-003 measurement values trim padded numeric input before parsing")
+    func us003MeasurementValueTrimsPaddedNumericInput() throws {
+        let range = MeasurementRange(
+            unit: .seconds,
+            minimum: Decimal(string: "0.00")!,
+            maximum: Decimal(string: "4.99")!,
+            maximumFractionDigits: 2
+        )
+
+        let measurement = try MeasurementValue(rawValue: " \n4.38\t ", range: range)
+
+        #expect(measurement.value == Decimal(string: "4.38")!)
+        #expect(measurement.formattedValue == "4.38 s")
+    }
+
     @Test("US-004 evidence metadata stores attachment display data for required proof")
     func us004EvidenceMetadataStoresAttachmentDisplayDataForRequiredProof() {
         let createdAt = Date(timeIntervalSince1970: 1_780_000_000)

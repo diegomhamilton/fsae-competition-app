@@ -79,6 +79,24 @@ struct InspectionCoordinatorTests {
         #expect(execution.activeStep?.title == "RML flashing")
     }
 
+    @Test("US-002 execution coordinator rejects unknown stage routes")
+    func executionCoordinatorRejectsUnknownStageRoutes() async throws {
+        let coordinator = AppCoordinator(teams: teams(), stages: stages())
+        coordinator.completeMockLogin()
+        #expect(await coordinator.selectTeam(id: 28))
+        #expect(await coordinator.openStage(id: "rain"))
+
+        let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        let originalRoute = execution.route
+        let originalStageID = execution.sessionContext.activeStageID
+
+        #expect(!(await coordinator.openStage(id: "unknown-stage")))
+
+        #expect(execution.route == originalRoute)
+        #expect(execution.sessionContext.activeStageID == originalStageID)
+        #expect(execution.activeStage?.id == "rain")
+    }
+
     @Test("US-006 team switch routes through confirmation")
     func teamSwitchRoutesThroughConfirmation() async throws {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())

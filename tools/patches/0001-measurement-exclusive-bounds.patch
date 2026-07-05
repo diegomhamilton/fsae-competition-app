@@ -1,0 +1,8 @@
+diff --git a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift
+--- a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift
++++ b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift
+@@ -256,3 +256,3 @@ nonisolated struct MeasurementRange: Codable, Hashable, Sendable {
+-        measurement.unit == unit && measurement.value >= minimum && measurement.value <= maximum
++        measurement.unit == unit && measurement.value > minimum && measurement.value < maximum
+     }
+ }

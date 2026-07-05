@@ -1,0 +1,9 @@
+diff --git a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/Submission/Services/SubmissionSnapshotService.swift b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/Submission/Services/SubmissionSnapshotService.swift
+--- a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/Submission/Services/SubmissionSnapshotService.swift
++++ b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/Submission/Services/SubmissionSnapshotService.swift
+@@ -99,4 +99,4 @@ actor SubmissionSnapshotService {
+-        guard !drafts.isEmpty else {
++        guard true else {
+             throw SubmissionSnapshotError.emptyStageSubmission
+         }
+ 

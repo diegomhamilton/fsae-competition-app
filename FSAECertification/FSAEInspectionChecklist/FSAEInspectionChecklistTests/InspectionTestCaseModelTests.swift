@@ -28,6 +28,35 @@ struct InspectionTestCaseModelTests {
         #expect(testCase.orderedSteps.map(\.ruleReference) == ["IN.4.1", "Rain 7", "EV.6.1"])
     }
 
+    @Test("US-002 decoded test steps inherit parent rule reference when omitted")
+    func us002DecodedTestStepsInheritParentRuleReferenceWhenOmitted() throws {
+        let json = """
+        {
+          "id": "rain-rml",
+          "code": "RAIN-RML",
+          "displayOrder": 20,
+          "title": "Rain test RML behavior",
+          "ruleReferences": ["RAIN.1"],
+          "steps": [
+            {
+              "id": "RT-08",
+              "code": "RT-08",
+              "displayOrder": 10,
+              "title": "RML flashing",
+              "type": "check",
+              "content": "Verify the RML is flashing after TS activation."
+            }
+          ]
+        }
+        """
+
+        let testCase = try JSONDecoder().decode(InspectionTestCase.self, from: Data(json.utf8))
+
+        #expect(testCase.ruleReferences == ["RAIN.1"])
+        #expect(testCase.orderedSteps.map(\.ruleReference) == ["RAIN.1"])
+        #expect(testCase.allRuleReferences == ["RAIN.1"])
+    }
+
     @Test("US-002 test case draft aggregates child outcomes, notes, measurements, and evidence")
     func us002TestCaseDraftAggregatesChildStepDrafts() throws {
         let measurementRange = egressMeasurementRange()

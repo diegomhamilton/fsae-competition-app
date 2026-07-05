@@ -89,6 +89,24 @@ struct TestCaseJSONPersistenceServiceTests {
         #expect(teamBURL.path.contains("/teams/car-099/sessions/session-b/"))
     }
 
+    @Test("US-001 sanitizes colon characters in path-scoped identifiers")
+    func sanitizesColonCharactersInPathScopedIdentifiers() async throws {
+        let rootDirectory = try temporaryApplicationSupportDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let service = TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+        let context = InspectionPersistenceContext(
+            eventID: "event:2026",
+            teamID: "car:042",
+            sessionID: "session:a",
+            stageID: "garage:main"
+        )
+
+        let fileURL = await service.draftFileURL(context: context, testCaseID: "test:case")
+
+        #expect(fileURL.path.hasSuffix("/events/event_2026/teams/car_042/sessions/session_a/drafts/garage_main/test_case.json"))
+        #expect(!fileURL.lastPathComponent.contains(":"))
+    }
+
     @Test("US-001 exposes team-specific submissions folder without mixing team contexts")
     func exposesTeamSpecificSubmissionsFolder() async throws {
         let rootDirectory = try temporaryApplicationSupportDirectory()

@@ -67,6 +67,53 @@ struct SubmissionSnapshotServiceTests {
         }
     }
 
+    @Test("US-002 rejects empty stage submissions")
+    func rejectsEmptyStageSubmissions() async throws {
+        let rootDirectory = try temporaryApplicationSupportDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let service = SubmissionSnapshotService(
+            persistence: TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+        )
+        let context = InspectionPersistenceContext(
+            eventID: "event-2026",
+            teamID: "car-042",
+            sessionID: "session-a",
+            stageID: "garage"
+        )
+
+        await #expect(throws: SubmissionSnapshotError.emptyStageSubmission) {
+            _ = try await service.createStageSnapshot(
+                context: context,
+                submissionID: "submission-empty",
+                drafts: []
+            )
+        }
+    }
+
+    @Test("US-002 rejects duplicate draft test case IDs")
+    func rejectsDuplicateDraftTestCaseIDs() async throws {
+        let rootDirectory = try temporaryApplicationSupportDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let service = SubmissionSnapshotService(
+            persistence: TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+        )
+        let context = InspectionPersistenceContext(
+            eventID: "event-2026",
+            teamID: "car-042",
+            sessionID: "session-a",
+            stageID: "garage"
+        )
+        let draft = try completedSubmissionDraft(notes: "Garage inspection accepted.")
+
+        await #expect(throws: SubmissionSnapshotError.duplicateTestCaseID("garage-main")) {
+            _ = try await service.createStageSnapshot(
+                context: context,
+                submissionID: "submission-duplicate",
+                drafts: [draft, draft]
+            )
+        }
+    }
+
     @Test("US-006 places submitted snapshots in the active team folder")
     func placesSnapshotsUnderTeamSubmissionFolder() async throws {
         let rootDirectory = try temporaryApplicationSupportDirectory()
