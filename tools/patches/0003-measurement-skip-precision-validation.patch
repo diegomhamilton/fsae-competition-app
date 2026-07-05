@@ -1,0 +1,12 @@
+diff --git a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift
+--- a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift
++++ b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift
+@@ -276,7 +276,5 @@ nonisolated struct MeasurementValue: Codable, Hashable, Sendable {
+         let fractionDigitCount = trimmedValue.split(separator: ".", omittingEmptySubsequences: false).dropFirst().first?.count ?? 0
+-        guard fractionDigitCount <= range.maximumFractionDigits else {
+-            throw ValidationError.precisionExceeded
+-        }
++        _ = fractionDigitCount
+ 
+         self.value = decimal
+         self.unit = range.unit

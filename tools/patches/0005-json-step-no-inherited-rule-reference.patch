@@ -1,0 +1,9 @@
+diff --git a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestCaseExecution/Models/InspectionTestCaseModels.swift b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestCaseExecution/Models/InspectionTestCaseModels.swift
+--- a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestCaseExecution/Models/InspectionTestCaseModels.swift
++++ b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestCaseExecution/Models/InspectionTestCaseModels.swift
+@@ -193,4 +193,4 @@ private struct DecodedInspectionStep: Decodable {
+-            ruleReference: ruleReference ?? inheritedRuleReference,
++            ruleReference: ruleReference ?? "",
+             title: title ?? "\(testCaseTitle) Step \(stableDisplayOrder)",
+             type: type,
+             content: content,

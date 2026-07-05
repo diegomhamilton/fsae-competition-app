@@ -1,0 +1,9 @@
+diff --git a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/Persistence/Services/TestCaseJSONPersistenceService.swift b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/Persistence/Services/TestCaseJSONPersistenceService.swift
+--- a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/Persistence/Services/TestCaseJSONPersistenceService.swift
++++ b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/Persistence/Services/TestCaseJSONPersistenceService.swift
+@@ -527,5 +527,4 @@ actor TestCaseJSONPersistenceService {
+         rawValue
+             .replacingOccurrences(of: "/", with: "_")
+-            .replacingOccurrences(of: ":", with: "_")
+     }
+ }
