@@ -193,6 +193,42 @@ struct InspectionCoordinatorTests {
         let switchedExecution = try #require(relaunched.eventCoordinator.executionCoordinator)
         #expect(switchedExecution.draftsByTestCaseID["rain-rml"] == nil)
     }
+
+    @Test("Issue #56 dashboard stage row ignores static complete metadata when draft is unanswered")
+    func issue56DashboardStageRowUsesDraftBackedStatusForUnansweredStage() {
+        let stage = staticCompleteStageWithRequiredStep()
+
+        let row = ActiveTeamStageRowState(stage: stage)
+
+        #expect(row.status == .blocked)
+        #expect(row.statusText == "1 blocker")
+        #expect(row.completedStepCount == 0)
+        #expect(row.totalStepCount == 1)
+        #expect(row.blockerCount == 1)
+        #expect(row.progressFraction == 0)
+    }
+
+    @Test("Issue #56 dashboard stage row marks complete only when draft validation passes")
+    func issue56DashboardStageRowCompletesOnlyWithPassingDraft() {
+        let stage = staticCompleteStageWithRequiredStep()
+        let testCase = stage.orderedSections[0].orderedTestCases[0]
+        let draft = TestCaseDraft(
+            testCase: testCase,
+            stepDrafts: [TestStepDraft(stepID: "STATIC-STEP", outcome: .pass)]
+        )
+
+        let row = ActiveTeamStageRowState(
+            stage: stage,
+            draftsByTestCaseID: [testCase.id: draft]
+        )
+
+        #expect(row.status == .complete)
+        #expect(row.statusText == "Complete")
+        #expect(row.completedStepCount == 1)
+        #expect(row.totalStepCount == 1)
+        #expect(row.blockerCount == 0)
+        #expect(row.progressFraction == 1)
+    }
 }
 
 private func teams() -> [InspectionTeam] {
@@ -295,6 +331,39 @@ private func inspectionStep(
         content: "Test content for \(title).",
         requiredOutcome: true,
         requiresEvidence: requiresEvidence
+    )
+}
+
+private func staticCompleteStageWithRequiredStep() -> InspectionStage {
+    InspectionStage(
+        id: "static-complete",
+        code: "static-complete",
+        title: "Static Complete",
+        displayOrder: 1,
+        subtitle: "Regression fixture",
+        progress: 1,
+        requiredOpenItems: 0,
+        sections: [
+            InspectionSection(
+                id: "static-complete.section",
+                title: "Static Complete Section",
+                displayOrder: 1,
+                testCases: [
+                    InspectionTestCase(
+                        id: "static-case",
+                        code: "STATIC",
+                        displayOrder: 1,
+                        title: "Static case",
+                        steps: [
+                            inspectionStep(
+                                id: "STATIC-STEP",
+                                title: "Required answer"
+                            )
+                        ]
+                    )
+                ]
+            )
+        ]
     )
 }
 
