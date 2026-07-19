@@ -1,5 +1,5 @@
 ---
-title: System Map — iOS App Navigation Flow
+title: System Map — Judge Inspection Flow
 domain: inspection-event
 status: active
 owners: [documenter-agent]
@@ -28,60 +28,110 @@ doc_hooks:
     - CLAUDE.md
 ---
 
-# System Map: iOS App Navigation Flow
+# System Map: Judge Inspection Flow
 
-This document describes the navigation architecture of the FSAE Inspection Checklist iOS app as it exists today. App source root: `FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/` (all repo-relative paths below are relative to this root unless prefixed).
+This document maps the judge-facing inspection journey first, then summarizes the
+SwiftUI coordinator wiring that supports it. App source root:
+`FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/` (all
+repo-relative paths below are relative to this root unless prefixed).
 
-## Navigation Architecture Overview
+## User Flow Overview
 
-The app is a single-window SwiftUI app (`FSAEInspectionChecklistApp` -> `ContentView`) whose root UI is a five-tab `TabView` (`ContentTabsView`): **Sessions**, **Team**, **Stage**, **Case**, **Step**. Each tab wraps its screen in its own `NavigationStack`, but there is currently no push navigation inside any tab — every screen-to-screen transition is a *programmatic tab switch* driven by coordinator state.
+A judge launches the app, selects or resumes a team session, reviews the active
+team dashboard, works through inspection stages, records test-step outcomes,
+resolves validation blockers, and submits stage snapshots. During an event, the
+judge can switch teams and return to the same flow for the next active session.
 
-Navigation is owned by a three-level coordinator hierarchy (MVC + Coordinators, per the development plan design):
+Primary path:
 
-1. **`AppCoordinator`** (root) holds `route: AppCoordinatorRoute` (`.login` / `.sessionSelector` / `.inspection`) and `selectedScreen: ProposedScreen` (`.sessionSelector` / `.dashboard` / `.stageChecklist` / `.testCase` / `.stepDetail`). `selectedScreen` is bound to the `TabView` selection via `ContentViewBindings.selectedScreenBinding`, so setting it *is* the navigation act. Login is mocked: `ContentView.task` calls `completeMockLogin()` on launch (there is no login screen; `.login` is only the initial route value) and then loads official stages through `InspectionContentService`, falling back to `MockInspectionData`.
-2. **`InspectionEventCoordinator`** scopes the inspection event: it owns a `SessionSelectionCoordinator` (team roster, start/resume/blocked intents) and creates a fresh **`InspectionExecutionCoordinator`** whenever a session is started or resumed (`startOrResumeSession`), restoring persisted drafts from the `InspectionEventStore`.
-3. **`InspectionExecutionCoordinator`** holds the in-session position as `route: InspectionExecutionRoute` (`.dashboard`, `.stage`, `.testCase`, `.testStep`, `.teamSwitchConfirmation`) plus the draft state (`draftsByTestCaseID`). Views never mutate routes directly; they call closures that funnel into `AppCoordinator` methods (`openStage`, `openTestCase`, `openTestStep`, `saveStepDraft`, `requestTeamSwitch`), which update the execution route *and* the selected tab together.
+1. Launch app.
+2. Select or resume a team session.
+3. Review team progress and open blockers.
+4. Open an inspection stage.
+5. Open a test case.
+6. Record individual step outcomes, measurements, evidence, and notes.
+7. Resolve blockers until the stage can be submitted.
+8. Submit the stage snapshot.
+9. Continue another stage or switch teams.
 
-State-driven presentation: tabs whose coordinator state is missing (no execution coordinator, no active stage/test case) render an `EmptyFlowState` placeholder instead of their screen. The team-switch confirmation is the one modal in the app — a `.sheet` on `ContentView` whose `isPresented` binding derives from `route == .teamSwitchConfirmation` (`ContentViewBindings.teamSwitchConfirmationBinding`, medium detent).
-
-Submission, rechecks, and stickers: `FullStageView` renders a **Submit Stage** button gated by draft-backed validation (`FullStageViewState.canSubmit`), and its validation panel deep-links each blocker to the offending test step. However, the `submitStage` closure wired in `ContentTabsView` is currently an empty no-op, and no recheck or sticker screens exist yet — those flows are specified in `openspec/changes/technical-inspection-event-development-plan/design.md` but not implemented in navigation.
-
-## Navigation Flow
+## Judge Flow Diagram
 
 ```mermaid
 flowchart TD
-    Launch([App launch]) -->|"ContentView.task: completeMockLogin() + loadInspectionContent()"| Sessions
-
-    Sessions["SessionSelectorView<br/>(Sessions tab)"] -->|"tap team row -> AppCoordinator.selectTeam(id) -> InspectionEventCoordinator.startOrResumeSession"| Dashboard
-    Sessions -.->|"team status .blocked -> selection refused, stays on roster"| Sessions
-
-    Dashboard["ActiveTeamDashboardView<br/>(Team tab)"] -->|"'Open Stage' button or stage row -> AppCoordinator.openStage(id) -> executionCoordinator.openStage + restoreDraftsForActiveStage"| Stage
-    Dashboard -->|"'Switch' button -> AppCoordinator.requestTeamSwitch(to:) -> route .teamSwitchConfirmation"| SwitchSheet
-
-    SwitchSheet["TeamSwitchConfirmationView<br/>(sheet, medium detent)"] -->|"'Save & Switch' -> AppCoordinator.confirmTeamSwitch -> startOrResumeSession(target)"| Dashboard
-    SwitchSheet -->|"'Cancel' -> AppCoordinator.cancelTeamSwitch -> route .dashboard"| Dashboard
-
-    Stage["FullStageView<br/>(Stage tab)"] -->|"tap test case row -> AppCoordinator.openTestCase(id)"| TestCase
-    Stage -->|"tap validation blocker -> openBlockingRoute: openTestCase(id) + openTestStep(id)"| Step
-    Stage -->|"'Submit Stage' (enabled only when FullStageViewState.canSubmit)"| Submit
-
-    TestCase["TestCaseView<br/>(Case tab)"] -->|"'Open Step' on step card -> activeStepBinding -> AppCoordinator.openTestStep(id)"| Step
-    TestCase -.->|"outcome/note/measurement edits -> AppCoordinator.saveStepDraft (persists, no navigation)"| TestCase
-
-    Step["StepOverviewView<br/>(Step tab)"] -->|"'Done' -> persistDraft + AppCoordinator.selectScreen(.stageChecklist)"| Stage
-    Step -.->|"edits -> executionCoordinator.saveStepDraft (persists, no navigation)"| Step
-
-    Submit["Stage submission"]:::planned -.->|"submitStage closure is a no-op placeholder in ContentTabsView"| Rechecks
-    Rechecks["Rechecks / sticker eligibility<br/>(no screens yet; specified in design.md)"]:::planned
-
-    classDef planned stroke-dasharray: 5 5,opacity:0.7
+    Launch["Open app"] --> Sessions["Choose team"]
+    Sessions --> Dashboard["Review team dashboard"]
+    Dashboard --> Stage["Open stage"]
+    Stage --> Case["Open test case"]
+    Case --> Step["Record step results"]
+    Step --> Case
+    Case --> Stage
+    Stage --> Blockers{"Stage blockers?"}
+    Blockers -->|"Resolve blocker"| Step
+    Blockers -->|"Ready to submit"| Submit["Submit stage"]
+    Submit --> Dashboard
+    Dashboard --> Switch["Switch team"]
+    Switch --> Sessions
 ```
 
-Notes:
+## Screen Responsibilities
 
-- Any tab can also be reached directly through the tab bar (`selectedScreenBinding`); the coordinator methods above are the flow-driven paths.
-- Stage, Case, and Step tabs show an `EmptyFlowState` placeholder until the corresponding coordinator state exists (active session / stage / test case).
-- Validation is not a separate screen: it renders inline as `FullStageValidationPanel` (stage level) and `TestCaseValidationSummaryPanel` (test case level), gating the submit control and deep-linking blockers to steps.
+| User goal | Screen | What the judge can do |
+| --- | --- | --- |
+| Pick inspection work | SessionSelectorView (Sessions tab) | Select or resume a team session; blocked teams stay on the roster. |
+| Understand team progress | ActiveTeamDashboardView (Team tab) | Review stage status, open blockers, continue a stage, or start team switching. |
+| Work a stage | FullStageView (Stage tab) | Open test cases, review validation blockers, and submit when validation passes. |
+| Complete a case | TestCaseView (Case tab) | Edit all step outcomes, notes, measurements, and evidence for a test case. |
+| Focus one step | StepOverviewView (Step tab) | Record a single step result, then return to the case or stage flow. |
+| Switch active team | TeamSwitchConfirmationView (sheet) | Confirm save-and-switch or cancel back to the dashboard. |
+
+## Current Gaps
+
+- `FullStageView` renders a **Submit Stage** button gated by draft-backed
+  validation (`FullStageViewState.canSubmit`), but the `submitStage` closure wired
+  in `ContentTabsView` is currently an empty no-op.
+- Recheck and sticker eligibility screens are specified in
+  `openspec/changes/technical-inspection-event-development-plan/design.md` but are
+  not implemented in navigation yet.
+- Validation is not a separate screen: it renders inline as
+  `FullStageValidationPanel` and `TestCaseValidationSummaryPanel`, then deep-links
+  blockers to the relevant step.
+
+## Implementation Map
+
+The app is a single-window SwiftUI app (`FSAEInspectionChecklistApp` ->
+`ContentView`) whose root UI is a five-tab `TabView` (`ContentTabsView`):
+**Sessions**, **Team**, **Stage**, **Case**, **Step**. Each tab wraps its screen in
+its own `NavigationStack`, but there is currently no push navigation inside a tab.
+Flow-driven transitions are programmatic tab switches backed by coordinator state.
+
+Navigation is owned by a three-level coordinator hierarchy (MVC + Coordinators,
+per the development plan design):
+
+1. **`AppCoordinator`** (root) holds `route: AppCoordinatorRoute` (`.login` /
+   `.sessionSelector` / `.inspection`) and `selectedScreen: ProposedScreen`
+   (`.sessionSelector` / `.dashboard` / `.stageChecklist` / `.testCase` /
+   `.stepDetail`). `selectedScreen` is bound to the `TabView` selection via
+   `ContentViewBindings.selectedScreenBinding`, so setting it changes the visible
+   screen. Login is mocked: `ContentView.task` calls `completeMockLogin()` on
+   launch and then loads official stages through `InspectionContentService`,
+   falling back to `MockInspectionData`.
+2. **`InspectionEventCoordinator`** scopes the inspection event: it owns a
+   `SessionSelectionCoordinator` and creates a fresh
+   **`InspectionExecutionCoordinator`** whenever a session is started or resumed,
+   restoring persisted drafts from the `InspectionEventStore`.
+3. **`InspectionExecutionCoordinator`** holds the in-session position as
+   `route: InspectionExecutionRoute` (`.dashboard`, `.stage`, `.testCase`,
+   `.testStep`, `.teamSwitchConfirmation`) plus draft state
+   (`draftsByTestCaseID`). Views call closures that funnel into `AppCoordinator`
+   methods such as `openStage`, `openTestCase`, `openTestStep`, `saveStepDraft`,
+   and `requestTeamSwitch`.
+
+State-driven presentation: tabs whose coordinator state is missing (no execution
+coordinator, no active stage/test case) render an `EmptyFlowState` placeholder
+instead of their screen. The team-switch confirmation is the one modal in the app:
+a `.sheet` on `ContentView` whose `isPresented` binding derives from
+`route == .teamSwitchConfirmation` (`ContentViewBindings.teamSwitchConfirmationBinding`,
+medium detent).
 
 ## Screen Inventory
 
