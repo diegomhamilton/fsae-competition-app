@@ -10,9 +10,9 @@ final class InspectionExecutionCoordinator: ObservableObject {
     @Published private(set) var sessionContext: InspectionSessionContext
     @Published private(set) var route: InspectionExecutionRoute = .dashboard
     @Published private(set) var pendingSwitchTarget: InspectionTeam?
-    @Published private(set) var draftsByTestCaseID: [String: TestCaseDraft]
-    let stages: [InspectionStage]
+    @Published private(set) var draftsByStageID: [String: [String: TestCaseDraft]]
     let teams: [InspectionTeam]
+    private let stageModels: [InspectionStage]
     private let store: InspectionEventStore
     private let access: InspectionEventUserAccess
 
@@ -22,14 +22,34 @@ final class InspectionExecutionCoordinator: ObservableObject {
         teams: [InspectionTeam],
         store: InspectionEventStore,
         access: InspectionEventUserAccess,
+        draftsByStageID: [String: [String: TestCaseDraft]] = [:],
         draftsByTestCaseID: [String: TestCaseDraft] = [:]
     ) {
         self.sessionContext = sessionContext
-        self.stages = stages
+        self.stageModels = stages
         self.teams = teams
         self.store = store
         self.access = access
-        self.draftsByTestCaseID = draftsByTestCaseID
+        var stageDrafts = draftsByStageID
+        if !draftsByTestCaseID.isEmpty {
+            stageDrafts[sessionContext.activeStageID, default: [:]].merge(draftsByTestCaseID) { _, new in
+                new
+            }
+        }
+        self.draftsByStageID = stageDrafts
+    }
+
+    var stages: [FullStageViewState] {
+        stageModels.map { stage in
+            FullStageViewState(
+                stage: stage,
+                draftsByTestCaseID: draftsByStageID[stage.id] ?? [:]
+            )
+        }
+    }
+
+    var draftsByTestCaseID: [String: TestCaseDraft] {
+        draftsByStageID[sessionContext.activeStageID] ?? [:]
     }
 
     var activeTeam: InspectionTeam {
@@ -143,34 +163,46 @@ final class InspectionExecutionCoordinator: ObservableObject {
     }
 
     func restoreDraftsForActiveStage() async {
+        await restoreDrafts(for: sessionContext.activeStageID)
+    }
+
+    func restoreDraftsForAllStages() async {
+        for stage in stageModels {
+            await restoreDrafts(for: stage.id)
+        }
+    }
+
+    private func restoreDrafts(for stageID: String) async {
         do {
             let draftFiles = try await store.draftFiles(
-                scope: activeScope,
+                scope: scope(stageID: stageID),
                 access: access
             )
-            draftsByTestCaseID = draftFiles.reduce(into: [:]) { result, file in
+            draftsByStageID[stageID] = draftFiles.reduce(into: draftsByStageID[stageID] ?? [:]) { result, file in
                 result[file.testCaseID] = file.draft
             }
         } catch {
-            draftsByTestCaseID = [:]
+            return
         }
     }
 
     @discardableResult
     func saveStepDraft(_ stepDraft: TestStepDraft, testCaseID: String) async -> Bool {
-        guard let testCase = testCase(id: testCaseID) else {
+        guard let target = testCaseAndStage(id: testCaseID) else {
             return false
         }
 
-        var testCaseDraft = draft(for: testCase)
+        var stageDrafts = draftsByStageID[target.stageID] ?? [:]
+        var testCaseDraft = stageDrafts[testCaseID] ?? TestCaseDraft(testCase: target.testCase)
         testCaseDraft.updateStepDraft(stepDraft)
-        draftsByTestCaseID[testCaseID] = testCaseDraft
+        stageDrafts[testCaseID] = testCaseDraft
+        draftsByStageID[target.stageID] = stageDrafts
         sessionContext.hasUnsavedDraft = true
 
         do {
             _ = try await store.saveDraft(
                 testCaseDraft,
-                scope: activeScope,
+                scope: scope(stageID: target.stageID),
                 access: access
             )
             sessionContext.hasUnsavedDraft = false
@@ -181,7 +213,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
     }
 
     private func stage(id stageID: String) -> InspectionStage? {
-        stages.first { $0.id == stageID }
+        stageModels.first { $0.id == stageID }
     }
 
     private func testCase(id testCaseID: String) -> InspectionTestCase? {
@@ -198,13 +230,33 @@ final class InspectionExecutionCoordinator: ObservableObject {
             }
     }
 
-    private var activeScope: InspectionSessionScope {
+    private func testCaseAndStage(id testCaseID: String) -> (stageID: String, testCase: InspectionTestCase)? {
+        if let activeStage,
+           let testCase = testCase(id: testCaseID, in: activeStage) {
+            return (activeStage.id, testCase)
+        }
+
+        for stage in stageModels {
+            if let testCase = testCase(id: testCaseID, in: stage) {
+                return (stage.id, testCase)
+            }
+        }
+
+        return nil
+    }
+
+    private func testCase(id testCaseID: String, in stage: InspectionStage) -> InspectionTestCase? {
+        stage.orderedSections
+            .flatMap(\.orderedTestCases)
+            .first { $0.id == testCaseID }
+    }
+
+    private func scope(stageID: String) -> InspectionSessionScope {
         InspectionSessionScope(
             eventID: sessionContext.eventID,
             teamID: InspectionEventCoordinator.teamRecordID(sessionContext.team),
             sessionID: sessionContext.sessionID,
-            stageID: sessionContext.activeStageID
+            stageID: stageID
         )
     }
 }
-

@@ -78,6 +78,7 @@ final class InspectionEventCoordinator: ObservableObject {
             teams: sessionSelectionCoordinator.teams,
             store: store,
             access: access,
+            draftsByStageID: executionCoordinator?.draftsByStageID ?? [:],
             draftsByTestCaseID: executionCoordinator?.draftsByTestCaseID ?? [:]
         )
     }
@@ -115,7 +116,7 @@ final class InspectionEventCoordinator: ObservableObject {
             store: store,
             access: access
         )
-        await coordinator.restoreDraftsForActiveStage()
+        await coordinator.restoreDraftsForAllStages()
         executionCoordinator = coordinator
     }
 
@@ -135,4 +136,3 @@ final class InspectionEventCoordinator: ObservableObject {
         "\(eventID)-\(teamRecordID(team))-local"
     }
 }
-

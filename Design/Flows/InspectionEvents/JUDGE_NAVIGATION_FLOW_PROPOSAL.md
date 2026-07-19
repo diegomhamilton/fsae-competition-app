@@ -285,6 +285,8 @@ Keep implementation slices small:
   correction intent, with tests for route selection.
 - Empty-state route actions: add context-aware actions and identifiers without
   redesigning every screen.
+- Guided tab transition: either hide/demote `Case` and `Step` tabs or keep them
+  with route-repair behavior, but avoid mixing this with submission persistence.
 - Validation focus routing: route blocker selection to exact test case/step/field
   targets, then persist corrections immediately.
 - Submission and history: wire `Submit Stage` and immutable snapshot behavior in
