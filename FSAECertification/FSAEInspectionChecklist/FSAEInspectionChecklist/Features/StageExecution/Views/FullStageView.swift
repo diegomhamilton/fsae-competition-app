@@ -7,7 +7,7 @@ import SwiftUI
 
 struct FullStageView: View {
     fileprivate enum Strings {
-        static let eyebrow = "SC-003 Stage"
+        static let eyebrow = "Stage"
         static let sectionTitle = "Sections"
         static let progress = "Stage progress"
         static let validation = "Validation blockers"
@@ -16,6 +16,10 @@ struct FullStageView: View {
         static let submit = "Submit Stage"
         static let noBlockers = "No blockers found for this stage."
         static let openTestCase = "Open Test Case"
+        static let complete = "Complete"
+        static let blocked = "Blocked"
+        static let noBlockersShort = "No blockers"
+        static let localDraftFallback = "Review ordered test cases and validation from local draft state."
 
         enum Accessibility {
             static let summary = "Stage summary"
@@ -95,7 +99,7 @@ struct FullStageView: View {
     }
 
     private var subtitle: String {
-        "\(team.carNumber) \(team.school) · \(stage.subtitle.isEmpty ? "ordered test cases and stage validation from local draft state." : stage.subtitle)"
+        "\(team.carNumber) \(team.school) · \(stage.subtitle.isEmpty ? Strings.localDraftFallback : stage.subtitle)"
     }
 }
 
@@ -217,7 +221,7 @@ private struct FullStageTestCaseRow: View {
                     .font(.caption)
                     .foregroundStyle(Color.fsaeSecondaryText)
                 Spacer()
-                Label(testCase.validationSummary.isPassing ? "No blockers" : "\(testCase.validationSummary.blockerCount) blockers", systemImage: testCase.validationSummary.isPassing ? "checkmark.seal" : "exclamationmark.triangle")
+                Label(testCase.validationSummary.isPassing ? FullStageView.Strings.noBlockersShort : "\(testCase.validationSummary.blockerCount) blockers", systemImage: testCase.validationSummary.isPassing ? "checkmark.seal" : "exclamationmark.triangle")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(testCase.validationSummary.isPassing ? Color.fsaeGreen : Color.fsaeAmber)
             }
@@ -235,8 +239,8 @@ private struct FullStageTestCaseRow: View {
             Text(testCase.code)
                 .font(.caption.weight(.bold))
                 .foregroundStyle(Color.fsaeSecondaryText)
-            StatusPill(text: testCase.validationSummary.isPassing ? "Complete" : "Blocked", color: testCase.validationSummary.isPassing ? .fsaeGreen : .fsaeAmber)
-                .accessibilityLabel(testCase.validationSummary.isPassing ? "Complete" : "Blocked")
+            StatusPill(text: testCase.validationSummary.isPassing ? FullStageView.Strings.complete : FullStageView.Strings.blocked, color: testCase.validationSummary.isPassing ? .fsaeGreen : .fsaeAmber)
+                .accessibilityLabel(testCase.validationSummary.isPassing ? FullStageView.Strings.complete : FullStageView.Strings.blocked)
                 .accessibilityIdentifier(
                     InspectionAccessibilityIdentifier.testCaseStageStatus(stageID: stageID, testCaseID: testCase.id).rawValue
                 )

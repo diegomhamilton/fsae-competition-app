@@ -6,14 +6,24 @@
 import SwiftUI
 
 struct SessionSelectorView: View {
+    fileprivate enum Strings {
+        static let eyebrow = "Session Selection"
+        static let title = "Select Team"
+        static let subtitle = "Start or resume a locally stored inspection session for the current event."
+        static let resumeAvailable = "Resume available"
+        static let blocked = "Blocked"
+        static let localDrafts = "Local drafts are saved by team and session."
+        static let localDraftsDetail = "Choose a team to restore its latest stage, blockers, notes, measurements, and evidence metadata without mixing inspection work between teams."
+    }
+
     @ObservedObject var coordinator: SessionSelectionCoordinator
     let selectTeam: (Int) -> Void
 
     var body: some View {
         ScreenShell(
-            eyebrow: "SC-001 Session Selector",
-            title: "Select Team",
-            subtitle: "Judge-facing roster with clear resume status and current inspection position."
+            eyebrow: Strings.eyebrow,
+            title: Strings.title,
+            subtitle: Strings.subtitle
         ) {
             VStack(spacing: 12) {
                 ForEach(coordinator.teams) { team in
@@ -37,6 +47,10 @@ struct SessionSelectorView: View {
                             Spacer()
                             VStack(alignment: .trailing, spacing: 8) {
                                 StatusPill(text: team.status.rawValue, color: team.status.color)
+                                    .accessibilityIdentifier(
+                                        InspectionAccessibilityIdentifier.sessionSelectorTeamStatus(teamID: team.id).rawValue
+                                    )
+                                sessionAffordance(for: team)
                                 Text(team.lastSaved)
                                     .font(.caption)
                                     .foregroundStyle(Color.fsaeSecondaryText)
@@ -50,18 +64,43 @@ struct SessionSelectorView: View {
                         }
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.sessionSelectorTeamRow(teamID: team.id).rawValue
+                    )
                 }
             }
 
             ContentPanel {
-                Label("Resumable sessions stay visible as first-class rows.", systemImage: "arrow.clockwise")
+                Label(Strings.localDrafts, systemImage: "externaldrive.badge.checkmark")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Color.fsaeText)
-                Text("This overview intentionally collapses loading, empty, and error states into the roster concept so the app structure stays easy to evaluate before state handling is designed.")
+                Text(Strings.localDraftsDetail)
                     .font(.footnote)
                     .foregroundStyle(Color.fsaeSecondaryText)
             }
         }
         .navigationTitle("Sessions")
+    }
+
+    @ViewBuilder
+    private func sessionAffordance(for team: InspectionTeam) -> some View {
+        switch team.status {
+        case .ready:
+            EmptyView()
+        case .resumed:
+            Label(Strings.resumeAvailable, systemImage: "arrow.clockwise")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Color.fsaeBlue)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.sessionSelectorTeamResumeIndicator(teamID: team.id).rawValue
+                )
+        case .blocked:
+            Label(Strings.blocked, systemImage: "exclamationmark.triangle.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Color.fsaeAmber)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.sessionSelectorTeamBlockedIndicator(teamID: team.id).rawValue
+                )
+        }
     }
 }
