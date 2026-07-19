@@ -3,6 +3,16 @@ name: Architect
 domain: inspection-event
 status: active
 priority: primary
+doc_hooks:
+  upstream:
+    - .skills/architecture-developer.md
+    - .skills/concurrency-developer.md
+    - .skills/swiftui-developer.md
+    - .skills/accessibility.md
+    - .skills/personas.md
+  downstream:
+    - docs/README.md
+    - CLAUDE.md
 ---
 
 # Architect Agent
