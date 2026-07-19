@@ -79,6 +79,24 @@ struct InspectionCoordinatorTests {
         #expect(execution.activeStep?.title == "RML flashing")
     }
 
+    @Test("US-002 execution coordinator rejects unknown stage routes")
+    func executionCoordinatorRejectsUnknownStageRoutes() async throws {
+        let coordinator = AppCoordinator(teams: teams(), stages: stages())
+        coordinator.completeMockLogin()
+        #expect(await coordinator.selectTeam(id: 28))
+        #expect(await coordinator.openStage(id: "rain"))
+
+        let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        let originalRoute = execution.route
+        let originalStageID = execution.sessionContext.activeStageID
+
+        #expect(!(await coordinator.openStage(id: "unknown-stage")))
+
+        #expect(execution.route == originalRoute)
+        #expect(execution.sessionContext.activeStageID == originalStageID)
+        #expect(execution.activeStage?.id == "rain")
+    }
+
     @Test("US-006 team switch routes through confirmation")
     func teamSwitchRoutesThroughConfirmation() async throws {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())
@@ -193,6 +211,85 @@ struct InspectionCoordinatorTests {
         let switchedExecution = try #require(relaunched.eventCoordinator.executionCoordinator)
         #expect(switchedExecution.draftsByTestCaseID["rain-rml"] == nil)
     }
+
+    @Test("Issue #56 dashboard stage row ignores static complete metadata when draft is unanswered")
+    func issue56DashboardStageRowUsesDraftBackedStatusForUnansweredStage() {
+        let stage = staticCompleteStageWithRequiredStep()
+
+        let row = ActiveTeamStageRowState(stage: stage)
+
+        #expect(row.status == .blocked)
+        #expect(row.statusText == "1 blocker")
+        #expect(row.completedStepCount == 0)
+        #expect(row.totalStepCount == 1)
+        #expect(row.blockerCount == 1)
+        #expect(row.progressFraction == 0)
+    }
+
+    @Test("Issue #56 dashboard stage row marks complete only when draft validation passes")
+    func issue56DashboardStageRowCompletesOnlyWithPassingDraft() {
+        let stage = staticCompleteStageWithRequiredStep()
+        let testCase = stage.orderedSections[0].orderedTestCases[0]
+        let draft = TestCaseDraft(
+            testCase: testCase,
+            stepDrafts: [TestStepDraft(stepID: "STATIC-STEP", outcome: .pass)]
+        )
+
+        let row = ActiveTeamStageRowState(
+            stage: stage,
+            draftsByTestCaseID: [testCase.id: draft]
+        )
+
+        #expect(row.status == .complete)
+        #expect(row.statusText == "Complete")
+        #expect(row.completedStepCount == 1)
+        #expect(row.totalStepCount == 1)
+        #expect(row.blockerCount == 0)
+        #expect(row.progressFraction == 1)
+    }
+
+    @Test("TASK#10.1 stage switching preserves other stage draft progress")
+    func stageSwitchingPreservesOtherStageDraftProgress() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let stages = stageSwitchStages()
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: teams(),
+            stages: stages,
+            store: InspectionEventStore.appStore(
+                eventID: eventID,
+                teams: teams(),
+                stages: stages,
+                persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+            )
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        #expect(await coordinator.openStage(id: "ev"))
+        #expect(await coordinator.saveStepDraft(TestStepDraft(stepID: "EV-01", outcome: .pass), testCaseID: "ev-main"))
+
+        var execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        var evStageState = try #require(execution.stages.first { $0.stageID == "ev" })
+        #expect(evStageState.progressFraction == 1)
+
+        #expect(await coordinator.openStage(id: "chassis"))
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        evStageState = try #require(execution.stages.first { $0.stageID == "ev" })
+        var chassisStageState = try #require(execution.stages.first { $0.stageID == "chassis" })
+        #expect(evStageState.progressFraction == 1)
+        #expect(chassisStageState.progressFraction == 0)
+
+        #expect(await coordinator.saveStepDraft(TestStepDraft(stepID: "CH-01", outcome: .pass), testCaseID: "chassis-main"))
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        evStageState = try #require(execution.stages.first { $0.stageID == "ev" })
+        chassisStageState = try #require(execution.stages.first { $0.stageID == "chassis" })
+
+        #expect(evStageState.progressFraction == 1)
+        #expect(chassisStageState.progressFraction == 1)
+    }
 }
 
 private func teams() -> [InspectionTeam] {
@@ -280,6 +377,63 @@ private func stages() -> [InspectionStage] {
     ]
 }
 
+private func stageSwitchStages() -> [InspectionStage] {
+    [
+        InspectionStage(
+            id: "chassis",
+            code: "03",
+            title: "Chassis Inspection",
+            displayOrder: 3,
+            subtitle: "Structure and suspension checks",
+            sections: [
+                InspectionSection(
+                    id: "chassis.primary",
+                    title: "Chassis Checks",
+                    displayOrder: 1,
+                    testCases: [
+                        InspectionTestCase(
+                            id: "chassis-main",
+                            code: "CH-MAIN",
+                            displayOrder: 1,
+                            title: "Chassis main checks",
+                            ruleReferences: ["T.1"],
+                            steps: [
+                                inspectionStep(id: "CH-01", title: "Frame structure")
+                            ]
+                        )
+                    ]
+                )
+            ]
+        ),
+        InspectionStage(
+            id: "ev",
+            code: "04",
+            title: "EV Inspection",
+            displayOrder: 4,
+            subtitle: "Accumulator and shutdown checks",
+            sections: [
+                InspectionSection(
+                    id: "ev.primary",
+                    title: "EV Checks",
+                    displayOrder: 1,
+                    testCases: [
+                        InspectionTestCase(
+                            id: "ev-main",
+                            code: "EV-MAIN",
+                            displayOrder: 1,
+                            title: "EV main checks",
+                            ruleReferences: ["EV.1"],
+                            steps: [
+                                inspectionStep(id: "EV-01", title: "Accumulator container")
+                            ]
+                        )
+                    ]
+                )
+            ]
+        )
+    ]
+}
+
 private func inspectionStep(
     id: String,
     title: String,
@@ -295,6 +449,39 @@ private func inspectionStep(
         content: "Test content for \(title).",
         requiredOutcome: true,
         requiresEvidence: requiresEvidence
+    )
+}
+
+private func staticCompleteStageWithRequiredStep() -> InspectionStage {
+    InspectionStage(
+        id: "static-complete",
+        code: "static-complete",
+        title: "Static Complete",
+        displayOrder: 1,
+        subtitle: "Regression fixture",
+        progress: 1,
+        requiredOpenItems: 0,
+        sections: [
+            InspectionSection(
+                id: "static-complete.section",
+                title: "Static Complete Section",
+                displayOrder: 1,
+                testCases: [
+                    InspectionTestCase(
+                        id: "static-case",
+                        code: "STATIC",
+                        displayOrder: 1,
+                        title: "Static case",
+                        steps: [
+                            inspectionStep(
+                                id: "STATIC-STEP",
+                                title: "Required answer"
+                            )
+                        ]
+                    )
+                ]
+            )
+        ]
     )
 }
 
