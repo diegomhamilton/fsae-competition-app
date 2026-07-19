@@ -20,6 +20,7 @@ doc_hooks:
     - FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/SessionFlow/Coordinators/SessionSelectionCoordinator.swift
     - FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/SessionFlow/Coordinators/InspectionExecutionCoordinator.swift
   downstream:
+    - docs/prompts/tasks/TASK-10-local-stored-judge-experience-ux-follow-up/TASK-10.3-guided-navigation/README.md
     - docs/prompts/tasks/TASK-10-local-stored-judge-experience-ux-follow-up/TASK-10.5-actionable-validation-blockers/README.md
     - docs/prompts/tasks/TASK-10-local-stored-judge-experience-ux-follow-up/TASK-10.10-focused-tests-manual-validation/README.md
 ---
@@ -277,12 +278,13 @@ Rationale:
 
 Keep implementation slices small:
 
+- TASK#10.3 guided navigation: remove the standalone `Case` tab, keep
+  `Sessions`, `Team`, and `Stage` as top-level landmarks, and compose case-level
+  execution UI inside Stage with step detail remaining a guided drill-in.
 - Blocked re-inspection route: change blocked row selection from failed intent to
   correction intent, with tests for route selection.
 - Empty-state route actions: add context-aware actions and identifiers without
   redesigning every screen.
-- Guided tab transition: either hide/demote `Case` and `Step` tabs or keep them
-  with route-repair behavior, but avoid mixing this with submission persistence.
 - Validation focus routing: route blocker selection to exact test case/step/field
   targets, then persist corrections immediately.
 - Submission and history: wire `Submit Stage` and immutable snapshot behavior in
