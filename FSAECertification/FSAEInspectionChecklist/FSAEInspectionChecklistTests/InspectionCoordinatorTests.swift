@@ -193,6 +193,49 @@ struct InspectionCoordinatorTests {
         let switchedExecution = try #require(relaunched.eventCoordinator.executionCoordinator)
         #expect(switchedExecution.draftsByTestCaseID["rain-rml"] == nil)
     }
+
+    @Test("TASK#10.1 stage switching preserves other stage draft progress")
+    func stageSwitchingPreservesOtherStageDraftProgress() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let stages = stageSwitchStages()
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: teams(),
+            stages: stages,
+            store: InspectionEventStore.appStore(
+                eventID: eventID,
+                teams: teams(),
+                stages: stages,
+                persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+            )
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        #expect(await coordinator.openStage(id: "ev"))
+        #expect(await coordinator.saveStepDraft(TestStepDraft(stepID: "EV-01", outcome: .pass), testCaseID: "ev-main"))
+
+        var execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        var evStageState = try #require(execution.stages.first { $0.stageID == "ev" })
+        #expect(evStageState.progressFraction == 1)
+
+        #expect(await coordinator.openStage(id: "chassis"))
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        evStageState = try #require(execution.stages.first { $0.stageID == "ev" })
+        var chassisStageState = try #require(execution.stages.first { $0.stageID == "chassis" })
+        #expect(evStageState.progressFraction == 1)
+        #expect(chassisStageState.progressFraction == 0)
+
+        #expect(await coordinator.saveStepDraft(TestStepDraft(stepID: "CH-01", outcome: .pass), testCaseID: "chassis-main"))
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        evStageState = try #require(execution.stages.first { $0.stageID == "ev" })
+        chassisStageState = try #require(execution.stages.first { $0.stageID == "chassis" })
+
+        #expect(evStageState.progressFraction == 1)
+        #expect(chassisStageState.progressFraction == 1)
+    }
 }
 
 private func teams() -> [InspectionTeam] {
@@ -271,6 +314,63 @@ private func stages() -> [InspectionStage] {
                                     title: "RML flashing",
                                     requiresEvidence: true
                                 )
+                            ]
+                        )
+                    ]
+                )
+            ]
+        )
+    ]
+}
+
+private func stageSwitchStages() -> [InspectionStage] {
+    [
+        InspectionStage(
+            id: "chassis",
+            code: "03",
+            title: "Chassis Inspection",
+            displayOrder: 3,
+            subtitle: "Structure and suspension checks",
+            sections: [
+                InspectionSection(
+                    id: "chassis.primary",
+                    title: "Chassis Checks",
+                    displayOrder: 1,
+                    testCases: [
+                        InspectionTestCase(
+                            id: "chassis-main",
+                            code: "CH-MAIN",
+                            displayOrder: 1,
+                            title: "Chassis main checks",
+                            ruleReferences: ["T.1"],
+                            steps: [
+                                inspectionStep(id: "CH-01", title: "Frame structure")
+                            ]
+                        )
+                    ]
+                )
+            ]
+        ),
+        InspectionStage(
+            id: "ev",
+            code: "04",
+            title: "EV Inspection",
+            displayOrder: 4,
+            subtitle: "Accumulator and shutdown checks",
+            sections: [
+                InspectionSection(
+                    id: "ev.primary",
+                    title: "EV Checks",
+                    displayOrder: 1,
+                    testCases: [
+                        InspectionTestCase(
+                            id: "ev-main",
+                            code: "EV-MAIN",
+                            displayOrder: 1,
+                            title: "EV main checks",
+                            ruleReferences: ["EV.1"],
+                            steps: [
+                                inspectionStep(id: "EV-01", title: "Accumulator container")
                             ]
                         )
                     ]

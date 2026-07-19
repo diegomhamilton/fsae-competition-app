@@ -46,7 +46,7 @@ struct ActiveTeamDashboardView: View {
 
             HStack(spacing: 12) {
                 MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: "Overall progress", systemImage: "chart.pie", color: .fsaeGreen)
-                MetricTile(value: "\(stages.map(\.requiredOpenItems).reduce(0, +))", label: "Open blockers", systemImage: "exclamationmark.triangle", color: .fsaeAmber)
+                MetricTile(value: "\(stages.map(\.blockerCount).reduce(0, +))", label: "Open blockers", systemImage: "exclamationmark.triangle", color: .fsaeAmber)
             }
 
             ContentPanel {
@@ -80,9 +80,12 @@ struct ActiveTeamDashboardView: View {
                     .foregroundStyle(Color.fsaeText)
                 ForEach(stages) { stage in
                     Button {
-                        openStage(stage.id)
+                        openStage(stage.stageID)
                     } label: {
-                        StageRow(stage: stage, isSelected: stage.id == selectedStageID)
+                        StageRow(
+                            state: stage,
+                            isSelected: stage.stageID == selectedStageID
+                        )
                     }
                     .buttonStyle(.plain)
                 }
@@ -92,35 +95,38 @@ struct ActiveTeamDashboardView: View {
         .navigationTitle("Team")
     }
 
-    private func overallProgressPercent(stages: [InspectionStage]) -> Int {
+    private func overallProgressPercent(stages: [FullStageViewState]) -> Int {
         guard !stages.isEmpty else {
             return 0
         }
 
-        return Int(stages.map(\.progress).reduce(0, +) / Double(stages.count) * 100)
+        return Int(stages.map(\.progressFraction).reduce(0, +) / Double(stages.count) * 100)
     }
 }
 
 private struct StageRow: View {
-    let stage: InspectionStage
+    let state: FullStageViewState
     let isSelected: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(stage.title)
+                    Text(state.stageTitle)
                         .font(.headline)
                         .foregroundStyle(Color.fsaeText)
-                    Text(stage.subtitle)
+                    Text(state.stageSubtitle)
                         .font(.caption)
                         .foregroundStyle(Color.fsaeSecondaryText)
                 }
                 Spacer()
-                StatusPill(text: stage.requiredOpenItems == 0 ? "Complete" : "\(stage.requiredOpenItems) blocker", color: stage.requiredOpenItems == 0 ? Color.fsaeGreen : Color.fsaeAmber)
+                StatusPill(
+                    text: state.blockerText == "No blockers" ? "Complete" : state.blockerText,
+                    color: state.blockerCount == 0 ? Color.fsaeGreen : Color.fsaeAmber
+                )
             }
-            ProgressView(value: stage.progress)
-                .tint(stage.requiredOpenItems == 0 ? Color.fsaeGreen : Color.fsaePrimary)
+            ProgressView(value: state.progressFraction)
+                .tint(state.blockerCount == 0 ? Color.fsaeGreen : Color.fsaePrimary)
         }
         .padding(14)
         .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))

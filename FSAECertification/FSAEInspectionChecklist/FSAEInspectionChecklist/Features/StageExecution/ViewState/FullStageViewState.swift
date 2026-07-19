@@ -5,11 +5,15 @@
 
 import Foundation
 
-struct FullStageViewState: Equatable, Sendable {
+struct FullStageViewState: Identifiable, Equatable, Sendable {
     let stageID: String
     let stageTitle: String
     let stageSubtitle: String
     let sections: [FullStageSectionViewState]
+
+    var id: String {
+        stageID
+    }
 
     init(
         stage: InspectionStage,
