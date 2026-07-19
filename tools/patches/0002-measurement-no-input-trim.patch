@@ -1,0 +1,9 @@
+diff --git a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift
+--- a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift
++++ b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/TestStepExecution/Models/InspectionTestStepModels.swift
+@@ -271,4 +271,4 @@ nonisolated struct MeasurementValue: Codable, Hashable, Sendable {
+-        let trimmedValue = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
++        let trimmedValue = rawValue
+         guard let decimal = Decimal(string: trimmedValue, locale: Locale(identifier: "en_US_POSIX")) else {
+             throw ValidationError.nonNumericFormat
+         }
