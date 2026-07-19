@@ -3,6 +3,16 @@ name: Planner
 domain: inspection-event
 status: active
 priority: primary
+doc_hooks:
+  upstream:
+    - .skills/personas.md
+    - .skills/architecture-developer.md
+    - .skills/accessibility.md
+    - .skills/concurrency-developer.md
+    - .skills/swiftui-developer.md
+  downstream:
+    - docs/README.md
+    - CLAUDE.md
 ---
 
 # Planner Agent

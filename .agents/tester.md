@@ -3,6 +3,21 @@ name: Tester
 domain: inspection-event
 status: active
 priority: primary
+doc_hooks:
+  upstream:
+    - .skills/personas.md
+    - .skills/accessibility.md
+    - .skills/swiftui-developer.md
+    - .skills/concurrency-developer.md
+    - .skills/architecture-developer.md
+    - .skills/personas/judge.md
+    - .skills/personas/student.md
+    - .skills/personas/professor.md
+    - .skills/personas/fans.md
+    - .skills/personas/sponsors.md
+  downstream:
+    - docs/README.md
+    - CLAUDE.md
 ---
 
 # Tester Agent
