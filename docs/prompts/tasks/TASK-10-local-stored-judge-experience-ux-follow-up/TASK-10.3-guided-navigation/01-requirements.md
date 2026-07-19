@@ -2,7 +2,7 @@
 
 You are helping with SPDD for this task:
 
-Task: `10.3 Refine the test case screen so the primary next judge action is visually dominant: compact case summary, actionable validation message, and focused step editor for one-step cases.`
+Task: `10.3 Refactor judge navigation so Sessions, Team, and Stage are the top-level landmarks, remove the standalone Case tab, and make Stage contain the case UI with dominant next-action and focused one-step editing.`
 
 Describe the essence of the requirement in one clear sentence.
 
@@ -21,13 +21,13 @@ Context:
 
 - Macro-task: TASK#10 Local Stored Judge Experience UX Follow-up
 - Subtask: TASK#10.3
-- Expected PR title: `TASK#10.3: Test Case Next Action`
+- Expected PR title: `TASK#10.3: Guided Navigation`
 - Feature branch: `codex/inspection-event-local-judge-ux`
-- Suggested task branch: `codex/inspection-event-local-judge-ux-10-3-test-case-next-action`
-- Operation summary: Refine test case screen around the judge's next action, compact summary, validation message, and focused one-step editor.
-- Likely files or targets: TestCaseView; view state; tests
-- Validation: Swift Testing and manual checks for one-step and multi-step cases.
-- Split trigger: Split if editor refactor touches step models or persistence.
+- Suggested task branch: `codex/inspection-event-local-judge-ux-10-3-guided-navigation`
+- Operation summary: Implement the guided navigation refactor from `Design/Flows/InspectionEvents/JUDGE_NAVIGATION_FLOW_PROPOSAL.md`, keeping `Sessions`, `Team`, and `Stage` as top-level landmarks while Stage owns case-level execution UI.
+- Likely files or targets: ContentTabsView; ProposedScreen; AppCoordinator/InspectionExecutionCoordinator route handling; FullStageView; TestCaseView; view state; tests
+- Validation: Swift Testing for route transitions plus manual checks for one-step cases, multi-step cases, relaunch restore, empty states, and VoiceOver.
+- Split trigger: Split if route model changes and Stage/Case UI composition cannot be reviewed together.
 - Common instructions:
 - Start after TASK#7 establishes stored local session behavior.
 - Keep the judge task flow primary: restore context, inspect, correct blockers, submit, recheck, and verify sticker state.

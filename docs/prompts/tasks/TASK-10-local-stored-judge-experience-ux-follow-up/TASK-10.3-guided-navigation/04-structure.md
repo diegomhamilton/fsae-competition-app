@@ -2,7 +2,7 @@
 
 For this task:
 
-Task: `10.3 Refine the test case screen so the primary next judge action is visually dominant: compact case summary, actionable validation message, and focused step editor for one-step cases.`
+Task: `10.3 Refactor judge navigation so Sessions, Team, and Stage are the top-level landmarks, remove the standalone Case tab, and make Stage contain the case UI with dominant next-action and focused one-step editing.`
 
 Define the file and PR structure.
 
@@ -17,16 +17,20 @@ Include:
 
 Prompt folder:
 
-`docs/prompts/tasks/TASK-10-local-stored-judge-experience-ux-follow-up/TASK-10.3-test-case-next-action`
+`docs/prompts/tasks/TASK-10-local-stored-judge-experience-ux-follow-up/TASK-10.3-guided-navigation`
 
 Expected task files or targets:
 
+- ContentTabsView
+- ProposedScreen
+- AppCoordinator / InspectionExecutionCoordinator route handling
+- FullStageView
 - TestCaseView
 - view state
 - tests
 
 Recommended commit title:
 
-`10.3 test case next action`
+`10.3 guided navigation`
 
 Return the proposed file tree and explain which files are implementation, tests, fixtures, docs, or validation artifacts.

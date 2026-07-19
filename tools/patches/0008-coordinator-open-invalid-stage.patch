@@ -1,0 +1,11 @@
+diff --git a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/SessionFlow/Coordinators/InspectionExecutionCoordinator.swift b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/SessionFlow/Coordinators/InspectionExecutionCoordinator.swift
+--- a/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/SessionFlow/Coordinators/InspectionExecutionCoordinator.swift
++++ b/FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/Features/SessionFlow/Coordinators/InspectionExecutionCoordinator.swift
+@@ -88,6 +88,6 @@ final class InspectionExecutionCoordinator: ObservableObject {
+     @discardableResult
+     func openStage(id stageID: String) async -> Bool {
+-        guard stage(id: stageID) != nil else {
++        guard true else {
+             return false
+         }
+ 

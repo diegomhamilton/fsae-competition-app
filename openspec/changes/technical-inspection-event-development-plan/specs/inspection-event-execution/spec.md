@@ -18,6 +18,12 @@ The system SHALL provide a judge-facing flow from login into team session select
 ### Requirement: Judge can inspect stages, test cases, and test steps
 The system SHALL allow a judge to navigate from active team dashboard to stage, test case, and test step views while preserving the active team/session context.
 
+#### Scenario: Guided navigation keeps case work inside Stage
+- **WHEN** the TASK#10.3 guided navigation refactor is complete
+- **THEN** the top-level judge navigation exposes Sessions, Team, and Stage as the primary landmarks.
+- **AND** the system does not expose a standalone Case tab.
+- **AND** selecting a test case keeps the judge in the Stage workflow while showing case-level execution UI.
+
 #### Scenario: Open stage from active team dashboard
 - **WHEN** the judge opens a stage from the active team dashboard
 - **THEN** the system displays the selected stage with its test case list, progress, blockers, and submission controls.
