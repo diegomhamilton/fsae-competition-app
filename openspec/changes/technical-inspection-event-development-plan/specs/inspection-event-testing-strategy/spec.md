@@ -9,7 +9,7 @@ The system implementation SHALL add failing tests before behavior for domain mod
 
 #### Scenario: Coordinator tests cover navigation
 - **WHEN** coordinators are implemented
-- **THEN** unit tests verify login completion, start/resume session, stage selection, test case selection, test step selection, submission result routing, team switching, and recheck review routing.
+- **THEN** unit tests verify login completion, start/resume session, top-level Sessions/Team/Stage navigation, stage selection, Stage-contained test case selection, test step selection, missing-context route repair, submission result routing, team switching, and recheck review routing.
 
 #### Scenario: Service tests cover validation
 - **WHEN** validation services are implemented

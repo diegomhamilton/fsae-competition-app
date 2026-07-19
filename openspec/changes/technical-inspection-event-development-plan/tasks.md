@@ -95,10 +95,10 @@
 
 ## 10. Local Stored Judge Experience UX Follow-up
 
-- [ ] 10.0 Track Tentpole 2 continuation items moved from Task 7: former 7.10 recheck service, 7.11 sticker eligibility, and 7.12 manual validation are sequenced as 10.9, 10.10, and 10.11.
-- [ ] 10.1 Audit `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `TestCaseView`, `StepOverviewView`, and `TeamSwitchConfirmationView` for the minimum UX polish needed after Task 7 so a judge can complete a fully local, stored inspection without prototype copy, unclear navigation, or dead-end states.
-- [ ] 10.2 Replace prototype header/background treatment and "mock state" copy with stable event, team, stage, and test case context that survives relaunch restore and makes the active local session obvious.
-- [ ] 10.3 Refine the test case screen so the primary next judge action is visually dominant: compact case summary, actionable validation message, and focused step editor for one-step cases.
+- [x] 10.0 Track Tentpole 2 continuation items moved from Task 7: former 7.10 recheck service, 7.11 sticker eligibility, and 7.12 manual validation are sequenced as 10.9, 10.10, and 10.11.
+- [x] 10.1 Audit `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `TestCaseView`, `StepOverviewView`, and `TeamSwitchConfirmationView` for the minimum UX polish needed after Task 7 so a judge can complete a fully local, stored inspection without prototype copy, unclear navigation, or dead-end states.
+- [x] 10.2 Replace prototype header/background treatment and "mock state" copy with stable event, team, stage, and test case context that survives relaunch restore and makes the active local session obvious.
+- [ ] 10.3 Refactor judge navigation so `Sessions`, `Team`, and `Stage` are the top-level landmarks, remove the standalone `Case` tab, and make Stage contain the case UI with guided test-case and step-detail routing for next-action work.
 - [ ] 10.4 Refactor step metadata layout to avoid wrapping/truncation in compact widths and larger Dynamic Type: show step ID/title/status first, move rule references to a secondary row, and keep the open-step action compact.
 - [ ] 10.5 Make validation blockers actionable by tapping or selecting a blocker to focus the missing outcome, note, measurement, or evidence control, then persist the correction immediately to the test case JSON draft.
 - [ ] 10.6 Review `Pending` semantics so incomplete required steps are represented as derived draft state rather than a confusing judge decision when Pass, Fail, and N/A are the actual choices.
