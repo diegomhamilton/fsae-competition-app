@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct StepResult: Equatable, Sendable {
+nonisolated struct StepResult: Equatable, Sendable {
     var outcome: InspectionOutcome
     var notes: String
     var measurementInput: String

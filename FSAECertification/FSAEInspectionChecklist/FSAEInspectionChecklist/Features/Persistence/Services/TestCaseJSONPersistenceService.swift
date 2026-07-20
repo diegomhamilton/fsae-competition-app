@@ -24,7 +24,7 @@ nonisolated struct PersistedValidationIssue: Codable, Hashable, Sendable {
     let localizationArguments: [String: String]
     let message: String
 
-    @MainActor init(issue: ValidationIssue) {
+    nonisolated init(issue: ValidationIssue) {
         id = issue.id
         stepID = issue.code.stepID
         code = issue.code.storageCode
@@ -548,7 +548,7 @@ private extension JSONDecoder {
 }
 
 private extension ValidationIssue.Code {
-    var stepID: String {
+    nonisolated var stepID: String {
         switch self {
         case .missingRequiredOutcome(let stepID),
                 .missingInspectorNote(let stepID),
@@ -559,7 +559,7 @@ private extension ValidationIssue.Code {
         }
     }
 
-    var storageCode: String {
+    nonisolated var storageCode: String {
         switch self {
         case .missingRequiredOutcome:
             "missingRequiredOutcome"

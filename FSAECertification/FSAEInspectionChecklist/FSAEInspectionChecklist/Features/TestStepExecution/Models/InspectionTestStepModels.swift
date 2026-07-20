@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SwiftUI
 
 nonisolated struct InspectionTestStep: Identifiable, Codable, Hashable, Sendable {
     let id: String
@@ -73,7 +72,7 @@ extension InspectionTestStep {
         case evidenceAttachments
     }
 
-    init(from decoder: Decoder) throws {
+    nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         id = try container.decode(String.self, forKey: .id)
@@ -103,7 +102,7 @@ nonisolated struct InspectionStepMeasurementInput: Equatable, Sendable {
 }
 
 extension InspectionTestStep {
-    func measurementInput(from input: String) -> InspectionStepMeasurementInput {
+    nonisolated func measurementInput(from input: String) -> InspectionStepMeasurementInput {
         InspectionStepMeasurementInput(
             rawValue: input,
             measurementValue: measurementRange.flatMap { range in
@@ -133,20 +132,10 @@ nonisolated enum InspectionTestStepType: String, Codable, CaseIterable, Hashable
         case .context: "info.circle"
         }
     }
-
-    var color: Color {
-        switch self {
-        case .check: .fsaeGreen
-        case .measurement: .fsaeBlue
-        case .precondition: .fsaeAmber
-        case .action: .fsaeRed
-        case .context: .fsaeGray
-        }
-    }
 }
 
 extension InspectionTestStepType {
-    init(from decoder: Decoder) throws {
+    nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let rawValue = try container.decode(String.self)
 
@@ -178,7 +167,7 @@ nonisolated enum InspectionSafetyBadge: String, Codable, Hashable, Sendable {
 }
 
 extension Collection where Element == InspectionSafetyBadge {
-    func merging(_ badges: [InspectionSafetyBadge]) -> [InspectionSafetyBadge] {
+    nonisolated func merging(_ badges: [InspectionSafetyBadge]) -> [InspectionSafetyBadge] {
         var merged: [InspectionSafetyBadge] = []
         for badge in self {
             if !merged.contains(badge) {
@@ -197,7 +186,7 @@ extension Collection where Element == InspectionSafetyBadge {
 }
 
 extension InspectionSafetyBadge {
-    init(from decoder: Decoder) throws {
+    nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let rawValue = try container.decode(String.self)
 
@@ -234,15 +223,6 @@ nonisolated enum InspectionOutcome: String, Codable, CaseIterable, Hashable, Sen
 
     var requiresInspectorNote: Bool {
         self == .fail
-    }
-
-    var color: Color {
-        switch self {
-        case .pass: .fsaeGreen
-        case .fail: .fsaeRed
-        case .notApplicable: .fsaeGray
-        case .pending: .fsaeAmber
-        }
     }
 }
 

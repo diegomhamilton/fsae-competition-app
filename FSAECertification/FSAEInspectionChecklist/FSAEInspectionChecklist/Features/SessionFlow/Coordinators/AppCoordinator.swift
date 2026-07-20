@@ -11,10 +11,22 @@ final class AppCoordinator: ObservableObject {
     @Published private(set) var selectedScreen: ProposedScreen = .sessionSelector
     let eventCoordinator: InspectionEventCoordinator
 
+    convenience init(
+        eventID: String = "fsae-brasil-2026-technical-inspection",
+        store: InspectionEventStore? = nil
+    ) {
+        self.init(
+            eventID: eventID,
+            teams: MockInspectionData.teams,
+            stages: MockInspectionData.stages,
+            store: store
+        )
+    }
+
     init(
         eventID: String = "fsae-brasil-2026-technical-inspection",
-        teams: [InspectionTeam] = MockInspectionData.teams,
-        stages: [InspectionStage] = MockInspectionData.stages,
+        teams: [InspectionTeam],
+        stages: [InspectionStage],
         store: InspectionEventStore? = nil
     ) {
         let eventStore = store ?? InspectionEventStore.appStore(
@@ -122,4 +134,3 @@ final class AppCoordinator: ObservableObject {
         objectWillChange.send()
     }
 }
-

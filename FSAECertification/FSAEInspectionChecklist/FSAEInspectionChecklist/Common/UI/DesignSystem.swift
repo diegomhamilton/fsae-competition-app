@@ -95,6 +95,29 @@ struct MetricTile: View {
     }
 }
 
+extension InspectionTestStepType {
+    var color: Color {
+        switch self {
+        case .check: .fsaeGreen
+        case .measurement: .fsaeBlue
+        case .precondition: .fsaeAmber
+        case .action: .fsaeRed
+        case .context: .fsaeGray
+        }
+    }
+}
+
+extension InspectionOutcome {
+    var color: Color {
+        switch self {
+        case .pass: .fsaeGreen
+        case .fail: .fsaeRed
+        case .notApplicable: .fsaeGray
+        case .pending: .fsaeAmber
+        }
+    }
+}
+
 extension View {
     @ViewBuilder
     func measurementKeyboard() -> some View {
