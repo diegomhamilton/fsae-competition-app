@@ -9,4 +9,10 @@ enum ProposedScreen: Hashable {
     case stageChecklist
     case testCase
     case stepDetail
+
+    static let topLevelJudgeLandmarks: [ProposedScreen] = [
+        .sessionSelector,
+        .dashboard,
+        .stageChecklist
+    ]
 }

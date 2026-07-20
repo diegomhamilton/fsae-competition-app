@@ -44,8 +44,7 @@ struct TestCaseView: View {
     let team: InspectionTeam
     let stage: InspectionStage
     let testCase: InspectionTestCaseViewState
-    @Binding var selectedStep: InspectionTestStep
-    @Binding var selectedScreen: ProposedScreen
+    let openStepDetail: (InspectionTestStep) -> Void
     let updateStepDraft: (TestStepDraft) -> Void
     @FocusState private var focusedNoteStepID: String?
 
@@ -67,8 +66,7 @@ struct TestCaseView: View {
                         state: stepState,
                         focusedNoteStepID: $focusedNoteStepID
                     ) {
-                        selectedStep = stepState.step
-                        selectedScreen = .stepDetail
+                        openStepDetail(stepState.step)
                     } updateStepDraft: { stepDraft in
                         updateStepDraft(stepDraft)
                     }
