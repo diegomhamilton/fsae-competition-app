@@ -97,13 +97,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
     }
 
     private var activeTestCaseID: String? {
-        switch stageNavigationPath.last {
-        case .testCase(let testCaseID),
-             .testStep(let testCaseID, _):
-            testCaseID
-        case nil:
-            nil
-        }
+        stageNavigationPath.last?.testCaseID
     }
 
     func markUnsavedDraft(_ hasUnsavedDraft: Bool) {
