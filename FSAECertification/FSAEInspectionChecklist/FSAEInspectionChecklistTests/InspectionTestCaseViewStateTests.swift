@@ -22,8 +22,8 @@ struct InspectionTestCaseViewStateTests {
         #expect(viewState.steps.map(\.step.ruleReference) == ["EV.6.1", "EV.6.1", "EV.6.1"])
     }
 
-    @Test("US-002/US-003/US-004 test case validation summary reports blockers")
-    func us002Us003Us004TestCaseValidationSummaryReportsBlockers() {
+    @Test("TASK#10.6 test case validation summary reports blockers while deferring evidence")
+    func task1006TestCaseValidationSummaryDefersEvidenceBlockers() {
         let viewState = InspectionTestCaseViewState(
             id: "blocked-case",
             code: "BLOCKED",
@@ -62,16 +62,15 @@ struct InspectionTestCaseViewStateTests {
             ]
         )
 
-        #expect(viewState.validationSummary.blockerCount == 4)
-        #expect(viewState.validationSummary.firstBlockingStepID == "RT-08")
+        #expect(viewState.validationSummary.blockerCount == 3)
+        #expect(viewState.validationSummary.firstBlockingStepID == "EG-14")
         #expect(viewState.validationSummary.issues.map(\.code) == [
-            .missingRequiredEvidence,
             .invalidMeasurement,
             .missingRequiredOutcome,
             .missingInspectorNote
         ])
-        #expect(viewState.progressSummary.completeStepCount == 0)
-        #expect(viewState.progressSummary.blockedStepCount == 4)
+        #expect(viewState.progressSummary.completeStepCount == 1)
+        #expect(viewState.progressSummary.blockedStepCount == 3)
     }
 
     @Test("Accessibility identifier helpers build stable test case identifiers")
@@ -161,6 +160,21 @@ struct InspectionTestCaseViewStateTests {
         )
 
         #expect(state.safetyBadges == [.energized])
+    }
+
+    @Test("TASK#10.6 required evidence without attachments is visible as deferred metadata")
+    func task1006RequiredEvidenceWithoutAttachmentsIsDeferredMetadata() {
+        let state = stepState(
+            id: "RT-08",
+            displayOrder: 10,
+            title: "RML flashing",
+            requiresEvidence: true,
+            outcome: .pass
+        )
+
+        #expect(state.evidenceStatus == .deferred)
+        #expect(state.validationIssues.isEmpty)
+        #expect(state.status == .complete)
     }
 }
 

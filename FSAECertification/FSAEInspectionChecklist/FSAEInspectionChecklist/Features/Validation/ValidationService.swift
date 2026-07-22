@@ -80,8 +80,7 @@ extension Array where Element == InspectionValidationRule {
     static let defaultRules: [InspectionValidationRule] = [
         .requiredOutcome,
         .failedOutcomeInspectorNote,
-        .measurement,
-        .evidence
+        .measurement
     ]
 }
 

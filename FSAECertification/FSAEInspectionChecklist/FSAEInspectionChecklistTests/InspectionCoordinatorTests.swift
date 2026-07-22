@@ -175,8 +175,8 @@ struct InspectionCoordinatorTests {
         #expect(coordinator.eventCoordinator.executionCoordinator != nil)
     }
 
-    @Test("TASK#10.5 debug action marks every test case passing so session can complete")
-    func debugActionMarksEveryTestCasePassingSoSessionCanComplete() async throws {
+    @Test("TASK#10.6 debug action marks every test case passing without evidence so session can complete")
+    func debugActionMarksEveryTestCasePassingWithoutEvidenceSoSessionCanComplete() async throws {
         let rootDirectory = try temporaryStoreDirectory()
         defer { try? FileManager.default.removeItem(at: rootDirectory) }
         let eventID = "event-1"
@@ -215,7 +215,7 @@ struct InspectionCoordinatorTests {
         let evidenceDraft = try #require(execution.draftsByStageID["debug"]?["debug-evidence"])
         let evidenceStep = try #require(evidenceDraft.stepDraft(stepID: "DBG-EVIDENCE")?.draft)
         #expect(evidenceStep.outcome == .pass)
-        #expect(evidenceStep.evidenceAttachments.count == 1)
+        #expect(evidenceStep.evidenceAttachments.isEmpty)
 
         #expect(await coordinator.completeActiveSession(endedAt: completedAt))
     }

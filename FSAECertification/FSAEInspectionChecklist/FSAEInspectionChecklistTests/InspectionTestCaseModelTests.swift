@@ -119,8 +119,8 @@ struct InspectionTestCaseModelTests {
         #expect(aggregate.failedStepIDs == ["RT-08"])
     }
 
-    @Test("US-002/US-003/US-004 validation blockers count missing outcomes, notes, measurements, and evidence")
-    func us002Us003Us004BlockerCountsIncludeAllInvalidStepDrafts() {
+    @Test("TASK#10.6 validation blockers count missing outcomes, notes, and measurements but defer evidence")
+    func task1006BlockerCountsDeferMissingEvidence() {
         let testCase = InspectionTestCase(
             id: "blocked-case",
             code: "BLOCKED",
@@ -152,15 +152,14 @@ struct InspectionTestCaseModelTests {
 
         let summary = draft.validationSummary(for: testCase)
 
-        #expect(summary.blockerCount == 4)
+        #expect(summary.blockerCount == 3)
         let expectedIssueCodes: [ValidationIssue.Code] = [
-            .missingRequiredEvidence(stepID: "RT-08"),
             .invalidMeasurement(stepID: "EG-14", error: .outsideAllowedRange),
             .missingRequiredOutcome(stepID: "BP-01"),
             .missingInspectorNote(stepID: "NF-01")
         ]
         #expect(summary.issues.map(\.code) == expectedIssueCodes)
-        #expect(summary.firstBlockingStepID == "RT-08")
+        #expect(summary.firstBlockingStepID == "EG-14")
     }
 
     @Test("US-003 valid measurements make a test case step complete")
@@ -203,8 +202,8 @@ struct InspectionTestCaseModelTests {
         #expect(progress.fractionComplete == 1.0)
     }
 
-    @Test("US-004 removing required evidence makes the test case blocked again")
-    func us004RemovingRequiredEvidenceMakesTestCaseProgressBlocked() {
+    @Test("TASK#10.6 missing required evidence does not block test case progress")
+    func task1006MissingRequiredEvidenceDoesNotBlockTestCaseProgress() {
         let testCase = InspectionTestCase(
             id: "rain-rml",
             code: "RAIN-RML",
@@ -226,12 +225,11 @@ struct InspectionTestCaseModelTests {
         let summary = draft.validationSummary(for: testCase)
 
         #expect(progress.totalStepCount == 1)
-        #expect(progress.completeStepCount == 0)
-        #expect(progress.blockedStepCount == 1)
+        #expect(progress.completeStepCount == 1)
+        #expect(progress.blockedStepCount == 0)
         #expect(progress.pendingStepCount == 0)
-        #expect(summary.blockerCount == 1)
-        let expectedIssueCodes: [ValidationIssue.Code] = [.missingRequiredEvidence(stepID: "RT-08")]
-        #expect(summary.issues.map(\.code) == expectedIssueCodes)
+        #expect(summary.blockerCount == 0)
+        #expect(summary.issues.isEmpty)
     }
 }
 

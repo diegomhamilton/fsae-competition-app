@@ -92,6 +92,14 @@ struct InspectionTestCaseStepViewState: Identifiable, Equatable, Sendable {
         evidenceAttachments.count
     }
 
+    var evidenceStatus: InspectionTestCaseEvidenceStatus {
+        if !step.requiresEvidence {
+            return .notRequired
+        }
+
+        return evidenceAttachmentCount == 0 ? .deferred : .attached(count: evidenceAttachmentCount)
+    }
+
     var validationIssues: [InspectionTestCaseValidationIssue] {
         InspectionTestCaseValidationIssue.issues(for: self)
     }
@@ -117,6 +125,12 @@ enum InspectionTestCaseStepStatus: Equatable, Sendable {
     case blocked
     case complete
     case pending
+}
+
+enum InspectionTestCaseEvidenceStatus: Equatable, Sendable {
+    case notRequired
+    case deferred
+    case attached(count: Int)
 }
 
 struct InspectionTestCaseValidationSummary: Equatable, Sendable {
@@ -193,16 +207,6 @@ struct InspectionTestCaseValidationIssue: Identifiable, Equatable, Sendable {
                     stepID: state.id,
                     stepTitle: state.step.title,
                     code: .missingInspectorNote
-                )
-            )
-        }
-
-        if state.step.requiresEvidence && state.evidenceAttachmentCount == 0 {
-            issues.append(
-                Self(
-                    stepID: state.id,
-                    stepTitle: state.step.title,
-                    code: .missingRequiredEvidence
                 )
             )
         }

@@ -17,6 +17,7 @@ struct TestCaseView: View {
         static let outcome = "Outcome"
         static let measurementValue = "Value"
         static let evidence = "Evidence"
+        static let evidenceDeferred = "Evidence Deferred"
         static let addEvidence = "Add Evidence"
         static let notes = "Judge notes"
         static let openStep = "Open Step"
@@ -516,7 +517,7 @@ private struct TestCaseStepCard: View {
 
             HStack {
                 if state.step.requiresEvidence {
-                    StatusPill(text: TestCaseView.Strings.evidence, color: Color.fsaeBlue)
+                    StatusPill(text: state.evidenceStatus.displayName, color: state.evidenceStatus.color)
                 }
                 ForEach(state.safetyBadges, id: \.self) { badge in
                     StatusPill(text: badge.displayName, color: .fsaeRed)
@@ -670,6 +671,28 @@ private struct TestCaseStepCard: View {
                 evidenceAttachments: evidenceAttachments
             )
         )
+    }
+}
+
+private extension InspectionTestCaseEvidenceStatus {
+    var displayName: String {
+        switch self {
+        case .notRequired:
+            TestCaseView.Strings.evidence
+        case .deferred:
+            TestCaseView.Strings.evidenceDeferred
+        case .attached(let count):
+            count == 1 ? "1 Evidence" : "\(count) Evidence"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .notRequired, .attached:
+            .fsaeBlue
+        case .deferred:
+            .fsaeAmber
+        }
     }
 }
 

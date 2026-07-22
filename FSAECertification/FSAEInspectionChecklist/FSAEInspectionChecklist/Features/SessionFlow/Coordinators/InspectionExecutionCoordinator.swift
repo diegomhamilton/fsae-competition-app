@@ -358,22 +358,12 @@ private extension TestStepDraft {
         let measurementValue = step.measurementRange.flatMap { range in
             try? MeasurementValue(rawValue: measurementInput, range: range)
         }
-        let evidenceAttachments = step.requiresEvidence ? [
-            EvidenceAttachmentMetadata(
-                id: "debug-\(step.id)-evidence",
-                displayName: "Debug evidence for \(step.code)",
-                mediaType: .photo,
-                source: .mockAttachment,
-                createdAt: completedAt
-            )
-        ] : []
-
         return TestStepDraft(
             stepID: step.id,
             outcome: .pass,
             measurementInput: measurementInput,
             measurementValue: measurementValue,
-            evidenceAttachments: evidenceAttachments
+            evidenceAttachments: []
         )
     }
 }

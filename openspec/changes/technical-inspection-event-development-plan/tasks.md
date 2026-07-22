@@ -101,22 +101,27 @@
 - [x] 10.3 Refactor judge navigation so `Sessions`, `Team`, and `Stage` are the top-level landmarks, remove the standalone `Case` tab, and make Stage contain the case UI with guided test-case and step-detail routing for next-action work.
 - [x] 10.4 Add a local team catalog and no-default-mock production launch. A user can create a team entry with display name and car number, and `MockInspectionData.teams` remains available only for tests, previews, or explicit debug fixtures.
 - [x] 10.5 Add local session lifecycle for one team: start session, record `startedAt`, end/complete session, record `endedAt`, persist active session state, and restore the active session after relaunch.
-- [ ] 10.6 Allow a judge to run the full inspection test suite without attaching evidence. Evidence-required controls remain visible as deferred/metadata-only status, but evidence attachments do not block completion in this working version.
+- [x] 10.6 Allow a judge to run the full inspection test suite without attaching evidence. Evidence-required controls remain visible as deferred/metadata-only status, but evidence attachments do not block completion in this working version.
 - [ ] 10.7 Add session recovery and history: reset an active session with confirmation, preserve past completed executions, show past sessions with start/end timestamps, and document the validation path for checking past executions.
 - [ ] 10.8 Track actual token and time usage for each Task 10 PR while completing Task 10. Update `task-10-full-suite-session-plan.xlsx` with estimated tokens, actual input/output/total tokens, estimated time, actual time, branch, PR, and completion notes for 10.4 through 10.7.
 
+## 11.
+- [ ] 11.0 UI Improvements:
+    11.0.1 "Add Team" should be a button that when clicked expanded the section to input team's name and number
+    11.0.2 Stage View should show directly the same information that is currently seen in TestCaseView
+- [ ] 11.1 Make validation blockers actionable by tapping or selecting a blocker to focus the missing outcome, note, measurement, or evidence control, then persist the correction immediately to the test case JSON draft.
+- [ ] 11.2 Review `Pending` semantics so incomplete required steps are represented as derived draft state rather than a confusing judge decision.
+- [ ] 11.3 Clarify notes and evidence states with labels such as "Add Evidence", "1 Evidence", "Required Evidence Missing", "Add Note", and "Edit Note".
+- [ ] 11.4 Add camera capture, gallery/photo-library selection, Files import, attachment creation, and media-storage policy for evidence-required steps.
+- [ ] 11.5 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
+- [ ] 11.6 Implement sticker eligibility calculation from submitted stages and open rechecks.
+- [ ] 11.7 Add stopwatch-style timing support for egress-test measurement steps.
+
 ## 12. Parking Lot
-- [ ] 12.0 Refactor step metadata layout to avoid wrapping/truncation in compact widths and larger Dynamic Type.
-- [ ] 12.1 Make validation blockers actionable by tapping or selecting a blocker to focus the missing outcome, note, measurement, or evidence control, then persist the correction immediately to the test case JSON draft.
-- [ ] 12.2 Review `Pending` semantics so incomplete required steps are represented as derived draft state rather than a confusing judge decision.
-- [ ] 12.3 Clarify notes and evidence states with labels such as "Add Evidence", "1 Evidence", "Required Evidence Missing", "Add Note", and "Edit Note".
-- [ ] 12.4 Add camera capture, gallery/photo-library selection, Files import, attachment creation, and media-storage policy for evidence-required steps.
-- [ ] 12.5 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
-- [ ] 12.6 Implement sticker eligibility calculation from submitted stages and open rechecks.
-- [ ] 12.7 Add stopwatch-style timing support for egress-test measurement steps.
-- [ ] 12.8 Add dedicated UI automation launch fixtures, workflow automation, accessibility identifier assertions, snapshots, and coverage documentation.
-- [ ] 12.9 Review completed Task 10 token usage. Compare estimates, actual usage, code SHA at the time, and implementation outcomes to propose workflow changes that reduce token usage for similar future tasks.
-- [ ] 12.10 Map EV safety context by test case and step, including energized warnings, accumulator-related cautions, and required PPE guidance where the inspection content or rule metadata supports it.
-- [ ] 12.11 Design expandable rule reference presentation so long references such as `EV.7.5.5 / BR.4.6.1.1` can be reviewed without squeezing into small chips.
-- [ ] 12.12 Add optional "Why this matters" or inspection hint content for dense EV checks, starting with temperature monitoring and maintenance plug foolproof-connection cases.
-- [ ] 12.13 Decide whether EV-specific hints live in bundled inspection JSON, a separate reviewed metadata file, or future remote event content before implementing UI.
+- [ ] 12.1 Refactor step metadata layout to avoid wrapping/truncation in compact widths and larger Dynamic Type.
+- [ ] 12.2 Add dedicated UI automation launch fixtures, workflow automation, accessibility identifier assertions, snapshots, and coverage documentation.
+- [ ] 12.3 Review completed Task 10 token usage. Compare estimates, actual usage, code SHA at the time, and implementation outcomes to propose workflow changes that reduce token usage for similar future tasks.
+- [ ] 12.4 Map EV safety context by test case and step, including energized warnings, accumulator-related cautions, and required PPE guidance where the inspection content or rule metadata supports it.
+- [ ] 12.5 Design expandable rule reference presentation so long references such as `EV.7.5.5 / BR.4.6.1.1` can be reviewed without squeezing into small chips.
+- [ ] 12.6 Add optional "Why this matters" or inspection hint content for dense EV checks, starting with temperature monitoring and maintenance plug foolproof-connection cases.
+- [ ] 12.7 Decide whether EV-specific hints live in bundled inspection JSON, a separate reviewed metadata file, or future remote event content before implementing UI.
