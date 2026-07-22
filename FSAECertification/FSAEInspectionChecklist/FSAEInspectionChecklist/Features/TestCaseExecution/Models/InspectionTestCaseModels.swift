@@ -188,7 +188,7 @@ private struct DecodedInspectionStep: Decodable {
 
         return InspectionTestStep(
             id: id ?? "\(testCaseID).step.\(stableDisplayOrder)",
-            code: code ?? "\(testCaseCode)-\(stableDisplayOrder)",
+            code: code ?? "\(testCaseCode) - Step \(stableDisplayOrder)",
             displayOrder: stableDisplayOrder,
             ruleReference: ruleReference ?? inheritedRuleReference,
             title: title ?? "\(testCaseTitle) Step \(stableDisplayOrder)",
