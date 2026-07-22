@@ -387,6 +387,10 @@ nonisolated struct InspectionAccessibilityIdentifier: RawRepresentable, Equatabl
         Self(rawValue: "inspection.dashboard.team.\(teamID).completeSession")
     }
 
+    static func activeTeamDashboardDebugMarkAllPassedAction(teamID: Int) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).debug.markAllPassed")
+    }
+
     static func activeTeamDashboardStageRow(teamID: Int, stageID: String) -> Self {
         Self(rawValue: "inspection.dashboard.team.\(teamID).stage.\(stageID).row")
     }

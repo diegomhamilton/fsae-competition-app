@@ -133,7 +133,9 @@ final class InspectionEventCoordinator: ObservableObject {
 
     @discardableResult
     func completeActiveSession(endedAt: Date = Date()) async -> Bool {
-        guard let context = activeSession else {
+        guard let executionCoordinator,
+              executionCoordinator.canCompleteSession,
+              let context = activeSession else {
             return false
         }
 
@@ -148,10 +150,21 @@ final class InspectionEventCoordinator: ObservableObject {
             return false
         }
 
-        executionCoordinator = nil
+        self.executionCoordinator = nil
         await restoreTeamCatalog()
         return true
     }
+
+    #if DEBUG
+    @discardableResult
+    func markAllTestCasesPassedForDebug(at completedAt: Date = Date()) async -> Bool {
+        guard let executionCoordinator else {
+            return false
+        }
+
+        return await executionCoordinator.markAllTestCasesPassedForDebug(at: completedAt)
+    }
+    #endif
 
     @discardableResult
     func confirmPendingTeamSwitch() async -> Bool {

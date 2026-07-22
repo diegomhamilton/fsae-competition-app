@@ -121,6 +121,7 @@ struct InspectionCoordinatorTests {
         #expect(await coordinator.selectTeam(id: 28))
         let sessionID = try #require(coordinator.eventCoordinator.executionCoordinator?.sessionContext.sessionID)
         let endedAt = Date(timeIntervalSince1970: 1_780_040_000)
+        #expect(await coordinator.markAllTestCasesPassedForDebug(at: endedAt))
         #expect(await coordinator.completeActiveSession(endedAt: endedAt))
 
         let completedSession = try await store.session(
@@ -133,6 +134,90 @@ struct InspectionCoordinatorTests {
         #expect(coordinator.route == .sessionSelector)
         #expect(coordinator.selectedScreen == .sessionSelector)
         #expect(coordinator.eventCoordinator.executionCoordinator == nil)
+    }
+
+    @Test("TASK#10.5 active session completion is blocked while validation blockers remain")
+    func activeSessionCompletionIsBlockedWhileValidationBlockersRemain() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: stages(),
+            store: store
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        let sessionID = execution.sessionContext.sessionID
+
+        #expect(!execution.canCompleteSession)
+        #expect(!((await coordinator.completeActiveSession(endedAt: Date(timeIntervalSince1970: 1_780_040_000)))))
+
+        let activeSession = try await store.session(
+            eventID: eventID,
+            teamID: "car-28",
+            sessionID: sessionID,
+            access: .appAccess(eventID: eventID, teams: [teams()[1]])
+        )
+        #expect(activeSession.endedAt == nil)
+        #expect(coordinator.route == .inspection)
+        #expect(coordinator.selectedScreen == .dashboard)
+        #expect(coordinator.eventCoordinator.executionCoordinator != nil)
+    }
+
+    @Test("TASK#10.5 debug action marks every test case passing so session can complete")
+    func debugActionMarksEveryTestCasePassingSoSessionCanComplete() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let testStages = debugCompletionStages()
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: testStages,
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: testStages,
+            store: store
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        var execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(!execution.canCompleteSession)
+
+        let completedAt = Date(timeIntervalSince1970: 1_780_040_000)
+        #expect(await coordinator.markAllTestCasesPassedForDebug(at: completedAt))
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(execution.canCompleteSession)
+        #expect(execution.sessionBlockerCount == 0)
+
+        let egressDraft = try #require(execution.draftsByStageID["debug"]?["debug-egress"])
+        let measuredStep = try #require(egressDraft.stepDraft(stepID: "DBG-MEASURE")?.draft)
+        #expect(measuredStep.outcome == .pass)
+        #expect(measuredStep.measurementInput == "0")
+        #expect(measuredStep.measurementValue != nil)
+
+        let evidenceDraft = try #require(execution.draftsByStageID["debug"]?["debug-evidence"])
+        let evidenceStep = try #require(evidenceDraft.stepDraft(stepID: "DBG-EVIDENCE")?.draft)
+        #expect(evidenceStep.outcome == .pass)
+        #expect(evidenceStep.evidenceAttachments.count == 1)
+
+        #expect(await coordinator.completeActiveSession(endedAt: completedAt))
     }
 
     @Test("US-001 login completion opens session selector")
@@ -388,12 +473,12 @@ struct InspectionCoordinatorTests {
     func issue56DashboardStageRowUsesDraftBackedStatusForUnansweredStage() {
         let stage = staticCompleteStageWithRequiredStep()
 
-        let row = ActiveTeamStageRowState(stage: stage)
+        let row = FullStageViewState(stage: stage)
 
-        #expect(row.status == .blocked)
-        #expect(row.statusText == "1 blocker")
-        #expect(row.completedStepCount == 0)
-        #expect(row.totalStepCount == 1)
+        #expect(!row.canSubmit)
+        #expect(row.blockerText == "1 blocker")
+        #expect(row.completeStepCount == 0)
+        #expect(row.stepCount == 1)
         #expect(row.blockerCount == 1)
         #expect(row.progressFraction == 0)
     }
@@ -407,15 +492,15 @@ struct InspectionCoordinatorTests {
             stepDrafts: [TestStepDraft(stepID: "STATIC-STEP", outcome: .pass)]
         )
 
-        let row = ActiveTeamStageRowState(
+        let row = FullStageViewState(
             stage: stage,
             draftsByTestCaseID: [testCase.id: draft]
         )
 
-        #expect(row.status == .complete)
-        #expect(row.statusText == "Complete")
-        #expect(row.completedStepCount == 1)
-        #expect(row.totalStepCount == 1)
+        #expect(row.canSubmit)
+        #expect(row.blockerText == "No blockers")
+        #expect(row.completeStepCount == 1)
+        #expect(row.stepCount == 1)
         #expect(row.blockerCount == 0)
         #expect(row.progressFraction == 1)
     }
@@ -606,6 +691,49 @@ private func stageSwitchStages() -> [InspectionStage] {
     ]
 }
 
+private func debugCompletionStages() -> [InspectionStage] {
+    [
+        InspectionStage(
+            id: "debug",
+            code: "DBG",
+            title: "Debug Completion",
+            displayOrder: 1,
+            subtitle: "Completion gate fixture",
+            sections: [
+                InspectionSection(
+                    id: "debug.primary",
+                    title: "Debug Checks",
+                    displayOrder: 1,
+                    testCases: [
+                        InspectionTestCase(
+                            id: "debug-egress",
+                            code: "DBG-EGRESS",
+                            displayOrder: 1,
+                            title: "Debug measurement",
+                            ruleReferences: ["DBG.1"],
+                            steps: [measurementStep(id: "DBG-MEASURE", title: "Debug measurement")]
+                        ),
+                        InspectionTestCase(
+                            id: "debug-evidence",
+                            code: "DBG-EVIDENCE",
+                            displayOrder: 2,
+                            title: "Debug evidence",
+                            ruleReferences: ["DBG.2"],
+                            steps: [
+                                inspectionStep(
+                                    id: "DBG-EVIDENCE",
+                                    title: "Debug evidence",
+                                    requiresEvidence: true
+                                )
+                            ]
+                        )
+                    ]
+                )
+            ]
+        )
+    ]
+}
+
 private func inspectionStep(
     id: String,
     title: String,
@@ -621,6 +749,25 @@ private func inspectionStep(
         content: "Test content for \(title).",
         requiredOutcome: true,
         requiresEvidence: requiresEvidence
+    )
+}
+
+private func measurementStep(id: String, title: String) -> InspectionTestStep {
+    InspectionTestStep(
+        id: id,
+        code: id,
+        ruleReference: "VE.5",
+        title: title,
+        type: .measurement,
+        content: "Measure \(title).",
+        requiredOutcome: true,
+        requiresEvidence: false,
+        measurementRange: MeasurementRange(
+            unit: .seconds,
+            minimum: Decimal(string: "0.00")!,
+            maximum: Decimal(string: "4.99")!,
+            maximumFractionDigits: 2
+        )
     )
 }
 
