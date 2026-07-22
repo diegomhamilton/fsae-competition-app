@@ -56,6 +56,133 @@ struct InspectionEventStoreTests {
         #expect(restoredTeams == [created])
     }
 
+    @Test("TASK#10.5 local session catalog persists started and ended timestamps")
+    func localSessionCatalogPersistsStartedAndEndedTimestamps() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let catalog = LocalSessionCatalogService(rootDirectory: rootDirectory)
+        let startedAt = Date(timeIntervalSince1970: 1_780_010_000)
+        let endedAt = Date(timeIntervalSince1970: 1_780_013_600)
+        let completed = InspectionSessionRecord(
+            id: "session-42",
+            eventID: "event-2026",
+            teamID: "car-042",
+            judgeUserID: "judge-a",
+            status: .submitted,
+            currentStageID: "rain",
+            startedAt: startedAt,
+            endedAt: endedAt,
+            lastSavedAt: Date(timeIntervalSince1970: 1_780_011_200)
+        )
+
+        try await catalog.saveSessions([completed], eventID: "event-2026", teamID: "car-042")
+        let restored = try await catalog.loadSessions(eventID: "event-2026", teamID: "car-042")
+
+        #expect(restored == [completed])
+        #expect(restored.first?.startedAt == startedAt)
+        #expect(restored.first?.endedAt == endedAt)
+        #expect(try await catalog.loadSessions(eventID: "event-2026", teamID: "car-099").isEmpty)
+    }
+
+    @Test("TASK#10.5 store restores active session after relaunch and preserves start timestamp")
+    func storeRestoresActiveSessionAfterRelaunchAndPreservesStartTimestamp() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let startTime = Date(timeIntervalSince1970: 1_780_020_000)
+        let saveTime = Date(timeIntervalSince1970: 1_780_020_900)
+        let access = access(teamID: "car-042")
+        let firstLaunch = InspectionEventStore(
+            events: [event(id: "event-2026")],
+            teams: [team(id: "car-042", eventID: "event-2026", carNumber: "42")],
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+
+        let started = try await firstLaunch.startSession(
+            eventID: "event-2026",
+            teamID: "car-042",
+            defaultStageID: "garage",
+            sessionID: "session-active",
+            startedAt: startTime,
+            access: access
+        )
+        try await firstLaunch.saveDraft(
+            try completedStoreDraft(notes: "Rain stage progress saved."),
+            scope: InspectionSessionScope(
+                eventID: "event-2026",
+                teamID: "car-042",
+                sessionID: started.id,
+                stageID: "rain"
+            ),
+            updatedAt: saveTime,
+            access: access
+        )
+
+        let relaunched = InspectionEventStore(
+            events: [event(id: "event-2026")],
+            teams: [team(id: "car-042", eventID: "event-2026", carNumber: "42")],
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let activeSession = try #require(await relaunched.activeSession(
+            eventID: "event-2026",
+            teamID: "car-042",
+            access: access
+        ))
+
+        #expect(activeSession.id == "session-active")
+        #expect(activeSession.startedAt == startTime)
+        #expect(activeSession.endedAt == nil)
+        #expect(activeSession.currentStageID == "rain")
+        #expect(activeSession.lastSavedAt == saveTime)
+    }
+
+    @Test("TASK#10.5 completing session records endedAt and removes active session")
+    func completingSessionRecordsEndedAtAndRemovesActiveSession() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let startTime = Date(timeIntervalSince1970: 1_780_030_000)
+        let endTime = Date(timeIntervalSince1970: 1_780_033_600)
+        let store = InspectionEventStore(
+            events: [event(id: "event-2026")],
+            teams: [team(id: "car-042", eventID: "event-2026", carNumber: "42")],
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let access = access(teamID: "car-042")
+
+        let started = try await store.startSession(
+            eventID: "event-2026",
+            teamID: "car-042",
+            defaultStageID: "garage",
+            sessionID: "session-complete",
+            startedAt: startTime,
+            access: access
+        )
+        let completed = try await store.completeSession(
+            eventID: "event-2026",
+            teamID: "car-042",
+            sessionID: started.id,
+            endedAt: endTime,
+            access: access
+        )
+        let relaunched = InspectionEventStore(
+            events: [event(id: "event-2026")],
+            teams: [team(id: "car-042", eventID: "event-2026", carNumber: "42")],
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let sessions = try await relaunched.sessions(eventID: "event-2026", teamID: "car-042", access: access)
+
+        #expect(completed.status == .submitted)
+        #expect(completed.startedAt == startTime)
+        #expect(completed.endedAt == endTime)
+        #expect(try await relaunched.activeSession(eventID: "event-2026", teamID: "car-042", access: access) == nil)
+        #expect(sessions.first?.endedAt == endTime)
+    }
+
     @Test("US-001 scopes event, team, and session queries by user access")
     func scopesQueriesByEventTeamSessionAndAccess() async throws {
         let rootDirectory = try temporaryStoreDirectory()

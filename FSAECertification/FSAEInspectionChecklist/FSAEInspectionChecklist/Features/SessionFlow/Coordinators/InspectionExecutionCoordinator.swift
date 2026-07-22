@@ -4,6 +4,7 @@
 //
 
 import Combine
+import Foundation
 
 @MainActor
 final class InspectionExecutionCoordinator: ObservableObject {
@@ -46,6 +47,14 @@ final class InspectionExecutionCoordinator: ObservableObject {
                 draftsByTestCaseID: draftsByStageID[stage.id] ?? [:]
             )
         }
+    }
+
+    var sessionBlockerCount: Int {
+        stages.map(\.blockerCount).reduce(0, +)
+    }
+
+    var canCompleteSession: Bool {
+        sessionBlockerCount == 0
     }
 
     var draftsByTestCaseID: [String: TestCaseDraft] {
@@ -218,6 +227,79 @@ final class InspectionExecutionCoordinator: ObservableObject {
         }
     }
 
+    #if DEBUG
+    @discardableResult
+    func markAllTestCasesPassedForDebug(at completedAt: Date = Date()) async -> Bool {
+        var nextDraftsByStageID = draftsByStageID
+
+        for stage in stageModels {
+            var stageDrafts = nextDraftsByStageID[stage.id] ?? [:]
+            for testCase in stage.orderedSections.flatMap(\.orderedTestCases) {
+                let stepDrafts = testCase.orderedSteps.map { step in
+                    TestStepDraft.debugPassingDraft(step: step, completedAt: completedAt)
+                }
+                let testCaseDraft = TestCaseDraft(testCase: testCase, stepDrafts: stepDrafts)
+                stageDrafts[testCase.id] = testCaseDraft
+            }
+            nextDraftsByStageID[stage.id] = stageDrafts
+        }
+
+        draftsByStageID = nextDraftsByStageID
+        sessionContext.hasUnsavedDraft = true
+
+        for (stageID, stageDrafts) in nextDraftsByStageID {
+            for draft in stageDrafts.values {
+                do {
+                    _ = try await store.saveDraft(
+                        draft,
+                        scope: scope(stageID: stageID),
+                        access: access
+                    )
+                } catch {
+                    return false
+                }
+            }
+        }
+
+        sessionContext.hasUnsavedDraft = false
+        return canCompleteSession
+    }
+
+    @discardableResult
+    func markAllTestCasesIncompleteForDebug() async -> Bool {
+        var nextDraftsByStageID = draftsByStageID
+
+        for stage in stageModels {
+            var stageDrafts = nextDraftsByStageID[stage.id] ?? [:]
+            for testCase in stage.orderedSections.flatMap(\.orderedTestCases) {
+                let testCaseDraft = TestCaseDraft(testCase: testCase)
+                stageDrafts[testCase.id] = testCaseDraft
+            }
+            nextDraftsByStageID[stage.id] = stageDrafts
+        }
+
+        draftsByStageID = nextDraftsByStageID
+        sessionContext.hasUnsavedDraft = true
+
+        for (stageID, stageDrafts) in nextDraftsByStageID {
+            for draft in stageDrafts.values {
+                do {
+                    _ = try await store.saveDraft(
+                        draft,
+                        scope: scope(stageID: stageID),
+                        access: access
+                    )
+                } catch {
+                    return false
+                }
+            }
+        }
+
+        sessionContext.hasUnsavedDraft = false
+        return !canCompleteSession
+    }
+    #endif
+
     private func stage(id stageID: String) -> InspectionStage? {
         stageModels.first { $0.id == stageID }
     }
@@ -266,3 +348,33 @@ final class InspectionExecutionCoordinator: ObservableObject {
         )
     }
 }
+
+#if DEBUG
+private extension TestStepDraft {
+    static func debugPassingDraft(step: InspectionTestStep, completedAt: Date) -> TestStepDraft {
+        let measurementInput = step.measurementRange.map { range in
+            NSDecimalNumber(decimal: range.minimum).stringValue
+        } ?? ""
+        let measurementValue = step.measurementRange.flatMap { range in
+            try? MeasurementValue(rawValue: measurementInput, range: range)
+        }
+        let evidenceAttachments = step.requiresEvidence ? [
+            EvidenceAttachmentMetadata(
+                id: "debug-\(step.id)-evidence",
+                displayName: "Debug evidence for \(step.code)",
+                mediaType: .photo,
+                source: .mockAttachment,
+                createdAt: completedAt
+            )
+        ] : []
+
+        return TestStepDraft(
+            stepID: step.id,
+            outcome: .pass,
+            measurementInput: measurementInput,
+            measurementValue: measurementValue,
+            evidenceAttachments: evidenceAttachments
+        )
+    }
+}
+#endif

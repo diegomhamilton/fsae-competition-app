@@ -4,6 +4,7 @@
 //
 
 import Combine
+import Foundation
 
 @MainActor
 final class InspectionEventCoordinator: ObservableObject {
@@ -53,10 +54,19 @@ final class InspectionEventCoordinator: ObservableObject {
         case .blocked:
             return false
         case .startNewSession(let team):
-            await openSession(team: team, stageID: firstStageID)
+            await startSession(team: team, stageID: firstStageID)
             return true
         case .resumeSession(let team):
-            await openSession(team: team, stageID: stageID(titled: team.currentStage) ?? firstStageID)
+            let teamRecordID = Self.teamRecordID(team)
+            if let session = try? await store.activeSession(
+                eventID: eventID,
+                teamID: teamRecordID,
+                access: access
+            ) {
+                await openSession(team: team, session: session)
+            } else {
+                await startSession(team: team, stageID: stageID(titled: team.currentStage) ?? firstStageID)
+            }
             return true
         }
     }
@@ -88,7 +98,15 @@ final class InspectionEventCoordinator: ObservableObject {
             return
         }
 
-        sessionSelectionCoordinator.updateTeams(teams.map { team(record: $0) })
+        let restoredTeams = await teams.asyncMap { record in
+            let activeSession = try? await store.activeSession(
+                eventID: eventID,
+                teamID: record.id,
+                access: access
+            )
+            return team(record: record, activeSession: activeSession)
+        }
+        sessionSelectionCoordinator.updateTeams(restoredTeams)
     }
 
     @discardableResult
@@ -101,10 +119,61 @@ final class InspectionEventCoordinator: ObservableObject {
             access: access
         )
         let teams = try await store.teams(eventID: eventID, access: access)
-            .map { team(record: $0) }
-        sessionSelectionCoordinator.updateTeams(teams)
-        return teams.first { $0.id == record.numericTeamID }
+        let restoredTeams = await teams.asyncMap { record in
+            let activeSession = try? await store.activeSession(
+                eventID: eventID,
+                teamID: record.id,
+                access: access
+            )
+            return team(record: record, activeSession: activeSession)
+        }
+        sessionSelectionCoordinator.updateTeams(restoredTeams)
+        return restoredTeams.first { $0.id == record.numericTeamID }
     }
+
+    @discardableResult
+    func completeActiveSession(endedAt: Date = Date()) async -> Bool {
+        guard let executionCoordinator,
+              executionCoordinator.canCompleteSession,
+              let context = activeSession else {
+            return false
+        }
+
+        let teamID = Self.teamRecordID(context.team)
+        guard (try? await store.completeSession(
+            eventID: eventID,
+            teamID: teamID,
+            sessionID: context.sessionID,
+            endedAt: endedAt,
+            access: access
+        )) != nil else {
+            return false
+        }
+
+        self.executionCoordinator = nil
+        await restoreTeamCatalog()
+        return true
+    }
+
+    #if DEBUG
+    @discardableResult
+    func markAllTestCasesPassedForDebug(at completedAt: Date = Date()) async -> Bool {
+        guard let executionCoordinator else {
+            return false
+        }
+
+        return await executionCoordinator.markAllTestCasesPassedForDebug(at: completedAt)
+    }
+
+    @discardableResult
+    func markAllTestCasesIncompleteForDebug() async -> Bool {
+        guard let executionCoordinator else {
+            return false
+        }
+
+        return await executionCoordinator.markAllTestCasesIncompleteForDebug()
+    }
+    #endif
 
     @discardableResult
     func confirmPendingTeamSwitch() async -> Bool {
@@ -115,21 +184,33 @@ final class InspectionEventCoordinator: ObservableObject {
         return await startOrResumeSession(for: targetTeamID)
     }
 
-    private func openSession(team: InspectionTeam, stageID: String) async {
-        let sessionID = Self.sessionID(eventID: eventID, team: team)
+    private func startSession(team: InspectionTeam, stageID: String) async {
         let teamRecordID = Self.teamRecordID(team)
         let session = try? await store.startSession(
             eventID: eventID,
             teamID: teamRecordID,
             defaultStageID: stageID,
-            sessionID: sessionID,
             access: access
+        )
+        guard let session else {
+            return
+        }
+
+        await openSession(team: team, session: session)
+    }
+
+    private func openSession(team selectedTeam: InspectionTeam, session: InspectionSessionRecord) async {
+        let sessionTeam = team(
+            selectedTeam,
+            session: session
         )
         let context = InspectionSessionContext(
             eventID: eventID,
-            sessionID: session?.id ?? sessionID,
-            team: team,
-            activeStageID: session?.currentStageID ?? stageID,
+            sessionID: session.id,
+            team: sessionTeam,
+            activeStageID: session.currentStageID,
+            startedAt: session.startedAt,
+            endedAt: session.endedAt,
             hasUnsavedDraft: false
         )
         let coordinator = InspectionExecutionCoordinator(
@@ -161,20 +242,86 @@ final class InspectionEventCoordinator: ObservableObject {
 }
 
 private extension InspectionEventCoordinator {
-    func team(record: InspectionEventTeamRecord) -> InspectionTeam {
-        InspectionTeam(
-            id: record.numericTeamID,
-            school: record.displayName,
-            carNumber: record.carNumber,
-            status: .ready,
-            currentStage: stages.sorted { $0.displayOrder < $1.displayOrder }.first?.title ?? "",
-            lastSaved: "Not started"
+    func team(
+        record: InspectionEventTeamRecord,
+        activeSession: InspectionSessionRecord?
+    ) -> InspectionTeam {
+        guard let activeSession else {
+            return InspectionTeam(
+                id: record.numericTeamID,
+                school: record.displayName,
+                carNumber: record.carNumber,
+                status: .ready,
+                currentStage: stages.sorted { $0.displayOrder < $1.displayOrder }.first?.title ?? "",
+                lastSaved: "Not started"
+            )
+        }
+
+        return team(
+            InspectionTeam(
+                id: record.numericTeamID,
+                school: record.displayName,
+                carNumber: record.carNumber,
+                status: .ready,
+                currentStage: "",
+                lastSaved: ""
+            ),
+            session: activeSession
         )
+    }
+
+    func team(
+        _ team: InspectionTeam,
+        session: InspectionSessionRecord
+    ) -> InspectionTeam {
+        let stageTitle = stageTitle(id: session.currentStageID)
+        return InspectionTeam(
+            id: team.id,
+            school: team.school,
+            carNumber: team.carNumber,
+            status: session.endedAt == nil ? .resumed : .ready,
+            currentStage: session.endedAt == nil ? stageTitle : firstStageTitle,
+            lastSaved: sessionSummary(session)
+        )
+    }
+
+    var firstStageTitle: String {
+        stages.sorted { $0.displayOrder < $1.displayOrder }.first?.title ?? ""
+    }
+
+    func stageTitle(id stageID: String) -> String {
+        stages.first { $0.id == stageID }?.title ?? firstStageTitle
+    }
+
+    func sessionSummary(_ session: InspectionSessionRecord) -> String {
+        if let endedAt = session.endedAt {
+            return "Completed \(endedAt.formatted(date: .abbreviated, time: .shortened))"
+        }
+
+        if let lastSavedAt = session.lastSavedAt {
+            return "Saved \(lastSavedAt.formatted(date: .abbreviated, time: .shortened))"
+        }
+
+        return "Started \(session.startedAt.formatted(date: .abbreviated, time: .shortened))"
     }
 }
 
 private extension InspectionEventTeamRecord {
     var numericTeamID: Int {
         Int(carNumber.filter(\.isNumber)) ?? abs(id.hashValue)
+    }
+}
+
+private extension Array {
+    func asyncMap<Transformed>(
+        _ transform: (Element) async -> Transformed
+    ) async -> [Transformed] {
+        var transformed: [Transformed] = []
+        transformed.reserveCapacity(count)
+        for element in self {
+            let value = await transform(element)
+            transformed.append(value)
+        }
+        return transformed
     }
 }
