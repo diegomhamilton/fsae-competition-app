@@ -4,6 +4,7 @@
 //
 
 import Combine
+import Foundation
 
 @MainActor
 final class AppCoordinator: ObservableObject {
@@ -136,6 +137,40 @@ final class AppCoordinator: ObservableObject {
         await eventCoordinator.restoreTeamCatalog()
         objectWillChange.send()
     }
+
+    @discardableResult
+    func completeActiveSession(endedAt: Date = Date()) async -> Bool {
+        guard await eventCoordinator.completeActiveSession(endedAt: endedAt) else {
+            return false
+        }
+
+        route = .sessionSelector
+        selectedScreen = .sessionSelector
+        objectWillChange.send()
+        return true
+    }
+
+    #if DEBUG
+    @discardableResult
+    func markAllTestCasesPassedForDebug(at completedAt: Date = Date()) async -> Bool {
+        guard await eventCoordinator.markAllTestCasesPassedForDebug(at: completedAt) else {
+            return false
+        }
+
+        objectWillChange.send()
+        return true
+    }
+
+    @discardableResult
+    func markAllTestCasesIncompleteForDebug() async -> Bool {
+        guard await eventCoordinator.markAllTestCasesIncompleteForDebug() else {
+            return false
+        }
+
+        objectWillChange.send()
+        return true
+    }
+    #endif
 
     @discardableResult
     func createTeam(entry: LocalTeamCatalogEntry) async throws -> Bool {

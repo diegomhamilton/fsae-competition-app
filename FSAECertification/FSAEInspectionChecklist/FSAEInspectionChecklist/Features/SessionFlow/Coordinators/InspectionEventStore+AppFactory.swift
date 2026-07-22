@@ -9,7 +9,8 @@ extension InspectionEventStore {
         teams: [InspectionTeam] = [],
         stages: [InspectionStage],
         persistenceService: TestCaseJSONPersistenceService = TestCaseJSONPersistenceService(),
-        teamCatalogService: LocalTeamCatalogService = LocalTeamCatalogService()
+        teamCatalogService: LocalTeamCatalogService = LocalTeamCatalogService(),
+        sessionCatalogService: LocalSessionCatalogService = LocalSessionCatalogService()
     ) -> InspectionEventStore {
         InspectionEventStore(
             events: [
@@ -28,7 +29,8 @@ extension InspectionEventStore {
                 )
             },
             persistenceService: persistenceService,
-            teamCatalogService: teamCatalogService
+            teamCatalogService: teamCatalogService,
+            sessionCatalogService: sessionCatalogService
         )
     }
 }

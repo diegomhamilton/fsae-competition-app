@@ -14,6 +14,10 @@ struct ActiveTeamDashboardView: View {
         static let openBlockers = "Open blockers"
         static let currentStage = "Current Stage"
         static let openStage = "Open Stage"
+        static let completeSession = "Complete Session"
+        static let completeSessionBlocked = "Resolve validation blockers before completing this session."
+        static let debugMarkAllPassed = "Mark All Passed"
+        static let debugMarkAllIncomplete = "Mark All Incomplete"
         static let stages = "Stages"
         static let complete = "Complete"
         static let noBlockers = "No blockers"
@@ -22,6 +26,9 @@ struct ActiveTeamDashboardView: View {
     @ObservedObject var coordinator: InspectionExecutionCoordinator
     let openStage: (String) -> Void
     let requestTeamSwitch: () -> Void
+    let completeSession: () -> Void
+    let debugMarkAllPassed: () -> Void
+    let debugMarkAllIncomplete: () -> Void
 
     var body: some View {
         let team = coordinator.activeTeam
@@ -99,6 +106,44 @@ struct ActiveTeamDashboardView: View {
                         stageID: selectedStageID ?? "none"
                     ).rawValue
                 )
+                Button {
+                    completeSession()
+                } label: {
+                    Label(Strings.completeSession, systemImage: "checkmark.seal.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .disabled(!coordinator.canCompleteSession)
+                .accessibilityHint(coordinator.canCompleteSession ? "" : Strings.completeSessionBlocked)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardCompleteSessionAction(teamID: team.id).rawValue
+                )
+                #if DEBUG
+                Text("Debug Actions")
+                Button {
+                    debugMarkAllPassed()
+                } label: {
+                    Label(Strings.debugMarkAllPassed, systemImage: "checkmark.circle")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllPassedAction(teamID: team.id).rawValue
+                )
+                Button {
+                    debugMarkAllIncomplete()
+                } label: {
+                    Label(Strings.debugMarkAllIncomplete, systemImage: "xmark.circle")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllIncompleteAction(teamID: team.id).rawValue
+                )
+                #endif
             }
 
             VStack(alignment: .leading, spacing: 12) {
