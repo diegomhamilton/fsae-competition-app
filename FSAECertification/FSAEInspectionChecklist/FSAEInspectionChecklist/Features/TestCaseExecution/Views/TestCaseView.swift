@@ -58,8 +58,6 @@ struct TestCaseView: View {
         ) {
             TestCaseHeader(testCase: testCase)
 
-            TestCaseValidationSummaryPanel(testCase: testCase)
-
             TestCaseStepCarousel(
                 stageID: stage.id,
                 testCaseID: testCase.id,
@@ -76,6 +74,9 @@ struct TestCaseView: View {
             } scrollToStep: { stepID in
                 scrollToStep(stepID)
             }
+
+            TestCaseValidationSummaryPanel(testCase: testCase)
+
         }
         .onAppear {
             activeStepID = activeStepID ?? testCase.steps.first?.id
@@ -295,7 +296,7 @@ private struct TestCaseHeader: View {
                     Text(testCase.code)
                         .font(.caption.weight(.bold))
                         .foregroundStyle(Color.fsaeSecondaryText)
-                    Text(TestCaseView.Strings.rules)
+                    Text(testCase.title)
                         .font(.headline)
                         .foregroundStyle(Color.fsaeText)
                     HStack {
@@ -471,12 +472,7 @@ private struct TestCaseStepCard: View {
                     .foregroundStyle(state.step.type.color)
                     .frame(width: 28)
 
-                HStack {
-                    Text(state.step.code)
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(Color.fsaeSecondaryText)
-                    StatusPill(text: state.step.type.label, color: state.step.type.color)
-                }
+                StatusPill(text: state.step.type.label, color: state.step.type.color)
 
                 Spacer()
 
