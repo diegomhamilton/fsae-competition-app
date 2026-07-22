@@ -48,7 +48,7 @@ final class AppCoordinator: ObservableObject {
     }
 
     func selectScreen(_ screen: ProposedScreen) {
-        selectedScreen = screen
+        selectedScreen = ProposedScreen.topLevelJudgeLandmarks.contains(screen) ? screen : .stageChecklist
     }
 
     @discardableResult
@@ -68,7 +68,7 @@ final class AppCoordinator: ObservableObject {
             return false
         }
 
-        selectedScreen = .testCase
+        selectedScreen = .stageChecklist
         return true
     }
 
@@ -78,8 +78,18 @@ final class AppCoordinator: ObservableObject {
             return false
         }
 
-        selectedScreen = .stepDetail
+        selectedScreen = .stageChecklist
         return true
+    }
+
+    func returnToActiveStage() {
+        eventCoordinator.executionCoordinator?.returnToActiveStage()
+        selectedScreen = .stageChecklist
+    }
+
+    func returnToActiveTestCase() {
+        eventCoordinator.executionCoordinator?.returnToActiveTestCase()
+        selectedScreen = .stageChecklist
     }
 
     @discardableResult
@@ -122,4 +132,3 @@ final class AppCoordinator: ObservableObject {
         objectWillChange.send()
     }
 }
-

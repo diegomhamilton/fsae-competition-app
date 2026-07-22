@@ -72,11 +72,52 @@ struct InspectionCoordinatorTests {
         #expect(coordinator.openTestStep(id: "RT-08"))
 
         let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
-        #expect(coordinator.selectedScreen == .stepDetail)
-        #expect(execution.route == .testStep(stageID: "rain", testCaseID: "rain-rml", stepID: "RT-08"))
+        #expect(coordinator.selectedScreen == .stageChecklist)
+        #expect(execution.stageNavigationPath == [
+            .testCase(testCaseID: "rain-rml"),
+            .testStep(testCaseID: "rain-rml", stepID: "RT-08")
+        ])
         #expect(execution.activeStage?.title == "Rain Test")
         #expect(execution.activeTestCase?.title == "Rain test RML behavior")
         #expect(execution.activeStep?.title == "RML flashing")
+    }
+
+    @Test("TASK#10.3 judge landmarks exclude standalone case and step tabs")
+    func guidedNavigationExcludesStandaloneCaseAndStepTabs() {
+        #expect(ProposedScreen.topLevelJudgeLandmarks == [.sessionSelector, .dashboard, .stageChecklist])
+        #expect(ProposedScreen.topLevelJudgeLandmarks.contains(.testCase) == false)
+        #expect(ProposedScreen.topLevelJudgeLandmarks.contains(.stepDetail) == false)
+    }
+
+    @Test("TASK#10.3 case and step drill-ins stay inside Stage")
+    func caseAndStepDrillInsStayInsideStage() async throws {
+        let coordinator = AppCoordinator(teams: teams(), stages: stages())
+        coordinator.completeMockLogin()
+        #expect(await coordinator.selectTeam(id: 28))
+
+        #expect(await coordinator.openStage(id: "rain"))
+        #expect(coordinator.selectedScreen == .stageChecklist)
+
+        #expect(coordinator.openTestCase(id: "rain-rml"))
+        var execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(coordinator.selectedScreen == .stageChecklist)
+        #expect(execution.stageNavigationPath == [.testCase(testCaseID: "rain-rml")])
+
+        #expect(coordinator.openTestStep(id: "RT-08"))
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(coordinator.selectedScreen == .stageChecklist)
+        #expect(execution.stageNavigationPath == [
+            .testCase(testCaseID: "rain-rml"),
+            .testStep(testCaseID: "rain-rml", stepID: "RT-08")
+        ])
+
+        coordinator.returnToActiveTestCase()
+        #expect(coordinator.selectedScreen == .stageChecklist)
+        #expect(execution.stageNavigationPath == [.testCase(testCaseID: "rain-rml")])
+
+        coordinator.returnToActiveStage()
+        #expect(coordinator.selectedScreen == .stageChecklist)
+        #expect(execution.stageNavigationPath == [])
     }
 
     @Test("US-002 execution coordinator rejects unknown stage routes")
@@ -87,12 +128,12 @@ struct InspectionCoordinatorTests {
         #expect(await coordinator.openStage(id: "rain"))
 
         let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
-        let originalRoute = execution.route
+        let originalPath = execution.stageNavigationPath
         let originalStageID = execution.sessionContext.activeStageID
 
         #expect(!(await coordinator.openStage(id: "unknown-stage")))
 
-        #expect(execution.route == originalRoute)
+        #expect(execution.stageNavigationPath == originalPath)
         #expect(execution.sessionContext.activeStageID == originalStageID)
         #expect(execution.activeStage?.id == "rain")
     }
@@ -107,7 +148,7 @@ struct InspectionCoordinatorTests {
         execution.markUnsavedDraft(true)
 
         #expect(coordinator.requestTeamSwitch(to: 28))
-        #expect(execution.route == .teamSwitchConfirmation(currentTeamID: 13, targetTeamID: 28))
+        #expect(execution.stageNavigationPath == [])
         #expect(execution.pendingSwitchTarget?.id == 28)
 
         #expect(await coordinator.confirmTeamSwitch())
@@ -141,7 +182,7 @@ struct InspectionCoordinatorTests {
 
         #expect(coordinator.openTestStep(id: "RT-08"))
         #expect(execution.activeStep?.id == "RT-08")
-        #expect(coordinator.selectedScreen == .stepDetail)
+        #expect(coordinator.selectedScreen == .stageChecklist)
     }
 
     @Test("TASK#7.1 store-backed coordinator saves and restores draft values")

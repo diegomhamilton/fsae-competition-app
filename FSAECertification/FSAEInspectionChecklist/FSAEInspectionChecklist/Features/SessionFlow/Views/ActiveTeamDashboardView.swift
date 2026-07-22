@@ -6,6 +6,19 @@
 import SwiftUI
 
 struct ActiveTeamDashboardView: View {
+    fileprivate enum Strings {
+        static let eyebrow = "Active Team"
+        static let subtitle = "Review the locally stored session, stage progress, and team-switch controls."
+        static let switchTeam = "Switch Team"
+        static let overallProgress = "Overall progress"
+        static let openBlockers = "Open blockers"
+        static let currentStage = "Current Stage"
+        static let openStage = "Open Stage"
+        static let stages = "Stages"
+        static let complete = "Complete"
+        static let noBlockers = "No blockers"
+    }
+
     @ObservedObject var coordinator: InspectionExecutionCoordinator
     let openStage: (String) -> Void
     let requestTeamSwitch: () -> Void
@@ -16,9 +29,9 @@ struct ActiveTeamDashboardView: View {
         let selectedStageID = coordinator.activeStage?.id
 
         ScreenShell(
-            eyebrow: "SC-002 Active Team Dashboard",
+            eyebrow: Strings.eyebrow,
             title: "\(team.carNumber) \(team.school)",
-            subtitle: "Active team context, current stage, inspection progress, and the switch-team action."
+            subtitle: Strings.subtitle
         ) {
             ContentPanel {
                 HStack(alignment: .top, spacing: 12) {
@@ -40,19 +53,22 @@ struct ActiveTeamDashboardView: View {
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
-                    .accessibilityLabel("Switch Team")
+                    .accessibilityLabel(Strings.switchTeam)
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.activeTeamDashboardSwitchTeamAction(teamID: team.id).rawValue
+                    )
                 }
             }
 
             HStack(spacing: 12) {
-                MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: "Overall progress", systemImage: "chart.pie", color: .fsaeGreen)
-                MetricTile(value: "\(stages.map(\.blockerCount).reduce(0, +))", label: "Open blockers", systemImage: "exclamationmark.triangle", color: .fsaeAmber)
+                MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: Strings.overallProgress, systemImage: "chart.pie", color: .fsaeGreen)
+                MetricTile(value: "\(stages.map(\.blockerCount).reduce(0, +))", label: Strings.openBlockers, systemImage: "exclamationmark.triangle", color: .fsaeAmber)
             }
 
             ContentPanel {
                 HStack {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Current Stage")
+                        Text(Strings.currentStage)
                             .font(.caption.weight(.bold))
                             .foregroundStyle(Color.fsaeSecondaryText)
                         Text(team.currentStage)
@@ -67,15 +83,21 @@ struct ActiveTeamDashboardView: View {
                         openStage(stageID)
                     }
                 } label: {
-                    Label("Open Stage", systemImage: "arrow.right.circle.fill")
+                    Label(Strings.openStage, systemImage: "arrow.right.circle.fill")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardOpenCurrentStageAction(
+                        teamID: team.id,
+                        stageID: selectedStageID ?? "none"
+                    ).rawValue
+                )
             }
 
             VStack(alignment: .leading, spacing: 12) {
-                Text("Stages")
+                Text(Strings.stages)
                     .font(.headline)
                     .foregroundStyle(Color.fsaeText)
                 ForEach(stages) { stage in
@@ -83,11 +105,18 @@ struct ActiveTeamDashboardView: View {
                         openStage(stage.stageID)
                     } label: {
                         StageRow(
+                            teamID: team.id,
                             state: stage,
                             isSelected: stage.stageID == selectedStageID
                         )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.activeTeamDashboardStageRow(
+                            teamID: team.id,
+                            stageID: stage.stageID
+                        ).rawValue
+                    )
                 }
             }
 
@@ -105,6 +134,7 @@ struct ActiveTeamDashboardView: View {
 }
 
 private struct StageRow: View {
+    let teamID: Int
     let state: FullStageViewState
     let isSelected: Bool
 
@@ -121,8 +151,14 @@ private struct StageRow: View {
                 }
                 Spacer()
                 StatusPill(
-                    text: state.blockerText == "No blockers" ? "Complete" : state.blockerText,
+                    text: state.blockerText == ActiveTeamDashboardView.Strings.noBlockers ? ActiveTeamDashboardView.Strings.complete : state.blockerText,
                     color: state.blockerCount == 0 ? Color.fsaeGreen : Color.fsaeAmber
+                )
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardStageStatus(
+                        teamID: teamID,
+                        stageID: state.stageID
+                    ).rawValue
                 )
             }
             ProgressView(value: state.progressFraction)

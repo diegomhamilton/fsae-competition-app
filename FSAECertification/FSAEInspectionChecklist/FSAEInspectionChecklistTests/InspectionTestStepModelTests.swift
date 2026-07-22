@@ -186,6 +186,46 @@ struct InspectionTestStepModelTests {
             InspectionAccessibilityIdentifier.doneAction(stepID: "RT-08").rawValue
                 == "inspection.testStep.RT-08.done"
         )
+        #expect(
+            InspectionAccessibilityIdentifier.sessionSelectorTeamRow(teamID: 13).rawValue
+                == "inspection.sessionSelector.team.13.row"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.sessionSelectorTeamStatus(teamID: 13).rawValue
+                == "inspection.sessionSelector.team.13.status"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.sessionSelectorTeamResumeIndicator(teamID: 13).rawValue
+                == "inspection.sessionSelector.team.13.resume"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.sessionSelectorTeamBlockedIndicator(teamID: 13).rawValue
+                == "inspection.sessionSelector.team.13.blocked"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.activeTeamDashboardSwitchTeamAction(teamID: 13).rawValue
+                == "inspection.dashboard.team.13.switchTeam"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.activeTeamDashboardOpenCurrentStageAction(teamID: 13, stageID: "06_rain").rawValue
+                == "inspection.dashboard.team.13.stage.06_rain.openCurrent"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.activeTeamDashboardStageRow(teamID: 13, stageID: "06_rain").rawValue
+                == "inspection.dashboard.team.13.stage.06_rain.row"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.activeTeamDashboardStageStatus(teamID: 13, stageID: "06_rain").rawValue
+                == "inspection.dashboard.team.13.stage.06_rain.status"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.teamSwitchCancelAction(currentTeamID: 13, targetTeamID: 15).rawValue
+                == "inspection.teamSwitch.current.13.target.15.cancel"
+        )
+        #expect(
+            InspectionAccessibilityIdentifier.teamSwitchConfirmAction(currentTeamID: 13, targetTeamID: 15).rawValue
+                == "inspection.teamSwitch.current.13.target.15.confirm"
+        )
     }
 
     @Test("Localizable string key helpers return structured keys for test step views")

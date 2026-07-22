@@ -47,68 +47,16 @@ struct ContentTabsView: View {
             }
 
             Tab("Stage", systemImage: "checklist", value: .stageChecklist) {
-                NavigationStack {
-                    if let executionCoordinator = bindings.executionCoordinator,
-                       let stage = executionCoordinator.activeStage {
-                        FullStageView(
-                            team: executionCoordinator.activeTeam,
-                            stage: stage,
-                            draftsByTestCaseID: executionCoordinator.draftsByTestCaseID,
-                            openTestCase: { testCase in
-                                appCoordinator.openTestCase(id: testCase.id)
-                            },
-                            submitStage: {},
-                            openBlockingRoute: { route in
-                                if appCoordinator.openTestCase(id: route.testCaseID) {
-                                    appCoordinator.openTestStep(id: route.stepID)
-                                }
-                            }
-                        )
-                    } else {
+                if let executionCoordinator = bindings.executionCoordinator,
+                   let stage = executionCoordinator.activeStage {
+                    StageNavigationView(
+                        appCoordinator: appCoordinator,
+                        executionCoordinator: executionCoordinator,
+                        stage: stage
+                    )
+                } else {
+                    NavigationStack {
                         EmptyFlowState(title: "Open a team stage to inspect.")
-                    }
-                }
-            }
-
-            Tab("Case", systemImage: "list.bullet.rectangle", value: .testCase) {
-                NavigationStack {
-                    if let executionCoordinator = bindings.executionCoordinator,
-                       let stage = executionCoordinator.activeStage,
-                       let testCase = executionCoordinator.activeTestCase {
-                        TestCaseView(
-                            team: executionCoordinator.activeTeam,
-                            stage: stage,
-                            testCase: InspectionTestCaseViewState(
-                                testCase: testCase,
-                                draft: executionCoordinator.draft(for: testCase)
-                            ),
-                            selectedStep: bindings.activeStepBinding,
-                            selectedScreen: bindings.selectedScreenBinding,
-                            updateStepDraft: { stepDraft in
-                                Task {
-                                    await appCoordinator.saveStepDraft(
-                                        stepDraft,
-                                        testCaseID: testCase.id
-                                    )
-                                }
-                            }
-                        )
-                    } else {
-                        EmptyFlowState(title: "Open a test case from the active stage.")
-                    }
-                }
-            }
-
-            Tab("Step", systemImage: "square.and.pencil", value: .stepDetail) {
-                NavigationStack {
-                    if let executionCoordinator = bindings.executionCoordinator {
-                        StepOverviewView(
-                            coordinator: executionCoordinator
-                        ) {
-                            appCoordinator.selectScreen(.stageChecklist)
-                        }
-                    } else {
-                        EmptyFlowState(title: "Open a test step from a test case.")
                     }
                 }
             }
@@ -116,3 +64,72 @@ struct ContentTabsView: View {
     }
 }
 
+private struct StageNavigationView: View {
+    @ObservedObject var appCoordinator: AppCoordinator
+    @ObservedObject var executionCoordinator: InspectionExecutionCoordinator
+    let stage: InspectionStage
+
+    var body: some View {
+        NavigationStack(path: $executionCoordinator.stageNavigationPath) {
+            FullStageView(
+                team: executionCoordinator.activeTeam,
+                stage: stage,
+                draftsByTestCaseID: executionCoordinator.draftsByTestCaseID,
+                openTestCase: { testCase in
+                    appCoordinator.openTestCase(id: testCase.id)
+                },
+                submitStage: {},
+                openBlockingRoute: { route in
+                    if appCoordinator.openTestCase(id: route.testCaseID) {
+                        appCoordinator.openTestStep(id: route.stepID)
+                    }
+                }
+            )
+            .navigationDestination(for: StageNavigationRoute.self) { route in
+                destination(for: route)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func destination(for route: StageNavigationRoute) -> some View {
+        switch route {
+        case .testCase(let testCaseID):
+            if let testCase = testCase(id: testCaseID) {
+                TestCaseView(
+                    team: executionCoordinator.activeTeam,
+                    stage: stage,
+                    testCase: InspectionTestCaseViewState(
+                        testCase: testCase,
+                        draft: executionCoordinator.draft(for: testCase)
+                    ),
+                    openStepDetail: { step in
+                        appCoordinator.openTestStep(id: step.id)
+                    },
+                    updateStepDraft: { stepDraft in
+                        Task {
+                            await appCoordinator.saveStepDraft(
+                                stepDraft,
+                                testCaseID: testCase.id
+                            )
+                        }
+                    }
+                )
+            } else {
+                EmptyFlowState(title: "Open a test case from the active stage.")
+            }
+        case .testStep:
+            StepOverviewView(
+                coordinator: executionCoordinator
+            ) {
+                appCoordinator.returnToActiveTestCase()
+            }
+        }
+    }
+
+    private func testCase(id testCaseID: String) -> InspectionTestCase? {
+        stage.orderedSections
+            .flatMap(\.orderedTestCases)
+            .first { $0.id == testCaseID }
+    }
+}

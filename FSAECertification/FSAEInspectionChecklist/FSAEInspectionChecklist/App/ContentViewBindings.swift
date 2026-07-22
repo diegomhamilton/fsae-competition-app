@@ -20,27 +20,10 @@ struct ContentViewBindings {
         )
     }
 
-    var activeStepBinding: Binding<InspectionTestStep> {
-        Binding(
-            get: { executionCoordinator?.activeStep ?? MockInspectionData.steps[0] },
-            set: { step in
-                appCoordinator.openTestStep(id: step.id)
-            }
-        )
-    }
-
     var teamSwitchConfirmationBinding: Binding<Bool> {
         Binding(
             get: {
-                guard let route = executionCoordinator?.route else {
-                    return false
-                }
-
-                if case .teamSwitchConfirmation = route {
-                    return true
-                }
-
-                return false
+                executionCoordinator?.pendingSwitchTarget != nil
             },
             set: { isPresented in
                 if !isPresented {
@@ -60,4 +43,3 @@ struct ContentViewBindings {
             .id
     }
 }
-
