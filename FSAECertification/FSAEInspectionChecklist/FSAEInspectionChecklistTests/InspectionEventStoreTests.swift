@@ -3,6 +3,59 @@ import Testing
 @testable import FSAEInspectionChecklist
 
 struct InspectionEventStoreTests {
+    @Test("TASK#10.4 local team catalog persists created teams by event")
+    func localTeamCatalogPersistsCreatedTeamsByEvent() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let catalog = LocalTeamCatalogService(rootDirectory: rootDirectory)
+        let created = InspectionEventTeamRecord(
+            id: "car-101",
+            eventID: "event-2026",
+            displayName: "Local Team",
+            carNumber: "101"
+        )
+
+        try await catalog.saveTeams([created], eventID: "event-2026")
+        let restored = try await catalog.loadTeams(eventID: "event-2026")
+
+        #expect(restored == [created])
+        #expect(try await catalog.loadTeams(eventID: "event-2027").isEmpty)
+    }
+
+    @Test("TASK#10.4 store creates locally entered teams and grants local judge access")
+    func storeCreatesLocalTeamsAndGrantsLocalJudgeAccess() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let store = InspectionEventStore(
+            events: [event(id: "event-2026")],
+            teams: [],
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory)
+        )
+        let access = InspectionEventUserAccess.localJudgeAccess(eventID: "event-2026")
+
+        #expect(try await store.teams(eventID: "event-2026", access: access).isEmpty)
+
+        let created = try await store.createTeam(
+            eventID: "event-2026",
+            entry: LocalTeamCatalogEntry(displayName: "UFPE Racing", carNumber: "28"),
+            access: access
+        )
+        let visibleTeams = try await store.teams(eventID: "event-2026", access: access)
+        let relaunchedStore = InspectionEventStore(
+            events: [event(id: "event-2026")],
+            teams: [],
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory)
+        )
+        let restoredTeams = try await relaunchedStore.teams(eventID: "event-2026", access: access)
+
+        #expect(created.id == "car-28")
+        #expect(created.displayName == "UFPE Racing")
+        #expect(visibleTeams == [created])
+        #expect(restoredTeams == [created])
+    }
+
     @Test("US-001 scopes event, team, and session queries by user access")
     func scopesQueriesByEventTeamSessionAndAccess() async throws {
         let rootDirectory = try temporaryStoreDirectory()

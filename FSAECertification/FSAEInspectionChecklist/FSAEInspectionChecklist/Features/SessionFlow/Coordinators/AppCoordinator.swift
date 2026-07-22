@@ -13,7 +13,7 @@ final class AppCoordinator: ObservableObject {
 
     init(
         eventID: String = "fsae-brasil-2026-technical-inspection",
-        teams: [InspectionTeam] = MockInspectionData.teams,
+        teams: [InspectionTeam] = [],
         stages: [InspectionStage] = MockInspectionData.stages,
         store: InspectionEventStore? = nil
     ) {
@@ -130,5 +130,25 @@ final class AppCoordinator: ObservableObject {
     func updateStages(_ stages: [InspectionStage]) {
         eventCoordinator.updateStages(stages)
         objectWillChange.send()
+    }
+
+    func restoreTeamCatalog() async {
+        await eventCoordinator.restoreTeamCatalog()
+        objectWillChange.send()
+    }
+
+    @discardableResult
+    func createTeam(entry: LocalTeamCatalogEntry) async throws -> Bool {
+        let created = try await eventCoordinator.createTeam(
+            entry: entry
+        )
+        objectWillChange.send()
+        return created != nil
+    }
+
+    func submitTeamCreation(entry: LocalTeamCatalogEntry) {
+        Task { [weak self, entry] in
+            _ = try? await self?.createTeam(entry: entry)
+        }
     }
 }

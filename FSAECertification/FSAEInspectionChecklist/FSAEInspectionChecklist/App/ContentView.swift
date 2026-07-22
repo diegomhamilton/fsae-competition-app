@@ -14,6 +14,7 @@ struct ContentView: View {
             .preferredColorScheme(.light)
             .task {
                 appCoordinator.completeMockLogin()
+                await appCoordinator.restoreTeamCatalog()
                 await loadInspectionContent()
             }
             .sheet(isPresented: bindings.teamSwitchConfirmationBinding) {
@@ -54,4 +55,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-

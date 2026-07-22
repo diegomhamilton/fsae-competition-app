@@ -4,6 +4,43 @@ import Testing
 
 @MainActor
 struct InspectionCoordinatorTests {
+    @Test("TASK#10.4 production app launch does not seed mock teams")
+    func productionAppLaunchDoesNotSeedMockTeams() {
+        let coordinator = AppCoordinator(stages: stages())
+
+        #expect(coordinator.eventCoordinator.sessionSelectionCoordinator.teams.isEmpty)
+    }
+
+    @Test("TASK#10.4 judge can create a local team and start its session")
+    func judgeCanCreateLocalTeamAndStartSession() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            store: store
+        )
+        coordinator.completeMockLogin()
+
+        #expect(try await coordinator.createTeam(entry: LocalTeamCatalogEntry(displayName: "UFPE Racing", carNumber: "28")))
+        #expect(coordinator.eventCoordinator.sessionSelectionCoordinator.teams.map(\.school) == ["UFPE Racing"])
+        #expect(await coordinator.selectTeam(id: 28))
+
+        let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(execution.sessionContext.team.school == "UFPE Racing")
+        #expect(execution.sessionContext.team.carNumber == "28")
+        #expect(execution.sessionContext.activeStageID == "garage")
+    }
+
     @Test("US-001 login completion opens session selector")
     func loginCompletionOpensSessionSelector() {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())

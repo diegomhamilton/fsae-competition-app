@@ -32,12 +32,15 @@ Guide Swift 6 concurrency work for actor isolation, async services, `Sendable` m
 
 - Prefer value-type models that are immutable after creation where practical.
 - Mark models `Sendable` when they cross actor or task boundaries.
+- Convert UI input into a single immutable `Sendable` command/value before starting a `Task` or calling an actor.
+- Prefer typed command values over repeated same-type parameters for identity-sensitive input, especially when several `String` values cross from SwiftUI into coordinators or stores.
 - Keep `InspectionEventStore` actor isolated for event, team, session, draft, submission, recheck, and sticker state.
 - Expose async service APIs for content loading, validation, submission snapshot creation, recheck review, and mock authentication.
 - Return typed errors for malformed bundled content and unsupported step types.
 - Use `@MainActor` for UI-facing coordinator state or view model adapters.
 - Avoid mutating SwiftUI state from detached tasks or background actor contexts.
 - Keep coordinator intents small and explicit so async work can be tested.
+- Validate required and impossible field combinations at the actor/service boundary so bad UI wiring fails predictably instead of corrupting persisted state.
 
 ## Expected Outputs
 
@@ -45,6 +48,7 @@ Guide Swift 6 concurrency work for actor isolation, async services, `Sendable` m
 - Actor-isolated mutable session state.
 - Main-actor handoffs for UI state updates.
 - Unit tests for async success, failure, isolation, and routing behavior.
+- Boundary tests that prove each field in a submitted command reaches the actor/service unchanged.
 
 ## Agent Usage
 

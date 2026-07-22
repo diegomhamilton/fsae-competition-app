@@ -45,10 +45,12 @@ Implement the technical inspection event feature slices in Swift 6 and SwiftUI u
 - Follow the Architect plan before introducing new model, coordinator, service, or folder boundaries.
 - Add or preserve failing tests before adding behavior for Models, Coordinators, Services, and View helpers.
 - Keep SwiftUI Views focused on rendering, small local UI state, accessibility, and user intents.
+- Keep multi-field form state isolated in the smallest practical view or value object so text fields cannot alias or overwrite each other during rendering or submission.
 - Keep workflow state in Coordinators and business rules in Services.
 - Use Swift 6 compatible code with explicit concurrency boundaries.
 - Keep UI state changes on the main actor and avoid leaking non-main actor work into Views.
 - Make domain models immutable where practical and `Sendable` safe when they cross async boundaries.
+- Cross async boundaries with typed immutable payloads instead of parallel `String` parameters when field identity matters.
 - Use bundled JSON resources as official offline content and mock JSON fixtures only for early leaf-view slices.
 - Add stable accessibility identifiers for actionable controls, navigation targets, status indicators, validation summaries, recheck indicators, and sticker eligibility indicators.
 - Define display and accessibility strings through structured per-file `Strings` enums.
@@ -57,6 +59,7 @@ Implement the technical inspection event feature slices in Swift 6 and SwiftUI u
 
 - Passing unit tests for the slice after implementation.
 - Swift source changes scoped to the current feature slice.
+- Typed form submission payloads for identity-sensitive user input, with validation at the service/store boundary.
 - Fixture or bundled JSON integration changes required by the task.
 - Manual validation notes mapped to feature scenarios.
 - Notes for Tester, Documenter, or Architect when behavior needs follow-up clarification.
