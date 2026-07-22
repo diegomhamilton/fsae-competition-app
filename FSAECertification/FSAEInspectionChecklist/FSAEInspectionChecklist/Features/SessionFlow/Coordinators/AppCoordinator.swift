@@ -145,4 +145,10 @@ final class AppCoordinator: ObservableObject {
         objectWillChange.send()
         return created != nil
     }
+
+    func submitTeamCreation(entry: LocalTeamCatalogEntry) {
+        Task { [weak self, entry] in
+            _ = try? await self?.createTeam(entry: entry)
+        }
+    }
 }

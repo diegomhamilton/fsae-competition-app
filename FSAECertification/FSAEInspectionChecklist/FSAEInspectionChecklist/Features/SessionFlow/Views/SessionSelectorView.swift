@@ -21,19 +21,18 @@ struct SessionSelectorView: View {
         static let createTeamAction = "Add Team"
         static let emptyCatalog = "No local teams yet."
         static let emptyCatalogDetail = "Add a team to start the local inspection workflow."
+        static let duplicateFieldsError = "Enter a distinct car number."
+        static let genericCreationError = "Unable to add team."
     }
 
     @ObservedObject var coordinator: SessionSelectionCoordinator
     let selectTeam: (Int) -> Void
-    let createTeam: (LocalTeamCatalogEntry) async throws -> Bool
-    @State private var newTeamName = ""
-    @State private var newCarNumber = ""
-    @State private var creationError: String?
+    let createTeam: (LocalTeamCatalogEntry) -> Void
 
     init(
         coordinator: SessionSelectionCoordinator,
         selectTeam: @escaping (Int) -> Void,
-        createTeam: @escaping (LocalTeamCatalogEntry) async throws -> Bool = { _ in false }
+        createTeam: @escaping (LocalTeamCatalogEntry) -> Void = { _ in }
     ) {
         self.coordinator = coordinator
         self.selectTeam = selectTeam
@@ -117,65 +116,7 @@ struct SessionSelectorView: View {
     }
 
     private var createTeamPanel: some View {
-        ContentPanel {
-            Label(Strings.createTeamTitle, systemImage: "person.badge.plus")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(Color.fsaeText)
-            Text(Strings.createTeamDetail)
-                .font(.footnote)
-                .foregroundStyle(Color.fsaeSecondaryText)
-            VStack(spacing: 10) {
-                TextField(Strings.teamNamePlaceholder, text: $newTeamName)
-                    .textInputAutocapitalization(.words)
-                    .textFieldStyle(.roundedBorder)
-                    .accessibilityIdentifier(InspectionAccessibilityIdentifier.sessionSelectorCreateTeamNameField.rawValue)
-                TextField(Strings.carNumberPlaceholder, text: $newCarNumber)
-                    .keyboardType(.numberPad)
-                    .textFieldStyle(.roundedBorder)
-                    .accessibilityIdentifier(InspectionAccessibilityIdentifier.sessionSelectorCreateTeamCarNumberField.rawValue)
-                Button {
-                    let displayName = String(newTeamName.trimmingCharacters(in: .whitespacesAndNewlines))
-                    let carNumber = String(newCarNumber.trimmingCharacters(in: .whitespacesAndNewlines))
-                    let entry = LocalTeamCatalogEntry(displayName: displayName, carNumber: carNumber)
-                    let createTeam = createTeam
-                    Task {
-                        do {
-                            if try await createTeam(entry) {
-                                await MainActor.run {
-                                    newTeamName = ""
-                                    newCarNumber = ""
-                                    creationError = nil
-                                }
-                            }
-                        } catch LocalTeamCatalogValidationError.missingDisplayName {
-                            await MainActor.run {
-                                creationError = Strings.teamNamePlaceholder
-                            }
-                        } catch LocalTeamCatalogValidationError.missingCarNumber {
-                            await MainActor.run {
-                                creationError = Strings.carNumberPlaceholder
-                            }
-                        } catch {
-                            await MainActor.run {
-                                creationError = "Unable to add team."
-                            }
-                        }
-                    }
-                } label: {
-                    Label(Strings.createTeamAction, systemImage: "plus.circle.fill")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(newTeamName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || newCarNumber.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                .accessibilityIdentifier(InspectionAccessibilityIdentifier.sessionSelectorCreateTeamAction.rawValue)
-            }
-            if let creationError {
-                Text(creationError)
-                    .font(.footnote)
-                    .foregroundStyle(Color.fsaeRed)
-            }
-        }
-        .accessibilityIdentifier(InspectionAccessibilityIdentifier.sessionSelectorCreateTeamForm.rawValue)
+        CreateTeamForm(createTeam: createTeam)
     }
 
     @ViewBuilder
@@ -198,5 +139,86 @@ struct SessionSelectorView: View {
                     InspectionAccessibilityIdentifier.sessionSelectorTeamBlockedIndicator(teamID: team.id).rawValue
                 )
         }
+    }
+}
+
+private struct CreateTeamForm: View {
+    fileprivate enum Strings {
+        static let createTeamTitle = SessionSelectorView.Strings.createTeamTitle
+        static let createTeamDetail = SessionSelectorView.Strings.createTeamDetail
+        static let teamNamePlaceholder = SessionSelectorView.Strings.teamNamePlaceholder
+        static let carNumberPlaceholder = SessionSelectorView.Strings.carNumberPlaceholder
+        static let createTeamAction = SessionSelectorView.Strings.createTeamAction
+        static let duplicateFieldsError = SessionSelectorView.Strings.duplicateFieldsError
+        static let genericCreationError = SessionSelectorView.Strings.genericCreationError
+    }
+
+    let createTeam: (LocalTeamCatalogEntry) -> Void
+    @State private var displayName = ""
+    @State private var carNumber = ""
+    @State private var creationError: String?
+
+    var body: some View {
+        ContentPanel {
+            Label(Strings.createTeamTitle, systemImage: "person.badge.plus")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.fsaeText)
+            Text(Strings.createTeamDetail)
+                .font(.footnote)
+                .foregroundStyle(Color.fsaeSecondaryText)
+            VStack(spacing: 10) {
+                TextField(Strings.teamNamePlaceholder, text: $displayName)
+                    .textInputAutocapitalization(.words)
+                    .textFieldStyle(.roundedBorder)
+                    .accessibilityIdentifier(InspectionAccessibilityIdentifier.sessionSelectorCreateTeamNameField.rawValue)
+                TextField(Strings.carNumberPlaceholder, text: $carNumber)
+                    .keyboardType(.numberPad)
+                    .textFieldStyle(.roundedBorder)
+                    .accessibilityIdentifier(InspectionAccessibilityIdentifier.sessionSelectorCreateTeamCarNumberField.rawValue)
+                Button {
+                    submit()
+                } label: {
+                    Label(Strings.createTeamAction, systemImage: "plus.circle.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(submissionEntry == nil)
+                .accessibilityIdentifier(InspectionAccessibilityIdentifier.sessionSelectorCreateTeamAction.rawValue)
+            }
+            if let creationError {
+                Text(creationError)
+                    .font(.footnote)
+                    .foregroundStyle(Color.fsaeRed)
+            }
+        }
+        .accessibilityIdentifier(InspectionAccessibilityIdentifier.sessionSelectorCreateTeamForm.rawValue)
+    }
+
+    private var submissionEntry: LocalTeamCatalogEntry? {
+        let entry = LocalTeamCatalogEntry(
+            displayName: String(displayName.trimmingCharacters(in: .whitespacesAndNewlines)),
+            carNumber: String(carNumber.trimmingCharacters(in: .whitespacesAndNewlines))
+        )
+
+        guard !entry.displayName.isEmpty,
+              !entry.carNumber.isEmpty,
+              entry.displayName.caseInsensitiveCompare(entry.carNumber) != .orderedSame else {
+            return nil
+        }
+
+        return entry
+    }
+
+    private func submit() {
+        guard let entry = submissionEntry else {
+            creationError = Strings.duplicateFieldsError
+            return
+        }
+
+        let createTeam = createTeam
+        createTeam(entry)
+        displayName = ""
+        carNumber = ""
+        creationError = nil
     }
 }

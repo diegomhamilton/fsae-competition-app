@@ -43,6 +43,7 @@ nonisolated struct InspectionEventTeamRecord: Identifiable, Codable, Hashable, S
 nonisolated enum LocalTeamCatalogValidationError: Error, Equatable, Sendable {
     case missingDisplayName
     case missingCarNumber
+    case carNumberMatchesDisplayName
 }
 
 nonisolated struct LocalTeamCatalogEntry: Equatable, Hashable, Sendable {
@@ -248,6 +249,9 @@ actor InspectionEventStore {
         }
         guard !trimmedCarNumber.isEmpty else {
             throw LocalTeamCatalogValidationError.missingCarNumber
+        }
+        guard trimmedDisplayName.caseInsensitiveCompare(trimmedCarNumber) != .orderedSame else {
+            throw LocalTeamCatalogValidationError.carNumberMatchesDisplayName
         }
 
         let record = InspectionEventTeamRecord(

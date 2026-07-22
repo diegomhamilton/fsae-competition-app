@@ -21,9 +21,7 @@ struct ContentTabsView: View {
                             await appCoordinator.selectTeam(id: teamID)
                         }
                     } createTeam: { entry in
-                        try await appCoordinator.createTeam(
-                            entry: entry
-                        )
+                        appCoordinator.submitTeamCreation(entry: entry)
                     }
                 }
             }
