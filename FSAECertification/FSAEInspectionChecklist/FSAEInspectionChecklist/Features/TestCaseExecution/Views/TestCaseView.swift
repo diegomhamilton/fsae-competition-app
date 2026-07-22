@@ -145,6 +145,9 @@ private struct TestCaseStepCarousel: View {
     }
 
     var body: some View {
+        let showsAdjacentPreview = steps.count > 1
+        let horizontalBleed: CGFloat = showsAdjacentPreview ? 20 : 0
+
         VStack(alignment: .leading, spacing: 10) {
             TestCaseStepCarouselControls(
                 activeIndex: activeIndex,
@@ -158,7 +161,7 @@ private struct TestCaseStepCarousel: View {
             ScrollView(.horizontal) {
                 LazyHStack(alignment: .top, spacing: 14) {
                     ForEach(steps) { stepState in
-                        TestCaseStepCarouselItem {
+                        TestCaseStepCarouselItem(showsAdjacentPreview: showsAdjacentPreview) {
                             TestCaseStepCard(
                                 stageID: stageID,
                                 testCaseID: testCaseID,
@@ -181,12 +184,14 @@ private struct TestCaseStepCarousel: View {
             .scrollIndicators(.hidden)
             .scrollTargetBehavior(.viewAligned)
             .scrollPosition($scrollPosition)
+            .contentMargins(.horizontal, horizontalBleed, for: .scrollContent)
             .onScrollTargetVisibilityChange(idType: String.self, threshold: 0.8) { visibleStepIDs in
                 if let visibleStepID = visibleStepIDs.first {
                     activeStepID = visibleStepID
                 }
             }
             .frame(minHeight: 430, alignment: .top)
+            .padding(.horizontal, -horizontalBleed)
 
             TestCaseStepCarouselDots(
                 steps: steps,
@@ -267,16 +272,21 @@ private struct TestCaseStepCarouselDots: View {
 }
 
 private struct TestCaseStepCarouselItem<Content: View>: View {
+    let showsAdjacentPreview: Bool
     let content: Content
 
-    init(@ViewBuilder content: () -> Content) {
+    init(
+        showsAdjacentPreview: Bool,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.showsAdjacentPreview = showsAdjacentPreview
         self.content = content()
     }
 
     var body: some View {
         content
             .containerRelativeFrame(.horizontal) { length, _ in
-                length * 0.88
+                length * (showsAdjacentPreview ? 0.84 : 1)
             }
             .scrollTransition(.interactive, axis: .horizontal) { content, phase in
                 content
