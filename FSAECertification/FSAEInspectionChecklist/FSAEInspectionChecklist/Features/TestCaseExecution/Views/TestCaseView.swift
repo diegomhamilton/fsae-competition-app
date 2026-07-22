@@ -212,38 +212,36 @@ private struct TestCaseStepCard: View {
                     .foregroundStyle(state.step.type.color)
                     .frame(width: 28)
 
-                HStack(spacing: 6) {
-                    HStack {
-                        Text(state.step.code)
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(Color.fsaeSecondaryText)
-                        StatusPill(text: state.step.type.label, color: state.step.type.color)
-                    }
+                HStack {
+                    Text(state.step.code)
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(Color.fsaeSecondaryText)
+                    StatusPill(text: state.step.type.label, color: state.step.type.color)
+                }
 
-                    Spacer()
+                Spacer()
 
-                    VStack(alignment: .trailing, spacing: 8) {
-                        StatusPill(text: state.status.displayName, color: state.statusColor)
-                            .accessibilityIdentifier(
-                                InspectionAccessibilityIdentifier.testCaseStepStatus(
-                                    testCaseID: testCaseID,
-                                    stepID: state.id
-                                ).rawValue
-                            )
-                        Button {
-                            openStepDetail()
-                        } label: {
-                            Label(TestCaseView.Strings.openStep, systemImage: "chevron.right.circle")
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(Color.fsaePrimary)
+                VStack(alignment: .trailing, spacing: 8) {
+                    StatusPill(text: state.status.displayName, color: state.statusColor)
                         .accessibilityIdentifier(
-                            InspectionAccessibilityIdentifier.testCaseStepOpenAction(
+                            InspectionAccessibilityIdentifier.testCaseStepStatus(
                                 testCaseID: testCaseID,
                                 stepID: state.id
                             ).rawValue
                         )
+                    Button {
+                        openStepDetail()
+                    } label: {
+                        Label(TestCaseView.Strings.openStep, systemImage: "chevron.right.circle")
                     }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(Color.fsaePrimary)
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.testCaseStepOpenAction(
+                            testCaseID: testCaseID,
+                            stepID: state.id
+                        ).rawValue
+                    )
                 }
             }
 
