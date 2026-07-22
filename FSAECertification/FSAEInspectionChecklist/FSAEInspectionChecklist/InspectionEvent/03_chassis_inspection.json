@@ -53,7 +53,38 @@
           "title": "STEERING",
           "displayOrder": 3,
           "badges": [],
-          "steps": []
+          "steps": [
+            {
+              "displayOrder": 1,
+              "type": "check",
+              "content": "All steerable wheels must have positive stops to prevent linkage lock-up or contact with other parts."
+            },
+            {
+              "displayOrder": 2,
+              "type": "check",
+              "content": "Maximum freeplay at the steering wheel is 7 degrees."
+            },
+            {
+              "displayOrder": 3,
+              "type": "check",
+              "content": "No steer-by-wire is permitted on the front wheels."
+            },
+            {
+              "displayOrder": 4,
+              "type": "check",
+              "content": "No cables or belts are permitted in the steering system."
+            },
+            {
+              "displayOrder": 5,
+              "type": "check",
+              "content": "Bonded joints in the steering column must have metal backup."
+            },
+            {
+              "displayOrder": 6,
+              "type": "check",
+              "content": "Rear steer is limited to 6 degrees total and must have mechanical stops."
+            }
+          ]
         },
         {
           "itemId": "C58",
