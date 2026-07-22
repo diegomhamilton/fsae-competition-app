@@ -106,7 +106,8 @@ extension InspectionTestCase {
             ?? container.decode(String.self, forKey: .itemID)
         let decodedCode = try container.decodeIfPresent(String.self, forKey: .code) ?? decodedID
         let decodedRuleReferences = try container.decodeIfPresent([String].self, forKey: .ruleReferences)
-            ?? container.decodeIfPresent(String.self, forKey: .ruleReference).map { [$0] }
+            ?? (try? container.decode([String].self, forKey: .ruleReference))
+            ?? (try? container.decode(String.self, forKey: .ruleReference)).map { [$0] }
             ?? []
         let decodedBadges = try container.decodeIfPresent([InspectionSafetyBadge].self, forKey: .safetyBadges)
             ?? container.decodeIfPresent([InspectionSafetyBadge].self, forKey: .badges)
@@ -188,7 +189,7 @@ private struct DecodedInspectionStep: Decodable {
 
         return InspectionTestStep(
             id: id ?? "\(testCaseID).step.\(stableDisplayOrder)",
-            code: code ?? "\(testCaseCode)-\(stableDisplayOrder)",
+            code: code ?? "\(testCaseCode) - Step \(stableDisplayOrder)",
             displayOrder: stableDisplayOrder,
             ruleReference: ruleReference ?? inheritedRuleReference,
             title: title ?? "\(testCaseTitle) Step \(stableDisplayOrder)",

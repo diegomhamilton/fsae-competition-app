@@ -46,6 +46,8 @@ struct TestCaseView: View {
     let testCase: InspectionTestCaseViewState
     let openStepDetail: (InspectionTestStep) -> Void
     let updateStepDraft: (TestStepDraft) -> Void
+    @State private var stepScrollPosition = ScrollPosition()
+    @State private var activeStepID: String?
     @FocusState private var focusedNoteStepID: String?
 
     var body: some View {
@@ -56,22 +58,36 @@ struct TestCaseView: View {
         ) {
             TestCaseHeader(testCase: testCase)
 
+            TestCaseStepCarousel(
+                stageID: stage.id,
+                testCaseID: testCase.id,
+                steps: testCase.steps,
+                focusedNoteStepID: $focusedNoteStepID,
+                scrollPosition: $stepScrollPosition,
+                activeStepID: $activeStepID
+            ) { step in
+                openStepDetail(step)
+            } updateStepDraft: { stepDraft in
+                updateStepDraft(stepDraft)
+            } advanceFromStep: { stepID in
+                advanceToNextStep(after: stepID)
+            } scrollToStep: { stepID in
+                scrollToStep(stepID)
+            }
+
             TestCaseValidationSummaryPanel(testCase: testCase)
 
-            VStack(spacing: 14) {
-                ForEach(testCase.steps) { stepState in
-                    TestCaseStepCard(
-                        stageID: stage.id,
-                        testCaseID: testCase.id,
-                        state: stepState,
-                        focusedNoteStepID: $focusedNoteStepID
-                    ) {
-                        openStepDetail(stepState.step)
-                    } updateStepDraft: { stepDraft in
-                        updateStepDraft(stepDraft)
-                    }
-                }
+        }
+        .onAppear {
+            activeStepID = activeStepID ?? testCase.steps.first?.id
+        }
+        .onChange(of: testCase.steps.map(\.id)) { _, stepIDs in
+            guard let firstStepID = stepIDs.first else {
+                return
             }
+
+            activeStepID = firstStepID
+            stepScrollPosition.scrollTo(id: firstStepID)
         }
         .safeAreaInset(edge: .bottom) {
             if focusedNoteStepID != nil {
@@ -82,6 +98,201 @@ struct TestCaseView: View {
             }
         }
         .navigationTitle("Test Case")
+    }
+
+    private func advanceToNextStep(after stepID: String) {
+        guard let currentIndex = testCase.steps.firstIndex(where: { $0.id == stepID }) else {
+            return
+        }
+
+        let nextIndex = testCase.steps.index(after: currentIndex)
+        guard testCase.steps.indices.contains(nextIndex) else {
+            return
+        }
+
+        scrollToStep(testCase.steps[nextIndex].id)
+    }
+
+    private func scrollToStep(_ stepID: String) {
+        focusedNoteStepID = nil
+        activeStepID = stepID
+        withAnimation(.snappy) {
+            stepScrollPosition.scrollTo(id: stepID)
+        }
+    }
+}
+
+private struct TestCaseStepCarousel: View {
+    let stageID: String
+    let testCaseID: String
+    let steps: [InspectionTestCaseStepViewState]
+    let focusedNoteStepID: FocusState<String?>.Binding
+    @Binding var scrollPosition: ScrollPosition
+    @Binding var activeStepID: String?
+    let openStepDetail: (InspectionTestStep) -> Void
+    let updateStepDraft: (TestStepDraft) -> Void
+    let advanceFromStep: (String) -> Void
+    let scrollToStep: (String) -> Void
+
+    private var activeIndex: Int {
+        guard let activeStepID,
+              let index = steps.firstIndex(where: { $0.id == activeStepID })
+        else {
+            return 0
+        }
+
+        return index
+    }
+
+    var body: some View {
+        let showsAdjacentPreview = steps.count > 1
+        let horizontalBleed: CGFloat = showsAdjacentPreview ? 20 : 0
+
+        VStack(alignment: .leading, spacing: 10) {
+            TestCaseStepCarouselControls(
+                activeIndex: activeIndex,
+                totalCount: steps.count,
+                previousStepID: adjacentStepID(offset: -1),
+                nextStepID: adjacentStepID(offset: 1)
+            ) { stepID in
+                scrollToStep(stepID)
+            }
+
+            ScrollView(.horizontal) {
+                LazyHStack(alignment: .top, spacing: 14) {
+                    ForEach(steps) { stepState in
+                        TestCaseStepCarouselItem(showsAdjacentPreview: showsAdjacentPreview) {
+                            TestCaseStepCard(
+                                stageID: stageID,
+                                testCaseID: testCaseID,
+                                state: stepState,
+                                focusedNoteStepID: focusedNoteStepID
+                            ) {
+                                openStepDetail(stepState.step)
+                            } updateStepDraft: { stepDraft in
+                                updateStepDraft(stepDraft)
+                            } advanceFromStep: {
+                                advanceFromStep(stepState.id)
+                            }
+                        }
+                        .id(stepState.id)
+                    }
+                }
+                .scrollTargetLayout()
+                .padding(.vertical, 2)
+            }
+            .scrollIndicators(.hidden)
+            .scrollTargetBehavior(.viewAligned)
+            .scrollPosition($scrollPosition)
+            .contentMargins(.horizontal, horizontalBleed, for: .scrollContent)
+            .onScrollTargetVisibilityChange(idType: String.self, threshold: 0.8) { visibleStepIDs in
+                if let visibleStepID = visibleStepIDs.first {
+                    activeStepID = visibleStepID
+                }
+            }
+            .frame(minHeight: 430, alignment: .top)
+            .padding(.horizontal, -horizontalBleed)
+
+            TestCaseStepCarouselDots(
+                steps: steps,
+                activeStepID: activeStepID ?? steps.first?.id
+            )
+        }
+    }
+
+    private func adjacentStepID(offset: Int) -> String? {
+        let index = activeIndex + offset
+
+        guard steps.indices.contains(index) else {
+            return nil
+        }
+
+        return steps[index].id
+    }
+}
+
+private struct TestCaseStepCarouselControls: View {
+    let activeIndex: Int
+    let totalCount: Int
+    let previousStepID: String?
+    let nextStepID: String?
+    let scrollToStep: (String) -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Text("Step \(activeIndex + 1) of \(totalCount)")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(Color.fsaeSecondaryText)
+
+            Spacer()
+
+            CarouselStepButton(systemImage: "chevron.left", stepID: previousStepID, scrollToStep: scrollToStep)
+            CarouselStepButton(systemImage: "chevron.right", stepID: nextStepID, scrollToStep: scrollToStep)
+        }
+    }
+}
+
+private struct CarouselStepButton: View {
+    let systemImage: String
+    let stepID: String?
+    let scrollToStep: (String) -> Void
+
+    var body: some View {
+        Button {
+            if let stepID {
+                scrollToStep(stepID)
+            }
+        } label: {
+            Image(systemName: systemImage)
+                .font(.caption.weight(.bold))
+                .frame(width: 30, height: 30)
+                .background(.ultraThinMaterial, in: Circle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(stepID == nil ? Color.fsaeSecondaryText.opacity(0.35) : Color.fsaePrimary)
+        .disabled(stepID == nil)
+    }
+}
+
+private struct TestCaseStepCarouselDots: View {
+    let steps: [InspectionTestCaseStepViewState]
+    let activeStepID: String?
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(steps) { step in
+                Capsule()
+                    .fill(step.id == activeStepID ? Color.fsaePrimary : Color.fsaeBorder)
+                    .frame(width: step.id == activeStepID ? 18 : 6, height: 6)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .animation(.snappy, value: activeStepID)
+    }
+}
+
+private struct TestCaseStepCarouselItem<Content: View>: View {
+    let showsAdjacentPreview: Bool
+    let content: Content
+
+    init(
+        showsAdjacentPreview: Bool,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.showsAdjacentPreview = showsAdjacentPreview
+        self.content = content()
+    }
+
+    var body: some View {
+        content
+            .containerRelativeFrame(.horizontal) { length, _ in
+                length * (showsAdjacentPreview ? 0.84 : 1)
+            }
+            .scrollTransition(.interactive, axis: .horizontal) { content, phase in
+                content
+                    .scaleEffect(phase.isIdentity ? 1 : 0.96)
+                    .opacity(phase.isIdentity ? 1 : 0.82)
+            }
     }
 }
 
@@ -95,7 +306,7 @@ private struct TestCaseHeader: View {
                     Text(testCase.code)
                         .font(.caption.weight(.bold))
                         .foregroundStyle(Color.fsaeSecondaryText)
-                    Text(TestCaseView.Strings.rules)
+                    Text(testCase.title)
                         .font(.headline)
                         .foregroundStyle(Color.fsaeText)
                     HStack {
@@ -125,9 +336,11 @@ private struct TestCaseProgressBadge: View {
                 text: "\(progress.completeStepCount)/\(progress.totalStepCount) \(TestCaseView.Strings.complete)",
                 color: progress.blockedStepCount == 0 ? .fsaeGreen : .fsaeAmber
             )
-            Text("\(progress.pendingStepCount) \(TestCaseView.Strings.pending.lowercased())")
-                .font(.caption)
-                .foregroundStyle(Color.fsaeSecondaryText)
+            if (progress.pendingStepCount > 0) {
+                Text("\(progress.pendingStepCount) \(TestCaseView.Strings.pending.lowercased())")
+                    .font(.caption)
+                    .foregroundStyle(Color.fsaeSecondaryText)
+            }
         }
     }
 }
@@ -135,39 +348,95 @@ private struct TestCaseProgressBadge: View {
 private struct TestCaseValidationSummaryPanel: View {
     let testCase: InspectionTestCaseViewState
 
+    private var blockerRows: [ValidationBlockerOutlineRow] {
+        [
+            ValidationBlockerOutlineRow(
+                id: "validation-blockers",
+                blockerCount: testCase.validationSummary.blockerCount,
+                children: testCase.validationSummary.issues.map(ValidationBlockerOutlineRow.init(issue:))
+            )
+        ]
+    }
+
     var body: some View {
         ContentPanel {
-            HStack(alignment: .firstTextBaseline) {
-                Text(testCase.validationSummary.isPassing ? TestCaseView.Strings.validationReady : TestCaseView.Strings.validationBlocked)
-                    .font(.headline)
-                    .foregroundStyle(Color.fsaeText)
-                Spacer()
-                StatusPill(
-                    text: testCase.validationSummary.isPassing ? TestCaseView.Strings.complete : "\(testCase.validationSummary.blockerCount) \(TestCaseView.Strings.blocked.lowercased())",
-                    color: testCase.validationSummary.isPassing ? .fsaeGreen : .fsaeRed
-                )
-            }
-
             if testCase.validationSummary.isPassing {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(TestCaseView.Strings.validationReady)
+                        .font(.headline)
+                        .foregroundStyle(Color.fsaeText)
+                    Spacer()
+                    StatusPill(
+                        text: TestCaseView.Strings.complete,
+                        color: .fsaeGreen
+                    )
+                }
+
                 Text(TestCaseView.Strings.noBlockers)
                     .font(.footnote)
                     .foregroundStyle(Color.fsaeSecondaryText)
             } else {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(testCase.validationSummary.issues, id: \.id) { issue in
-                        Label {
-                            Text("\(issue.stepTitle): \(issue.localizedMessage)")
-                        } icon: {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                        }
-                        .font(.footnote)
-                        .foregroundStyle(Color.fsaeRed)
-                    }
+                OutlineGroup(blockerRows, children: \.children) { row in
+                    ValidationBlockerOutlineRowView(row: row)
                 }
+                .tint(Color.fsaeSecondaryText)
             }
         }
         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseValidationSummary(testCaseID: testCase.id).rawValue)
         .accessibilityValue(testCase.validationSummary.isPassing ? TestCaseView.Strings.validationReady : "\(testCase.validationSummary.blockerCount) blockers")
+    }
+}
+
+private struct ValidationBlockerOutlineRow: Identifiable {
+    let id: String
+    let issue: InspectionTestCaseValidationIssue?
+    let blockerCount: Int?
+    var children: [ValidationBlockerOutlineRow]?
+
+    init(
+        id: String,
+        blockerCount: Int,
+        children: [ValidationBlockerOutlineRow]
+    ) {
+        self.id = id
+        issue = nil
+        self.blockerCount = blockerCount
+        self.children = children
+    }
+
+    init(issue: InspectionTestCaseValidationIssue) {
+        id = issue.id
+        self.issue = issue
+        blockerCount = nil
+        children = nil
+    }
+}
+
+private struct ValidationBlockerOutlineRowView: View {
+    let row: ValidationBlockerOutlineRow
+
+    var body: some View {
+        if let issue = row.issue {
+            Label {
+                Text("\(issue.stepTitle): \(issue.localizedMessage)")
+            } icon: {
+                Image(systemName: "exclamationmark.triangle.fill")
+            }
+            .font(.footnote)
+            .foregroundStyle(Color.fsaeRed)
+            .padding(.top, 4)
+        } else {
+            HStack(alignment: .firstTextBaseline) {
+                Text(TestCaseView.Strings.validationBlocked)
+                    .font(.headline)
+                    .foregroundStyle(Color.fsaeText)
+                Spacer()
+                StatusPill(
+                    text: "\(row.blockerCount ?? 0) \(TestCaseView.Strings.blocked.lowercased())",
+                    color: .fsaeRed
+                )
+            }
+        }
     }
 }
 
@@ -177,6 +446,7 @@ private struct TestCaseStepCard: View {
     let state: InspectionTestCaseStepViewState
     let focusedNoteStepID: FocusState<String?>.Binding
     let openStepDetail: () -> Void
+    let advanceFromStep: () -> Void
     @State private var selectedOutcome: InspectionOutcome
     @State private var noteText: String
     @State private var measurementValue: String
@@ -188,7 +458,8 @@ private struct TestCaseStepCard: View {
         state: InspectionTestCaseStepViewState,
         focusedNoteStepID: FocusState<String?>.Binding,
         openStepDetail: @escaping () -> Void,
-        updateStepDraft: @escaping (TestStepDraft) -> Void
+        updateStepDraft: @escaping (TestStepDraft) -> Void,
+        advanceFromStep: @escaping () -> Void
     ) {
         self.stageID = stageID
         self.testCaseID = testCaseID
@@ -196,6 +467,7 @@ private struct TestCaseStepCard: View {
         self.focusedNoteStepID = focusedNoteStepID
         self.openStepDetail = openStepDetail
         self.updateStepDraft = updateStepDraft
+        self.advanceFromStep = advanceFromStep
         _selectedOutcome = State(initialValue: state.outcome)
         _noteText = State(initialValue: state.notes)
         _measurementValue = State(initialValue: state.measurementInput)
@@ -212,35 +484,7 @@ private struct TestCaseStepCard: View {
                     .foregroundStyle(state.step.type.color)
                     .frame(width: 28)
 
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text(state.step.code)
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(Color.fsaeSecondaryText)
-                        StatusPill(text: state.step.type.label, color: state.step.type.color)
-                        StatusPill(text: state.step.ruleReference, color: .fsaeGray)
-                        if state.step.requiresEvidence {
-                            StatusPill(text: TestCaseView.Strings.evidence, color: Color.fsaeBlue)
-                        }
-                        ForEach(state.safetyBadges, id: \.self) { badge in
-                            StatusPill(text: badge.displayName, color: .fsaeRed)
-                                .accessibilityLabel(badge.accessibilityLabel)
-                                .accessibilityValue(badge.accessibilityLabel)
-                                .accessibilityIdentifier(
-                                    InspectionAccessibilityIdentifier.testCaseStageEnergizedBadge(
-                                        stageID: stageID,
-                                        testCaseID: testCaseID
-                                    ).rawValue
-                                )
-                        }
-                    }
-                    Text(state.step.title)
-                        .font(.headline)
-                        .foregroundStyle(Color.fsaeText)
-                    Text(state.step.content)
-                        .font(.footnote)
-                        .foregroundStyle(Color.fsaeSecondaryText)
-                }
+                StatusPill(text: state.step.type.label, color: state.step.type.color)
 
                 Spacer()
 
@@ -267,6 +511,28 @@ private struct TestCaseStepCard: View {
                     )
                 }
             }
+
+            HStack {
+                StatusPill(text: state.step.ruleReference, color: .fsaeGray)
+                if state.step.requiresEvidence {
+                    StatusPill(text: TestCaseView.Strings.evidence, color: Color.fsaeBlue)
+                }
+                ForEach(state.safetyBadges, id: \.self) { badge in
+                    StatusPill(text: badge.displayName, color: .fsaeRed)
+                        .accessibilityLabel(badge.accessibilityLabel)
+                        .accessibilityValue(badge.accessibilityLabel)
+                        .accessibilityIdentifier(
+                            InspectionAccessibilityIdentifier.testCaseStageEnergizedBadge(
+                                stageID: stageID,
+                                testCaseID: testCaseID
+                            ).rawValue
+                        )
+                }
+            }
+
+            Text(state.step.content)
+                .font(.headline)
+                .foregroundStyle(Color.fsaeText)
 
             Picker(TestCaseView.Strings.outcome, selection: $selectedOutcome) {
                 ForEach(InspectionOutcome.allCases, id: \.self) { outcome in
@@ -331,8 +597,12 @@ private struct TestCaseStepCard: View {
                     ).rawValue
                 )
         }
-        .onChange(of: selectedOutcome) { _, _ in
+        .onChange(of: selectedOutcome) { oldOutcome, newOutcome in
             persistDraft()
+            #warning("PD: Review what flow makes more sense here")
+            if oldOutcome == .pending, newOutcome.satisfiesRequiredOutcome {
+                advanceFromStep()
+            }
         }
         .onChange(of: noteText) { _, _ in
             persistDraft()
@@ -344,11 +614,17 @@ private struct TestCaseStepCard: View {
             syncLocalState(with: newState)
         }
         .padding(14)
-        .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .background(Color.fsaeSurface.opacity(0.72), in: RoundedRectangle(cornerRadius: 8))
         .overlay {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(state.validationIssues.isEmpty ? Color.fsaeBorder : Color.fsaeRed.opacity(0.5))
         }
+        .overlay(alignment: .topLeading) {
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(.white.opacity(0.35), lineWidth: 1)
+        }
+        .shadow(color: Color.black.opacity(0.08), radius: 14, x: 0, y: 8)
         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseStepRow(testCaseID: testCaseID, stepID: state.id).rawValue)
     }
 

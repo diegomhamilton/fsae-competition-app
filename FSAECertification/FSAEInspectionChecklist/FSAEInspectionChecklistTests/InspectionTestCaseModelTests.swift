@@ -57,6 +57,35 @@ struct InspectionTestCaseModelTests {
         #expect(testCase.allRuleReferences == ["RAIN.1"])
     }
 
+    @Test("US-002 decoded ruleRef array preserves discrete rule references")
+    func us002DecodedRuleRefArrayPreservesDiscreteRuleReferences() throws {
+        let json = """
+        {
+          "id": "accumulator-attachments",
+          "code": "EV41",
+          "displayOrder": 41,
+          "title": "Accumulator attachment check",
+          "ruleRef": ["EV.8.3", "EV.8.4.1", "IN.4.4"],
+          "steps": [
+            {
+              "id": "EV41-1",
+              "code": "EV41-1",
+              "displayOrder": 1,
+              "title": "Check attachment rules",
+              "type": "check",
+              "content": "Verify the accumulator attachment rule references are available individually."
+            }
+          ]
+        }
+        """
+
+        let testCase = try JSONDecoder().decode(InspectionTestCase.self, from: Data(json.utf8))
+
+        #expect(testCase.ruleReferences == ["EV.8.3", "EV.8.4.1", "IN.4.4"])
+        #expect(testCase.orderedSteps.map(\.ruleReference) == ["EV.8.3"])
+        #expect(testCase.allRuleReferences == ["EV.8.3", "EV.8.4.1", "IN.4.4"])
+    }
+
     @Test("US-002 test case draft aggregates child outcomes, notes, measurements, and evidence")
     func us002TestCaseDraftAggregatesChildStepDrafts() throws {
         let measurementRange = egressMeasurementRange()
