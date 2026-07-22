@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-An offline-first iOS (SwiftUI, Swift 6) app for conducting Formula SAE Electric Vehicle technical inspections. Judges select or resume a team session, walk through the 6 official inspection stages (Garage, Body, Chassis, EV, Egress, Rain), record Pass/Fail/N/A verdicts with notes and measurements against test cases, submit immutable stage snapshots, and track failed test cases as rechecks until sticker eligibility. All checklist content is bundled JSON — no network required.
+An offline-first iOS (SwiftUI, Swift 6) app for conducting Formula SAE Electric Vehicle technical inspections. Judges select or resume a team session, walk through the 6 official inspection stages (Garage, Body, Chassis, EV, Egress, Rain), and record Pass/Fail/N/A verdicts with notes, measurements, and evidence against test cases. Current app wiring covers stage-first navigation, validation, team switching, and local JSON draft persistence; immutable stage submission, rechecks, and sticker eligibility are designed/service-backed follow-up slices. All checklist content is bundled JSON — no network required.
 
 Behavioral source of truth: `Design/UserStories/InspectionEvents/features/inspection_event_use_cases.feature`. Test names and PR validation notes should map back to its scenarios.
 
@@ -38,7 +38,7 @@ MVC with Coordinators and Services (deliberately not MVVM — see `openspec/chan
 
 - **Models** — immutable inspection content (`InspectionStage/Section/TestCase/TestStep`) plus mutable draft state (`TestCaseDraft`, `TestStepDraft`), validation, submission, and recheck value types.
 - **Views** — SwiftUI value views with only local presentation state; they render coordinator-backed state.
-- **Coordinators** — own navigation, flow state, and user intents: `AppCoordinator` (launch/login/root), `InspectionEventCoordinator` (active event/session), `SessionSelectionCoordinator`, `InspectionExecutionCoordinator` (stage/case/step routing, submission, team switch).
+- **Coordinators** — own navigation, flow state, and user intents: `AppCoordinator` (launch/login/root), `InspectionEventCoordinator` (active event/session), `SessionSelectionCoordinator`, `InspectionExecutionCoordinator` (Stage tab case/step routing, draft saves, team switch).
 - **Services** — async boundaries: `InspectionContentService` (decodes bundled stage JSON), `InspectionValidationService`, `SubmissionSnapshotService`, and the actor-isolated `InspectionEventStore` — the single source of truth, with reads/writes scoped by event, team, session, and user access.
 
 Source layout under `FSAECertification/FSAEInspectionChecklist/FSAEInspectionChecklist/`:
@@ -50,7 +50,7 @@ Source layout under `FSAECertification/FSAEInspectionChecklist/FSAEInspectionChe
 
 ### Persistence
 
-`TestCaseJSONPersistenceService` writes one JSON file per in-progress test case under Application Support, scoped as `events/<event>/teams/<team>/sessions/<session>/drafts/<stage>/<test-case>.json`. Submitted stage snapshots are immutable, append-only records in a per-team `submissions/` folder — corrections happen through recheck records, never by mutating historical snapshots. Writes are atomic and actor-isolated; relaunch restores draft state from these files.
+`TestCaseJSONPersistenceService` writes one JSON file per in-progress test case under Application Support, scoped as `events/<event>/teams/<team>/sessions/<session>/drafts/<stage>/<test-case>.json`. `SubmissionSnapshotService` can create immutable, append-only submitted stage/test-case snapshot files in per-team submission folders, but the current Stage tab submit action is not wired to that service yet. Corrections are intended to flow through recheck records rather than mutation of historical snapshots. Writes are atomic and actor-isolated; relaunch restores draft state from these files.
 
 ### Concurrency
 

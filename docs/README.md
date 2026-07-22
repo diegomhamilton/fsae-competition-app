@@ -45,10 +45,10 @@ Entry points
                                           the 6 inspection stages, and doc links (no frontmatter)
 
 Architecture & app docs
-  docs/system-map.md ................... iOS navigation flow: 3-level coordinator hierarchy, screen
-                                          inventory, state-driven presentation
+  docs/system-map.md ................... Current judge flow: Sessions/Team/Stage tabs, Stage-owned
+                                          case/step push navigation, module inventory, risk map
   docs/inspection-event/README.md ...... Technical overview: Models/Views/Coordinators/Services, recheck
-                                          behavior, testing, accessibility & localization conventions
+                                          intent/current gaps, testing, accessibility & localization conventions
   docs/inspection-event/tutorials.md ... How to extend: add inspection JSON fixtures, validation rules,
                                           a11y identifiers, persona scenarios
   docs/inspection-event/review-hygiene.md  PR description sections, branch rules, commit conventions,
