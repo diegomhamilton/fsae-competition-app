@@ -8,9 +8,9 @@ The inspection event workflow needs a concrete implementation plan that can rebu
 - Establish a Swift 6, SwiftUI, and Concurrency-first MVC architecture using Models, Views, Coordinators, and Services.
 - Add development slices in this order: Test Step view from mock JSONs, Test Case view from mock JSONs, then Test Case list and stage views from bundled JSONs.
 - Persist each in-progress test case as an individual JSON file in the app's Application Support directory, scoped by event, team, session, stage, and test case ID.
-- Group each team's submitted stage/test case snapshots in team-specific local JSON folders for review, rechecks, and sticker eligibility.
-- Treat a recheck as any failed inspection test case from `Design/Resources/InspectionEvent/*.json`; teams must resolve the issue and review with a judge before receiving inspection stickers.
-- Add a follow-up UX cleanup slice for step-view ergonomics, picture capture for evidence-required steps, and stopwatch timing for the egress test.
+- Group each team's submitted stage/test case snapshots in team-specific local JSON folders for later review.
+- Narrow Task 10 to a local full-suite session version: user-created teams, no default mock-team launch, session start/end timestamps, relaunch restore, full-suite execution without evidence attachments, active-session reset, and past execution history.
+- Move rechecks, sticker eligibility, camera/gallery/Files evidence input, media storage, stopwatch timing, UI automation, snapshots, and broad UX polish to Parking Lot 12.
 - Define a multi-agent delivery workflow with Architect, Tester, Planner, Developer, and Documenter agents, plus dedicated skill files for accessibility, concurrency, SwiftUI, animation, architecture, and personas.
 - Require TDD for Models, Coordinators, Services, and View helpers, with UI tests and snapshot tests planned in a dedicated PR.
 - Require accessibility identifiers, VoiceOver-ready flows, localized strings, and structured per-file string constant enums.
