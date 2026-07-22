@@ -47,6 +47,7 @@ struct TestCaseView: View {
     let openStepDetail: (InspectionTestStep) -> Void
     let updateStepDraft: (TestStepDraft) -> Void
     @State private var stepScrollPosition = ScrollPosition()
+    @State private var activeStepID: String?
     @FocusState private var focusedNoteStepID: String?
 
     var body: some View {
@@ -64,20 +65,27 @@ struct TestCaseView: View {
                 testCaseID: testCase.id,
                 steps: testCase.steps,
                 focusedNoteStepID: $focusedNoteStepID,
-                scrollPosition: $stepScrollPosition
+                scrollPosition: $stepScrollPosition,
+                activeStepID: $activeStepID
             ) { step in
                 openStepDetail(step)
             } updateStepDraft: { stepDraft in
                 updateStepDraft(stepDraft)
             } advanceFromStep: { stepID in
                 advanceToNextStep(after: stepID)
+            } scrollToStep: { stepID in
+                scrollToStep(stepID)
             }
+        }
+        .onAppear {
+            activeStepID = activeStepID ?? testCase.steps.first?.id
         }
         .onChange(of: testCase.steps.map(\.id)) { _, stepIDs in
             guard let firstStepID = stepIDs.first else {
                 return
             }
 
+            activeStepID = firstStepID
             stepScrollPosition.scrollTo(id: firstStepID)
         }
         .safeAreaInset(edge: .bottom) {
@@ -101,9 +109,14 @@ struct TestCaseView: View {
             return
         }
 
+        scrollToStep(testCase.steps[nextIndex].id)
+    }
+
+    private func scrollToStep(_ stepID: String) {
         focusedNoteStepID = nil
+        activeStepID = stepID
         withAnimation(.snappy) {
-            stepScrollPosition.scrollTo(id: testCase.steps[nextIndex].id)
+            stepScrollPosition.scrollTo(id: stepID)
         }
     }
 }
@@ -114,38 +127,141 @@ private struct TestCaseStepCarousel: View {
     let steps: [InspectionTestCaseStepViewState]
     let focusedNoteStepID: FocusState<String?>.Binding
     @Binding var scrollPosition: ScrollPosition
+    @Binding var activeStepID: String?
     let openStepDetail: (InspectionTestStep) -> Void
     let updateStepDraft: (TestStepDraft) -> Void
     let advanceFromStep: (String) -> Void
+    let scrollToStep: (String) -> Void
+
+    private var activeIndex: Int {
+        guard let activeStepID,
+              let index = steps.firstIndex(where: { $0.id == activeStepID })
+        else {
+            return 0
+        }
+
+        return index
+    }
 
     var body: some View {
-        ScrollView(.horizontal) {
-            LazyHStack(alignment: .top, spacing: 14) {
-                ForEach(steps) { stepState in
-                    TestCaseStepCarouselItem {
-                        TestCaseStepCard(
-                            stageID: stageID,
-                            testCaseID: testCaseID,
-                            state: stepState,
-                            focusedNoteStepID: focusedNoteStepID
-                        ) {
-                            openStepDetail(stepState.step)
-                        } updateStepDraft: { stepDraft in
-                            updateStepDraft(stepDraft)
-                        } advanceFromStep: {
-                            advanceFromStep(stepState.id)
+        VStack(alignment: .leading, spacing: 10) {
+            TestCaseStepCarouselControls(
+                activeIndex: activeIndex,
+                totalCount: steps.count,
+                previousStepID: adjacentStepID(offset: -1),
+                nextStepID: adjacentStepID(offset: 1)
+            ) { stepID in
+                scrollToStep(stepID)
+            }
+
+            ScrollView(.horizontal) {
+                LazyHStack(alignment: .top, spacing: 14) {
+                    ForEach(steps) { stepState in
+                        TestCaseStepCarouselItem {
+                            TestCaseStepCard(
+                                stageID: stageID,
+                                testCaseID: testCaseID,
+                                state: stepState,
+                                focusedNoteStepID: focusedNoteStepID
+                            ) {
+                                openStepDetail(stepState.step)
+                            } updateStepDraft: { stepDraft in
+                                updateStepDraft(stepDraft)
+                            } advanceFromStep: {
+                                advanceFromStep(stepState.id)
+                            }
                         }
+                        .id(stepState.id)
                     }
-                    .id(stepState.id)
+                }
+                .scrollTargetLayout()
+                .padding(.vertical, 2)
+            }
+            .scrollIndicators(.hidden)
+            .scrollTargetBehavior(.viewAligned)
+            .scrollPosition($scrollPosition)
+            .onScrollTargetVisibilityChange(idType: String.self, threshold: 0.8) { visibleStepIDs in
+                if let visibleStepID = visibleStepIDs.first {
+                    activeStepID = visibleStepID
                 }
             }
-            .scrollTargetLayout()
-            .padding(.vertical, 2)
+            .frame(minHeight: 430, alignment: .top)
+
+            TestCaseStepCarouselDots(
+                steps: steps,
+                activeStepID: activeStepID ?? steps.first?.id
+            )
         }
-        .scrollIndicators(.hidden)
-        .scrollTargetBehavior(.viewAligned)
-        .scrollPosition($scrollPosition)
-        .frame(minHeight: 430, alignment: .top)
+    }
+
+    private func adjacentStepID(offset: Int) -> String? {
+        let index = activeIndex + offset
+
+        guard steps.indices.contains(index) else {
+            return nil
+        }
+
+        return steps[index].id
+    }
+}
+
+private struct TestCaseStepCarouselControls: View {
+    let activeIndex: Int
+    let totalCount: Int
+    let previousStepID: String?
+    let nextStepID: String?
+    let scrollToStep: (String) -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Text("Step \(activeIndex + 1) of \(totalCount)")
+                .font(.caption.weight(.bold))
+                .foregroundStyle(Color.fsaeSecondaryText)
+
+            Spacer()
+
+            CarouselStepButton(systemImage: "chevron.left", stepID: previousStepID, scrollToStep: scrollToStep)
+            CarouselStepButton(systemImage: "chevron.right", stepID: nextStepID, scrollToStep: scrollToStep)
+        }
+    }
+}
+
+private struct CarouselStepButton: View {
+    let systemImage: String
+    let stepID: String?
+    let scrollToStep: (String) -> Void
+
+    var body: some View {
+        Button {
+            if let stepID {
+                scrollToStep(stepID)
+            }
+        } label: {
+            Image(systemName: systemImage)
+                .font(.caption.weight(.bold))
+                .frame(width: 30, height: 30)
+                .background(.ultraThinMaterial, in: Circle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(stepID == nil ? Color.fsaeSecondaryText.opacity(0.35) : Color.fsaePrimary)
+        .disabled(stepID == nil)
+    }
+}
+
+private struct TestCaseStepCarouselDots: View {
+    let steps: [InspectionTestCaseStepViewState]
+    let activeStepID: String?
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(steps) { step in
+                Capsule()
+                    .fill(step.id == activeStepID ? Color.fsaePrimary : Color.fsaeBorder)
+                    .frame(width: step.id == activeStepID ? 18 : 6, height: 6)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .animation(.snappy, value: activeStepID)
     }
 }
 
