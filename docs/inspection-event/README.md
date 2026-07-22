@@ -20,7 +20,7 @@ related_scenarios:
 
 ## Purpose
 
-The inspection event app is a local-first SwiftUI tool for judges who need to select a team session, inspect official technical inspection stages, record outcomes, persist draft work, submit immutable stage snapshots, and track failed test cases through recheck review. The current implementation is intentionally incremental: stable domain models and local JSON contracts come before broader UX changes, remote services, or UI automation.
+The inspection event app is a local-first SwiftUI tool for judges who need to select a team session, inspect official technical inspection stages, record outcomes, persist draft work, submit immutable stage snapshots, and track failed test cases through recheck review. The current implementation is intentionally incremental: session selection, stage-first navigation, draft editing, validation, and local JSON draft persistence are wired into the app; stage submission, recheck review, sticker eligibility, remote services, and UI automation remain follow-up slices.
 
 ## Architecture
 
@@ -28,23 +28,23 @@ The app follows a Swift 6, SwiftUI, and Concurrency-first MVC shape.
 
 Models define immutable inspection content and mutable draft state. Core values include `InspectionStage`, `InspectionSection`, `InspectionTestCase`, `InspectionTestStep`, `TestCaseDraft`, `TestStepDraft`, `ValidationIssue`, `SubmissionSnapshot`, and local persistence schema records.
 
-Views stay as SwiftUI composition surfaces. They render coordinator-backed state and keep only local presentation state. User-visible strings should live in structured `Strings` enums so localization work can migrate to string catalogs later.
+Views stay as SwiftUI composition surfaces. They render coordinator-backed state and keep only local presentation state. The current judge shell exposes Sessions, Team, and Stage as top-level tabs. Test case and focused step editing are pushed inside the Stage tab rather than exposed as separate top-level destinations. User-visible strings should live in structured `Strings` enums so localization work can migrate to string catalogs later.
 
-Coordinators own routing and user intents. `AppCoordinator` handles launch/login/root screen selection. `InspectionEventCoordinator` owns the active event and session lifecycle. `SessionSelectionCoordinator` owns roster decisions. `InspectionExecutionCoordinator` owns stage, test case, test step, draft save, and team-switch routing.
+Coordinators own routing and user intents. `AppCoordinator` handles launch/login/root screen selection. `InspectionEventCoordinator` owns the active event and session lifecycle. `SessionSelectionCoordinator` owns roster decisions. `InspectionExecutionCoordinator` owns stage navigation, test case and test step push routes, draft save, and team-switch routing.
 
-Services provide async boundaries. `InspectionContentService` loads bundled official stage JSON. `InspectionValidationService` validates outcomes, notes, measurement ranges, and required evidence. `InspectionEventStore` and `TestCaseJSONPersistenceService` preserve scoped local draft and submission records. `SubmissionSnapshotService` writes immutable stage submission artifacts.
+Services provide async boundaries. `InspectionContentService` loads bundled official stage JSON. `InspectionValidationService` validates outcomes, notes, measurement ranges, and required evidence. `InspectionEventStore` and `TestCaseJSONPersistenceService` preserve scoped local draft records. `SubmissionSnapshotService` can write immutable stage submission artifacts, but the Stage tab submit button is not wired to that service yet.
 
 ## Recheck Behavior
 
-A submitted test case with a failed outcome is the unit that becomes a recheck. Recheck records reference the event, team, session, stage, test case, failed rules, and judge notes. Submitted snapshots remain immutable; corrections are represented by later recheck review records rather than mutation of historical submission JSON.
+A submitted test case with a failed outcome is the unit that becomes a recheck. The JSON schema and submission snapshot service carry recheck-reference fields, and submitted snapshots remain immutable by design. Dedicated recheck creation, review, and closure behavior is still Task 10 continuation work rather than a screen-level flow in the current app.
 
-Sticker eligibility is derived from required submitted stages plus open recheck state. If any recheck remains open, the team is not sticker-ready. Task 10 owns the next implementation pass for recheck service behavior, sticker eligibility calculation, and the full local stored judge experience.
+Sticker eligibility is intended to derive from required submitted stages plus open recheck state. If any recheck remains open, the team is not sticker-ready. Task 10 owns the next implementation pass for recheck service behavior, sticker eligibility calculation, and the full local stored judge experience.
 
 ## Testing Approach
 
 Swift Testing covers domain models, coordinators, services, persistence, and view helpers in the same implementation slices as the code under test. Test names and documentation should map positive, negative, and edge cases back to `inspection_event_use_cases.feature`.
 
-Dedicated UI automation and snapshot tests belong to Task 8, after stable navigation hooks and accessibility identifiers exist. Until then, implementation PRs should include focused unit tests plus manual validation notes.
+Dedicated UI automation and snapshot tests belong to Task 8. The current navigation hooks are closer to the target shape after the Stage-tab refactor, but implementation PRs should still include focused unit tests plus manual validation notes until the dedicated UI target exists.
 
 ## Accessibility Conventions
 
@@ -52,11 +52,10 @@ Actionable controls, navigation destinations, status indicators, validation summ
 
 Status must not rely on color alone. Passed, failed, pending, blocked, energized, and recheck states need text, icon, shape, or accessibility value support in addition to color.
 
-VoiceOver users must be able to complete login, session selection, stage inspection, validation correction, submission, team switching, and recheck review flows.
+VoiceOver users must be able to complete login, session selection, stage inspection, validation correction, submission, team switching, and recheck review flows as those flows become screen-level features. For current screens, stable identifiers already cover the main session, stage, test case, step, validation, notes, evidence, and team-switch controls.
 
 ## Localization Conventions
 
 User-visible text and accessibility labels should be centralized through structured per-file `Strings` enums. Raw string literals are acceptable only for stable technical identifiers, fixture values, or test-only data.
 
 When new UI text is introduced, include its visible copy, accessibility label or hint, and validation/error copy in the same localizable structure. This keeps future string catalog migration mechanical and reviewable.
-

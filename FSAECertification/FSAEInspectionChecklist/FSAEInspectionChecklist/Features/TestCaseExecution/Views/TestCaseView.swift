@@ -18,8 +18,6 @@ struct TestCaseView: View {
         static let measurementValue = "Value"
         static let evidence = "Evidence"
         static let addEvidence = "Add Evidence"
-        static let addNote = "Add Note"
-        static let editNote = "Edit Note"
         static let notes = "Judge notes"
         static let openStep = "Open Step"
         static let dismissKeyboard = "Done"
@@ -190,7 +188,7 @@ private struct TestCaseStepCarousel: View {
                     activeStepID = visibleStepID
                 }
             }
-            .frame(minHeight: 430, alignment: .top)
+//            .frame(minHeight: 430, alignment: .top)
             .padding(.horizontal, -horizontalBleed)
 
             TestCaseStepCarouselDots(
@@ -488,7 +486,7 @@ private struct TestCaseStepCard: View {
 
                 Spacer()
 
-                VStack(alignment: .trailing, spacing: 8) {
+                HStack(spacing: 8) {
                     StatusPill(text: state.status.displayName, color: state.statusColor)
                         .accessibilityIdentifier(
                             InspectionAccessibilityIdentifier.testCaseStepStatus(
@@ -496,13 +494,17 @@ private struct TestCaseStepCard: View {
                                 stepID: state.id
                             ).rawValue
                         )
+
                     Button {
                         openStepDetail()
                     } label: {
-                        Label(TestCaseView.Strings.openStep, systemImage: "chevron.right.circle")
+                        Image(systemName: "chevron.right.circle")
+                            .font(.title3.weight(.semibold))
+                            .frame(width: 32, height: 32)
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(Color.fsaePrimary)
+                    .accessibilityLabel(TestCaseView.Strings.openStep)
                     .accessibilityIdentifier(
                         InspectionAccessibilityIdentifier.testCaseStepOpenAction(
                             testCaseID: testCaseID,
@@ -513,7 +515,6 @@ private struct TestCaseStepCard: View {
             }
 
             HStack {
-                StatusPill(text: state.step.ruleReference, color: .fsaeGray)
                 if state.step.requiresEvidence {
                     StatusPill(text: TestCaseView.Strings.evidence, color: Color.fsaeBlue)
                 }
@@ -555,7 +556,27 @@ private struct TestCaseStepCard: View {
                 }
             }
 
-            HStack(spacing: 10) {
+            HStack(alignment: .center, spacing: 10) {
+                TextField(TestCaseView.Strings.notes, text: $noteText, axis: .vertical)
+                    .focused(focusedNoteStepID, equals: state.id)
+                    .lineLimit(2...4)
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .frame(minHeight: 36, alignment: .center)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                    .background(Color.white.opacity(0.16), in: RoundedRectangle(cornerRadius: 8))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.white.opacity(0.42), lineWidth: 1)
+                    }
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.testCaseNotesField(
+                            testCaseID: testCaseID,
+                            stepID: state.id
+                        ).rawValue
+                    )
+
                 Button {
                     evidenceAttachments.append(
                         EvidenceAttachmentMetadata(
@@ -568,34 +589,25 @@ private struct TestCaseStepCard: View {
                     )
                     persistDraft()
                 } label: {
-                    Label(TestCaseView.Strings.addEvidence, systemImage: state.step.requiresEvidence ? "camera.fill" : "paperclip")
-                        .frame(maxWidth: .infinity)
+                    Image(systemName: "plus")
+                        .font(.headline.weight(.semibold))
+                        .frame(width: 44, height: 36)
+                        .background(Color.fsaePrimary.opacity(0.12), in: Capsule())
+                        .overlay {
+                            Capsule()
+                                .stroke(Color.fsaePrimary.opacity(0.35), lineWidth: 1)
+                        }
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.plain)
+                .foregroundStyle(Color.fsaePrimary)
+                .accessibilityLabel(TestCaseView.Strings.addEvidence)
                 .accessibilityIdentifier(
                     InspectionAccessibilityIdentifier.testCaseEvidenceAction(
                         testCaseID: testCaseID,
                         stepID: state.id
                     ).rawValue
                 )
-
-                Label(noteText.isEmpty ? TestCaseView.Strings.addNote : TestCaseView.Strings.editNote, systemImage: "note.text")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(Color.black.opacity(0.04), in: RoundedRectangle(cornerRadius: 8))
-                    .foregroundStyle(Color.fsaeSecondaryText)
             }
-
-            TextField(TestCaseView.Strings.notes, text: $noteText, axis: .vertical)
-                .focused(focusedNoteStepID, equals: state.id)
-                .lineLimit(2...4)
-                .textFieldStyle(.roundedBorder)
-                .accessibilityIdentifier(
-                    InspectionAccessibilityIdentifier.testCaseNotesField(
-                        testCaseID: testCaseID,
-                        stepID: state.id
-                    ).rawValue
-                )
         }
         .onChange(of: selectedOutcome) { oldOutcome, newOutcome in
             persistDraft()
