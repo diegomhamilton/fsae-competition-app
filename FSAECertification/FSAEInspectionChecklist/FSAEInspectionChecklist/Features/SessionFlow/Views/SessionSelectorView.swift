@@ -25,7 +25,7 @@ struct SessionSelectorView: View {
 
     @ObservedObject var coordinator: SessionSelectionCoordinator
     let selectTeam: (Int) -> Void
-    let createTeam: (String, String) async throws -> Bool
+    let createTeam: (LocalTeamCatalogEntry) async throws -> Bool
     @State private var newTeamName = ""
     @State private var newCarNumber = ""
     @State private var creationError: String?
@@ -33,7 +33,7 @@ struct SessionSelectorView: View {
     init(
         coordinator: SessionSelectionCoordinator,
         selectTeam: @escaping (Int) -> Void,
-        createTeam: @escaping (String, String) async throws -> Bool = { _, _ in false }
+        createTeam: @escaping (LocalTeamCatalogEntry) async throws -> Bool = { _ in false }
     ) {
         self.coordinator = coordinator
         self.selectTeam = selectTeam
@@ -136,10 +136,11 @@ struct SessionSelectorView: View {
                 Button {
                     let displayName = String(newTeamName.trimmingCharacters(in: .whitespacesAndNewlines))
                     let carNumber = String(newCarNumber.trimmingCharacters(in: .whitespacesAndNewlines))
+                    let entry = LocalTeamCatalogEntry(displayName: displayName, carNumber: carNumber)
                     let createTeam = createTeam
                     Task {
                         do {
-                            if try await createTeam(displayName, carNumber) {
+                            if try await createTeam(entry) {
                                 await MainActor.run {
                                     newTeamName = ""
                                     newCarNumber = ""

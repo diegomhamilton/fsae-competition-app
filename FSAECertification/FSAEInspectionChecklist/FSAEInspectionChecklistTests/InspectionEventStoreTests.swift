@@ -38,8 +38,7 @@ struct InspectionEventStoreTests {
 
         let created = try await store.createTeam(
             eventID: "event-2026",
-            displayName: "UFPE Racing",
-            carNumber: "28",
+            entry: LocalTeamCatalogEntry(displayName: "UFPE Racing", carNumber: "28"),
             access: access
         )
         let visibleTeams = try await store.teams(eventID: "event-2026", access: access)
