@@ -43,6 +43,17 @@ nonisolated struct InspectionEventTeamRecord: Identifiable, Codable, Hashable, S
 nonisolated enum LocalTeamCatalogValidationError: Error, Equatable, Sendable {
     case missingDisplayName
     case missingCarNumber
+    case carNumberMatchesDisplayName
+}
+
+nonisolated struct LocalTeamCatalogEntry: Equatable, Hashable, Sendable {
+    let displayName: String
+    let carNumber: String
+
+    init(displayName: String, carNumber: String) {
+        self.displayName = displayName
+        self.carNumber = carNumber
+    }
 }
 
 nonisolated enum InspectionEventSessionStatus: String, Codable, Hashable, Sendable {
@@ -224,21 +235,23 @@ actor InspectionEventStore {
     @discardableResult
     func createTeam(
         eventID: String,
-        displayName: String,
-        carNumber: String,
+        entry: LocalTeamCatalogEntry,
         access: InspectionEventUserAccess
     ) throws -> InspectionEventTeamRecord {
         try requireEvent(eventID)
         try requireAccess(access, eventID: eventID)
 
-        let trimmedDisplayName = displayName
-        let trimmedCarNumber = carNumber
+        let trimmedDisplayName = entry.displayName
+        let trimmedCarNumber = entry.carNumber
 
         guard !trimmedDisplayName.isEmpty else {
             throw LocalTeamCatalogValidationError.missingDisplayName
         }
         guard !trimmedCarNumber.isEmpty else {
             throw LocalTeamCatalogValidationError.missingCarNumber
+        }
+        guard trimmedDisplayName.caseInsensitiveCompare(trimmedCarNumber) != .orderedSame else {
+            throw LocalTeamCatalogValidationError.carNumberMatchesDisplayName
         }
 
         let record = InspectionEventTeamRecord(

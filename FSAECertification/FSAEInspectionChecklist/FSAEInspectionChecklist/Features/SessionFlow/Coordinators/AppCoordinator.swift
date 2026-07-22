@@ -138,12 +138,17 @@ final class AppCoordinator: ObservableObject {
     }
 
     @discardableResult
-    func createTeam(displayName: String, carNumber: String) async throws -> Bool {
+    func createTeam(entry: LocalTeamCatalogEntry) async throws -> Bool {
         let created = try await eventCoordinator.createTeam(
-            displayName: displayName,
-            carNumber: carNumber
+            entry: entry
         )
         objectWillChange.send()
         return created != nil
+    }
+
+    func submitTeamCreation(entry: LocalTeamCatalogEntry) {
+        Task { [weak self, entry] in
+            _ = try? await self?.createTeam(entry: entry)
+        }
     }
 }

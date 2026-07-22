@@ -93,13 +93,11 @@ final class InspectionEventCoordinator: ObservableObject {
 
     @discardableResult
     func createTeam(
-        displayName: String,
-        carNumber: String
+        entry: LocalTeamCatalogEntry
     ) async throws -> InspectionTeam? {
         let record = try await store.createTeam(
             eventID: eventID,
-            displayName: displayName,
-            carNumber: carNumber,
+            entry: entry,
             access: access
         )
         let teams = try await store.teams(eventID: eventID, access: access)

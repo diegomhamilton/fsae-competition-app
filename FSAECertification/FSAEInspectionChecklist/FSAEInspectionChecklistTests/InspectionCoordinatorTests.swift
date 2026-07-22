@@ -31,7 +31,7 @@ struct InspectionCoordinatorTests {
         )
         coordinator.completeMockLogin()
 
-        #expect(try await coordinator.createTeam(displayName: "UFPE Racing", carNumber: "28"))
+        #expect(try await coordinator.createTeam(entry: LocalTeamCatalogEntry(displayName: "UFPE Racing", carNumber: "28")))
         #expect(coordinator.eventCoordinator.sessionSelectionCoordinator.teams.map(\.school) == ["UFPE Racing"])
         #expect(await coordinator.selectTeam(id: 28))
 
