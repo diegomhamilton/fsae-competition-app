@@ -135,39 +135,95 @@ private struct TestCaseProgressBadge: View {
 private struct TestCaseValidationSummaryPanel: View {
     let testCase: InspectionTestCaseViewState
 
+    private var blockerRows: [ValidationBlockerOutlineRow] {
+        [
+            ValidationBlockerOutlineRow(
+                id: "validation-blockers",
+                blockerCount: testCase.validationSummary.blockerCount,
+                children: testCase.validationSummary.issues.map(ValidationBlockerOutlineRow.init(issue:))
+            )
+        ]
+    }
+
     var body: some View {
         ContentPanel {
-            HStack(alignment: .firstTextBaseline) {
-                Text(testCase.validationSummary.isPassing ? TestCaseView.Strings.validationReady : TestCaseView.Strings.validationBlocked)
-                    .font(.headline)
-                    .foregroundStyle(Color.fsaeText)
-                Spacer()
-                StatusPill(
-                    text: testCase.validationSummary.isPassing ? TestCaseView.Strings.complete : "\(testCase.validationSummary.blockerCount) \(TestCaseView.Strings.blocked.lowercased())",
-                    color: testCase.validationSummary.isPassing ? .fsaeGreen : .fsaeRed
-                )
-            }
-
             if testCase.validationSummary.isPassing {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(TestCaseView.Strings.validationReady)
+                        .font(.headline)
+                        .foregroundStyle(Color.fsaeText)
+                    Spacer()
+                    StatusPill(
+                        text: TestCaseView.Strings.complete,
+                        color: .fsaeGreen
+                    )
+                }
+
                 Text(TestCaseView.Strings.noBlockers)
                     .font(.footnote)
                     .foregroundStyle(Color.fsaeSecondaryText)
             } else {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(testCase.validationSummary.issues, id: \.id) { issue in
-                        Label {
-                            Text("\(issue.stepTitle): \(issue.localizedMessage)")
-                        } icon: {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                        }
-                        .font(.footnote)
-                        .foregroundStyle(Color.fsaeRed)
-                    }
+                OutlineGroup(blockerRows, children: \.children) { row in
+                    ValidationBlockerOutlineRowView(row: row)
                 }
+                .tint(Color.fsaeSecondaryText)
             }
         }
         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseValidationSummary(testCaseID: testCase.id).rawValue)
         .accessibilityValue(testCase.validationSummary.isPassing ? TestCaseView.Strings.validationReady : "\(testCase.validationSummary.blockerCount) blockers")
+    }
+}
+
+private struct ValidationBlockerOutlineRow: Identifiable {
+    let id: String
+    let issue: InspectionTestCaseValidationIssue?
+    let blockerCount: Int?
+    var children: [ValidationBlockerOutlineRow]?
+
+    init(
+        id: String,
+        blockerCount: Int,
+        children: [ValidationBlockerOutlineRow]
+    ) {
+        self.id = id
+        issue = nil
+        self.blockerCount = blockerCount
+        self.children = children
+    }
+
+    init(issue: InspectionTestCaseValidationIssue) {
+        id = issue.id
+        self.issue = issue
+        blockerCount = nil
+        children = nil
+    }
+}
+
+private struct ValidationBlockerOutlineRowView: View {
+    let row: ValidationBlockerOutlineRow
+
+    var body: some View {
+        if let issue = row.issue {
+            Label {
+                Text("\(issue.stepTitle): \(issue.localizedMessage)")
+            } icon: {
+                Image(systemName: "exclamationmark.triangle.fill")
+            }
+            .font(.footnote)
+            .foregroundStyle(Color.fsaeRed)
+            .padding(.top, 4)
+        } else {
+            HStack(alignment: .firstTextBaseline) {
+                Text(TestCaseView.Strings.validationBlocked)
+                    .font(.headline)
+                    .foregroundStyle(Color.fsaeText)
+                Spacer()
+                StatusPill(
+                    text: "\(row.blockerCount ?? 0) \(TestCaseView.Strings.blocked.lowercased())",
+                    color: .fsaeRed
+                )
+            }
+        }
     }
 }
 
