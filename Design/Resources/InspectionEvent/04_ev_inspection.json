@@ -653,7 +653,9 @@
           "title": "BRAKE SYSTEM",
           "displayOrder": 61,
           "badges": [],
-          "steps": []
+          "steps": [
+            { "displayOrder": 1, "type": "check", "content": "Brake pedal overtravel switch must open shutdown circuit. Not resetable, must not rely on software to work." }
+          ]
         },
         {
           "itemId": "EV62",

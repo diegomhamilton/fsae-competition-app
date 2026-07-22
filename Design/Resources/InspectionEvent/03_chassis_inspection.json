@@ -74,7 +74,9 @@
           "title": "STEERING WHEEL",
           "displayOrder": 6,
           "badges": [],
-          "steps": []
+          "steps": [
+            { "displayOrder": 1, "type": "check", "content": "Continuous perimeter, near round with no concave sections. Driver operable quick disconnect. Not higher than top of Front Hoop, in any angular position. 250 mm max rearward of Front Hoop (F.5.7.5)." }
+          ]
         },
         {
           "itemId": "C61",
@@ -122,7 +124,9 @@
           "title": "CRITICAL FASTENERS — BRAKES",
           "displayOrder": 11,
           "badges": [],
-          "steps": []
+          "steps": [
+            { "displayOrder": 1, "type": "check", "content": "Pedal assembly: including adjustment mechanism, caliper to knuckle mounts, rotor to hat. Exempt: COTS caliper body assembly." }
+          ]
         },
         {
           "itemId": "C66",
@@ -166,7 +170,9 @@
           "title": "HEAD RESTRAINT (CHASSIS)",
           "displayOrder": 15,
           "badges": [],
-          "steps": []
+          "steps": [
+            { "displayOrder": 1, "type": "check", "content": "Inside Rollover Envelope or F.5.10 Head Restraint protection." }
+          ]
         },
         {
           "itemId": "S4",
@@ -266,7 +272,9 @@
           "title": "STANDARD IMPACT ATTENUATOR",
           "displayOrder": 24,
           "badges": [],
-          "steps": []
+          "steps": [
+            { "displayOrder": 1, "type": "check", "content": "Must be fully bonded to AIP. IA must not be degraded or damaged." }
+          ]
         },
         {
           "itemId": "S14",
@@ -294,7 +302,9 @@
           "title": "FRONT WING DETACHMENT",
           "displayOrder": 27,
           "badges": [],
-          "steps": []
+          "steps": [
+            { "displayOrder": 1, "type": "check", "content": "No portion of front wing or mountings block the front view of bulkhead. F.8.6.2 detaches below peak load. Fasteners match SES documentation." }
+          ]
         },
         {
           "itemId": "S17",
@@ -420,7 +430,9 @@
           "title": "LAMINATE TEST SPECIMENS",
           "displayOrder": 38,
           "badges": [],
-          "steps": []
+          "steps": [
+            { "displayOrder": 1, "type": "check", "content": "Three-point bending: 275 x 500 mm or 138 x 500 mm. Perimeter shear: 100 x 100 mm or 3-point. Lap joint. Engraved with date and specimen name." }
+          ]
         },
         {
           "itemId": "S26",
