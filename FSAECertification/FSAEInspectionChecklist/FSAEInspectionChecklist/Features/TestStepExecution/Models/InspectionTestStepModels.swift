@@ -370,6 +370,11 @@ nonisolated struct InspectionAccessibilityIdentifier: RawRepresentable, Equatabl
         Self(rawValue: "inspection.sessionSelector.team.\(teamID).blocked")
     }
 
+    static let sessionSelectorCreateTeamForm = Self(rawValue: "inspection.sessionSelector.createTeam.form")
+    static let sessionSelectorCreateTeamNameField = Self(rawValue: "inspection.sessionSelector.createTeam.name")
+    static let sessionSelectorCreateTeamCarNumberField = Self(rawValue: "inspection.sessionSelector.createTeam.carNumber")
+    static let sessionSelectorCreateTeamAction = Self(rawValue: "inspection.sessionSelector.createTeam.action")
+
     static func activeTeamDashboardSwitchTeamAction(teamID: Int) -> Self {
         Self(rawValue: "inspection.dashboard.team.\(teamID).switchTeam")
     }

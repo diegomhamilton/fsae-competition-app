@@ -31,6 +31,7 @@ Guide technical inspection event work so judges can complete login, session sele
 ## Implementation Checklist
 
 - Define stable accessibility identifiers separately from localized labels.
+- Give each editable field a unique identifier and verify tests use those identifiers, not placeholder text or nearby labels, to enter data.
 - Add identifiers for session rows, stage rows, test case rows, test step controls, validation summaries, submission controls, recheck actions, and sticker eligibility statuses.
 - Ensure VoiceOver can identify the active team, stage, test case, invalid step, failed test case, recheck state, and save or submit action.
 - Pair color with text, icon, or shape for passed, failed, pending, blocked, recheck required, and sticker eligible states.
@@ -43,6 +44,7 @@ Guide technical inspection event work so judges can complete login, session sele
 - Identifier constants or helpers with stable names.
 - VoiceOver labels, hints, and values for critical controls and statuses.
 - XCUITest coverage that queries identifiers rather than localized labels.
+- XCUITest or manual field-identity coverage for forms where two controls share the same keyboard type, layout, or value type.
 - Manual validation notes for keyboard, VoiceOver, status cues, and blocked submission correction.
 
 ## Agent Usage
