@@ -8,7 +8,7 @@ import Combine
 @MainActor
 final class InspectionExecutionCoordinator: ObservableObject {
     @Published private(set) var sessionContext: InspectionSessionContext
-    @Published private(set) var route: InspectionExecutionRoute = .dashboard
+    @Published var stageNavigationPath: [StageNavigationRoute] = []
     @Published private(set) var pendingSwitchTarget: InspectionTeam?
     @Published private(set) var draftsByStageID: [String: [String: TestCaseDraft]]
     let teams: [InspectionTeam]
@@ -61,12 +61,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
     }
 
     var activeTestCase: InspectionTestCase? {
-        let testCaseID: String
-        switch route {
-        case .testCase(_, let routedTestCaseID),
-             .testStep(_, let routedTestCaseID, _):
-            testCaseID = routedTestCaseID
-        default:
+        guard let testCaseID = activeTestCaseID else {
             return nil
         }
 
@@ -74,7 +69,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
     }
 
     var activeStep: InspectionTestStep? {
-        guard case .testStep(_, _, let stepID) = route else {
+        guard case .testStep(_, let stepID) = stageNavigationPath.last else {
             return nil
         }
 
@@ -101,6 +96,10 @@ final class InspectionExecutionCoordinator: ObservableObject {
         draftsByTestCaseID[testCase.id] ?? TestCaseDraft(testCase: testCase)
     }
 
+    private var activeTestCaseID: String? {
+        stageNavigationPath.last?.testCaseID
+    }
+
     func markUnsavedDraft(_ hasUnsavedDraft: Bool) {
         sessionContext.hasUnsavedDraft = hasUnsavedDraft
     }
@@ -112,7 +111,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
         }
 
         sessionContext.activeStageID = stageID
-        route = .stage(stageID: stageID)
+        stageNavigationPath.removeAll()
         await restoreDraftsForActiveStage()
         return true
     }
@@ -123,7 +122,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
             return false
         }
 
-        route = .testCase(stageID: sessionContext.activeStageID, testCaseID: testCaseID)
+        stageNavigationPath = [.testCase(testCaseID: testCaseID)]
         return true
     }
 
@@ -134,11 +133,10 @@ final class InspectionExecutionCoordinator: ObservableObject {
             return false
         }
 
-        route = .testStep(
-            stageID: sessionContext.activeStageID,
-            testCaseID: testCase.id,
-            stepID: stepID
-        )
+        stageNavigationPath = [
+            .testCase(testCaseID: testCase.id),
+            .testStep(testCaseID: testCase.id, stepID: stepID)
+        ]
         return true
     }
 
@@ -150,16 +148,24 @@ final class InspectionExecutionCoordinator: ObservableObject {
         }
 
         pendingSwitchTarget = targetTeam
-        route = .teamSwitchConfirmation(
-            currentTeamID: sessionContext.team.id,
-            targetTeamID: targetTeam.id
-        )
         return true
     }
 
     func cancelTeamSwitch() {
         pendingSwitchTarget = nil
-        route = .dashboard
+    }
+
+    func returnToActiveStage() {
+        stageNavigationPath.removeAll()
+    }
+
+    func returnToActiveTestCase() {
+        guard let testCaseID = activeTestCaseID else {
+            returnToActiveStage()
+            return
+        }
+
+        stageNavigationPath = [.testCase(testCaseID: testCaseID)]
     }
 
     func restoreDraftsForActiveStage() async {

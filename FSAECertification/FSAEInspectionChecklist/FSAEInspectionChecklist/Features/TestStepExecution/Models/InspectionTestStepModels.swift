@@ -354,6 +354,46 @@ nonisolated struct InspectionAccessibilityIdentifier: RawRepresentable, Equatabl
         Self(rawValue: "inspection.testStep.\(stepID).done")
     }
 
+    static func sessionSelectorTeamRow(teamID: Int) -> Self {
+        Self(rawValue: "inspection.sessionSelector.team.\(teamID).row")
+    }
+
+    static func sessionSelectorTeamStatus(teamID: Int) -> Self {
+        Self(rawValue: "inspection.sessionSelector.team.\(teamID).status")
+    }
+
+    static func sessionSelectorTeamResumeIndicator(teamID: Int) -> Self {
+        Self(rawValue: "inspection.sessionSelector.team.\(teamID).resume")
+    }
+
+    static func sessionSelectorTeamBlockedIndicator(teamID: Int) -> Self {
+        Self(rawValue: "inspection.sessionSelector.team.\(teamID).blocked")
+    }
+
+    static func activeTeamDashboardSwitchTeamAction(teamID: Int) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).switchTeam")
+    }
+
+    static func activeTeamDashboardOpenCurrentStageAction(teamID: Int, stageID: String) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).stage.\(stageID).openCurrent")
+    }
+
+    static func activeTeamDashboardStageRow(teamID: Int, stageID: String) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).stage.\(stageID).row")
+    }
+
+    static func activeTeamDashboardStageStatus(teamID: Int, stageID: String) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).stage.\(stageID).status")
+    }
+
+    static func teamSwitchCancelAction(currentTeamID: Int, targetTeamID: Int) -> Self {
+        Self(rawValue: "inspection.teamSwitch.current.\(currentTeamID).target.\(targetTeamID).cancel")
+    }
+
+    static func teamSwitchConfirmAction(currentTeamID: Int, targetTeamID: Int) -> Self {
+        Self(rawValue: "inspection.teamSwitch.current.\(currentTeamID).target.\(targetTeamID).confirm")
+    }
+
     static func testCaseValidationSummary(testCaseID: String) -> Self {
         Self(rawValue: "inspection.testCase.\(testCaseID).validation.summary")
     }

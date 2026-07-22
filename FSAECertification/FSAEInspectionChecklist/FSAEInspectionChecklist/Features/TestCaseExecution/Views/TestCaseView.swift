@@ -7,8 +7,8 @@ import SwiftUI
 
 struct TestCaseView: View {
     fileprivate enum Strings {
-        static let eyebrow = "SC-003 Test Case"
-        static let subtitle = "Ordered test steps, validation blockers, notes, measurements, and evidence from mock test case state."
+        static let eyebrow = "Test Case"
+        static let subtitle = "Record outcomes, notes, measurements, evidence, and validation status for this case."
         static let rules = "Rules"
         static let validationReady = "Ready to submit"
         static let validationBlocked = "Validation blockers"
@@ -17,6 +17,7 @@ struct TestCaseView: View {
         static let outcome = "Outcome"
         static let measurementValue = "Value"
         static let evidence = "Evidence"
+        static let addEvidence = "Add Evidence"
         static let addNote = "Add Note"
         static let editNote = "Edit Note"
         static let notes = "Judge notes"
@@ -43,8 +44,7 @@ struct TestCaseView: View {
     let team: InspectionTeam
     let stage: InspectionStage
     let testCase: InspectionTestCaseViewState
-    @Binding var selectedStep: InspectionTestStep
-    @Binding var selectedScreen: ProposedScreen
+    let openStepDetail: (InspectionTestStep) -> Void
     let updateStepDraft: (TestStepDraft) -> Void
     @FocusState private var focusedNoteStepID: String?
 
@@ -66,8 +66,7 @@ struct TestCaseView: View {
                         state: stepState,
                         focusedNoteStepID: $focusedNoteStepID
                     ) {
-                        selectedStep = stepState.step
-                        selectedScreen = .stepDetail
+                        openStepDetail(stepState.step)
                     } updateStepDraft: { stepDraft in
                         updateStepDraft(stepDraft)
                     }
@@ -294,8 +293,8 @@ private struct TestCaseStepCard: View {
                 Button {
                     evidenceAttachments.append(
                         EvidenceAttachmentMetadata(
-                            id: "fake-attachment-\(evidenceAttachments.count + 1)",
-                            displayName: "Fake attachment \(evidenceAttachments.count + 1)",
+                            id: "evidence-attachment-\(evidenceAttachments.count + 1)",
+                            displayName: "Evidence \(evidenceAttachments.count + 1)",
                             mediaType: .photo,
                             source: .mockAttachment,
                             createdAt: Date()
@@ -303,7 +302,7 @@ private struct TestCaseStepCard: View {
                     )
                     persistDraft()
                 } label: {
-                    Label(TestCaseView.Strings.evidence, systemImage: state.step.requiresEvidence ? "camera.fill" : "paperclip")
+                    Label(TestCaseView.Strings.addEvidence, systemImage: state.step.requiresEvidence ? "camera.fill" : "paperclip")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
