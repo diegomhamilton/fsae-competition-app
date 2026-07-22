@@ -231,8 +231,8 @@ actor InspectionEventStore {
         try requireEvent(eventID)
         try requireAccess(access, eventID: eventID)
 
-        let trimmedDisplayName = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedCarNumber = carNumber.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedDisplayName = displayName
+        let trimmedCarNumber = carNumber
 
         guard !trimmedDisplayName.isEmpty else {
             throw LocalTeamCatalogValidationError.missingDisplayName

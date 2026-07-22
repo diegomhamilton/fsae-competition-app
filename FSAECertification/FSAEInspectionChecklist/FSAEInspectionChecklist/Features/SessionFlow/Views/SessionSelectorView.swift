@@ -134,10 +134,31 @@ struct SessionSelectorView: View {
                     .textFieldStyle(.roundedBorder)
                     .accessibilityIdentifier(InspectionAccessibilityIdentifier.sessionSelectorCreateTeamCarNumberField.rawValue)
                 Button {
-                    let displayName = newTeamName
-                    let carNumber = newCarNumber
+                    let displayName = String(newTeamName.trimmingCharacters(in: .whitespacesAndNewlines))
+                    let carNumber = String(newCarNumber.trimmingCharacters(in: .whitespacesAndNewlines))
+                    let createTeam = createTeam
                     Task {
-                        await submitNewTeam(displayName: displayName, carNumber: carNumber)
+                        do {
+                            if try await createTeam(displayName, carNumber) {
+                                await MainActor.run {
+                                    newTeamName = ""
+                                    newCarNumber = ""
+                                    creationError = nil
+                                }
+                            }
+                        } catch LocalTeamCatalogValidationError.missingDisplayName {
+                            await MainActor.run {
+                                creationError = Strings.teamNamePlaceholder
+                            }
+                        } catch LocalTeamCatalogValidationError.missingCarNumber {
+                            await MainActor.run {
+                                creationError = Strings.carNumberPlaceholder
+                            }
+                        } catch {
+                            await MainActor.run {
+                                creationError = "Unable to add team."
+                            }
+                        }
                     }
                 } label: {
                     Label(Strings.createTeamAction, systemImage: "plus.circle.fill")
@@ -154,22 +175,6 @@ struct SessionSelectorView: View {
             }
         }
         .accessibilityIdentifier(InspectionAccessibilityIdentifier.sessionSelectorCreateTeamForm.rawValue)
-    }
-
-    private func submitNewTeam(displayName: String, carNumber: String) async {
-        do {
-            if try await createTeam(displayName, carNumber) {
-                newTeamName = ""
-                newCarNumber = ""
-                creationError = nil
-            }
-        } catch LocalTeamCatalogValidationError.missingDisplayName {
-            creationError = Strings.teamNamePlaceholder
-        } catch LocalTeamCatalogValidationError.missingCarNumber {
-            creationError = Strings.carNumberPlaceholder
-        } catch {
-            creationError = "Unable to add team."
-        }
     }
 
     @ViewBuilder
