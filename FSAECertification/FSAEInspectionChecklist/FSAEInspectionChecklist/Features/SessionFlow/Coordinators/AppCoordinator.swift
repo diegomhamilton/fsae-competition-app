@@ -4,6 +4,7 @@
 //
 
 import Combine
+import Foundation
 
 @MainActor
 final class AppCoordinator: ObservableObject {
@@ -135,6 +136,18 @@ final class AppCoordinator: ObservableObject {
     func restoreTeamCatalog() async {
         await eventCoordinator.restoreTeamCatalog()
         objectWillChange.send()
+    }
+
+    @discardableResult
+    func completeActiveSession(endedAt: Date = Date()) async -> Bool {
+        guard await eventCoordinator.completeActiveSession(endedAt: endedAt) else {
+            return false
+        }
+
+        route = .sessionSelector
+        selectedScreen = .sessionSelector
+        objectWillChange.send()
+        return true
     }
 
     @discardableResult

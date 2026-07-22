@@ -14,6 +14,7 @@ struct ActiveTeamDashboardView: View {
         static let openBlockers = "Open blockers"
         static let currentStage = "Current Stage"
         static let openStage = "Open Stage"
+        static let completeSession = "Complete Session"
         static let stages = "Stages"
         static let complete = "Complete"
         static let noBlockers = "No blockers"
@@ -22,6 +23,7 @@ struct ActiveTeamDashboardView: View {
     @ObservedObject var coordinator: InspectionExecutionCoordinator
     let openStage: (String) -> Void
     let requestTeamSwitch: () -> Void
+    let completeSession: () -> Void
 
     var body: some View {
         let team = coordinator.activeTeam
@@ -93,6 +95,17 @@ struct ActiveTeamDashboardView: View {
                         teamID: team.id,
                         stageID: selectedStageID ?? "none"
                     ).rawValue
+                )
+                Button {
+                    completeSession()
+                } label: {
+                    Label(Strings.completeSession, systemImage: "checkmark.seal.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardCompleteSessionAction(teamID: team.id).rawValue
                 )
             }
 

@@ -40,6 +40,11 @@ struct ContentTabsView: View {
                                 if let targetTeamID = bindings.nextSwitchTeamID {
                                     appCoordinator.requestTeamSwitch(to: targetTeamID)
                                 }
+                            },
+                            completeSession: {
+                                Task {
+                                    await appCoordinator.completeActiveSession()
+                                }
                             }
                         )
                     } else {

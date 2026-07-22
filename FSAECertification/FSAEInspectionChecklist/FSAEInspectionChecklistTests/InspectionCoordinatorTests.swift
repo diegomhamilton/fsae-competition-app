@@ -41,6 +41,100 @@ struct InspectionCoordinatorTests {
         #expect(execution.sessionContext.activeStageID == "garage")
     }
 
+    @Test("TASK#10.5 relaunch restores active local team session")
+    func relaunchRestoresActiveLocalTeamSession() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let firstLaunchStore = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let firstLaunch = AppCoordinator(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            store: firstLaunchStore
+        )
+        firstLaunch.completeMockLogin()
+
+        #expect(try await firstLaunch.createTeam(entry: LocalTeamCatalogEntry(displayName: "Solar Hawks", carNumber: "42")))
+        #expect(await firstLaunch.selectTeam(id: 42))
+        #expect(await firstLaunch.openStage(id: "rain"))
+        #expect(await firstLaunch.saveStepDraft(TestStepDraft(stepID: "RT-08", outcome: .pass), testCaseID: "rain-rml"))
+
+        let relaunchedStore = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let relaunched = AppCoordinator(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            store: relaunchedStore
+        )
+        relaunched.completeMockLogin()
+        await relaunched.restoreTeamCatalog()
+
+        let restoredTeam = try #require(relaunched.eventCoordinator.sessionSelectionCoordinator.teams.first)
+        #expect(restoredTeam.school == "Solar Hawks")
+        #expect(restoredTeam.carNumber == "42")
+        #expect(restoredTeam.status == .resumed)
+        #expect(restoredTeam.currentStage == "Rain Test")
+        #expect(await relaunched.selectTeam(id: 42))
+
+        let execution = try #require(relaunched.eventCoordinator.executionCoordinator)
+        #expect(execution.sessionContext.team.school == "Solar Hawks")
+        #expect(execution.sessionContext.team.carNumber == "42")
+        #expect(execution.sessionContext.activeStageID == "rain")
+        #expect(execution.sessionContext.endedAt == nil)
+    }
+
+    @Test("TASK#10.5 completing active session records endedAt and returns to sessions")
+    func completingActiveSessionRecordsEndedAtAndReturnsToSessions() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: stages(),
+            store: store
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        let sessionID = try #require(coordinator.eventCoordinator.executionCoordinator?.sessionContext.sessionID)
+        let endedAt = Date(timeIntervalSince1970: 1_780_040_000)
+        #expect(await coordinator.completeActiveSession(endedAt: endedAt))
+
+        let completedSession = try await store.session(
+            eventID: eventID,
+            teamID: "car-28",
+            sessionID: sessionID,
+            access: .appAccess(eventID: eventID, teams: [teams()[1]])
+        )
+        #expect(completedSession.endedAt == endedAt)
+        #expect(coordinator.route == .sessionSelector)
+        #expect(coordinator.selectedScreen == .sessionSelector)
+        #expect(coordinator.eventCoordinator.executionCoordinator == nil)
+    }
+
     @Test("US-001 login completion opens session selector")
     func loginCompletionOpensSessionSelector() {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())

@@ -70,6 +70,7 @@ nonisolated struct InspectionSessionRecord: Identifiable, Codable, Hashable, Sen
     let status: InspectionEventSessionStatus
     let currentStageID: String
     let startedAt: Date
+    let endedAt: Date?
     let lastSavedAt: Date?
 
     init(
@@ -80,6 +81,7 @@ nonisolated struct InspectionSessionRecord: Identifiable, Codable, Hashable, Sen
         status: InspectionEventSessionStatus = .inProgress,
         currentStageID: String,
         startedAt: Date,
+        endedAt: Date? = nil,
         lastSavedAt: Date? = nil
     ) {
         self.id = id
@@ -89,6 +91,7 @@ nonisolated struct InspectionSessionRecord: Identifiable, Codable, Hashable, Sen
         self.status = status
         self.currentStageID = currentStageID
         self.startedAt = startedAt
+        self.endedAt = endedAt
         self.lastSavedAt = lastSavedAt
     }
 
@@ -101,7 +104,22 @@ nonisolated struct InspectionSessionRecord: Identifiable, Codable, Hashable, Sen
             status: status,
             currentStageID: stageID,
             startedAt: startedAt,
+            endedAt: endedAt,
             lastSavedAt: savedAt
+        )
+    }
+
+    func markingCompleted(at endedAt: Date) -> InspectionSessionRecord {
+        InspectionSessionRecord(
+            id: id,
+            eventID: eventID,
+            teamID: teamID,
+            judgeUserID: judgeUserID,
+            status: .submitted,
+            currentStageID: currentStageID,
+            startedAt: startedAt,
+            endedAt: endedAt,
+            lastSavedAt: lastSavedAt
         )
     }
 }
@@ -182,16 +200,19 @@ actor InspectionEventStore {
     private var sessionsByKey: [SessionKey: InspectionSessionRecord]
     private let persistenceService: TestCaseJSONPersistenceService
     private let teamCatalogService: LocalTeamCatalogService
+    private let sessionCatalogService: LocalSessionCatalogService
 
     init(
         events: [InspectionEventDefinition],
         teams: [InspectionEventTeamRecord],
         sessions: [InspectionSessionRecord] = [],
         persistenceService: TestCaseJSONPersistenceService = TestCaseJSONPersistenceService(),
-        teamCatalogService: LocalTeamCatalogService = LocalTeamCatalogService()
+        teamCatalogService: LocalTeamCatalogService = LocalTeamCatalogService(),
+        sessionCatalogService: LocalSessionCatalogService = LocalSessionCatalogService()
     ) {
         eventsByID = Dictionary(uniqueKeysWithValues: events.map { ($0.id, $0) })
         self.teamCatalogService = teamCatalogService
+        self.sessionCatalogService = sessionCatalogService
         var teamsByEvent = Dictionary(grouping: teams, by: \.eventID)
         for event in events {
             let persistedTeams = (try? teamCatalogService.loadTeams(eventID: event.id)) ?? []
@@ -200,8 +221,18 @@ actor InspectionEventStore {
         teamsByEventID = teamsByEvent.mapValues { records in
             Array(Dictionary(uniqueKeysWithValues: records.map { ($0.id, $0) }).values)
         }
+        var restoredSessions = sessions
+        for event in events {
+            for team in teamsByEventID[event.id, default: []] {
+                let persistedSessions = (try? sessionCatalogService.loadSessions(
+                    eventID: event.id,
+                    teamID: team.id
+                )) ?? []
+                restoredSessions.append(contentsOf: persistedSessions)
+            }
+        }
         sessionsByKey = Dictionary(
-            uniqueKeysWithValues: sessions.map { session in
+            uniqueKeysWithValues: restoredSessions.map { session in
                 (SessionKey(session), session)
             }
         )
@@ -308,6 +339,29 @@ actor InspectionEventStore {
         return session
     }
 
+    func activeSession(
+        eventID: String,
+        teamID: String,
+        access: InspectionEventUserAccess
+    ) throws -> InspectionSessionRecord? {
+        try requireTeam(eventID: eventID, teamID: teamID)
+        try requireAccess(access, eventID: eventID, teamID: teamID)
+
+        return sessionsByKey.values
+            .filter { session in
+                session.eventID == eventID
+                    && session.teamID == teamID
+                    && session.endedAt == nil
+                    && session.status != .submitted
+            }
+            .sorted { lhs, rhs in
+                let lhsSavedAt = lhs.lastSavedAt ?? lhs.startedAt
+                let rhsSavedAt = rhs.lastSavedAt ?? rhs.startedAt
+                return lhsSavedAt > rhsSavedAt
+            }
+            .first
+    }
+
     func startSession(
         eventID: String,
         teamID: String,
@@ -319,6 +373,10 @@ actor InspectionEventStore {
         try requireTeam(eventID: eventID, teamID: teamID)
         try requireAccess(access, eventID: eventID, teamID: teamID)
 
+        if let activeSession = try activeSession(eventID: eventID, teamID: teamID, access: access) {
+            return activeSession
+        }
+
         let session = InspectionSessionRecord(
             id: sessionID,
             eventID: eventID,
@@ -328,7 +386,33 @@ actor InspectionEventStore {
             startedAt: startedAt
         )
         sessionsByKey[SessionKey(session)] = session
+        try persistSessions(eventID: eventID, teamID: teamID)
         return session
+    }
+
+    @discardableResult
+    func completeSession(
+        eventID: String,
+        teamID: String,
+        sessionID: String,
+        endedAt: Date = Date(),
+        access: InspectionEventUserAccess
+    ) throws -> InspectionSessionRecord {
+        try requireAccess(access, eventID: eventID, teamID: teamID)
+
+        let key = SessionKey(eventID: eventID, teamID: teamID, sessionID: sessionID)
+        guard let session = sessionsByKey[key] else {
+            throw InspectionEventStoreError.sessionNotFound(
+                eventID: eventID,
+                teamID: teamID,
+                sessionID: sessionID
+            )
+        }
+
+        let completedSession = session.markingCompleted(at: endedAt)
+        sessionsByKey[key] = completedSession
+        try persistSessions(eventID: eventID, teamID: teamID)
+        return completedSession
     }
 
     @discardableResult
@@ -351,6 +435,7 @@ actor InspectionEventStore {
         let key = SessionKey(scope: scope)
         if let session = sessionsByKey[key] {
             sessionsByKey[key] = session.markingSaved(stageID: scope.stageID, at: updatedAt)
+            try persistSessions(eventID: scope.eventID, teamID: scope.teamID)
         }
 
         guard let draftFile = try await persistenceService.loadDraftFile(
@@ -400,6 +485,15 @@ actor InspectionEventStore {
         guard eventsByID[eventID] != nil else {
             throw InspectionEventStoreError.eventNotFound(eventID)
         }
+    }
+
+    private func persistSessions(
+        eventID: String,
+        teamID: String
+    ) throws {
+        let sessions = sessionsByKey.values
+            .filter { $0.eventID == eventID && $0.teamID == teamID }
+        try sessionCatalogService.saveSessions(sessions, eventID: eventID, teamID: teamID)
     }
 
     private func requireTeam(eventID: String, teamID: String) throws {
