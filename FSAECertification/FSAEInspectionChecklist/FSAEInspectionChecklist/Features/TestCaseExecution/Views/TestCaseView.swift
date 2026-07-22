@@ -475,6 +475,7 @@ private struct TestCaseStepCard: View {
         }
         .onChange(of: selectedOutcome) { oldOutcome, newOutcome in
             persistDraft()
+            #warning("PD: Review what flow makes more sense here")
             if oldOutcome == .pending, newOutcome.satisfiesRequiredOutcome {
                 advanceFromStep()
             }
