@@ -188,7 +188,7 @@ private struct TestCaseStepCarousel: View {
                     activeStepID = visibleStepID
                 }
             }
-//            .frame(minHeight: 430, alignment: .top)
+            .frame(alignment: .top)
             .padding(.horizontal, -horizontalBleed)
 
             TestCaseStepCarouselDots(
