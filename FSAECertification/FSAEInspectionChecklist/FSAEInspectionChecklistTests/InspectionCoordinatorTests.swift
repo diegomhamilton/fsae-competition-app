@@ -220,6 +220,52 @@ struct InspectionCoordinatorTests {
         #expect(await coordinator.completeActiveSession(endedAt: completedAt))
     }
 
+    @Test("TASK#10.5 debug action marks every test case incomplete so session cannot complete")
+    func debugActionMarksEveryTestCaseIncompleteSoSessionCannotComplete() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let testStages = debugCompletionStages()
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: testStages,
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: testStages,
+            store: store
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        let completedAt = Date(timeIntervalSince1970: 1_780_040_000)
+        #expect(await coordinator.markAllTestCasesPassedForDebug(at: completedAt))
+        var execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(execution.canCompleteSession)
+
+        #expect(await coordinator.markAllTestCasesIncompleteForDebug())
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(!execution.canCompleteSession)
+        #expect(execution.sessionBlockerCount == 2)
+
+        let egressDraft = try #require(execution.draftsByStageID["debug"]?["debug-egress"])
+        let measuredStep = try #require(egressDraft.stepDraft(stepID: "DBG-MEASURE")?.draft)
+        #expect(measuredStep.outcome == .pending)
+        #expect(measuredStep.measurementInput.isEmpty)
+        #expect(measuredStep.measurementValue == nil)
+
+        let evidenceDraft = try #require(execution.draftsByStageID["debug"]?["debug-evidence"])
+        let evidenceStep = try #require(evidenceDraft.stepDraft(stepID: "DBG-EVIDENCE")?.draft)
+        #expect(evidenceStep.outcome == .pending)
+        #expect(evidenceStep.evidenceAttachments.isEmpty)
+
+        #expect(!(await coordinator.completeActiveSession(endedAt: completedAt)))
+    }
+
     @Test("US-001 login completion opens session selector")
     func loginCompletionOpensSessionSelector() {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())

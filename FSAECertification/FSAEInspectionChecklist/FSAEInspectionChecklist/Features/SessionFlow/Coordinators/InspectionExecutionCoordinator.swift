@@ -264,6 +264,40 @@ final class InspectionExecutionCoordinator: ObservableObject {
         sessionContext.hasUnsavedDraft = false
         return canCompleteSession
     }
+
+    @discardableResult
+    func markAllTestCasesIncompleteForDebug() async -> Bool {
+        var nextDraftsByStageID = draftsByStageID
+
+        for stage in stageModels {
+            var stageDrafts = nextDraftsByStageID[stage.id] ?? [:]
+            for testCase in stage.orderedSections.flatMap(\.orderedTestCases) {
+                let testCaseDraft = TestCaseDraft(testCase: testCase)
+                stageDrafts[testCase.id] = testCaseDraft
+            }
+            nextDraftsByStageID[stage.id] = stageDrafts
+        }
+
+        draftsByStageID = nextDraftsByStageID
+        sessionContext.hasUnsavedDraft = true
+
+        for (stageID, stageDrafts) in nextDraftsByStageID {
+            for draft in stageDrafts.values {
+                do {
+                    _ = try await store.saveDraft(
+                        draft,
+                        scope: scope(stageID: stageID),
+                        access: access
+                    )
+                } catch {
+                    return false
+                }
+            }
+        }
+
+        sessionContext.hasUnsavedDraft = false
+        return !canCompleteSession
+    }
     #endif
 
     private func stage(id stageID: String) -> InspectionStage? {

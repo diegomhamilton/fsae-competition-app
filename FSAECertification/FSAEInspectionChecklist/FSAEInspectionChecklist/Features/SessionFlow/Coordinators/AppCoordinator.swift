@@ -160,6 +160,16 @@ final class AppCoordinator: ObservableObject {
         objectWillChange.send()
         return true
     }
+
+    @discardableResult
+    func markAllTestCasesIncompleteForDebug() async -> Bool {
+        guard await eventCoordinator.markAllTestCasesIncompleteForDebug() else {
+            return false
+        }
+
+        objectWillChange.send()
+        return true
+    }
     #endif
 
     @discardableResult

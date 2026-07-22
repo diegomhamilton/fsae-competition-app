@@ -164,6 +164,15 @@ final class InspectionEventCoordinator: ObservableObject {
 
         return await executionCoordinator.markAllTestCasesPassedForDebug(at: completedAt)
     }
+
+    @discardableResult
+    func markAllTestCasesIncompleteForDebug() async -> Bool {
+        guard let executionCoordinator else {
+            return false
+        }
+
+        return await executionCoordinator.markAllTestCasesIncompleteForDebug()
+    }
     #endif
 
     @discardableResult

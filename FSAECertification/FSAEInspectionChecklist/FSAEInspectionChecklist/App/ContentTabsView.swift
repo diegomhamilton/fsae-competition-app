@@ -52,6 +52,13 @@ struct ContentTabsView: View {
                                     await appCoordinator.markAllTestCasesPassedForDebug()
                                 }
                                 #endif
+                            },
+                            debugMarkAllIncomplete: {
+                                #if DEBUG
+                                Task {
+                                    await appCoordinator.markAllTestCasesIncompleteForDebug()
+                                }
+                                #endif
                             }
                         )
                     } else {
