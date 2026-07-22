@@ -30,6 +30,9 @@ Guide SwiftUI implementation for inspection event screens with composable views,
 ## Implementation Checklist
 
 - Keep Views as value views focused on rendering, user intents, accessibility, and small local UI state.
+- Keep related text field state in an isolated child view or form model when the parent view has complex lists, navigation, or async callbacks.
+- Snapshot form input into a typed value before calling async work; avoid reading mutable `@State` again from inside asynchronous closures.
+- For multi-field forms, wire each `TextField` to a distinct binding and submit through a typed payload so display strings, identifiers, and stored values cannot be accidentally swapped.
 - Move workflow decisions to Coordinators and business rules to Services.
 - Break complex screens into small components only when it improves readability or test seams.
 - Define user-visible text and accessibility text in structured per-file `Strings` enums.
@@ -44,6 +47,7 @@ Guide SwiftUI implementation for inspection event screens with composable views,
 - Structured `Strings` enums for visible and accessibility copy.
 - Preview states that support manual review.
 - View helper tests for presentation logic when the logic is nontrivial.
+- Focused form-state tests or manual checks that enter deliberately different values and verify each value appears in the intended output.
 
 ## Agent Usage
 
