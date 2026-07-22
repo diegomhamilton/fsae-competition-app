@@ -46,6 +46,7 @@ struct TestCaseView: View {
     let testCase: InspectionTestCaseViewState
     let openStepDetail: (InspectionTestStep) -> Void
     let updateStepDraft: (TestStepDraft) -> Void
+    @State private var stepScrollPosition = ScrollPosition()
     @FocusState private var focusedNoteStepID: String?
 
     var body: some View {
@@ -58,20 +59,26 @@ struct TestCaseView: View {
 
             TestCaseValidationSummaryPanel(testCase: testCase)
 
-            VStack(spacing: 14) {
-                ForEach(testCase.steps) { stepState in
-                    TestCaseStepCard(
-                        stageID: stage.id,
-                        testCaseID: testCase.id,
-                        state: stepState,
-                        focusedNoteStepID: $focusedNoteStepID
-                    ) {
-                        openStepDetail(stepState.step)
-                    } updateStepDraft: { stepDraft in
-                        updateStepDraft(stepDraft)
-                    }
-                }
+            TestCaseStepCarousel(
+                stageID: stage.id,
+                testCaseID: testCase.id,
+                steps: testCase.steps,
+                focusedNoteStepID: $focusedNoteStepID,
+                scrollPosition: $stepScrollPosition
+            ) { step in
+                openStepDetail(step)
+            } updateStepDraft: { stepDraft in
+                updateStepDraft(stepDraft)
+            } advanceFromStep: { stepID in
+                advanceToNextStep(after: stepID)
             }
+        }
+        .onChange(of: testCase.steps.map(\.id)) { _, stepIDs in
+            guard let firstStepID = stepIDs.first else {
+                return
+            }
+
+            stepScrollPosition.scrollTo(id: firstStepID)
         }
         .safeAreaInset(edge: .bottom) {
             if focusedNoteStepID != nil {
@@ -82,6 +89,83 @@ struct TestCaseView: View {
             }
         }
         .navigationTitle("Test Case")
+    }
+
+    private func advanceToNextStep(after stepID: String) {
+        guard let currentIndex = testCase.steps.firstIndex(where: { $0.id == stepID }) else {
+            return
+        }
+
+        let nextIndex = testCase.steps.index(after: currentIndex)
+        guard testCase.steps.indices.contains(nextIndex) else {
+            return
+        }
+
+        focusedNoteStepID = nil
+        withAnimation(.snappy) {
+            stepScrollPosition.scrollTo(id: testCase.steps[nextIndex].id)
+        }
+    }
+}
+
+private struct TestCaseStepCarousel: View {
+    let stageID: String
+    let testCaseID: String
+    let steps: [InspectionTestCaseStepViewState]
+    let focusedNoteStepID: FocusState<String?>.Binding
+    @Binding var scrollPosition: ScrollPosition
+    let openStepDetail: (InspectionTestStep) -> Void
+    let updateStepDraft: (TestStepDraft) -> Void
+    let advanceFromStep: (String) -> Void
+
+    var body: some View {
+        ScrollView(.horizontal) {
+            LazyHStack(alignment: .top, spacing: 14) {
+                ForEach(steps) { stepState in
+                    TestCaseStepCarouselItem {
+                        TestCaseStepCard(
+                            stageID: stageID,
+                            testCaseID: testCaseID,
+                            state: stepState,
+                            focusedNoteStepID: focusedNoteStepID
+                        ) {
+                            openStepDetail(stepState.step)
+                        } updateStepDraft: { stepDraft in
+                            updateStepDraft(stepDraft)
+                        } advanceFromStep: {
+                            advanceFromStep(stepState.id)
+                        }
+                    }
+                    .id(stepState.id)
+                }
+            }
+            .scrollTargetLayout()
+            .padding(.vertical, 2)
+        }
+        .scrollIndicators(.hidden)
+        .scrollTargetBehavior(.viewAligned)
+        .scrollPosition($scrollPosition)
+        .frame(minHeight: 430, alignment: .top)
+    }
+}
+
+private struct TestCaseStepCarouselItem<Content: View>: View {
+    let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    var body: some View {
+        content
+            .containerRelativeFrame(.horizontal) { length, _ in
+                length * 0.88
+            }
+            .scrollTransition(.interactive, axis: .horizontal) { content, phase in
+                content
+                    .scaleEffect(phase.isIdentity ? 1 : 0.96)
+                    .opacity(phase.isIdentity ? 1 : 0.82)
+            }
     }
 }
 
@@ -233,6 +317,7 @@ private struct TestCaseStepCard: View {
     let state: InspectionTestCaseStepViewState
     let focusedNoteStepID: FocusState<String?>.Binding
     let openStepDetail: () -> Void
+    let advanceFromStep: () -> Void
     @State private var selectedOutcome: InspectionOutcome
     @State private var noteText: String
     @State private var measurementValue: String
@@ -244,7 +329,8 @@ private struct TestCaseStepCard: View {
         state: InspectionTestCaseStepViewState,
         focusedNoteStepID: FocusState<String?>.Binding,
         openStepDetail: @escaping () -> Void,
-        updateStepDraft: @escaping (TestStepDraft) -> Void
+        updateStepDraft: @escaping (TestStepDraft) -> Void,
+        advanceFromStep: @escaping () -> Void
     ) {
         self.stageID = stageID
         self.testCaseID = testCaseID
@@ -252,6 +338,7 @@ private struct TestCaseStepCard: View {
         self.focusedNoteStepID = focusedNoteStepID
         self.openStepDetail = openStepDetail
         self.updateStepDraft = updateStepDraft
+        self.advanceFromStep = advanceFromStep
         _selectedOutcome = State(initialValue: state.outcome)
         _noteText = State(initialValue: state.notes)
         _measurementValue = State(initialValue: state.measurementInput)
@@ -386,8 +473,11 @@ private struct TestCaseStepCard: View {
                     ).rawValue
                 )
         }
-        .onChange(of: selectedOutcome) { _, _ in
+        .onChange(of: selectedOutcome) { oldOutcome, newOutcome in
             persistDraft()
+            if oldOutcome == .pending, newOutcome.satisfiesRequiredOutcome {
+                advanceFromStep()
+            }
         }
         .onChange(of: noteText) { _, _ in
             persistDraft()
@@ -399,11 +489,17 @@ private struct TestCaseStepCard: View {
             syncLocalState(with: newState)
         }
         .padding(14)
-        .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .background(Color.fsaeSurface.opacity(0.72), in: RoundedRectangle(cornerRadius: 8))
         .overlay {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(state.validationIssues.isEmpty ? Color.fsaeBorder : Color.fsaeRed.opacity(0.5))
         }
+        .overlay(alignment: .topLeading) {
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(.white.opacity(0.35), lineWidth: 1)
+        }
+        .shadow(color: Color.black.opacity(0.08), radius: 14, x: 0, y: 8)
         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseStepRow(testCaseID: testCaseID, stepID: state.id).rawValue)
     }
 
