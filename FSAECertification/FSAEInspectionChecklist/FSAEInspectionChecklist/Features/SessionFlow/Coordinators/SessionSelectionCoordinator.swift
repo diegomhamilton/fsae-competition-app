@@ -32,6 +32,15 @@ final class SessionSelectionCoordinator: ObservableObject {
         teams.first { $0.id == teamID }
     }
 
+    func updateTeams(_ teams: [InspectionTeam]) {
+        self.teams = teams
+        if let selectedTeamID,
+           !teams.contains(where: { $0.id == selectedTeamID }) {
+            self.selectedTeamID = nil
+            route = .roster
+        }
+    }
+
     @discardableResult
     func selectTeam(id teamID: Int) -> SessionSelectionIntent? {
         guard let team = team(id: teamID) else {
@@ -53,4 +62,3 @@ final class SessionSelectionCoordinator: ObservableObject {
         }
     }
 }
-

@@ -20,6 +20,11 @@ struct ContentTabsView: View {
                         Task {
                             await appCoordinator.selectTeam(id: teamID)
                         }
+                    } createTeam: { displayName, carNumber in
+                        try await appCoordinator.createTeam(
+                            displayName: displayName,
+                            carNumber: carNumber
+                        )
                     }
                 }
             }

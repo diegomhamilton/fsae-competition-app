@@ -12,7 +12,7 @@ final class InspectionEventCoordinator: ObservableObject {
     @Published private(set) var executionCoordinator: InspectionExecutionCoordinator?
     @Published private(set) var stages: [InspectionStage]
     private let store: InspectionEventStore
-    private let access: InspectionEventUserAccess
+    private var access: InspectionEventUserAccess
 
     init(
         eventID: String,
@@ -83,6 +83,31 @@ final class InspectionEventCoordinator: ObservableObject {
         )
     }
 
+    func restoreTeamCatalog() async {
+        guard let teams = try? await store.teams(eventID: eventID, access: access) else {
+            return
+        }
+
+        sessionSelectionCoordinator.updateTeams(teams.map { team(record: $0) })
+    }
+
+    @discardableResult
+    func createTeam(
+        displayName: String,
+        carNumber: String
+    ) async throws -> InspectionTeam? {
+        let record = try await store.createTeam(
+            eventID: eventID,
+            displayName: displayName,
+            carNumber: carNumber,
+            access: access
+        )
+        let teams = try await store.teams(eventID: eventID, access: access)
+            .map { team(record: $0) }
+        sessionSelectionCoordinator.updateTeams(teams)
+        return teams.first { $0.id == record.numericTeamID }
+    }
+
     @discardableResult
     func confirmPendingTeamSwitch() async -> Bool {
         guard let targetTeamID = executionCoordinator?.pendingSwitchTarget?.id else {
@@ -129,10 +154,29 @@ final class InspectionEventCoordinator: ObservableObject {
     }
 
     nonisolated static func teamRecordID(_ team: InspectionTeam) -> String {
-        "car-\(team.carNumber)"
+        InspectionEventStore.localTeamID(carNumber: team.carNumber)
     }
 
     nonisolated static func sessionID(eventID: String, team: InspectionTeam) -> String {
         "\(eventID)-\(teamRecordID(team))-local"
+    }
+}
+
+private extension InspectionEventCoordinator {
+    func team(record: InspectionEventTeamRecord) -> InspectionTeam {
+        InspectionTeam(
+            id: record.numericTeamID,
+            school: record.displayName,
+            carNumber: record.carNumber,
+            status: .ready,
+            currentStage: stages.sorted { $0.displayOrder < $1.displayOrder }.first?.title ?? "",
+            lastSaved: "Not started"
+        )
+    }
+}
+
+private extension InspectionEventTeamRecord {
+    var numericTeamID: Int {
+        Int(carNumber.filter(\.isNumber)) ?? abs(id.hashValue)
     }
 }

@@ -40,6 +40,11 @@ nonisolated struct InspectionEventTeamRecord: Identifiable, Codable, Hashable, S
     }
 }
 
+nonisolated enum LocalTeamCatalogValidationError: Error, Equatable, Sendable {
+    case missingDisplayName
+    case missingCarNumber
+}
+
 nonisolated enum InspectionEventSessionStatus: String, Codable, Hashable, Sendable {
     case inProgress
     case blocked
@@ -122,15 +127,18 @@ nonisolated struct InspectionEventUserAccess: Codable, Hashable, Sendable {
     let userID: String
     let permittedEventIDs: Set<String>
     let permittedTeamIDsByEventID: [String: Set<String>]
+    let permitsAllTeamsForPermittedEvents: Bool
 
     init(
         userID: String,
         permittedEventIDs: Set<String>,
-        permittedTeamIDsByEventID: [String: Set<String>]
+        permittedTeamIDsByEventID: [String: Set<String>],
+        permitsAllTeamsForPermittedEvents: Bool = false
     ) {
         self.userID = userID
         self.permittedEventIDs = permittedEventIDs
         self.permittedTeamIDsByEventID = permittedTeamIDsByEventID
+        self.permitsAllTeamsForPermittedEvents = permitsAllTeamsForPermittedEvents
     }
 
     func permits(eventID: String) -> Bool {
@@ -140,6 +148,10 @@ nonisolated struct InspectionEventUserAccess: Codable, Hashable, Sendable {
     func permits(eventID: String, teamID: String) -> Bool {
         guard permits(eventID: eventID) else {
             return false
+        }
+
+        if permitsAllTeamsForPermittedEvents {
+            return true
         }
 
         return permittedTeamIDsByEventID[eventID]?.contains(teamID) == true
@@ -158,15 +170,25 @@ actor InspectionEventStore {
     private var teamsByEventID: [String: [InspectionEventTeamRecord]]
     private var sessionsByKey: [SessionKey: InspectionSessionRecord]
     private let persistenceService: TestCaseJSONPersistenceService
+    private let teamCatalogService: LocalTeamCatalogService
 
     init(
         events: [InspectionEventDefinition],
         teams: [InspectionEventTeamRecord],
         sessions: [InspectionSessionRecord] = [],
-        persistenceService: TestCaseJSONPersistenceService = TestCaseJSONPersistenceService()
+        persistenceService: TestCaseJSONPersistenceService = TestCaseJSONPersistenceService(),
+        teamCatalogService: LocalTeamCatalogService = LocalTeamCatalogService()
     ) {
         eventsByID = Dictionary(uniqueKeysWithValues: events.map { ($0.id, $0) })
-        teamsByEventID = Dictionary(grouping: teams, by: \.eventID)
+        self.teamCatalogService = teamCatalogService
+        var teamsByEvent = Dictionary(grouping: teams, by: \.eventID)
+        for event in events {
+            let persistedTeams = (try? teamCatalogService.loadTeams(eventID: event.id)) ?? []
+            teamsByEvent[event.id, default: []].append(contentsOf: persistedTeams)
+        }
+        teamsByEventID = teamsByEvent.mapValues { records in
+            Array(Dictionary(uniqueKeysWithValues: records.map { ($0.id, $0) }).values)
+        }
         sessionsByKey = Dictionary(
             uniqueKeysWithValues: sessions.map { session in
                 (SessionKey(session), session)
@@ -197,6 +219,43 @@ actor InspectionEventStore {
                     lhs.carNumber < rhs.carNumber
                 }
             }
+    }
+
+    @discardableResult
+    func createTeam(
+        eventID: String,
+        displayName: String,
+        carNumber: String,
+        access: InspectionEventUserAccess
+    ) throws -> InspectionEventTeamRecord {
+        try requireEvent(eventID)
+        try requireAccess(access, eventID: eventID)
+
+        let trimmedDisplayName = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedCarNumber = carNumber.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmedDisplayName.isEmpty else {
+            throw LocalTeamCatalogValidationError.missingDisplayName
+        }
+        guard !trimmedCarNumber.isEmpty else {
+            throw LocalTeamCatalogValidationError.missingCarNumber
+        }
+
+        let record = InspectionEventTeamRecord(
+            id: Self.localTeamID(carNumber: trimmedCarNumber),
+            eventID: eventID,
+            displayName: trimmedDisplayName,
+            carNumber: trimmedCarNumber
+        )
+        var eventTeams = teamsByEventID[eventID, default: []]
+        if let existingIndex = eventTeams.firstIndex(where: { $0.id == record.id }) {
+            eventTeams[existingIndex] = record
+        } else {
+            eventTeams.append(record)
+        }
+        teamsByEventID[eventID] = eventTeams
+        try teamCatalogService.saveTeams(eventTeams, eventID: eventID)
+        return record
     }
 
     func sessions(
@@ -376,6 +435,16 @@ actor InspectionEventStore {
                 )
             }
         }
+    }
+
+    nonisolated static func localTeamID(carNumber: String) -> String {
+        let normalized = carNumber
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+            .replacingOccurrences(of: "/", with: "-")
+            .replacingOccurrences(of: ":", with: "-")
+            .replacingOccurrences(of: " ", with: "-")
+        return "car-\(normalized)"
     }
 }
 
