@@ -326,9 +326,11 @@ private struct TestCaseProgressBadge: View {
                 text: "\(progress.completeStepCount)/\(progress.totalStepCount) \(TestCaseView.Strings.complete)",
                 color: progress.blockedStepCount == 0 ? .fsaeGreen : .fsaeAmber
             )
-            Text("\(progress.pendingStepCount) \(TestCaseView.Strings.pending.lowercased())")
-                .font(.caption)
-                .foregroundStyle(Color.fsaeSecondaryText)
+            if (progress.pendingStepCount > 0) {
+                Text("\(progress.pendingStepCount) \(TestCaseView.Strings.pending.lowercased())")
+                    .font(.caption)
+                    .foregroundStyle(Color.fsaeSecondaryText)
+            }
         }
     }
 }
