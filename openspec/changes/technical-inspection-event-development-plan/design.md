@@ -13,16 +13,16 @@ This change is a development plan, not the full implementation. The first implem
 - Define a Swift 6, SwiftUI, Concurrency-first architecture using MVC: Models, Views, Coordinators, and Services.
 - Preserve the existing SwiftUI screens as the starting UI shape while replacing mock state with domain-backed state over incremental PRs.
 - Use the `.feature` file as the primary acceptance source for every implementation phase and test scenario.
-- Define concrete classes, services, coordinators, Swift Testing unit/integration tests, dedicated UI automation, snapshot tests, documentation, agents, and skill files.
-- Separate UI test integration into a dedicated PR after the model/coordinator/service foundations are stable.
+- Define concrete classes, services, coordinators, Swift Testing unit/integration tests, documentation, agents, and skill files.
+- Track dedicated UI automation and snapshot integration in Parking Lot 12 until the lean local full-suite session version is working.
 - Require localizable strings through structured `Strings` enums in each view or component file.
 - Require accessibility identifiers and VoiceOver-complete flows from the first UI-facing slices.
 
 **Non-Goals:**
 
 - Implement production authentication, cloud sync, or remote event APIs in the initial plan.
-- Add real camera/file attachment storage before metadata-only evidence and validation are stable.
-- Merge UI tests into every implementation PR; they are planned as a dedicated PR with clear coverage boundaries.
+- Add camera/gallery/Files evidence input, attachment creation, or media storage before the no-evidence full-suite version is stable.
+- Merge UI tests into Task 10 implementation PRs; UI automation and snapshots are Parking Lot 12 follow-ups.
 - Rewrite the entire UI before validating the incremental inspection flow.
 - Replace the bundled JSON resources with a network content system.
 
@@ -231,9 +231,9 @@ Rationale:
 4. Implement the Test Step view slice with mock JSON fixtures, models, coordinator intent tests, view helper tests, accessibility identifiers, and localized string enums.
 5. Implement the Test Case view slice by composing steps and validation summaries.
 6. Implement the Test Case list and stage views by loading bundled JSON through `InspectionContentService`.
-7. Add session selection, active team routing, Application Support JSON persistence, submissions, and rechecks incrementally after the stage list is stable.
-8. Add dedicated UI automation and snapshot tests in a dedicated PR.
-9. Add step-view and general UX follow-up work for camera evidence capture, egress stopwatch timing, and inspection ergonomics after the core flow is stable.
+7. Add the lean Task 10 working version: local team catalog, no-default-mock launch, session start/end timestamps, relaunch restore, no-evidence full-suite completion, reset, and past execution history.
+8. Track actual Task 10 token and time usage while completing the remaining Task 10 PRs.
+9. Move rechecks, sticker eligibility, camera/gallery/Files evidence input, media storage, stopwatch timing, UI automation, snapshots, and broad UX polish to Parking Lot 12.
 
 Rollback strategy:
 - Planning PRs can be reverted independently.
