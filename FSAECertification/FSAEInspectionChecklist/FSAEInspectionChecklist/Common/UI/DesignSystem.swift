@@ -6,31 +6,22 @@
 import SwiftUI
 
 struct ScreenShell<Content: View>: View {
-    let eyebrow: String
     let title: String
     let subtitle: String
     @ViewBuilder var content: Content
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(eyebrow.uppercased())
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(Color.fsaePrimary)
-                    Text(title)
-                        .font(.largeTitle.weight(.bold))
-                        .foregroundStyle(Color.fsaeText)
-                    Text(subtitle)
-                        .font(.subheadline)
-                        .foregroundStyle(Color.fsaeSecondaryText)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 12)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(Color.fsaePrimary)
+                    .padding(.leading, 12)
 
                 content
             }
-            .padding(20)
+            .padding(.top, 4)
+            .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
         }
         .background(Color.fsaeBackground)
     }
@@ -105,3 +96,4 @@ extension View {
         #endif
     }
 }
+

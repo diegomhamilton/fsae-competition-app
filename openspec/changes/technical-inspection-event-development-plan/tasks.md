@@ -109,6 +109,8 @@
 - [ ] 11.0 UI Improvements:
     11.0.1 "Add Team" should be a button that when clicked expanded the section to input team's name and number
     11.0.2 Stage View should show directly the same information that is currently seen in TestCaseView
+    11.0.3 [x] Simplify the shared screen shell by removing redundant prototype eyebrow and header treatment while preserving event, team, stage, and test-case context.
+    11.0.4 [x] Remove redundant active-team status pills and align the Sessions screen title/subtitle with the active inspection workflow.
 - [ ] 11.1 Make validation blockers actionable by tapping or selecting a blocker to focus the missing outcome, note, measurement, or evidence control, then persist the correction immediately to the test case JSON draft.
 - [ ] 11.2 Review `Pending` semantics so incomplete required steps are represented as derived draft state rather than a confusing judge decision.
 - [ ] 11.3 Clarify notes and evidence states with labels such as "Add Evidence", "1 Evidence", "Required Evidence Missing", "Add Note", and "Edit Note".

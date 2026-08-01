@@ -57,7 +57,6 @@ struct FullStageView: View {
         let state = FullStageViewState(stage: stage, draftsByTestCaseID: draftsByTestCaseID)
 
         ScreenShell(
-            eyebrow: Strings.eyebrow,
             title: state.stageTitle,
             subtitle: subtitle
         ) {

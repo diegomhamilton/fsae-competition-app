@@ -38,7 +38,6 @@ struct StepOverviewView: View {
         let step = currentStep
 
         ScreenShell(
-            eyebrow: Strings.eyebrow,
             title: step.title,
             subtitle: subtitle
         ) {

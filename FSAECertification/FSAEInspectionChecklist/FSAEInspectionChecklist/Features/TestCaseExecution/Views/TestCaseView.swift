@@ -51,7 +51,6 @@ struct TestCaseView: View {
 
     var body: some View {
         ScreenShell(
-            eyebrow: Strings.eyebrow,
             title: testCase.title,
             subtitle: "\(team.carNumber) \(team.school) · \(stage.title) · \(Strings.subtitle)"
         ) {

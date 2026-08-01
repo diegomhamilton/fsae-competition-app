@@ -36,21 +36,14 @@ struct ActiveTeamDashboardView: View {
         let selectedStageID = coordinator.activeStage?.id
 
         ScreenShell(
-            eyebrow: Strings.eyebrow,
             title: "\(team.carNumber) \(team.school)",
             subtitle: Strings.subtitle
         ) {
             ContentPanel {
-                HStack(alignment: .top, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("\(team.carNumber) \(team.school)")
-                            .font(.title3.weight(.bold))
-                            .foregroundStyle(Color.fsaeText)
-                        HStack {
-                            StatusPill(text: team.lastSaved, color: Color.fsaeBlue)
-                            StatusPill(text: team.currentStage, color: Color.fsaeGray)
-                        }
-                    }
+                HStack(alignment: .center, spacing: 12) {
+                    Text("\(team.carNumber) \(team.school)")
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(Color.fsaeText)
                     Spacer()
                     Button {
                         requestTeamSwitch()
