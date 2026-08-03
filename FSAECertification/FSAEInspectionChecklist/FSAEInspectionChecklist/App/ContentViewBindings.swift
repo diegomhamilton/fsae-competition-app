@@ -20,26 +20,4 @@ struct ContentViewBindings {
         )
     }
 
-    var teamSwitchConfirmationBinding: Binding<Bool> {
-        Binding(
-            get: {
-                executionCoordinator?.pendingSwitchTarget != nil
-            },
-            set: { isPresented in
-                if !isPresented {
-                    appCoordinator.cancelTeamSwitch()
-                }
-            }
-        )
-    }
-
-    var nextSwitchTeamID: Int? {
-        guard let activeTeamID = executionCoordinator?.activeTeam.id else {
-            return nil
-        }
-
-        return appCoordinator.eventCoordinator.sessionSelectionCoordinator.teams
-            .first { $0.id != activeTeamID }?
-            .id
-    }
 }

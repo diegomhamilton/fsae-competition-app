@@ -40,7 +40,6 @@ struct StageChecklistView: View {
         )
 
         ScreenShell(
-            eyebrow: Strings.eyebrow,
             title: stage.title,
             subtitle: "\(team.carNumber) \(team.school) · ordered test cases grouped by inspection section."
         ) {

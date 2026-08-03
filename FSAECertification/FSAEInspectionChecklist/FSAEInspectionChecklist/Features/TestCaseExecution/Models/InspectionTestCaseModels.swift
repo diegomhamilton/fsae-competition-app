@@ -266,10 +266,6 @@ nonisolated struct ComposedTestStepDraft: Identifiable, Codable, Hashable, Senda
             return false
         }
 
-        if step.requiresEvidence && draft.evidenceAttachments.isEmpty {
-            return false
-        }
-
         return true
     }
 }

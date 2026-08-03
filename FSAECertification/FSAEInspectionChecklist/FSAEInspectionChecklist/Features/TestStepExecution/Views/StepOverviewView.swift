@@ -22,7 +22,7 @@ struct StepOverviewView: View {
         static let measurementHelp = "Enter a numeric value using the allowed precision for this measurement."
         static let evidenceRequired = "Evidence required"
         static let evidenceOptional = "Evidence optional"
-        static let noEvidenceAdded = "No evidence metadata added."
+        static let noEvidenceAdded = "Evidence metadata deferred."
         static let evidenceOptionalMessage = "Evidence metadata is optional for this step."
     }
 
@@ -38,7 +38,6 @@ struct StepOverviewView: View {
         let step = currentStep
 
         ScreenShell(
-            eyebrow: Strings.eyebrow,
             title: step.title,
             subtitle: subtitle
         ) {

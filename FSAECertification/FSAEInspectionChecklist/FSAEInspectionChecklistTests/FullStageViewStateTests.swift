@@ -31,19 +31,19 @@ struct FullStageViewStateTests {
         #expect(viewState.stageTitle == "Rain Test")
         #expect(viewState.testCaseCount == 2)
         #expect(viewState.stepCount == 3)
-        #expect(viewState.completeStepCount == 1)
-        #expect(viewState.blockerCount == 2)
-        #expect(viewState.progressText == "1/3 complete")
-        #expect(viewState.blockerText == "2 blockers")
+        #expect(viewState.completeStepCount == 2)
+        #expect(viewState.blockerCount == 1)
+        #expect(viewState.progressText == "2/3 complete")
+        #expect(viewState.blockerText == "1 blocker")
         #expect(!viewState.canSubmit)
-        #expect(viewState.validationSummary.blockerCount == 2)
-        #expect(viewState.validationSummary.issues.map(\.stepID) == ["RT-08", "EG-14"])
+        #expect(viewState.validationSummary.blockerCount == 1)
+        #expect(viewState.validationSummary.issues.map(\.stepID) == ["EG-14"])
         #expect(!viewState.canSubmit)
         #expect(viewState.validationSummary.firstBlockingRoute == FullStageBlockingRoute(
             stageID: "06_rain",
-            testCaseID: "rain-rml",
-            stepID: "RT-08",
-            issueID: "missingRequiredEvidence.RT-08"
+            testCaseID: "egress-case",
+            stepID: "EG-14",
+            issueID: "invalidMeasurement.EG-14.outsideAllowedRange"
         ))
     }
 
