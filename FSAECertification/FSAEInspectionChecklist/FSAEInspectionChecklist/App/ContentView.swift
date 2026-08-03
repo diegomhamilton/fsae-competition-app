@@ -17,27 +17,6 @@ struct ContentView: View {
                 await appCoordinator.restoreTeamCatalog()
                 await loadInspectionContent()
             }
-            .sheet(isPresented: bindings.teamSwitchConfirmationBinding) {
-                if let executionCoordinator = bindings.executionCoordinator,
-                   executionCoordinator.pendingSwitchTarget != nil {
-                    TeamSwitchConfirmationView(
-                        coordinator: executionCoordinator,
-                        cancelSwitch: {
-                            appCoordinator.cancelTeamSwitch()
-                        },
-                        confirmSwitch: {
-                            Task {
-                                await appCoordinator.confirmTeamSwitch()
-                            }
-                        }
-                    )
-                    .presentationDetents([.medium])
-                }
-            }
-    }
-
-    private var bindings: ContentViewBindings {
-        ContentViewBindings(appCoordinator: appCoordinator)
     }
 
     private func loadInspectionContent() async {

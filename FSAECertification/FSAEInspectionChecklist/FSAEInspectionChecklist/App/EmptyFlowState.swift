@@ -10,7 +10,6 @@ struct EmptyFlowState: View {
 
     var body: some View {
         ScreenShell(
-            eyebrow: "Inspection Flow",
             title: title,
             subtitle: ""
         ) {

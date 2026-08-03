@@ -73,8 +73,8 @@ struct InspectionValidationServiceTests {
         #expect(valid.isEmpty)
     }
 
-    @Test("US-004 blocks submission when required evidence metadata is missing")
-    func us004BlocksMissingRequiredEvidenceMetadata() {
+    @Test("TASK#10.6 does not block submission when required evidence metadata is missing")
+    func task1006DoesNotBlockMissingRequiredEvidenceMetadata() {
         let step = inspectionStep(id: "RT-08", title: "RML flashing", requiresEvidence: true)
         let evidence = EvidenceAttachmentMetadata(
             id: "rml-visible-photo",
@@ -90,10 +90,7 @@ struct InspectionValidationServiceTests {
             result: StepResult(outcome: .pass, evidenceAttachments: [evidence])
         )
 
-        #expect(missingIssues.map(\.code) == [.missingRequiredEvidence(stepID: "RT-08")])
-        #expect(missingIssues.map(\.localizationKey) == [.missingRequiredEvidence])
-        #expect(missingIssues.first?.localizationArguments["minimumAttachmentCount"] == "1")
-        #expect(missingIssues.map(\.message) == ["RML flashing requires evidence metadata."])
+        #expect(missingIssues.isEmpty)
         #expect(validIssues.isEmpty)
     }
 
@@ -123,13 +120,11 @@ struct InspectionValidationServiceTests {
 
         #expect(issues.map(\.code) == [
             .missingRequiredOutcome(stepID: "EG-14"),
-            .invalidMeasurement(stepID: "EG-14", error: .outsideAllowedRange),
-            .missingRequiredEvidence(stepID: "EG-14")
+            .invalidMeasurement(stepID: "EG-14", error: .outsideAllowedRange)
         ])
         #expect(issues.map(\.localizationKey) == [
             .missingRequiredOutcome,
-            .invalidMeasurementRange,
-            .missingRequiredEvidence
+            .invalidMeasurementRange
         ])
     }
 }

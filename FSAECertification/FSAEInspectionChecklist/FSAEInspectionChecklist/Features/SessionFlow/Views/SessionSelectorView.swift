@@ -7,9 +7,9 @@ import SwiftUI
 
 struct SessionSelectorView: View {
     fileprivate enum Strings {
-        static let eyebrow = "Session Selection"
-        static let title = "Select Team"
-        static let subtitle = "Start or resume a locally stored inspection session for the current event."
+//        static let eyebrow = "Session Selection"
+        static let title = "Active Inspections"
+        static let subtitle = "Select Team to start or resume a locally stored inspection session for the current event."
         static let resumeAvailable = "Resume available"
         static let blocked = "Blocked"
         static let localDrafts = "Local drafts are saved by team and session."
@@ -41,7 +41,6 @@ struct SessionSelectorView: View {
 
     var body: some View {
         ScreenShell(
-            eyebrow: Strings.eyebrow,
             title: Strings.title,
             subtitle: Strings.subtitle
         ) {
@@ -112,7 +111,7 @@ struct SessionSelectorView: View {
                     .foregroundStyle(Color.fsaeSecondaryText)
             }
         }
-        .navigationTitle("Sessions")
+        .navigationTitle(Strings.title)
     }
 
     private var createTeamPanel: some View {

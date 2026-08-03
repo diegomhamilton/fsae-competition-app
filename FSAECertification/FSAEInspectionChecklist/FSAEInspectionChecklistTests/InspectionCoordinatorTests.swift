@@ -175,8 +175,8 @@ struct InspectionCoordinatorTests {
         #expect(coordinator.eventCoordinator.executionCoordinator != nil)
     }
 
-    @Test("TASK#10.5 debug action marks every test case passing so session can complete")
-    func debugActionMarksEveryTestCasePassingSoSessionCanComplete() async throws {
+    @Test("TASK#10.6 debug action marks every test case passing without evidence so session can complete")
+    func debugActionMarksEveryTestCasePassingWithoutEvidenceSoSessionCanComplete() async throws {
         let rootDirectory = try temporaryStoreDirectory()
         defer { try? FileManager.default.removeItem(at: rootDirectory) }
         let eventID = "event-1"
@@ -215,7 +215,7 @@ struct InspectionCoordinatorTests {
         let evidenceDraft = try #require(execution.draftsByStageID["debug"]?["debug-evidence"])
         let evidenceStep = try #require(evidenceDraft.stepDraft(stepID: "DBG-EVIDENCE")?.draft)
         #expect(evidenceStep.outcome == .pass)
-        #expect(evidenceStep.evidenceAttachments.count == 1)
+        #expect(evidenceStep.evidenceAttachments.isEmpty)
 
         #expect(await coordinator.completeActiveSession(endedAt: completedAt))
     }
@@ -400,8 +400,8 @@ struct InspectionCoordinatorTests {
         #expect(execution.activeStage?.id == "rain")
     }
 
-    @Test("US-006 team switch routes through confirmation")
-    func teamSwitchRoutesThroughConfirmation() async throws {
+    @Test("US-006 team switch is disabled for the Task 10.6 PR")
+    func teamSwitchIsDisabledForTask10_6PR() async throws {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())
         coordinator.completeMockLogin()
         #expect(await coordinator.selectTeam(id: 13))
@@ -409,16 +409,11 @@ struct InspectionCoordinatorTests {
         let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
         execution.markUnsavedDraft(true)
 
-        #expect(coordinator.requestTeamSwitch(to: 28))
+        #expect(!coordinator.requestTeamSwitch(to: 28))
         #expect(execution.stageNavigationPath == [])
-        #expect(execution.pendingSwitchTarget?.id == 28)
-
-        #expect(await coordinator.confirmTeamSwitch())
-
-        let switchedExecution = try #require(coordinator.eventCoordinator.executionCoordinator)
-        #expect(coordinator.selectedScreen == .dashboard)
-        #expect(switchedExecution.sessionContext.team.id == 28)
-        #expect(switchedExecution.sessionContext.activeStageID == "garage")
+        #expect(execution.pendingSwitchTarget == nil)
+        #expect(execution.sessionContext.team.id == 13)
+        #expect(!(await coordinator.confirmTeamSwitch()))
     }
 
     @Test("TASK#7.8 coordinator selected state feeds backed views")
