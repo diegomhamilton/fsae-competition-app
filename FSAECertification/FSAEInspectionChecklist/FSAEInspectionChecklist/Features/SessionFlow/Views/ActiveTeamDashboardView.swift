@@ -8,8 +8,7 @@ import SwiftUI
 struct ActiveTeamDashboardView: View {
     fileprivate enum Strings {
         static let eyebrow = "Active Team"
-        static let subtitle = "Review the locally stored session, stage progress, and team-switch controls."
-        static let switchTeam = "Switch Team"
+        static let subtitle = "Review the locally stored session and stage progress."
         static let overallProgress = "Overall progress"
         static let openBlockers = "Open blockers"
         static let currentStage = "Current Stage"
@@ -25,7 +24,6 @@ struct ActiveTeamDashboardView: View {
 
     @ObservedObject var coordinator: InspectionExecutionCoordinator
     let openStage: (String) -> Void
-    let requestTeamSwitch: () -> Void
     let completeSession: () -> Void
     let debugMarkAllPassed: () -> Void
     let debugMarkAllIncomplete: () -> Void
@@ -44,19 +42,6 @@ struct ActiveTeamDashboardView: View {
                     Text("\(team.carNumber) \(team.school)")
                         .font(.title3.weight(.bold))
                         .foregroundStyle(Color.fsaeText)
-                    Spacer()
-                    Button {
-                        requestTeamSwitch()
-                    } label: {
-                        Label("Switch", systemImage: "person.2.badge.gearshape")
-                            .labelStyle(.iconOnly)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
-                    .accessibilityLabel(Strings.switchTeam)
-                    .accessibilityIdentifier(
-                        InspectionAccessibilityIdentifier.activeTeamDashboardSwitchTeamAction(teamID: team.id).rawValue
-                    )
                 }
             }
 

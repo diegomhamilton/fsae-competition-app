@@ -400,8 +400,8 @@ struct InspectionCoordinatorTests {
         #expect(execution.activeStage?.id == "rain")
     }
 
-    @Test("US-006 team switch routes through confirmation")
-    func teamSwitchRoutesThroughConfirmation() async throws {
+    @Test("US-006 team switch is disabled for the Task 10.6 PR")
+    func teamSwitchIsDisabledForTask10_6PR() async throws {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())
         coordinator.completeMockLogin()
         #expect(await coordinator.selectTeam(id: 13))
@@ -409,16 +409,11 @@ struct InspectionCoordinatorTests {
         let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
         execution.markUnsavedDraft(true)
 
-        #expect(coordinator.requestTeamSwitch(to: 28))
+        #expect(!coordinator.requestTeamSwitch(to: 28))
         #expect(execution.stageNavigationPath == [])
-        #expect(execution.pendingSwitchTarget?.id == 28)
-
-        #expect(await coordinator.confirmTeamSwitch())
-
-        let switchedExecution = try #require(coordinator.eventCoordinator.executionCoordinator)
-        #expect(coordinator.selectedScreen == .dashboard)
-        #expect(switchedExecution.sessionContext.team.id == 28)
-        #expect(switchedExecution.sessionContext.activeStageID == "garage")
+        #expect(execution.pendingSwitchTarget == nil)
+        #expect(execution.sessionContext.team.id == 13)
+        #expect(!(await coordinator.confirmTeamSwitch()))
     }
 
     @Test("TASK#7.8 coordinator selected state feeds backed views")

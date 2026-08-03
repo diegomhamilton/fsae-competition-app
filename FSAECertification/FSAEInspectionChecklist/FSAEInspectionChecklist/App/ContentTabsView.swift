@@ -36,11 +36,6 @@ struct ContentTabsView: View {
                                     await appCoordinator.openStage(id: stageID)
                                 }
                             },
-                            requestTeamSwitch: {
-                                if let targetTeamID = bindings.nextSwitchTeamID {
-                                    appCoordinator.requestTeamSwitch(to: targetTeamID)
-                                }
-                            },
                             completeSession: {
                                 Task {
                                     await appCoordinator.completeActiveSession()

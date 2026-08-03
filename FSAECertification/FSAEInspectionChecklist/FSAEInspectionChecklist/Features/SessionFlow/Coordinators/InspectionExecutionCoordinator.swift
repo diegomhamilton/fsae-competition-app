@@ -151,13 +151,8 @@ final class InspectionExecutionCoordinator: ObservableObject {
 
     @discardableResult
     func requestTeamSwitch(to targetTeamID: Int) -> Bool {
-        guard let targetTeam = teams.first(where: { $0.id == targetTeamID }),
-              targetTeam.id != sessionContext.team.id else {
-            return false
-        }
-
-        pendingSwitchTarget = targetTeam
-        return true
+        // Team switching is intentionally disabled for the Task 10.6 PR.
+        return false
     }
 
     func cancelTeamSwitch() {
