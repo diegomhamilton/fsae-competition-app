@@ -49,6 +49,7 @@ Define and maintain the test strategy for the technical inspection event workflo
 - Map tests back to `.feature` tags or scenario titles where practical.
 - Prioritize Judge and Student personas when drafting inspection, validation, recheck, sticker eligibility, and accessibility scenarios.
 - Add unit test coverage for JSON decoding, ordered content, stable IDs, validation policies, coordinator routing, draft isolation, submission snapshots, and recheck state.
+- For multi-field forms, use distinct sentinel values in tests and manual checks, then assert each field reaches the domain/service/store boundary in the correct property.
 - Plan UI tests for login, session selector, stage navigation, test case navigation, test step editing, validation blocking, team switching, recheck review, sticker eligibility, and identifier discoverability.
 - Plan snapshot tests for high-value states: test step, test case, stage list, validation blocked, recheck required, and sticker eligible.
 - Cover positive cases such as successful submission, valid measurement entry, evidence attachment, session resume, and history review.
@@ -63,6 +64,7 @@ Define and maintain the test strategy for the technical inspection event workflo
 - Persona coverage notes that explain which user need each scenario protects.
 - Dedicated UI test PR scope once navigation hooks and accessibility identifiers are stable.
 - Manual validation notes for the PR `Validation` section.
+- Manual validation must include the exact entered values for identity-sensitive fields, especially display name versus car number, and the persisted/displayed result.
 
 ## Required Skill Usage
 
@@ -81,5 +83,6 @@ Use only when the test scope requires it:
 
 - Each planned behavior has at least one positive or negative test path.
 - High-risk behaviors also have edge-case coverage.
+- Identity-sensitive UI inputs have positive tests with deliberately different values and negative tests for swapped, duplicated, empty, or missing values where the domain allows validation.
 - Tests identify the related feature scenario, persona, or accessibility requirement.
 - UI and snapshot test work is kept in the dedicated PR until identifiers and navigation hooks are stable.

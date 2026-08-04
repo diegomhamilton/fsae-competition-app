@@ -354,6 +354,63 @@ nonisolated struct InspectionAccessibilityIdentifier: RawRepresentable, Equatabl
         Self(rawValue: "inspection.testStep.\(stepID).done")
     }
 
+    static func sessionSelectorTeamRow(teamID: Int) -> Self {
+        Self(rawValue: "inspection.sessionSelector.team.\(teamID).row")
+    }
+
+    static func sessionSelectorTeamStatus(teamID: Int) -> Self {
+        Self(rawValue: "inspection.sessionSelector.team.\(teamID).status")
+    }
+
+    static func sessionSelectorTeamResumeIndicator(teamID: Int) -> Self {
+        Self(rawValue: "inspection.sessionSelector.team.\(teamID).resume")
+    }
+
+    static func sessionSelectorTeamBlockedIndicator(teamID: Int) -> Self {
+        Self(rawValue: "inspection.sessionSelector.team.\(teamID).blocked")
+    }
+
+    static let sessionSelectorCreateTeamForm = Self(rawValue: "inspection.sessionSelector.createTeam.form")
+    static let sessionSelectorCreateTeamNameField = Self(rawValue: "inspection.sessionSelector.createTeam.name")
+    static let sessionSelectorCreateTeamCarNumberField = Self(rawValue: "inspection.sessionSelector.createTeam.carNumber")
+    static let sessionSelectorCreateTeamAction = Self(rawValue: "inspection.sessionSelector.createTeam.action")
+
+    static func activeTeamDashboardSwitchTeamAction(teamID: Int) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).switchTeam")
+    }
+
+    static func activeTeamDashboardOpenCurrentStageAction(teamID: Int, stageID: String) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).stage.\(stageID).openCurrent")
+    }
+
+    static func activeTeamDashboardCompleteSessionAction(teamID: Int) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).completeSession")
+    }
+
+    static func activeTeamDashboardDebugMarkAllPassedAction(teamID: Int) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).debug.markAllPassed")
+    }
+
+    static func activeTeamDashboardDebugMarkAllIncompleteAction(teamID: Int) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).debug.markAllIncomplete")
+    }
+
+    static func activeTeamDashboardStageRow(teamID: Int, stageID: String) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).stage.\(stageID).row")
+    }
+
+    static func activeTeamDashboardStageStatus(teamID: Int, stageID: String) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).stage.\(stageID).status")
+    }
+
+    static func teamSwitchCancelAction(currentTeamID: Int, targetTeamID: Int) -> Self {
+        Self(rawValue: "inspection.teamSwitch.current.\(currentTeamID).target.\(targetTeamID).cancel")
+    }
+
+    static func teamSwitchConfirmAction(currentTeamID: Int, targetTeamID: Int) -> Self {
+        Self(rawValue: "inspection.teamSwitch.current.\(currentTeamID).target.\(targetTeamID).confirm")
+    }
+
     static func testCaseValidationSummary(testCaseID: String) -> Self {
         Self(rawValue: "inspection.testCase.\(testCaseID).validation.summary")
     }

@@ -6,9 +6,27 @@
 import SwiftUI
 
 struct ActiveTeamDashboardView: View {
+    fileprivate enum Strings {
+        static let eyebrow = "Active Team"
+        static let subtitle = "Review the locally stored session and stage progress."
+        static let overallProgress = "Overall progress"
+        static let openBlockers = "Open blockers"
+        static let currentStage = "Current Stage"
+        static let openStage = "Open Stage"
+        static let completeSession = "Complete Session"
+        static let completeSessionBlocked = "Resolve validation blockers before completing this session."
+        static let debugMarkAllPassed = "Mark All Passed"
+        static let debugMarkAllIncomplete = "Mark All Incomplete"
+        static let stages = "Stages"
+        static let complete = "Complete"
+        static let noBlockers = "No blockers"
+    }
+
     @ObservedObject var coordinator: InspectionExecutionCoordinator
     let openStage: (String) -> Void
-    let requestTeamSwitch: () -> Void
+    let completeSession: () -> Void
+    let debugMarkAllPassed: () -> Void
+    let debugMarkAllIncomplete: () -> Void
 
     var body: some View {
         let team = coordinator.activeTeam
@@ -21,43 +39,19 @@ struct ActiveTeamDashboardView: View {
         let selectedStageID = coordinator.activeStage?.id
 
         ScreenShell(
-            eyebrow: "SC-002 Active Team Dashboard",
             title: "\(team.carNumber) \(team.school)",
-            subtitle: "Active team context, current stage, inspection progress, and the switch-team action."
+            subtitle: Strings.subtitle
         ) {
-            ContentPanel {
-                HStack(alignment: .top, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("\(team.carNumber) \(team.school)")
-                            .font(.title3.weight(.bold))
-                            .foregroundStyle(Color.fsaeText)
-                        HStack {
-                            StatusPill(text: team.lastSaved, color: Color.fsaeBlue)
-                            StatusPill(text: team.currentStage, color: Color.fsaeGray)
-                        }
-                    }
-                    Spacer()
-                    Button {
-                        requestTeamSwitch()
-                    } label: {
-                        Label("Switch", systemImage: "person.2.badge.gearshape")
-                            .labelStyle(.iconOnly)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
-                    .accessibilityLabel("Switch Team")
-                }
-            }
 
             HStack(spacing: 12) {
-                MetricTile(value: "\(overallProgressPercent(stageRows: stageRows))%", label: "Overall progress", systemImage: "chart.pie", color: .fsaeGreen)
-                MetricTile(value: "\(stageRows.map(\.blockerCount).reduce(0, +))", label: "Open blockers", systemImage: "exclamationmark.triangle", color: .fsaeAmber)
+                MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: Strings.overallProgress, systemImage: "chart.pie", color: .fsaeGreen)
+                MetricTile(value: "\(stages.map(\.blockerCount).reduce(0, +))", label: Strings.openBlockers, systemImage: "exclamationmark.triangle", color: .fsaeAmber)
             }
 
             ContentPanel {
                 HStack {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Current Stage")
+                        Text(Strings.currentStage)
                             .font(.caption.weight(.bold))
                             .foregroundStyle(Color.fsaeSecondaryText)
                         Text(team.currentStage)
@@ -72,147 +66,124 @@ struct ActiveTeamDashboardView: View {
                         openStage(stageID)
                     }
                 } label: {
-                    Label("Open Stage", systemImage: "arrow.right.circle.fill")
+                    Label(Strings.openStage, systemImage: "arrow.right.circle.fill")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardOpenCurrentStageAction(
+                        teamID: team.id,
+                        stageID: selectedStageID ?? "none"
+                    ).rawValue
+                )
+                Button {
+                    completeSession()
+                } label: {
+                    Label(Strings.completeSession, systemImage: "checkmark.seal.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .disabled(!coordinator.canCompleteSession)
+                .accessibilityHint(coordinator.canCompleteSession ? "" : Strings.completeSessionBlocked)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardCompleteSessionAction(teamID: team.id).rawValue
+                )
+                #if DEBUG
+                Text("Debug Actions")
+                Button {
+                    debugMarkAllPassed()
+                } label: {
+                    Label(Strings.debugMarkAllPassed, systemImage: "checkmark.circle")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllPassedAction(teamID: team.id).rawValue
+                )
+                Button {
+                    debugMarkAllIncomplete()
+                } label: {
+                    Label(Strings.debugMarkAllIncomplete, systemImage: "xmark.circle")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllIncompleteAction(teamID: team.id).rawValue
+                )
+                #endif
             }
 
             VStack(alignment: .leading, spacing: 12) {
-                Text("Stages")
+                Text(Strings.stages)
                     .font(.headline)
                     .foregroundStyle(Color.fsaeText)
                 ForEach(stageRows) { stageRow in
                     Button {
-                        openStage(stageRow.id)
+                        openStage(stage.stageID)
                     } label: {
-                        StageRow(stageRow: stageRow, isSelected: stageRow.id == selectedStageID)
+                        StageRow(
+                            teamID: team.id,
+                            state: stage,
+                            isSelected: stage.stageID == selectedStageID
+                        )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.activeTeamDashboardStageRow(
+                            teamID: team.id,
+                            stageID: stage.stageID
+                        ).rawValue
+                    )
                 }
             }
 
         }
-        .navigationTitle("Team")
+        .navigationTitle("\(team.carNumber) \(team.school)")
     }
 
-    private func overallProgressPercent(stageRows: [ActiveTeamStageRowState]) -> Int {
-        guard !stageRows.isEmpty else {
+    private func overallProgressPercent(stages: [FullStageViewState]) -> Int {
+        guard !stages.isEmpty else {
             return 0
         }
 
-        return Int(stageRows.map(\.progressFraction).reduce(0, +) / Double(stageRows.count) * 100)
-    }
-}
-
-struct ActiveTeamStageRowState: Identifiable, Equatable, Sendable {
-    let stage: InspectionStage
-    let completedStepCount: Int
-    let totalStepCount: Int
-    let blockerCount: Int
-
-    var id: String {
-        stage.id
-    }
-
-    var progressFraction: Double {
-        guard totalStepCount > 0 else {
-            return 0
-        }
-
-        return Double(completedStepCount) / Double(totalStepCount)
-    }
-
-    var status: ActiveTeamStageStatus {
-        if totalStepCount == 0 {
-            return .notStarted
-        }
-
-        if blockerCount > 0 {
-            return .blocked
-        }
-
-        return completedStepCount == totalStepCount ? .complete : .inProgress
-    }
-
-    var statusText: String {
-        switch status {
-        case .notStarted, .inProgress, .complete:
-            status.displayName
-        case .blocked:
-            switch blockerCount {
-            case 1: "1 blocker"
-            default: "\(blockerCount) blockers"
-            }
-        }
-    }
-
-    init(
-        stage: InspectionStage,
-        draftsByTestCaseID: [String: TestCaseDraft] = [:]
-    ) {
-        self.stage = stage
-
-        let testCases = stage.orderedSections.flatMap(\.orderedTestCases)
-        let summaries = testCases.map { testCase in
-            InspectionTestCaseViewState(
-                testCase: testCase,
-                draft: draftsByTestCaseID[testCase.id] ?? TestCaseDraft(testCase: testCase)
-            )
-        }
-
-        completedStepCount = summaries.map(\.progressSummary.completeStepCount).reduce(0, +)
-        totalStepCount = summaries.map(\.progressSummary.totalStepCount).reduce(0, +)
-        blockerCount = summaries.map(\.validationSummary.blockerCount).reduce(0, +)
-    }
-}
-
-enum ActiveTeamStageStatus: Equatable, Sendable {
-    case notStarted
-    case inProgress
-    case blocked
-    case complete
-
-    var displayName: String {
-        switch self {
-        case .notStarted: "Not Started"
-        case .inProgress: "In Progress"
-        case .blocked: "Blocked"
-        case .complete: "Complete"
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .notStarted: .fsaeGray
-        case .inProgress: .fsaeBlue
-        case .blocked: .fsaeAmber
-        case .complete: .fsaeGreen
-        }
+        return Int(stages.map(\.progressFraction).reduce(0, +) / Double(stages.count) * 100)
     }
 }
 
 private struct StageRow: View {
-    let stageRow: ActiveTeamStageRowState
+    let teamID: Int
+    let state: FullStageViewState
     let isSelected: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(stageRow.stage.title)
+                    Text(state.stageTitle)
                         .font(.headline)
                         .foregroundStyle(Color.fsaeText)
-                    Text(stageRow.stage.subtitle)
+                    Text(state.stageSubtitle)
                         .font(.caption)
                         .foregroundStyle(Color.fsaeSecondaryText)
                 }
                 Spacer()
-                StatusPill(text: stageRow.statusText, color: stageRow.status.color)
+                StatusPill(
+                    text: state.blockerText == ActiveTeamDashboardView.Strings.noBlockers ? ActiveTeamDashboardView.Strings.complete : state.blockerText,
+                    color: state.blockerCount == 0 ? Color.fsaeGreen : Color.fsaeAmber
+                )
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardStageStatus(
+                        teamID: teamID,
+                        stageID: state.stageID
+                    ).rawValue
+                )
             }
-            ProgressView(value: stageRow.progressFraction)
-                .tint(stageRow.status == .complete ? Color.fsaeGreen : Color.fsaePrimary)
+            ProgressView(value: state.progressFraction)
+                .tint(state.blockerCount == 0 ? Color.fsaeGreen : Color.fsaePrimary)
         }
         .padding(14)
         .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))

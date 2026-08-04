@@ -6,9 +6,11 @@
 extension InspectionEventStore {
     static func appStore(
         eventID: String,
-        teams: [InspectionTeam],
+        teams: [InspectionTeam] = [],
         stages: [InspectionStage],
-        persistenceService: TestCaseJSONPersistenceService = TestCaseJSONPersistenceService()
+        persistenceService: TestCaseJSONPersistenceService = TestCaseJSONPersistenceService(),
+        teamCatalogService: LocalTeamCatalogService = LocalTeamCatalogService(),
+        sessionCatalogService: LocalSessionCatalogService = LocalSessionCatalogService()
     ) -> InspectionEventStore {
         InspectionEventStore(
             events: [
@@ -20,13 +22,15 @@ extension InspectionEventStore {
             ],
             teams: teams.map { team in
                 InspectionEventTeamRecord(
-                    id: InspectionEventCoordinator.teamRecordID(team),
+                    id: InspectionEventStore.localTeamID(carNumber: team.carNumber),
                     eventID: eventID,
                     displayName: team.school,
                     carNumber: team.carNumber
                 )
             },
-            persistenceService: persistenceService
+            persistenceService: persistenceService,
+            teamCatalogService: teamCatalogService,
+            sessionCatalogService: sessionCatalogService
         )
     }
 }
@@ -42,7 +46,20 @@ extension InspectionEventUserAccess {
             permittedEventIDs: [eventID],
             permittedTeamIDsByEventID: [
                 eventID: Set(teams.map(InspectionEventCoordinator.teamRecordID))
-            ]
+            ],
+            permitsAllTeamsForPermittedEvents: teams.isEmpty
+        )
+    }
+
+    static func localJudgeAccess(
+        eventID: String,
+        userID: String = "local-judge"
+    ) -> InspectionEventUserAccess {
+        InspectionEventUserAccess(
+            userID: userID,
+            permittedEventIDs: [eventID],
+            permittedTeamIDsByEventID: [:],
+            permitsAllTeamsForPermittedEvents: true
         )
     }
 }

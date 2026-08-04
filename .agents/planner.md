@@ -46,6 +46,7 @@ Sequence the technical inspection event work into small, manually verifiable fea
 - Use predictable branch names such as `codex/inspection-event-test-step`, `codex/inspection-event-test-case`, `codex/inspection-event-stage-content`, `codex/inspection-event-session-flow`, and `codex/inspection-event-ui-tests`.
 - Split tasks into reviewable commits where each commit completes a coherent task or tightly related task pair.
 - Define manual validation checkpoints before implementation begins.
+- For forms and identity-sensitive data, define checkpoints with exact distinct sample values and expected persistence/display results.
 - Draft PR descriptions using the PR 1 template:
 
 ```md
@@ -77,6 +78,7 @@ Sequence the technical inspection event work into small, manually verifiable fea
 - Ordered slice plan with tasks, owners, dependencies, and validation checkpoints.
 - Branch name, commit grouping, and optional task branch recommendation.
 - PR description draft with validation placeholders and linked feature scenarios.
+- PR validation checklist that names any field-identity checks, including the exact user-entered values and the observed stored/displayed values.
 - Merge guidance that states whether the PR should squash merge and why.
 - OpenSpec task updates for completed owned work.
 
@@ -96,5 +98,6 @@ Use only when the planning decision requires it:
 ## Definition of Ready
 
 - The slice has a feature branch name, task order, test scope, manual validation goal, and PR description outline.
+- The manual validation goal includes at least one concrete end-to-end value trace when the slice moves user input into persistence, history, snapshots, or network/API calls.
 - Each task can be reviewed independently or as a tightly related pair.
 - Any optional task branch split has a clear reason and a planned squash path back to the feature branch.

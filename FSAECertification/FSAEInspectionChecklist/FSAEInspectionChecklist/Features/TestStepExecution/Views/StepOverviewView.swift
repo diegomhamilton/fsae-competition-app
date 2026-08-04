@@ -7,8 +7,8 @@ import SwiftUI
 
 struct StepOverviewView: View {
     fileprivate enum Strings {
-        static let eyebrow = "SC-004 · SC-005 · SC-006 Step Details"
-        static let subtitle = "One overview for outcome, notes, measurements, and evidence using mock JSON-compatible inspection test step data."
+        static let eyebrow = "Step Details"
+        static let subtitle = "Record the outcome, notes, measurements, and evidence metadata for this inspection step."
         static let outcome = "Outcome"
         static let measurement = "Measurement"
         static let measurementValue = "Value"
@@ -16,16 +16,21 @@ struct StepOverviewView: View {
         static let dismissKeyboard = "Done"
         static let done = "Done"
         static let evidence = "Evidence"
-        static let addEvidence = "Add Fake Attachment"
+        static let addEvidence = "Add Evidence"
         static let required = "Required"
         static let optional = "Optional"
+        static let measurementHelp = "Enter a numeric value using the allowed precision for this measurement."
+        static let evidenceRequired = "Evidence required"
+        static let evidenceOptional = "Evidence optional"
+        static let noEvidenceAdded = "Evidence metadata deferred."
+        static let evidenceOptionalMessage = "Evidence metadata is optional for this step."
     }
 
     @ObservedObject var coordinator: InspectionExecutionCoordinator
     let completeStep: () -> Void
     @State private var selectedOutcome = InspectionOutcome.pending
-    @State private var measurementValue = "4.72"
-    @State private var noteText = "Observed by lead judge at station 3."
+    @State private var measurementValue = ""
+    @State private var noteText = ""
     @State private var evidenceAttachments: [EvidenceAttachmentMetadata] = []
     @FocusState private var isNotesFocused: Bool
 
@@ -33,9 +38,8 @@ struct StepOverviewView: View {
         let step = currentStep
 
         ScreenShell(
-            eyebrow: Strings.eyebrow,
             title: step.title,
-            subtitle: Strings.subtitle
+            subtitle: subtitle
         ) {
             ContentPanel {
                 HStack(alignment: .top) {
@@ -157,10 +161,16 @@ struct StepOverviewView: View {
     private var measurementHelpText: String {
         let step = currentStep
         guard let range = step.measurementRange else {
-            return "Mock schema: numeric value with precision and range validation."
+            return Strings.measurementHelp
         }
 
         return "Allowed range: \(range.minimum) to \(range.maximum) \(range.unit.rawValue)."
+    }
+
+    private var subtitle: String {
+        let team = coordinator.activeTeam
+        let stageTitle = coordinator.activeStage?.title ?? "Active stage"
+        return "\(team.carNumber) \(team.school) · \(stageTitle) · \(Strings.subtitle)"
     }
 
     private func persistDraft() {
@@ -200,11 +210,11 @@ private struct EvidenceOverview: View {
                     text: requiresEvidence ? StepOverviewView.Strings.required : StepOverviewView.Strings.optional,
                     color: requiresEvidence ? .fsaeRed : .fsaeGray
                 )
-                .accessibilityValue(requiresEvidence ? "Evidence required" : "Evidence optional")
+                .accessibilityValue(requiresEvidence ? StepOverviewView.Strings.evidenceRequired : StepOverviewView.Strings.evidenceOptional)
             }
 
             if attachments.isEmpty {
-                Text(requiresEvidence ? "No attachment metadata added." : "Attachment metadata optional.")
+                Text(requiresEvidence ? StepOverviewView.Strings.noEvidenceAdded : StepOverviewView.Strings.evidenceOptionalMessage)
                     .font(.footnote)
                     .foregroundStyle(Color.fsaeSecondaryText)
             } else {
@@ -214,8 +224,8 @@ private struct EvidenceOverview: View {
             Button {
                 attachments.append(
                     EvidenceAttachmentMetadata(
-                        id: "fake-attachment-\(attachments.count + 1)",
-                        displayName: "Fake attachment \(attachments.count + 1)",
+                        id: "evidence-attachment-\(attachments.count + 1)",
+                        displayName: "Evidence \(attachments.count + 1)",
                         mediaType: .photo,
                         source: .mockAttachment,
                         createdAt: Date()

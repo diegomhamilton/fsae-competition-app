@@ -93,26 +93,38 @@
 - [x] 9.9 Split `AppCoordinators.swift` into smaller route and coordinator ownership files without changing route names, public intents, selected screen behavior, team switching, or stage/case/step routing.
 - [x] 9.10 Split `ContentView.swift` into smaller root composition, tab composition, binding helper, and empty-state files without changing top-level tabs or current navigation behavior.
 
-## 10. Local Stored Judge Experience UX Follow-up
+## 10. Local Full-Suite Session Version
 
-- [ ] 10.0 Track Tentpole 2 continuation items moved from Task 7: former 7.10 recheck service, 7.11 sticker eligibility, and 7.12 manual validation are sequenced as 10.9, 10.10, and 10.11.
-- [ ] 10.1 Audit `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `TestCaseView`, `StepOverviewView`, and `TeamSwitchConfirmationView` for the minimum UX polish needed after Task 7 so a judge can complete a fully local, stored inspection without prototype copy, unclear navigation, or dead-end states.
-- [ ] 10.2 Replace prototype header/background treatment and "mock state" copy with stable event, team, stage, and test case context that survives relaunch restore and makes the active local session obvious.
-- [ ] 10.3 Refine the test case screen so the primary next judge action is visually dominant: compact case summary, actionable validation message, and focused step editor for one-step cases.
-- [ ] 10.4 Refactor step metadata layout to avoid wrapping/truncation in compact widths and larger Dynamic Type: show step ID/title/status first, move rule references to a secondary row, and keep the open-step action compact.
-- [ ] 10.5 Make validation blockers actionable by tapping or selecting a blocker to focus the missing outcome, note, measurement, or evidence control, then persist the correction immediately to the test case JSON draft.
-- [ ] 10.6 Review `Pending` semantics so incomplete required steps are represented as derived draft state rather than a confusing judge decision when Pass, Fail, and N/A are the actual choices.
-- [ ] 10.7 Clarify notes and evidence states with labels such as "Add Evidence", "1 Evidence", "Required Evidence Missing", "Add Note", and "Edit Note", and ensure each state round-trips through the local test case JSON draft.
-- [ ] 10.8 Add camera/photo capture support for evidence-required steps, persisting captured file metadata with the test case JSON draft while keeping full media storage behind a reviewed storage policy.
-- [ ] 10.9 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
-- [ ] 10.10 Implement sticker eligibility calculation from submitted stages and open rechecks.
-- [ ] 10.11 Manually validate start, resume after app relaunch, submit, blocked submit, team switch, recheck, sticker eligibility, per-test-case JSON files, and team submission folders against the `.feature` file.
-- [ ] 10.12 Add stopwatch-style timing support for egress-test measurement steps, including start, stop, reset, manual override, validation against the allowed range, draft persistence, and accessible announcements.
-- [ ] 10.13 Add focused tests and manual validation for relaunch restore UX, actionable validation focus, camera evidence metadata, stopwatch timing, keyboard dismissal, VoiceOver operation, and common judge recovery paths.
+- [x] 10.0 Track Tentpole 2 continuation items moved from Task 7. Recheck service, sticker eligibility, and broad manual validation were previously sequenced as 10.9, 10.10, and 10.11, then moved to Parking Lot 12 when Task 10 was narrowed to a working local full-suite session version without evidence attachments.
+- [x] 10.1 Audit `SessionSelectorView`, `ActiveTeamDashboardView`, `FullStageView`, `TestCaseView`, `StepOverviewView`, and `TeamSwitchConfirmationView` for the minimum UX polish needed after Task 7 so a judge can complete a fully local, stored inspection without prototype copy, unclear navigation, or dead-end states.
+- [x] 10.2 Replace prototype header/background treatment and "mock state" copy with stable event, team, stage, and test case context that survives relaunch restore and makes the active local session obvious.
+- [x] 10.3 Refactor judge navigation so `Sessions`, `Team`, and `Stage` are the top-level landmarks, remove the standalone `Case` tab, and make Stage contain the case UI with guided test-case and step-detail routing for next-action work.
+- [x] 10.4 Add a local team catalog and no-default-mock production launch. A user can create a team entry with display name and car number, and `MockInspectionData.teams` remains available only for tests, previews, or explicit debug fixtures.
+- [x] 10.5 Add local session lifecycle for one team: start session, record `startedAt`, end/complete session, record `endedAt`, persist active session state, and restore the active session after relaunch.
+- [x] 10.6 Allow a judge to run the full inspection test suite without attaching evidence. Evidence-required controls remain visible as deferred/metadata-only status, but evidence attachments do not block completion in this working version.
+- [ ] 10.7 Add session recovery and history: reset an active session with confirmation, preserve past completed executions, show past sessions with start/end timestamps, and document the validation path for checking past executions.
+- [ ] 10.8 Track actual token and time usage for each Task 10 PR while completing Task 10. Update `task-10-full-suite-session-plan.xlsx` with estimated tokens, actual input/output/total tokens, estimated time, actual time, branch, PR, and completion notes for 10.4 through 10.7.
 
-## 11. Parking Lot: Future EV Inspection Enhancements
-- [ ] 11.0 Review token usage for each session to solve tasks 1 - 10. Compare peak usages, code SHA at that time, and how that specific part of code changed since then to identify gaps in the prompts. Propose changes in my workflow to reduce token usage to get similar or better output. Use "~/.codex/sessions" .jsonl files to get details about sessions. This is a purely process task. DO NOT OUTPUT code, you can still use code/scripts to specific tasks such as parsing data from files.
-- [ ] 11.1 Map EV safety context by test case and step, including energized warnings, accumulator-related cautions, and required PPE guidance where the inspection content or rule metadata supports it.
-- [ ] 11.2 Design expandable rule reference presentation so long references such as `EV.7.5.5 / BR.4.6.1.1` can be reviewed without squeezing into small chips.
-- [ ] 11.3 Add optional "Why this matters" or inspection hint content for dense EV checks, starting with temperature monitoring and maintenance plug foolproof-connection cases.
-- [ ] 11.4 Decide whether EV-specific hints live in bundled inspection JSON, a separate reviewed metadata file, or future remote event content before implementing UI.
+## 11.
+- [ ] 11.0 UI Improvements:
+    11.0.1 "Add Team" should be a button that when clicked expanded the section to input team's name and number
+    11.0.2 [x] Stage View should show directly the same information that is currently seen in TestCaseView
+    11.0.3 [x] Simplify the shared screen shell by removing redundant prototype eyebrow and header treatment while preserving event, team, stage, and test-case context.
+    11.0.4 [x] Remove redundant active-team status pills and align the Sessions screen title/subtitle with the active inspection workflow.
+    11.0.5 [x] Disable team-switch operations for the Task 10.6 PR while retaining team selection at session start.
+- [ ] 11.1 Make validation blockers actionable by tapping or selecting a blocker to focus the missing outcome, note, measurement, or evidence control, then persist the correction immediately to the test case JSON draft.
+- [ ] 11.2 Review `Pending` semantics so incomplete required steps are represented as derived draft state rather than a confusing judge decision.
+- [ ] 11.3 Clarify notes and evidence states with labels such as "Add Evidence", "1 Evidence", "Required Evidence Missing", "Add Note", and "Edit Note".
+- [ ] 11.4 Add camera capture, gallery/photo-library selection, Files import, attachment creation, and media-storage policy for evidence-required steps.
+- [ ] 11.5 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
+- [ ] 11.6 Implement sticker eligibility calculation from submitted stages and open rechecks.
+- [ ] 11.7 Add stopwatch-style timing support for egress-test measurement steps.
+
+## 12. Parking Lot
+- [ ] 12.1 Refactor step metadata layout to avoid wrapping/truncation in compact widths and larger Dynamic Type.
+- [ ] 12.2 Add dedicated UI automation launch fixtures, workflow automation, accessibility identifier assertions, snapshots, and coverage documentation.
+- [ ] 12.3 Review completed Task 10 token usage. Compare estimates, actual usage, code SHA at the time, and implementation outcomes to propose workflow changes that reduce token usage for similar future tasks.
+- [ ] 12.4 Map EV safety context by test case and step, including energized warnings, accumulator-related cautions, and required PPE guidance where the inspection content or rule metadata supports it.
+- [ ] 12.5 Design expandable rule reference presentation so long references such as `EV.7.5.5 / BR.4.6.1.1` can be reviewed without squeezing into small chips.
+- [ ] 12.6 Add optional "Why this matters" or inspection hint content for dense EV checks, starting with temperature monitoring and maintenance plug foolproof-connection cases.
+- [ ] 12.7 Decide whether EV-specific hints live in bundled inspection JSON, a separate reviewed metadata file, or future remote event content before implementing UI.

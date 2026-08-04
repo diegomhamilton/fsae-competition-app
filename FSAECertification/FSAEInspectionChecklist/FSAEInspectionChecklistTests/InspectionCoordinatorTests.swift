@@ -4,6 +4,268 @@ import Testing
 
 @MainActor
 struct InspectionCoordinatorTests {
+    @Test("TASK#10.4 production app launch does not seed mock teams")
+    func productionAppLaunchDoesNotSeedMockTeams() {
+        let coordinator = AppCoordinator(stages: stages())
+
+        #expect(coordinator.eventCoordinator.sessionSelectionCoordinator.teams.isEmpty)
+    }
+
+    @Test("TASK#10.4 judge can create a local team and start its session")
+    func judgeCanCreateLocalTeamAndStartSession() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            store: store
+        )
+        coordinator.completeMockLogin()
+
+        #expect(try await coordinator.createTeam(entry: LocalTeamCatalogEntry(displayName: "UFPE Racing", carNumber: "28")))
+        #expect(coordinator.eventCoordinator.sessionSelectionCoordinator.teams.map(\.school) == ["UFPE Racing"])
+        #expect(await coordinator.selectTeam(id: 28))
+
+        let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(execution.sessionContext.team.school == "UFPE Racing")
+        #expect(execution.sessionContext.team.carNumber == "28")
+        #expect(execution.sessionContext.activeStageID == "garage")
+    }
+
+    @Test("TASK#10.5 relaunch restores active local team session")
+    func relaunchRestoresActiveLocalTeamSession() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let firstLaunchStore = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let firstLaunch = AppCoordinator(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            store: firstLaunchStore
+        )
+        firstLaunch.completeMockLogin()
+
+        #expect(try await firstLaunch.createTeam(entry: LocalTeamCatalogEntry(displayName: "Solar Hawks", carNumber: "42")))
+        #expect(await firstLaunch.selectTeam(id: 42))
+        #expect(await firstLaunch.openStage(id: "rain"))
+        #expect(await firstLaunch.saveStepDraft(TestStepDraft(stepID: "RT-08", outcome: .pass), testCaseID: "rain-rml"))
+
+        let relaunchedStore = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let relaunched = AppCoordinator(
+            eventID: eventID,
+            teams: [],
+            stages: stages(),
+            store: relaunchedStore
+        )
+        relaunched.completeMockLogin()
+        await relaunched.restoreTeamCatalog()
+
+        let restoredTeam = try #require(relaunched.eventCoordinator.sessionSelectionCoordinator.teams.first)
+        #expect(restoredTeam.school == "Solar Hawks")
+        #expect(restoredTeam.carNumber == "42")
+        #expect(restoredTeam.status == .resumed)
+        #expect(restoredTeam.currentStage == "Rain Test")
+        #expect(await relaunched.selectTeam(id: 42))
+
+        let execution = try #require(relaunched.eventCoordinator.executionCoordinator)
+        #expect(execution.sessionContext.team.school == "Solar Hawks")
+        #expect(execution.sessionContext.team.carNumber == "42")
+        #expect(execution.sessionContext.activeStageID == "rain")
+        #expect(execution.sessionContext.endedAt == nil)
+    }
+
+    @Test("TASK#10.5 completing active session records endedAt and returns to sessions")
+    func completingActiveSessionRecordsEndedAtAndReturnsToSessions() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: stages(),
+            store: store
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        let sessionID = try #require(coordinator.eventCoordinator.executionCoordinator?.sessionContext.sessionID)
+        let endedAt = Date(timeIntervalSince1970: 1_780_040_000)
+        #expect(await coordinator.markAllTestCasesPassedForDebug(at: endedAt))
+        #expect(await coordinator.completeActiveSession(endedAt: endedAt))
+
+        let completedSession = try await store.session(
+            eventID: eventID,
+            teamID: "car-28",
+            sessionID: sessionID,
+            access: .appAccess(eventID: eventID, teams: [teams()[1]])
+        )
+        #expect(completedSession.endedAt == endedAt)
+        #expect(coordinator.route == .sessionSelector)
+        #expect(coordinator.selectedScreen == .sessionSelector)
+        #expect(coordinator.eventCoordinator.executionCoordinator == nil)
+    }
+
+    @Test("TASK#10.5 active session completion is blocked while validation blockers remain")
+    func activeSessionCompletionIsBlockedWhileValidationBlockersRemain() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: stages(),
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: stages(),
+            store: store
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        let sessionID = execution.sessionContext.sessionID
+
+        #expect(!execution.canCompleteSession)
+        #expect(!((await coordinator.completeActiveSession(endedAt: Date(timeIntervalSince1970: 1_780_040_000)))))
+
+        let activeSession = try await store.session(
+            eventID: eventID,
+            teamID: "car-28",
+            sessionID: sessionID,
+            access: .appAccess(eventID: eventID, teams: [teams()[1]])
+        )
+        #expect(activeSession.endedAt == nil)
+        #expect(coordinator.route == .inspection)
+        #expect(coordinator.selectedScreen == .dashboard)
+        #expect(coordinator.eventCoordinator.executionCoordinator != nil)
+    }
+
+    @Test("TASK#10.6 debug action marks every test case passing without evidence so session can complete")
+    func debugActionMarksEveryTestCasePassingWithoutEvidenceSoSessionCanComplete() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let testStages = debugCompletionStages()
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: testStages,
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: testStages,
+            store: store
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        var execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(!execution.canCompleteSession)
+
+        let completedAt = Date(timeIntervalSince1970: 1_780_040_000)
+        #expect(await coordinator.markAllTestCasesPassedForDebug(at: completedAt))
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(execution.canCompleteSession)
+        #expect(execution.sessionBlockerCount == 0)
+
+        let egressDraft = try #require(execution.draftsByStageID["debug"]?["debug-egress"])
+        let measuredStep = try #require(egressDraft.stepDraft(stepID: "DBG-MEASURE")?.draft)
+        #expect(measuredStep.outcome == .pass)
+        #expect(measuredStep.measurementInput == "0")
+        #expect(measuredStep.measurementValue != nil)
+
+        let evidenceDraft = try #require(execution.draftsByStageID["debug"]?["debug-evidence"])
+        let evidenceStep = try #require(evidenceDraft.stepDraft(stepID: "DBG-EVIDENCE")?.draft)
+        #expect(evidenceStep.outcome == .pass)
+        #expect(evidenceStep.evidenceAttachments.isEmpty)
+
+        #expect(await coordinator.completeActiveSession(endedAt: completedAt))
+    }
+
+    @Test("TASK#10.5 debug action marks every test case incomplete so session cannot complete")
+    func debugActionMarksEveryTestCaseIncompleteSoSessionCannotComplete() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let testStages = debugCompletionStages()
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: testStages,
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: testStages,
+            store: store
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        let completedAt = Date(timeIntervalSince1970: 1_780_040_000)
+        #expect(await coordinator.markAllTestCasesPassedForDebug(at: completedAt))
+        var execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(execution.canCompleteSession)
+
+        #expect(await coordinator.markAllTestCasesIncompleteForDebug())
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(!execution.canCompleteSession)
+        #expect(execution.sessionBlockerCount == 2)
+
+        let egressDraft = try #require(execution.draftsByStageID["debug"]?["debug-egress"])
+        let measuredStep = try #require(egressDraft.stepDraft(stepID: "DBG-MEASURE")?.draft)
+        #expect(measuredStep.outcome == .pending)
+        #expect(measuredStep.measurementInput.isEmpty)
+        #expect(measuredStep.measurementValue == nil)
+
+        let evidenceDraft = try #require(execution.draftsByStageID["debug"]?["debug-evidence"])
+        let evidenceStep = try #require(evidenceDraft.stepDraft(stepID: "DBG-EVIDENCE")?.draft)
+        #expect(evidenceStep.outcome == .pending)
+        #expect(evidenceStep.evidenceAttachments.isEmpty)
+
+        #expect(!(await coordinator.completeActiveSession(endedAt: completedAt)))
+    }
+
     @Test("US-001 login completion opens session selector")
     func loginCompletionOpensSessionSelector() {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())
@@ -72,11 +334,52 @@ struct InspectionCoordinatorTests {
         #expect(coordinator.openTestStep(id: "RT-08"))
 
         let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
-        #expect(coordinator.selectedScreen == .stepDetail)
-        #expect(execution.route == .testStep(stageID: "rain", testCaseID: "rain-rml", stepID: "RT-08"))
+        #expect(coordinator.selectedScreen == .stageChecklist)
+        #expect(execution.stageNavigationPath == [
+            .testCase(testCaseID: "rain-rml"),
+            .testStep(testCaseID: "rain-rml", stepID: "RT-08")
+        ])
         #expect(execution.activeStage?.title == "Rain Test")
         #expect(execution.activeTestCase?.title == "Rain test RML behavior")
         #expect(execution.activeStep?.title == "RML flashing")
+    }
+
+    @Test("TASK#10.3 judge landmarks exclude standalone case and step tabs")
+    func guidedNavigationExcludesStandaloneCaseAndStepTabs() {
+        #expect(ProposedScreen.topLevelJudgeLandmarks == [.sessionSelector, .dashboard, .stageChecklist])
+        #expect(ProposedScreen.topLevelJudgeLandmarks.contains(.testCase) == false)
+        #expect(ProposedScreen.topLevelJudgeLandmarks.contains(.stepDetail) == false)
+    }
+
+    @Test("TASK#10.3 case and step drill-ins stay inside Stage")
+    func caseAndStepDrillInsStayInsideStage() async throws {
+        let coordinator = AppCoordinator(teams: teams(), stages: stages())
+        coordinator.completeMockLogin()
+        #expect(await coordinator.selectTeam(id: 28))
+
+        #expect(await coordinator.openStage(id: "rain"))
+        #expect(coordinator.selectedScreen == .stageChecklist)
+
+        #expect(coordinator.openTestCase(id: "rain-rml"))
+        var execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(coordinator.selectedScreen == .stageChecklist)
+        #expect(execution.stageNavigationPath == [.testCase(testCaseID: "rain-rml")])
+
+        #expect(coordinator.openTestStep(id: "RT-08"))
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        #expect(coordinator.selectedScreen == .stageChecklist)
+        #expect(execution.stageNavigationPath == [
+            .testCase(testCaseID: "rain-rml"),
+            .testStep(testCaseID: "rain-rml", stepID: "RT-08")
+        ])
+
+        coordinator.returnToActiveTestCase()
+        #expect(coordinator.selectedScreen == .stageChecklist)
+        #expect(execution.stageNavigationPath == [.testCase(testCaseID: "rain-rml")])
+
+        coordinator.returnToActiveStage()
+        #expect(coordinator.selectedScreen == .stageChecklist)
+        #expect(execution.stageNavigationPath == [])
     }
 
     @Test("US-002 execution coordinator rejects unknown stage routes")
@@ -87,18 +390,18 @@ struct InspectionCoordinatorTests {
         #expect(await coordinator.openStage(id: "rain"))
 
         let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
-        let originalRoute = execution.route
+        let originalPath = execution.stageNavigationPath
         let originalStageID = execution.sessionContext.activeStageID
 
         #expect(!(await coordinator.openStage(id: "unknown-stage")))
 
-        #expect(execution.route == originalRoute)
+        #expect(execution.stageNavigationPath == originalPath)
         #expect(execution.sessionContext.activeStageID == originalStageID)
         #expect(execution.activeStage?.id == "rain")
     }
 
-    @Test("US-006 team switch routes through confirmation")
-    func teamSwitchRoutesThroughConfirmation() async throws {
+    @Test("US-006 team switch is disabled for the Task 10.6 PR")
+    func teamSwitchIsDisabledForTask10_6PR() async throws {
         let coordinator = AppCoordinator(teams: teams(), stages: stages())
         coordinator.completeMockLogin()
         #expect(await coordinator.selectTeam(id: 13))
@@ -106,16 +409,11 @@ struct InspectionCoordinatorTests {
         let execution = try #require(coordinator.eventCoordinator.executionCoordinator)
         execution.markUnsavedDraft(true)
 
-        #expect(coordinator.requestTeamSwitch(to: 28))
-        #expect(execution.route == .teamSwitchConfirmation(currentTeamID: 13, targetTeamID: 28))
-        #expect(execution.pendingSwitchTarget?.id == 28)
-
-        #expect(await coordinator.confirmTeamSwitch())
-
-        let switchedExecution = try #require(coordinator.eventCoordinator.executionCoordinator)
-        #expect(coordinator.selectedScreen == .dashboard)
-        #expect(switchedExecution.sessionContext.team.id == 28)
-        #expect(switchedExecution.sessionContext.activeStageID == "garage")
+        #expect(!coordinator.requestTeamSwitch(to: 28))
+        #expect(execution.stageNavigationPath == [])
+        #expect(execution.pendingSwitchTarget == nil)
+        #expect(execution.sessionContext.team.id == 13)
+        #expect(!(await coordinator.confirmTeamSwitch()))
     }
 
     @Test("TASK#7.8 coordinator selected state feeds backed views")
@@ -141,7 +439,7 @@ struct InspectionCoordinatorTests {
 
         #expect(coordinator.openTestStep(id: "RT-08"))
         #expect(execution.activeStep?.id == "RT-08")
-        #expect(coordinator.selectedScreen == .stepDetail)
+        #expect(coordinator.selectedScreen == .stageChecklist)
     }
 
     @Test("TASK#7.1 store-backed coordinator saves and restores draft values")
@@ -216,12 +514,12 @@ struct InspectionCoordinatorTests {
     func issue56DashboardStageRowUsesDraftBackedStatusForUnansweredStage() {
         let stage = staticCompleteStageWithRequiredStep()
 
-        let row = ActiveTeamStageRowState(stage: stage)
+        let row = FullStageViewState(stage: stage)
 
-        #expect(row.status == .blocked)
-        #expect(row.statusText == "1 blocker")
-        #expect(row.completedStepCount == 0)
-        #expect(row.totalStepCount == 1)
+        #expect(!row.canSubmit)
+        #expect(row.blockerText == "1 blocker")
+        #expect(row.completeStepCount == 0)
+        #expect(row.stepCount == 1)
         #expect(row.blockerCount == 1)
         #expect(row.progressFraction == 0)
     }
@@ -235,17 +533,60 @@ struct InspectionCoordinatorTests {
             stepDrafts: [TestStepDraft(stepID: "STATIC-STEP", outcome: .pass)]
         )
 
-        let row = ActiveTeamStageRowState(
+        let row = FullStageViewState(
             stage: stage,
             draftsByTestCaseID: [testCase.id: draft]
         )
 
-        #expect(row.status == .complete)
-        #expect(row.statusText == "Complete")
-        #expect(row.completedStepCount == 1)
-        #expect(row.totalStepCount == 1)
+        #expect(row.canSubmit)
+        #expect(row.blockerText == "No blockers")
+        #expect(row.completeStepCount == 1)
+        #expect(row.stepCount == 1)
         #expect(row.blockerCount == 0)
         #expect(row.progressFraction == 1)
+    }
+
+    @Test("TASK#10.1 stage switching preserves other stage draft progress")
+    func stageSwitchingPreservesOtherStageDraftProgress() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let stages = stageSwitchStages()
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: teams(),
+            stages: stages,
+            store: InspectionEventStore.appStore(
+                eventID: eventID,
+                teams: teams(),
+                stages: stages,
+                persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+            )
+        )
+        coordinator.completeMockLogin()
+
+        #expect(await coordinator.selectTeam(id: 28))
+        #expect(await coordinator.openStage(id: "ev"))
+        #expect(await coordinator.saveStepDraft(TestStepDraft(stepID: "EV-01", outcome: .pass), testCaseID: "ev-main"))
+
+        var execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        var evStageState = try #require(execution.stages.first { $0.stageID == "ev" })
+        #expect(evStageState.progressFraction == 1)
+
+        #expect(await coordinator.openStage(id: "chassis"))
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        evStageState = try #require(execution.stages.first { $0.stageID == "ev" })
+        var chassisStageState = try #require(execution.stages.first { $0.stageID == "chassis" })
+        #expect(evStageState.progressFraction == 1)
+        #expect(chassisStageState.progressFraction == 0)
+
+        #expect(await coordinator.saveStepDraft(TestStepDraft(stepID: "CH-01", outcome: .pass), testCaseID: "chassis-main"))
+        execution = try #require(coordinator.eventCoordinator.executionCoordinator)
+        evStageState = try #require(execution.stages.first { $0.stageID == "ev" })
+        chassisStageState = try #require(execution.stages.first { $0.stageID == "chassis" })
+
+        #expect(evStageState.progressFraction == 1)
+        #expect(chassisStageState.progressFraction == 1)
     }
 }
 
@@ -334,6 +675,106 @@ private func stages() -> [InspectionStage] {
     ]
 }
 
+private func stageSwitchStages() -> [InspectionStage] {
+    [
+        InspectionStage(
+            id: "chassis",
+            code: "03",
+            title: "Chassis Inspection",
+            displayOrder: 3,
+            subtitle: "Structure and suspension checks",
+            sections: [
+                InspectionSection(
+                    id: "chassis.primary",
+                    title: "Chassis Checks",
+                    displayOrder: 1,
+                    testCases: [
+                        InspectionTestCase(
+                            id: "chassis-main",
+                            code: "CH-MAIN",
+                            displayOrder: 1,
+                            title: "Chassis main checks",
+                            ruleReferences: ["T.1"],
+                            steps: [
+                                inspectionStep(id: "CH-01", title: "Frame structure")
+                            ]
+                        )
+                    ]
+                )
+            ]
+        ),
+        InspectionStage(
+            id: "ev",
+            code: "04",
+            title: "EV Inspection",
+            displayOrder: 4,
+            subtitle: "Accumulator and shutdown checks",
+            sections: [
+                InspectionSection(
+                    id: "ev.primary",
+                    title: "EV Checks",
+                    displayOrder: 1,
+                    testCases: [
+                        InspectionTestCase(
+                            id: "ev-main",
+                            code: "EV-MAIN",
+                            displayOrder: 1,
+                            title: "EV main checks",
+                            ruleReferences: ["EV.1"],
+                            steps: [
+                                inspectionStep(id: "EV-01", title: "Accumulator container")
+                            ]
+                        )
+                    ]
+                )
+            ]
+        )
+    ]
+}
+
+private func debugCompletionStages() -> [InspectionStage] {
+    [
+        InspectionStage(
+            id: "debug",
+            code: "DBG",
+            title: "Debug Completion",
+            displayOrder: 1,
+            subtitle: "Completion gate fixture",
+            sections: [
+                InspectionSection(
+                    id: "debug.primary",
+                    title: "Debug Checks",
+                    displayOrder: 1,
+                    testCases: [
+                        InspectionTestCase(
+                            id: "debug-egress",
+                            code: "DBG-EGRESS",
+                            displayOrder: 1,
+                            title: "Debug measurement",
+                            ruleReferences: ["DBG.1"],
+                            steps: [measurementStep(id: "DBG-MEASURE", title: "Debug measurement")]
+                        ),
+                        InspectionTestCase(
+                            id: "debug-evidence",
+                            code: "DBG-EVIDENCE",
+                            displayOrder: 2,
+                            title: "Debug evidence",
+                            ruleReferences: ["DBG.2"],
+                            steps: [
+                                inspectionStep(
+                                    id: "DBG-EVIDENCE",
+                                    title: "Debug evidence",
+                                    requiresEvidence: true
+                                )
+                            ]
+                        )
+                    ]
+                )
+            ]
+        )
+    ]
+}
+
 private func inspectionStep(
     id: String,
     title: String,
@@ -349,6 +790,25 @@ private func inspectionStep(
         content: "Test content for \(title).",
         requiredOutcome: true,
         requiresEvidence: requiresEvidence
+    )
+}
+
+private func measurementStep(id: String, title: String) -> InspectionTestStep {
+    InspectionTestStep(
+        id: id,
+        code: id,
+        ruleReference: "VE.5",
+        title: title,
+        type: .measurement,
+        content: "Measure \(title).",
+        requiredOutcome: true,
+        requiresEvidence: false,
+        measurementRange: MeasurementRange(
+            unit: .seconds,
+            minimum: Decimal(string: "0.00")!,
+            maximum: Decimal(string: "4.99")!,
+            maximumFractionDigits: 2
+        )
     )
 }
 

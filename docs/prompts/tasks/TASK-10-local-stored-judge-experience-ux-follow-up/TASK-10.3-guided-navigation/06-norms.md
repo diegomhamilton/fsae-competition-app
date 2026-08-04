@@ -2,7 +2,7 @@
 
 Apply the project norms to this task:
 
-Task: `10.3 Refine the test case screen so the primary next judge action is visually dominant: compact case summary, actionable validation message, and focused step editor for one-step cases.`
+Task: `10.3 Refactor judge navigation so Sessions, Team, and Stage are the top-level landmarks, remove the standalone Case tab, and make Stage contain the case UI with dominant next-action and focused one-step editing.`
 
 Check the proposed work against these norms:
 
@@ -22,6 +22,10 @@ Check the proposed work against these norms:
 
 Return any adjustments needed before implementation.
 
+Additional TASK#10.3 norm:
+
+- By the end of TASK#10.3, the app should have no standalone `Case` tab; case-level UI lives inside Stage, while Step Detail remains a guided drill-in from Stage/case/blocker flows.
+
 Expected PR title:
 
-`TASK#10.3: Test Case Next Action`
+`TASK#10.3: Guided Navigation`

@@ -12,6 +12,9 @@ struct StageChecklistView: View {
         static let testCases = "Test Cases"
         static let blockers = "Blockers"
         static let rules = "Rules"
+        static let testCase = "test case"
+        static let testCasePlural = "test cases"
+        static let expandSectionHint = "Tap to expand or collapse this section."
         static let openTestCase = "Open Test Case"
         static let noRuleReferences = "No rule reference"
     }
@@ -20,6 +23,7 @@ struct StageChecklistView: View {
     let stage: InspectionStage
     let draftsByTestCaseID: [String: TestCaseDraft]
     let selectTestCase: (InspectionTestCase) -> Void
+    @State private var expandedSectionIDs: Set<String> = []
 
     init(
         team: InspectionTeam,
@@ -40,7 +44,6 @@ struct StageChecklistView: View {
         )
 
         ScreenShell(
-            eyebrow: Strings.eyebrow,
             title: stage.title,
             subtitle: "\(team.carNumber) \(team.school) · ordered test cases grouped by inspection section."
         ) {
@@ -48,14 +51,26 @@ struct StageChecklistView: View {
 
             VStack(alignment: .leading, spacing: 18) {
                 ForEach(viewState.sections) { section in
-                    StageSectionBlock(section: section) { testCase in
+                    StageSectionBlock(
+                        section: section,
+                        isExpanded: expandedSectionIDs.contains(section.id),
+                        toggleExpanded: {
+                            withAnimation(.snappy(duration: 0.28)) {
+                                if expandedSectionIDs.contains(section.id) {
+                                    expandedSectionIDs.remove(section.id)
+                                } else {
+                                    expandedSectionIDs.insert(section.id)
+                                }
+                            }
+                        }
+                    ) { testCase in
                         selectTestCase(testCase)
                     }
                 }
             }
         }
         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseStageSummary(stageID: stage.id).rawValue)
-        .navigationTitle("Stage")
+        .navigationTitle(stage.title)
     }
 }
 
@@ -99,37 +114,74 @@ private struct StageMetrics: View {
 
 private struct StageSectionBlock: View {
     let section: InspectionStageListSectionViewState
+    let isExpanded: Bool
+    let toggleExpanded: () -> Void
     let selectTestCase: (InspectionTestCase) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(section.title)
-                .font(.headline)
-                .foregroundStyle(Color.fsaeText)
-                .accessibilityIdentifier(
+            Button(action: toggleExpanded) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(section.title)
+                            .font(.headline)
+                            .foregroundStyle(Color.fsaeText)
+                        if !section.subtitle.isEmpty {
+                            Text(section.subtitle)
+                                .font(.subheadline)
+                                .foregroundStyle(Color.fsaeSecondaryText)
+                                .multilineTextAlignment(.leading)
+                        }
+                    }
+                    Spacer()
+                    HStack(spacing: 8) {
+                        Text(testCaseCountLabel)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.fsaeSecondaryText)
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(Color.fsaeSecondaryText)
+                            .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                            .animation(.snappy(duration: 0.28), value: isExpanded)
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(section.title)\(section.subtitle.isEmpty ? "" : ", \(section.subtitle)"), \(testCaseCountLabel)")
+            .accessibilityHint(StageChecklistView.Strings.expandSectionHint)
+            .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+            .accessibilityIdentifier(
                     InspectionAccessibilityIdentifier.testCaseStageSection(
                         stageID: section.rows.first?.stageID ?? "",
                         sectionID: section.id
                     ).rawValue
                 )
 
-            VStack(spacing: 12) {
-                ForEach(section.rows) { row in
-                    Button {
-                        selectTestCase(row.testCase)
-                    } label: {
-                        StageTestCaseRow(row: row)
+            if isExpanded {
+                VStack(spacing: 12) {
+                    ForEach(section.rows) { row in
+                        Button {
+                            selectTestCase(row.testCase)
+                        } label: {
+                            StageTestCaseRow(row: row)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier(
+                            InspectionAccessibilityIdentifier.testCaseStageRow(
+                                stageID: row.stageID,
+                                testCaseID: row.id
+                            ).rawValue
+                        )
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier(
-                        InspectionAccessibilityIdentifier.testCaseStageRow(
-                            stageID: row.stageID,
-                            testCaseID: row.id
-                        ).rawValue
-                    )
                 }
             }
         }
+    }
+
+    private var testCaseCountLabel: String {
+        let label = section.rows.count == 1
+            ? StageChecklistView.Strings.testCase
+            : StageChecklistView.Strings.testCasePlural
+        return "\(section.rows.count) \(label)"
     }
 }
 

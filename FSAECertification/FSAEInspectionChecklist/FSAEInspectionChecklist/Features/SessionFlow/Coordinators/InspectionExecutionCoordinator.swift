@@ -4,15 +4,16 @@
 //
 
 import Combine
+import Foundation
 
 @MainActor
 final class InspectionExecutionCoordinator: ObservableObject {
     @Published private(set) var sessionContext: InspectionSessionContext
-    @Published private(set) var route: InspectionExecutionRoute = .dashboard
+    @Published var stageNavigationPath: [StageNavigationRoute] = []
     @Published private(set) var pendingSwitchTarget: InspectionTeam?
-    @Published private(set) var draftsByTestCaseID: [String: TestCaseDraft]
-    let stages: [InspectionStage]
+    @Published private(set) var draftsByStageID: [String: [String: TestCaseDraft]]
     let teams: [InspectionTeam]
+    private let stageModels: [InspectionStage]
     private let store: InspectionEventStore
     private let access: InspectionEventUserAccess
 
@@ -22,14 +23,42 @@ final class InspectionExecutionCoordinator: ObservableObject {
         teams: [InspectionTeam],
         store: InspectionEventStore,
         access: InspectionEventUserAccess,
+        draftsByStageID: [String: [String: TestCaseDraft]] = [:],
         draftsByTestCaseID: [String: TestCaseDraft] = [:]
     ) {
         self.sessionContext = sessionContext
-        self.stages = stages
+        self.stageModels = stages
         self.teams = teams
         self.store = store
         self.access = access
-        self.draftsByTestCaseID = draftsByTestCaseID
+        var stageDrafts = draftsByStageID
+        if !draftsByTestCaseID.isEmpty {
+            stageDrafts[sessionContext.activeStageID, default: [:]].merge(draftsByTestCaseID) { _, new in
+                new
+            }
+        }
+        self.draftsByStageID = stageDrafts
+    }
+
+    var stages: [FullStageViewState] {
+        stageModels.map { stage in
+            FullStageViewState(
+                stage: stage,
+                draftsByTestCaseID: draftsByStageID[stage.id] ?? [:]
+            )
+        }
+    }
+
+    var sessionBlockerCount: Int {
+        stages.map(\.blockerCount).reduce(0, +)
+    }
+
+    var canCompleteSession: Bool {
+        sessionBlockerCount == 0
+    }
+
+    var draftsByTestCaseID: [String: TestCaseDraft] {
+        draftsByStageID[sessionContext.activeStageID] ?? [:]
     }
 
     var activeTeam: InspectionTeam {
@@ -41,12 +70,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
     }
 
     var activeTestCase: InspectionTestCase? {
-        let testCaseID: String
-        switch route {
-        case .testCase(_, let routedTestCaseID),
-             .testStep(_, let routedTestCaseID, _):
-            testCaseID = routedTestCaseID
-        default:
+        guard let testCaseID = activeTestCaseID else {
             return nil
         }
 
@@ -54,7 +78,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
     }
 
     var activeStep: InspectionTestStep? {
-        guard case .testStep(_, _, let stepID) = route else {
+        guard case .testStep(_, let stepID) = stageNavigationPath.last else {
             return nil
         }
 
@@ -81,6 +105,10 @@ final class InspectionExecutionCoordinator: ObservableObject {
         draftsByTestCaseID[testCase.id] ?? TestCaseDraft(testCase: testCase)
     }
 
+    private var activeTestCaseID: String? {
+        stageNavigationPath.last?.testCaseID
+    }
+
     func markUnsavedDraft(_ hasUnsavedDraft: Bool) {
         sessionContext.hasUnsavedDraft = hasUnsavedDraft
     }
@@ -92,7 +120,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
         }
 
         sessionContext.activeStageID = stageID
-        route = .stage(stageID: stageID)
+        stageNavigationPath.removeAll()
         await restoreDraftsForActiveStage()
         return true
     }
@@ -103,7 +131,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
             return false
         }
 
-        route = .testCase(stageID: sessionContext.activeStageID, testCaseID: testCaseID)
+        stageNavigationPath = [.testCase(testCaseID: testCaseID)]
         return true
     }
 
@@ -114,63 +142,77 @@ final class InspectionExecutionCoordinator: ObservableObject {
             return false
         }
 
-        route = .testStep(
-            stageID: sessionContext.activeStageID,
-            testCaseID: testCase.id,
-            stepID: stepID
-        )
+        stageNavigationPath = [
+            .testCase(testCaseID: testCase.id),
+            .testStep(testCaseID: testCase.id, stepID: stepID)
+        ]
         return true
     }
 
     @discardableResult
     func requestTeamSwitch(to targetTeamID: Int) -> Bool {
-        guard let targetTeam = teams.first(where: { $0.id == targetTeamID }),
-              targetTeam.id != sessionContext.team.id else {
-            return false
-        }
-
-        pendingSwitchTarget = targetTeam
-        route = .teamSwitchConfirmation(
-            currentTeamID: sessionContext.team.id,
-            targetTeamID: targetTeam.id
-        )
-        return true
+        // Team switching is intentionally disabled for the Task 10.6 PR.
+        return false
     }
 
     func cancelTeamSwitch() {
         pendingSwitchTarget = nil
-        route = .dashboard
+    }
+
+    func returnToActiveStage() {
+        stageNavigationPath.removeAll()
+    }
+
+    func returnToActiveTestCase() {
+        guard let testCaseID = activeTestCaseID else {
+            returnToActiveStage()
+            return
+        }
+
+        stageNavigationPath = [.testCase(testCaseID: testCaseID)]
     }
 
     func restoreDraftsForActiveStage() async {
+        await restoreDrafts(for: sessionContext.activeStageID)
+    }
+
+    func restoreDraftsForAllStages() async {
+        for stage in stageModels {
+            await restoreDrafts(for: stage.id)
+        }
+    }
+
+    private func restoreDrafts(for stageID: String) async {
         do {
             let draftFiles = try await store.draftFiles(
-                scope: activeScope,
+                scope: scope(stageID: stageID),
                 access: access
             )
-            draftsByTestCaseID = draftFiles.reduce(into: [:]) { result, file in
+            draftsByStageID[stageID] = draftFiles.reduce(into: draftsByStageID[stageID] ?? [:]) { result, file in
                 result[file.testCaseID] = file.draft
             }
         } catch {
-            draftsByTestCaseID = [:]
+            return
         }
     }
 
     @discardableResult
     func saveStepDraft(_ stepDraft: TestStepDraft, testCaseID: String) async -> Bool {
-        guard let testCase = testCase(id: testCaseID) else {
+        guard let target = testCaseAndStage(id: testCaseID) else {
             return false
         }
 
-        var testCaseDraft = draft(for: testCase)
+        var stageDrafts = draftsByStageID[target.stageID] ?? [:]
+        var testCaseDraft = stageDrafts[testCaseID] ?? TestCaseDraft(testCase: target.testCase)
         testCaseDraft.updateStepDraft(stepDraft)
-        draftsByTestCaseID[testCaseID] = testCaseDraft
+        stageDrafts[testCaseID] = testCaseDraft
+        draftsByStageID[target.stageID] = stageDrafts
         sessionContext.hasUnsavedDraft = true
 
         do {
             _ = try await store.saveDraft(
                 testCaseDraft,
-                scope: activeScope,
+                scope: scope(stageID: target.stageID),
                 access: access
             )
             sessionContext.hasUnsavedDraft = false
@@ -180,8 +222,81 @@ final class InspectionExecutionCoordinator: ObservableObject {
         }
     }
 
+    #if DEBUG
+    @discardableResult
+    func markAllTestCasesPassedForDebug(at completedAt: Date = Date()) async -> Bool {
+        var nextDraftsByStageID = draftsByStageID
+
+        for stage in stageModels {
+            var stageDrafts = nextDraftsByStageID[stage.id] ?? [:]
+            for testCase in stage.orderedSections.flatMap(\.orderedTestCases) {
+                let stepDrafts = testCase.orderedSteps.map { step in
+                    TestStepDraft.debugPassingDraft(step: step, completedAt: completedAt)
+                }
+                let testCaseDraft = TestCaseDraft(testCase: testCase, stepDrafts: stepDrafts)
+                stageDrafts[testCase.id] = testCaseDraft
+            }
+            nextDraftsByStageID[stage.id] = stageDrafts
+        }
+
+        draftsByStageID = nextDraftsByStageID
+        sessionContext.hasUnsavedDraft = true
+
+        for (stageID, stageDrafts) in nextDraftsByStageID {
+            for draft in stageDrafts.values {
+                do {
+                    _ = try await store.saveDraft(
+                        draft,
+                        scope: scope(stageID: stageID),
+                        access: access
+                    )
+                } catch {
+                    return false
+                }
+            }
+        }
+
+        sessionContext.hasUnsavedDraft = false
+        return canCompleteSession
+    }
+
+    @discardableResult
+    func markAllTestCasesIncompleteForDebug() async -> Bool {
+        var nextDraftsByStageID = draftsByStageID
+
+        for stage in stageModels {
+            var stageDrafts = nextDraftsByStageID[stage.id] ?? [:]
+            for testCase in stage.orderedSections.flatMap(\.orderedTestCases) {
+                let testCaseDraft = TestCaseDraft(testCase: testCase)
+                stageDrafts[testCase.id] = testCaseDraft
+            }
+            nextDraftsByStageID[stage.id] = stageDrafts
+        }
+
+        draftsByStageID = nextDraftsByStageID
+        sessionContext.hasUnsavedDraft = true
+
+        for (stageID, stageDrafts) in nextDraftsByStageID {
+            for draft in stageDrafts.values {
+                do {
+                    _ = try await store.saveDraft(
+                        draft,
+                        scope: scope(stageID: stageID),
+                        access: access
+                    )
+                } catch {
+                    return false
+                }
+            }
+        }
+
+        sessionContext.hasUnsavedDraft = false
+        return !canCompleteSession
+    }
+    #endif
+
     private func stage(id stageID: String) -> InspectionStage? {
-        stages.first { $0.id == stageID }
+        stageModels.first { $0.id == stageID }
     }
 
     private func testCase(id testCaseID: String) -> InspectionTestCase? {
@@ -198,13 +313,53 @@ final class InspectionExecutionCoordinator: ObservableObject {
             }
     }
 
-    private var activeScope: InspectionSessionScope {
+    private func testCaseAndStage(id testCaseID: String) -> (stageID: String, testCase: InspectionTestCase)? {
+        if let activeStage,
+           let testCase = testCase(id: testCaseID, in: activeStage) {
+            return (activeStage.id, testCase)
+        }
+
+        for stage in stageModels {
+            if let testCase = testCase(id: testCaseID, in: stage) {
+                return (stage.id, testCase)
+            }
+        }
+
+        return nil
+    }
+
+    private func testCase(id testCaseID: String, in stage: InspectionStage) -> InspectionTestCase? {
+        stage.orderedSections
+            .flatMap(\.orderedTestCases)
+            .first { $0.id == testCaseID }
+    }
+
+    private func scope(stageID: String) -> InspectionSessionScope {
         InspectionSessionScope(
             eventID: sessionContext.eventID,
             teamID: InspectionEventCoordinator.teamRecordID(sessionContext.team),
             sessionID: sessionContext.sessionID,
-            stageID: sessionContext.activeStageID
+            stageID: stageID
         )
     }
 }
 
+#if DEBUG
+private extension TestStepDraft {
+    static func debugPassingDraft(step: InspectionTestStep, completedAt: Date) -> TestStepDraft {
+        let measurementInput = step.measurementRange.map { range in
+            NSDecimalNumber(decimal: range.minimum).stringValue
+        } ?? ""
+        let measurementValue = step.measurementRange.flatMap { range in
+            try? MeasurementValue(rawValue: measurementInput, range: range)
+        }
+        return TestStepDraft(
+            stepID: step.id,
+            outcome: .pass,
+            measurementInput: measurementInput,
+            measurementValue: measurementValue,
+            evidenceAttachments: []
+        )
+    }
+}
+#endif

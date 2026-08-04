@@ -4,6 +4,7 @@
 //
 
 import Combine
+import Foundation
 
 @MainActor
 final class AppCoordinator: ObservableObject {
@@ -13,7 +14,7 @@ final class AppCoordinator: ObservableObject {
 
     init(
         eventID: String = "fsae-brasil-2026-technical-inspection",
-        teams: [InspectionTeam] = MockInspectionData.teams,
+        teams: [InspectionTeam] = [],
         stages: [InspectionStage] = MockInspectionData.stages,
         store: InspectionEventStore? = nil
     ) {
@@ -48,7 +49,7 @@ final class AppCoordinator: ObservableObject {
     }
 
     func selectScreen(_ screen: ProposedScreen) {
-        selectedScreen = screen
+        selectedScreen = ProposedScreen.topLevelJudgeLandmarks.contains(screen) ? screen : .stageChecklist
     }
 
     @discardableResult
@@ -68,7 +69,7 @@ final class AppCoordinator: ObservableObject {
             return false
         }
 
-        selectedScreen = .testCase
+        selectedScreen = .stageChecklist
         return true
     }
 
@@ -78,8 +79,18 @@ final class AppCoordinator: ObservableObject {
             return false
         }
 
-        selectedScreen = .stepDetail
+        selectedScreen = .stageChecklist
         return true
+    }
+
+    func returnToActiveStage() {
+        eventCoordinator.executionCoordinator?.returnToActiveStage()
+        selectedScreen = .stageChecklist
+    }
+
+    func returnToActiveTestCase() {
+        eventCoordinator.executionCoordinator?.returnToActiveTestCase()
+        selectedScreen = .stageChecklist
     }
 
     @discardableResult
@@ -121,5 +132,58 @@ final class AppCoordinator: ObservableObject {
         eventCoordinator.updateStages(stages)
         objectWillChange.send()
     }
-}
 
+    func restoreTeamCatalog() async {
+        await eventCoordinator.restoreTeamCatalog()
+        objectWillChange.send()
+    }
+
+    @discardableResult
+    func completeActiveSession(endedAt: Date = Date()) async -> Bool {
+        guard await eventCoordinator.completeActiveSession(endedAt: endedAt) else {
+            return false
+        }
+
+        route = .sessionSelector
+        selectedScreen = .sessionSelector
+        objectWillChange.send()
+        return true
+    }
+
+    #if DEBUG
+    @discardableResult
+    func markAllTestCasesPassedForDebug(at completedAt: Date = Date()) async -> Bool {
+        guard await eventCoordinator.markAllTestCasesPassedForDebug(at: completedAt) else {
+            return false
+        }
+
+        objectWillChange.send()
+        return true
+    }
+
+    @discardableResult
+    func markAllTestCasesIncompleteForDebug() async -> Bool {
+        guard await eventCoordinator.markAllTestCasesIncompleteForDebug() else {
+            return false
+        }
+
+        objectWillChange.send()
+        return true
+    }
+    #endif
+
+    @discardableResult
+    func createTeam(entry: LocalTeamCatalogEntry) async throws -> Bool {
+        let created = try await eventCoordinator.createTeam(
+            entry: entry
+        )
+        objectWillChange.send()
+        return created != nil
+    }
+
+    func submitTeamCreation(entry: LocalTeamCatalogEntry) {
+        Task { [weak self, entry] in
+            _ = try? await self?.createTeam(entry: entry)
+        }
+    }
+}
