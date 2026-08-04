@@ -108,7 +108,7 @@
 ## 11.
 - [ ] 11.0 UI Improvements:
     11.0.1 "Add Team" should be a button that when clicked expanded the section to input team's name and number
-    11.0.2 Stage View should show directly the same information that is currently seen in TestCaseView
+    11.0.2 [x] Stage View should show directly the same information that is currently seen in TestCaseView
     11.0.3 [x] Simplify the shared screen shell by removing redundant prototype eyebrow and header treatment while preserving event, team, stage, and test-case context.
     11.0.4 [x] Remove redundant active-team status pills and align the Sessions screen title/subtitle with the active inspection workflow.
     11.0.5 [x] Disable team-switch operations for the Task 10.6 PR while retaining team selection at session start.
