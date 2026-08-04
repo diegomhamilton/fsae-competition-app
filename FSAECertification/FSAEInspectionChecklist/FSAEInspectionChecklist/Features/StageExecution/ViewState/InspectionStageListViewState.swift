@@ -42,6 +42,7 @@ struct InspectionStageListViewState: Equatable, Sendable {
 struct InspectionStageListSectionViewState: Identifiable, Equatable, Sendable {
     let id: String
     let title: String
+    let subtitle: String
     let displayOrder: Int
     let rows: [InspectionStageTestCaseRowState]
 
@@ -51,7 +52,9 @@ struct InspectionStageListSectionViewState: Identifiable, Equatable, Sendable {
         draftsByTestCaseID: [String: TestCaseDraft]
     ) {
         id = section.id
-        title = section.title
+        let displayText = InspectionSectionDisplayText(rawTitle: section.title)
+        title = displayText.title
+        subtitle = displayText.subtitle
         displayOrder = section.displayOrder
         rows = section.orderedTestCases.map { testCase in
             InspectionStageTestCaseRowState(
@@ -60,6 +63,17 @@ struct InspectionStageListSectionViewState: Identifiable, Equatable, Sendable {
                 draft: draftsByTestCaseID[testCase.id] ?? TestCaseDraft(testCase: testCase)
             )
         }
+    }
+}
+
+struct InspectionSectionDisplayText: Equatable, Sendable {
+    let title: String
+    let subtitle: String
+
+    init(rawTitle: String) {
+        let parts = rawTitle.split(separator: "/", maxSplits: 1, omittingEmptySubsequences: true)
+        title = parts.first.map(String.init)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? rawTitle
+        subtitle = parts.dropFirst().first.map(String.init)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
     }
 }
 

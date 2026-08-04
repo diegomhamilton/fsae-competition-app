@@ -8,6 +8,7 @@ import Foundation
 struct FullStageViewState: Identifiable, Equatable, Sendable {
     let stageID: String
     let stageTitle: String
+    let teamName: String
     let stageSubtitle: String
     let sections: [FullStageSectionViewState]
 
@@ -17,10 +18,12 @@ struct FullStageViewState: Identifiable, Equatable, Sendable {
 
     init(
         stage: InspectionStage,
+        team: InspectionTeam? = nil,
         draftsByTestCaseID: [String: TestCaseDraft] = [:]
     ) {
         stageID = stage.id
         stageTitle = stage.title
+        teamName = team.map { "\($0.carNumber) \($0.school)" } ?? stage.title
         stageSubtitle = stage.subtitle
         sections = stage.orderedSections.map { section in
             FullStageSectionViewState(
@@ -80,6 +83,7 @@ struct FullStageSectionViewState: Identifiable, Equatable, Sendable {
     let stageID: String
     let id: String
     let title: String
+    let subtitle: String
     let displayOrder: Int
     let testCases: [FullStageTestCaseViewState]
 
@@ -90,7 +94,9 @@ struct FullStageSectionViewState: Identifiable, Equatable, Sendable {
     ) {
         self.stageID = stageID
         id = section.id
-        title = section.title
+        let displayText = InspectionSectionDisplayText(rawTitle: section.title)
+        title = displayText.title
+        subtitle = displayText.subtitle
         displayOrder = section.displayOrder
         testCases = section.orderedTestCases.map { testCase in
             FullStageTestCaseViewState(
@@ -133,6 +139,7 @@ struct FullStageValidationSummary: Equatable, Sendable {
                     FullStageValidationIssue(
                         stageID: section.stageID,
                         testCaseID: testCase.id,
+                        testCaseCode: testCase.code,
                         stepID: issue.stepID,
                         stepTitle: issue.stepTitle,
                         message: issue.localizedMessage,
@@ -158,6 +165,7 @@ struct FullStageValidationSummary: Equatable, Sendable {
 struct FullStageValidationIssue: Identifiable, Equatable, Sendable {
     let stageID: String
     let testCaseID: String
+    let testCaseCode: String
     let stepID: String
     let stepTitle: String
     let message: String
