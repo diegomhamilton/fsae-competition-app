@@ -42,13 +42,6 @@ struct ActiveTeamDashboardView: View {
             title: "\(team.carNumber) \(team.school)",
             subtitle: Strings.subtitle
         ) {
-            ContentPanel {
-                HStack(alignment: .center, spacing: 12) {
-                    Text("\(team.carNumber) \(team.school)")
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(Color.fsaeText)
-                }
-            }
 
             HStack(spacing: 12) {
                 MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: Strings.overallProgress, systemImage: "chart.pie", color: .fsaeGreen)
@@ -149,7 +142,7 @@ struct ActiveTeamDashboardView: View {
             }
 
         }
-        .navigationTitle("Team")
+        .navigationTitle("\(team.carNumber) \(team.school)")
     }
 
     private func overallProgressPercent(stages: [FullStageViewState]) -> Int {

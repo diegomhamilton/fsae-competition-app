@@ -91,8 +91,16 @@ private struct StageNavigationView: View {
                 team: executionCoordinator.activeTeam,
                 stage: stage,
                 draftsByTestCaseID: executionCoordinator.draftsByTestCaseID,
-                openTestCase: { testCase in
-                    appCoordinator.openTestCase(id: testCase.id)
+                openStepDetail: { step in
+                    appCoordinator.openTestStep(id: step.id)
+                },
+                updateStepDraft: { stepDraft, testCaseID in
+                    Task {
+                        await appCoordinator.saveStepDraft(
+                            stepDraft,
+                            testCaseID: testCaseID
+                        )
+                    }
                 },
                 submitStage: {},
                 openBlockingRoute: { route in

@@ -45,9 +45,6 @@ struct TestCaseView: View {
     let testCase: InspectionTestCaseViewState
     let openStepDetail: (InspectionTestStep) -> Void
     let updateStepDraft: (TestStepDraft) -> Void
-    @State private var stepScrollPosition = ScrollPosition()
-    @State private var activeStepID: String?
-    @FocusState private var focusedNoteStepID: String?
 
     var body: some View {
         ScreenShell(
@@ -56,71 +53,14 @@ struct TestCaseView: View {
         ) {
             TestCaseHeader(testCase: testCase)
 
-            TestCaseStepCarousel(
-                stageID: stage.id,
-                testCaseID: testCase.id,
-                steps: testCase.steps,
-                focusedNoteStepID: $focusedNoteStepID,
-                scrollPosition: $stepScrollPosition,
-                activeStepID: $activeStepID
-            ) { step in
-                openStepDetail(step)
-            } updateStepDraft: { stepDraft in
-                updateStepDraft(stepDraft)
-            } advanceFromStep: { stepID in
-                advanceToNextStep(after: stepID)
-            } scrollToStep: { stepID in
-                scrollToStep(stepID)
-            }
-
             TestCaseValidationSummaryPanel(testCase: testCase)
 
         }
-        .onAppear {
-            activeStepID = activeStepID ?? testCase.steps.first?.id
-        }
-        .onChange(of: testCase.steps.map(\.id)) { _, stepIDs in
-            guard let firstStepID = stepIDs.first else {
-                return
-            }
-
-            activeStepID = firstStepID
-            stepScrollPosition.scrollTo(id: firstStepID)
-        }
-        .safeAreaInset(edge: .bottom) {
-            if focusedNoteStepID != nil {
-                KeyboardDismissBar(title: Strings.dismissKeyboard) {
-                    focusedNoteStepID = nil
-                }
-                .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseKeyboardDismissAction(testCaseID: testCase.id).rawValue)
-            }
-        }
         .navigationTitle("Test Case")
-    }
-
-    private func advanceToNextStep(after stepID: String) {
-        guard let currentIndex = testCase.steps.firstIndex(where: { $0.id == stepID }) else {
-            return
-        }
-
-        let nextIndex = testCase.steps.index(after: currentIndex)
-        guard testCase.steps.indices.contains(nextIndex) else {
-            return
-        }
-
-        scrollToStep(testCase.steps[nextIndex].id)
-    }
-
-    private func scrollToStep(_ stepID: String) {
-        focusedNoteStepID = nil
-        activeStepID = stepID
-        withAnimation(.snappy) {
-            stepScrollPosition.scrollTo(id: stepID)
-        }
     }
 }
 
-private struct TestCaseStepCarousel: View {
+struct TestCaseStepCarousel: View {
     let stageID: String
     let testCaseID: String
     let steps: [InspectionTestCaseStepViewState]
