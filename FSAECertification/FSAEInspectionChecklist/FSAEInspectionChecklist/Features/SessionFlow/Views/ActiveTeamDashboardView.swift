@@ -30,12 +30,7 @@ struct ActiveTeamDashboardView: View {
 
     var body: some View {
         let team = coordinator.activeTeam
-        let stageRows = coordinator.stages.map { stage in
-            ActiveTeamStageRowState(
-                stage: stage,
-                draftsByTestCaseID: coordinator.draftsByTestCaseID
-            )
-        }
+        let stageRows = coordinator.stages
         let selectedStageID = coordinator.activeStage?.id
 
         ScreenShell(
@@ -44,8 +39,8 @@ struct ActiveTeamDashboardView: View {
         ) {
 
             HStack(spacing: 12) {
-                MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: Strings.overallProgress, systemImage: "chart.pie", color: .fsaeGreen)
-                MetricTile(value: "\(stages.map(\.blockerCount).reduce(0, +))", label: Strings.openBlockers, systemImage: "exclamationmark.triangle", color: .fsaeAmber)
+                MetricTile(value: "\(overallProgressPercent(stages: stageRows))%", label: Strings.overallProgress, systemImage: "chart.pie", color: .fsaeGreen)
+                MetricTile(value: "\(stageRows.map(\.blockerCount).reduce(0, +))", label: Strings.openBlockers, systemImage: "exclamationmark.triangle", color: .fsaeAmber)
             }
 
             ContentPanel {
@@ -123,19 +118,19 @@ struct ActiveTeamDashboardView: View {
                     .foregroundStyle(Color.fsaeText)
                 ForEach(stageRows) { stageRow in
                     Button {
-                        openStage(stage.stageID)
+                        openStage(stageRow.stageID)
                     } label: {
                         StageRow(
                             teamID: team.id,
-                            state: stage,
-                            isSelected: stage.stageID == selectedStageID
+                            state: stageRow,
+                            isSelected: stageRow.stageID == selectedStageID
                         )
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier(
                         InspectionAccessibilityIdentifier.activeTeamDashboardStageRow(
                             teamID: team.id,
-                            stageID: stage.stageID
+                            stageID: stageRow.stageID
                         ).rawValue
                     )
                 }
