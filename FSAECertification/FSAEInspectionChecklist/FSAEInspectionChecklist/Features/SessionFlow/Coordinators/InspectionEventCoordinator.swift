@@ -98,15 +98,27 @@ final class InspectionEventCoordinator: ObservableObject {
             return
         }
 
-        let restoredTeams = await teams.asyncMap { record in
+        var restoredTeams: [InspectionTeam] = []
+        var historyByTeamID: [Int: SessionHistoryViewState] = [:]
+        for record in teams {
             let activeSession = try? await store.activeSession(
                 eventID: eventID,
                 teamID: record.id,
                 access: access
             )
-            return team(record: record, activeSession: activeSession)
+            let restoredTeam = team(record: record, activeSession: activeSession)
+            restoredTeams.append(restoredTeam)
+            let completedSessions = (try? await store.completedSessions(
+                eventID: eventID,
+                teamID: record.id,
+                access: access
+            )) ?? []
+            historyByTeamID[restoredTeam.id] = SessionHistoryViewState(
+                entries: completedSessions.compactMap { CompletedSessionSummary(session: $0) }
+            )
         }
         sessionSelectionCoordinator.updateTeams(restoredTeams)
+        sessionSelectionCoordinator.replaceHistory(historyByTeamID)
     }
 
     @discardableResult
@@ -151,6 +163,29 @@ final class InspectionEventCoordinator: ObservableObject {
         }
 
         self.executionCoordinator = nil
+        await restoreTeamCatalog()
+        return true
+    }
+
+    @discardableResult
+    func resetActiveSession() async -> Bool {
+        guard let context = activeSession else {
+            return false
+        }
+
+        let teamID = Self.teamRecordID(context.team)
+        do {
+            try await store.resetActiveSession(
+                eventID: eventID,
+                teamID: teamID,
+                sessionID: context.sessionID,
+                access: access
+            )
+        } catch {
+            return false
+        }
+
+        executionCoordinator = nil
         await restoreTeamCatalog()
         return true
     }

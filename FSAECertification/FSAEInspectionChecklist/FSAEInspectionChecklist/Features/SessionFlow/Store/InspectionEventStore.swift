@@ -192,6 +192,7 @@ nonisolated enum InspectionEventStoreError: Error, Equatable, Sendable {
     case eventNotFound(String)
     case teamNotFound(eventID: String, teamID: String)
     case sessionNotFound(eventID: String, teamID: String, sessionID: String)
+    case sessionNotActive(eventID: String, teamID: String, sessionID: String)
 }
 
 actor InspectionEventStore {
@@ -319,6 +320,23 @@ actor InspectionEventStore {
             }
     }
 
+    func completedSessions(
+        eventID: String,
+        teamID: String,
+        access: InspectionEventUserAccess
+    ) throws -> [InspectionSessionRecord] {
+        try sessions(eventID: eventID, teamID: teamID, access: access)
+            .filter { $0.status == .submitted && $0.endedAt != nil }
+            .sorted { lhs, rhs in
+                let lhsEndedAt = lhs.endedAt ?? lhs.startedAt
+                let rhsEndedAt = rhs.endedAt ?? rhs.startedAt
+                if lhsEndedAt == rhsEndedAt {
+                    return lhs.id < rhs.id
+                }
+                return lhsEndedAt > rhsEndedAt
+            }
+    }
+
     func session(
         eventID: String,
         teamID: String,
@@ -413,6 +431,47 @@ actor InspectionEventStore {
         sessionsByKey[key] = completedSession
         try persistSessions(eventID: eventID, teamID: teamID)
         return completedSession
+    }
+
+    func resetActiveSession(
+        eventID: String,
+        teamID: String,
+        sessionID: String,
+        access: InspectionEventUserAccess
+    ) async throws {
+        try requireAccess(access, eventID: eventID, teamID: teamID)
+
+        let key = SessionKey(eventID: eventID, teamID: teamID, sessionID: sessionID)
+        guard let session = sessionsByKey[key] else {
+            throw InspectionEventStoreError.sessionNotFound(
+                eventID: eventID,
+                teamID: teamID,
+                sessionID: sessionID
+            )
+        }
+        guard session.endedAt == nil, session.status != .submitted else {
+            throw InspectionEventStoreError.sessionNotActive(
+                eventID: eventID,
+                teamID: teamID,
+                sessionID: sessionID
+            )
+        }
+
+        let context = InspectionPersistenceContext(
+            eventID: eventID,
+            teamID: teamID,
+            sessionID: sessionID,
+            stageID: session.currentStageID
+        )
+        try await persistenceService.clearDraftsForSession(context: context)
+
+        sessionsByKey.removeValue(forKey: key)
+        do {
+            try persistSessions(eventID: eventID, teamID: teamID)
+        } catch {
+            sessionsByKey[key] = session
+            throw error
+        }
     }
 
     @discardableResult

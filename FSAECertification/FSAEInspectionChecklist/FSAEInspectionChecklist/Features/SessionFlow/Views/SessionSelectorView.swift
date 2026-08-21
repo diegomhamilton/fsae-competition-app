@@ -23,6 +23,9 @@ struct SessionSelectorView: View {
         static let emptyCatalogDetail = "Add a team to start the local inspection workflow."
         static let duplicateFieldsError = "Enter a distinct car number."
         static let genericCreationError = "Unable to add team."
+        static let pastExecutions = "Past executions"
+        static let completedSession = "Completed session"
+        static let readOnlyHistory = "Completed history is read-only."
     }
 
     @ObservedObject var coordinator: SessionSelectionCoordinator
@@ -59,46 +62,53 @@ struct SessionSelectorView: View {
 
             VStack(spacing: 12) {
                 ForEach(coordinator.teams) { team in
-                    Button {
-                        selectTeam(team.id)
-                    } label: {
-                        HStack(spacing: 14) {
-                            VStack(alignment: .leading, spacing: 6) {
-                                HStack {
-                                    Text(team.carNumber)
-                                        .font(.title3.weight(.bold))
-                                        .foregroundStyle(Color.fsaeText)
-                                    Text(team.school)
-                                        .font(.headline)
-                                        .foregroundStyle(Color.fsaeText)
+                    VStack(spacing: 8) {
+                        Button {
+                            selectTeam(team.id)
+                        } label: {
+                            HStack(spacing: 14) {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    HStack {
+                                        Text(team.carNumber)
+                                            .font(.title3.weight(.bold))
+                                            .foregroundStyle(Color.fsaeText)
+                                        Text(team.school)
+                                            .font(.headline)
+                                            .foregroundStyle(Color.fsaeText)
+                                    }
+                                    Text(team.currentStage)
+                                        .font(.subheadline)
+                                        .foregroundStyle(Color.fsaeSecondaryText)
                                 }
-                                Text(team.currentStage)
-                                    .font(.subheadline)
-                                    .foregroundStyle(Color.fsaeSecondaryText)
+                                Spacer()
+                                VStack(alignment: .trailing, spacing: 8) {
+                                    StatusPill(text: team.status.rawValue, color: team.status.color)
+                                        .accessibilityIdentifier(
+                                            InspectionAccessibilityIdentifier.sessionSelectorTeamStatus(teamID: team.id).rawValue
+                                        )
+                                    sessionAffordance(for: team)
+                                    Text(team.lastSaved)
+                                        .font(.caption)
+                                        .foregroundStyle(Color.fsaeSecondaryText)
+                                }
                             }
-                            Spacer()
-                            VStack(alignment: .trailing, spacing: 8) {
-                                StatusPill(text: team.status.rawValue, color: team.status.color)
-                                    .accessibilityIdentifier(
-                                        InspectionAccessibilityIdentifier.sessionSelectorTeamStatus(teamID: team.id).rawValue
-                                    )
-                                sessionAffordance(for: team)
-                                Text(team.lastSaved)
-                                    .font(.caption)
-                                    .foregroundStyle(Color.fsaeSecondaryText)
+                            .padding(16)
+                            .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(coordinator.selectedTeamID == team.id ? Color.fsaePrimary : Color.fsaeBorder, lineWidth: coordinator.selectedTeamID == team.id ? 2 : 1)
                             }
                         }
-                        .padding(16)
-                        .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(coordinator.selectedTeamID == team.id ? Color.fsaePrimary : Color.fsaeBorder, lineWidth: coordinator.selectedTeamID == team.id ? 2 : 1)
-                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier(
+                            InspectionAccessibilityIdentifier.sessionSelectorTeamRow(teamID: team.id).rawValue
+                        )
+
+                        SessionHistoryPanel(
+                            teamID: team.id,
+                            history: coordinator.history(for: team.id)
+                        )
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier(
-                        InspectionAccessibilityIdentifier.sessionSelectorTeamRow(teamID: team.id).rawValue
-                    )
                 }
             }
 
@@ -138,6 +148,65 @@ struct SessionSelectorView: View {
                     InspectionAccessibilityIdentifier.sessionSelectorTeamBlockedIndicator(teamID: team.id).rawValue
                 )
         }
+    }
+}
+
+private struct SessionHistoryPanel: View {
+    let teamID: Int
+    let history: SessionHistoryViewState
+
+    var body: some View {
+        ContentPanel {
+            HStack {
+                Label(SessionSelectorView.Strings.pastExecutions, systemImage: "clock.arrow.circlepath")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color.fsaeText)
+                Spacer()
+                Text("\(history.entries.count)")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(Color.fsaeSecondaryText)
+            }
+
+            if history.isEmpty {
+                Text(history.emptyStateText)
+                    .font(.footnote)
+                    .foregroundStyle(Color.fsaeSecondaryText)
+            } else {
+                ForEach(history.entries) { entry in
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: "lock.fill")
+                            .foregroundStyle(Color.fsaeSecondaryText)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(SessionSelectorView.Strings.completedSession)
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(Color.fsaeText)
+                            Text(entry.startedAtText)
+                                .font(.caption)
+                                .foregroundStyle(Color.fsaeSecondaryText)
+                            Text(entry.endedAtText)
+                                .font(.caption)
+                                .foregroundStyle(Color.fsaeSecondaryText)
+                        }
+                        Spacer()
+                    }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(entry.accessibilitySummary)
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.sessionSelectorHistoryEntry(
+                            teamID: teamID,
+                            sessionID: entry.id
+                        ).rawValue
+                    )
+                }
+            }
+
+            Text(SessionSelectorView.Strings.readOnlyHistory)
+                .font(.caption)
+                .foregroundStyle(Color.fsaeSecondaryText)
+        }
+        .accessibilityIdentifier(
+            InspectionAccessibilityIdentifier.sessionSelectorHistory(teamID: teamID).rawValue
+        )
     }
 }
 

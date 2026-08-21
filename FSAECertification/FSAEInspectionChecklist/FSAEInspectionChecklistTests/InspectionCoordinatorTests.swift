@@ -175,6 +175,107 @@ struct InspectionCoordinatorTests {
         #expect(coordinator.eventCoordinator.executionCoordinator != nil)
     }
 
+    @Test("TASK#10.7 reset requires confirmation before active progress is cleared")
+    func resetRequiresConfirmationBeforeActiveProgressIsCleared() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let eventID = "event-1"
+        let persistence = TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+        let store = InspectionEventStore.appStore(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: stages(),
+            persistenceService: persistence,
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: eventID,
+            teams: [teams()[1]],
+            stages: stages(),
+            store: store
+        )
+        coordinator.completeMockLogin()
+        #expect(await coordinator.selectTeam(id: 28))
+        #expect(await coordinator.openStage(id: "rain"))
+        #expect(await coordinator.saveStepDraft(TestStepDraft(stepID: "RT-08", outcome: .pass), testCaseID: "rain-rml"))
+        let sessionID = try #require(coordinator.eventCoordinator.executionCoordinator?.sessionContext.sessionID)
+        let context = InspectionPersistenceContext(
+            eventID: eventID,
+            teamID: "car-28",
+            sessionID: sessionID,
+            stageID: "rain"
+        )
+
+        #expect(coordinator.requestActiveSessionReset())
+        #expect(coordinator.isResetConfirmationPresented)
+        #expect(try await persistence.loadDraftFiles(context: context).count == 1)
+
+        coordinator.cancelActiveSessionReset()
+        #expect(!coordinator.isResetConfirmationPresented)
+        #expect(coordinator.eventCoordinator.executionCoordinator != nil)
+        #expect(try await persistence.loadDraftFiles(context: context).count == 1)
+
+        #expect(coordinator.requestActiveSessionReset())
+        #expect(await coordinator.confirmActiveSessionReset())
+        #expect(!coordinator.isResetConfirmationPresented)
+        #expect(coordinator.eventCoordinator.executionCoordinator == nil)
+        #expect(coordinator.route == .sessionSelector)
+        #expect(coordinator.selectedScreen == .sessionSelector)
+        #expect(try await persistence.loadDraftFiles(context: context).isEmpty)
+    }
+
+    @Test("TASK#10.7 completed session history is read-only presentation state with start and end timestamps")
+    func completedSessionHistoryShowsStartAndEndTimestamps() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let startedAt = Date(timeIntervalSince1970: 1_780_000_000)
+        let endedAt = Date(timeIntervalSince1970: 1_780_003_600)
+        let completed = InspectionSessionRecord(
+            id: "session-history",
+            eventID: "event-1",
+            teamID: "car-28",
+            judgeUserID: "judge-a",
+            status: .submitted,
+            currentStageID: "rain",
+            startedAt: startedAt,
+            endedAt: endedAt
+        )
+        let store = InspectionEventStore(
+            events: [InspectionEventDefinition(id: "event-1", name: "Event", stageIDs: stages().map(\.id))],
+            teams: [InspectionEventTeamRecord(id: "car-28", eventID: "event-1", displayName: "UFPE Racing", carNumber: "28")],
+            sessions: [completed],
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let coordinator = AppCoordinator(
+            eventID: "event-1",
+            teams: [teams()[1]],
+            stages: stages(),
+            store: store
+        )
+
+        await coordinator.restoreTeamCatalog()
+
+        let history = coordinator.eventCoordinator.sessionSelectionCoordinator.history(for: 28)
+        let entry = try #require(history.entries.first)
+        #expect(!history.isEmpty)
+        #expect(entry.id == "session-history")
+        #expect(entry.startedAt == startedAt)
+        #expect(entry.endedAt == endedAt)
+        #expect(entry.startedAtText == "Started \(startedAt.formatted(date: .abbreviated, time: .shortened))")
+        #expect(entry.endedAtText == "Ended \(endedAt.formatted(date: .abbreviated, time: .shortened))")
+        #expect(entry.accessibilitySummary.contains("Read-only"))
+    }
+
+    @Test("TASK#10.7 empty completed history has a clear read-only state")
+    func emptyCompletedHistoryHasClearReadOnlyState() {
+        let history = SessionHistoryViewState(entries: [])
+
+        #expect(history.isEmpty)
+        #expect(history.emptyStateText == "No completed sessions yet.")
+    }
+
     @Test("TASK#10.6 debug action marks every test case passing without evidence so session can complete")
     func debugActionMarksEveryTestCasePassingWithoutEvidenceSoSessionCanComplete() async throws {
         let rootDirectory = try temporaryStoreDirectory()

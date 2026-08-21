@@ -303,6 +303,16 @@ actor TestCaseJSONPersistenceService {
         }
     }
 
+    func clearDraftsForSession(context: InspectionPersistenceContext) throws {
+        let draftsDirectory = sessionDirectoryURL(context: context)
+            .appendingPathComponent("drafts")
+        guard fileManager.fileExists(atPath: draftsDirectory.path) else {
+            return
+        }
+
+        try fileManager.removeItem(at: draftsDirectory)
+    }
+
     func saveSubmittedTestCaseSnapshot(
         _ draft: TestCaseDraft,
         context: InspectionPersistenceContext,

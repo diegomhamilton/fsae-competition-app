@@ -183,6 +183,69 @@ struct InspectionEventStoreTests {
         #expect(sessions.first?.endedAt == endTime)
     }
 
+    @Test("TASK#10.7 reset removes only the active session and preserves completed history")
+    func resetRemovesOnlyActiveSessionAndPreservesCompletedHistory() async throws {
+        let rootDirectory = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let persistence = TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+        let completed = InspectionSessionRecord(
+            id: "session-completed",
+            eventID: "event-2026",
+            teamID: "car-042",
+            judgeUserID: "judge-a",
+            status: .submitted,
+            currentStageID: "rain",
+            startedAt: Date(timeIntervalSince1970: 1_780_000_000),
+            endedAt: Date(timeIntervalSince1970: 1_780_003_600)
+        )
+        let store = InspectionEventStore(
+            events: [event(id: "event-2026")],
+            teams: [team(id: "car-042", eventID: "event-2026", carNumber: "42")],
+            sessions: [completed],
+            persistenceService: persistence,
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        let access = access(teamID: "car-042")
+        let active = try await store.startSession(
+            eventID: "event-2026",
+            teamID: "car-042",
+            defaultStageID: "garage",
+            sessionID: "session-active",
+            startedAt: Date(timeIntervalSince1970: 1_780_010_000),
+            access: access
+        )
+        let scope = InspectionSessionScope(
+            eventID: "event-2026",
+            teamID: "car-042",
+            sessionID: active.id,
+            stageID: "garage"
+        )
+        try await store.saveDraft(
+            try completedStoreDraft(notes: "Discard this active progress."),
+            scope: scope,
+            access: access
+        )
+
+        try await store.resetActiveSession(
+            eventID: "event-2026",
+            teamID: "car-042",
+            sessionID: active.id,
+            access: access
+        )
+
+        #expect(try await store.activeSession(eventID: "event-2026", teamID: "car-042", access: access) == nil)
+        #expect(try await store.completedSessions(eventID: "event-2026", teamID: "car-042", access: access) == [completed])
+        #expect(try await persistence.loadDraftFiles(context: scope.persistenceContext).isEmpty)
+
+        let relaunched = InspectionEventStore(
+            events: [event(id: "event-2026")],
+            teams: [team(id: "car-042", eventID: "event-2026", carNumber: "42")],
+            persistenceService: persistence,
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
+        )
+        #expect(try await relaunched.sessions(eventID: "event-2026", teamID: "car-042", access: access) == [completed])
+    }
+
     @Test("US-001 scopes event, team, and session queries by user access")
     func scopesQueriesByEventTeamSessionAndAccess() async throws {
         let rootDirectory = try temporaryStoreDirectory()
