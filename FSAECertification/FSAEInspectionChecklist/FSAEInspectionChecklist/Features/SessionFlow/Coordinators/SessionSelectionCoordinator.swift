@@ -4,6 +4,47 @@
 //
 
 import Combine
+import Foundation
+
+nonisolated struct CompletedSessionSummary: Identifiable, Equatable, Sendable {
+    let id: String
+    let startedAt: Date
+    let endedAt: Date
+
+    init?(session: InspectionSessionRecord) {
+        guard session.status == .submitted, let endedAt = session.endedAt else {
+            return nil
+        }
+
+        id = session.id
+        startedAt = session.startedAt
+        self.endedAt = endedAt
+    }
+
+    var startedAtText: String {
+        "Started \(startedAt.formatted(date: .abbreviated, time: .shortened))"
+    }
+
+    var endedAtText: String {
+        "Ended \(endedAt.formatted(date: .abbreviated, time: .shortened))"
+    }
+
+    var accessibilitySummary: String {
+        "Completed session. \(startedAtText). \(endedAtText). Read-only."
+    }
+}
+
+nonisolated struct SessionHistoryViewState: Equatable, Sendable {
+    let entries: [CompletedSessionSummary]
+
+    var isEmpty: Bool {
+        entries.isEmpty
+    }
+
+    var emptyStateText: String {
+        "No completed sessions yet."
+    }
+}
 
 enum SessionSelectionRoute: Equatable {
     case roster
@@ -23,6 +64,7 @@ final class SessionSelectionCoordinator: ObservableObject {
     @Published private(set) var teams: [InspectionTeam]
     @Published private(set) var selectedTeamID: Int?
     @Published private(set) var route: SessionSelectionRoute = .roster
+    @Published private(set) var historyByTeamID: [Int: SessionHistoryViewState] = [:]
 
     init(teams: [InspectionTeam]) {
         self.teams = teams
@@ -39,6 +81,14 @@ final class SessionSelectionCoordinator: ObservableObject {
             self.selectedTeamID = nil
             route = .roster
         }
+    }
+
+    func replaceHistory(_ historyByTeamID: [Int: SessionHistoryViewState]) {
+        self.historyByTeamID = historyByTeamID
+    }
+
+    func history(for teamID: Int) -> SessionHistoryViewState {
+        historyByTeamID[teamID] ?? SessionHistoryViewState(entries: [])
     }
 
     @discardableResult

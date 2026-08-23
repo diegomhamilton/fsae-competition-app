@@ -375,6 +375,14 @@ nonisolated struct InspectionAccessibilityIdentifier: RawRepresentable, Equatabl
     static let sessionSelectorCreateTeamCarNumberField = Self(rawValue: "inspection.sessionSelector.createTeam.carNumber")
     static let sessionSelectorCreateTeamAction = Self(rawValue: "inspection.sessionSelector.createTeam.action")
 
+    static func sessionSelectorHistory(teamID: Int) -> Self {
+        Self(rawValue: "inspection.sessionSelector.team.\(teamID).history")
+    }
+
+    static func sessionSelectorHistoryEntry(teamID: Int, sessionID: String) -> Self {
+        Self(rawValue: "inspection.sessionSelector.team.\(teamID).history.\(sessionID)")
+    }
+
     static func activeTeamDashboardSwitchTeamAction(teamID: Int) -> Self {
         Self(rawValue: "inspection.dashboard.team.\(teamID).switchTeam")
     }
@@ -386,6 +394,13 @@ nonisolated struct InspectionAccessibilityIdentifier: RawRepresentable, Equatabl
     static func activeTeamDashboardCompleteSessionAction(teamID: Int) -> Self {
         Self(rawValue: "inspection.dashboard.team.\(teamID).completeSession")
     }
+
+    static func activeTeamDashboardResetSessionAction(teamID: Int) -> Self {
+        Self(rawValue: "inspection.dashboard.team.\(teamID).resetSession")
+    }
+
+    static let resetSessionConfirmAction = Self(rawValue: "inspection.session.reset.confirm")
+    static let resetSessionCancelAction = Self(rawValue: "inspection.session.reset.cancel")
 
     static func activeTeamDashboardDebugMarkAllPassedAction(teamID: Int) -> Self {
         Self(rawValue: "inspection.dashboard.team.\(teamID).debug.markAllPassed")

@@ -10,6 +10,7 @@ import Foundation
 final class AppCoordinator: ObservableObject {
     @Published private(set) var route: AppCoordinatorRoute = .login
     @Published private(set) var selectedScreen: ProposedScreen = .sessionSelector
+    @Published private(set) var isResetConfirmationPresented = false
     let eventCoordinator: InspectionEventCoordinator
 
     init(
@@ -144,6 +145,34 @@ final class AppCoordinator: ObservableObject {
             return false
         }
 
+        route = .sessionSelector
+        selectedScreen = .sessionSelector
+        objectWillChange.send()
+        return true
+    }
+
+    @discardableResult
+    func requestActiveSessionReset() -> Bool {
+        guard eventCoordinator.executionCoordinator != nil else {
+            return false
+        }
+
+        isResetConfirmationPresented = true
+        return true
+    }
+
+    func cancelActiveSessionReset() {
+        isResetConfirmationPresented = false
+    }
+
+    @discardableResult
+    func confirmActiveSessionReset() async -> Bool {
+        guard isResetConfirmationPresented,
+              await eventCoordinator.resetActiveSession() else {
+            return false
+        }
+
+        isResetConfirmationPresented = false
         route = .sessionSelector
         selectedScreen = .sessionSelector
         objectWillChange.send()

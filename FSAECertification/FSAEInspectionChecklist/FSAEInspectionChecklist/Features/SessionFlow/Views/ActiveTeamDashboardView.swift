@@ -15,6 +15,8 @@ struct ActiveTeamDashboardView: View {
         static let openStage = "Open Stage"
         static let completeSession = "Complete Session"
         static let completeSessionBlocked = "Resolve validation blockers before completing this session."
+        static let resetSession = "Reset Active Session"
+        static let resetSessionHint = "Asks for confirmation before clearing only this session's in-progress draft. Completed session history is preserved."
         static let debugMarkAllPassed = "Mark All Passed"
         static let debugMarkAllIncomplete = "Mark All Incomplete"
         static let stages = "Stages"
@@ -25,17 +27,13 @@ struct ActiveTeamDashboardView: View {
     @ObservedObject var coordinator: InspectionExecutionCoordinator
     let openStage: (String) -> Void
     let completeSession: () -> Void
+    let resetSession: () -> Void
     let debugMarkAllPassed: () -> Void
     let debugMarkAllIncomplete: () -> Void
 
     var body: some View {
         let team = coordinator.activeTeam
-        let stageRows = coordinator.stages.map { stage in
-            ActiveTeamStageRowState(
-                stage: stage,
-                draftsByTestCaseID: coordinator.draftsByTestCaseID
-            )
-        }
+        let stageRows = coordinator.stages
         let selectedStageID = coordinator.activeStage?.id
 
         ScreenShell(
@@ -44,8 +42,8 @@ struct ActiveTeamDashboardView: View {
         ) {
 
             HStack(spacing: 12) {
-                MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: Strings.overallProgress, systemImage: "chart.pie", color: .fsaeGreen)
-                MetricTile(value: "\(stages.map(\.blockerCount).reduce(0, +))", label: Strings.openBlockers, systemImage: "exclamationmark.triangle", color: .fsaeAmber)
+                MetricTile(value: "\(overallProgressPercent(stages: stageRows))%", label: Strings.overallProgress, systemImage: "chart.pie", color: .fsaeGreen)
+                MetricTile(value: "\(stageRows.map(\.blockerCount).reduce(0, +))", label: Strings.openBlockers, systemImage: "exclamationmark.triangle", color: .fsaeAmber)
             }
 
             ContentPanel {
@@ -90,6 +88,18 @@ struct ActiveTeamDashboardView: View {
                 .accessibilityIdentifier(
                     InspectionAccessibilityIdentifier.activeTeamDashboardCompleteSessionAction(teamID: team.id).rawValue
                 )
+                Button(role: .destructive) {
+                    resetSession()
+                } label: {
+                    Label(Strings.resetSession, systemImage: "arrow.counterclockwise.circle")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .accessibilityHint(Strings.resetSessionHint)
+                .accessibilityIdentifier(
+                    InspectionAccessibilityIdentifier.activeTeamDashboardResetSessionAction(teamID: team.id).rawValue
+                )
                 #if DEBUG
                 Text("Debug Actions")
                 Button {
@@ -123,19 +133,19 @@ struct ActiveTeamDashboardView: View {
                     .foregroundStyle(Color.fsaeText)
                 ForEach(stageRows) { stageRow in
                     Button {
-                        openStage(stage.stageID)
+                        openStage(stageRow.stageID)
                     } label: {
                         StageRow(
                             teamID: team.id,
-                            state: stage,
-                            isSelected: stage.stageID == selectedStageID
+                            state: stageRow,
+                            isSelected: stageRow.stageID == selectedStageID
                         )
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier(
                         InspectionAccessibilityIdentifier.activeTeamDashboardStageRow(
                             teamID: team.id,
-                            stageID: stage.stageID
+                            stageID: stageRow.stageID
                         ).rawValue
                     )
                 }

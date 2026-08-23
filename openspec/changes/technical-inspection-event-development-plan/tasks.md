@@ -102,7 +102,7 @@
 - [x] 10.4 Add a local team catalog and no-default-mock production launch. A user can create a team entry with display name and car number, and `MockInspectionData.teams` remains available only for tests, previews, or explicit debug fixtures.
 - [x] 10.5 Add local session lifecycle for one team: start session, record `startedAt`, end/complete session, record `endedAt`, persist active session state, and restore the active session after relaunch.
 - [x] 10.6 Allow a judge to run the full inspection test suite without attaching evidence. Evidence-required controls remain visible as deferred/metadata-only status, but evidence attachments do not block completion in this working version.
-- [ ] 10.7 Add session recovery and history: reset an active session with confirmation, preserve past completed executions, show past sessions with start/end timestamps, and document the validation path for checking past executions.
+- [x] 10.7 Add session recovery and history: reset an active session with confirmation, preserve past completed executions, show past sessions with start/end timestamps, and document the validation path for checking past executions.
 - [ ] 10.8 Track actual token and time usage for each Task 10 PR while completing Task 10. Update `task-10-full-suite-session-plan.xlsx` with estimated tokens, actual input/output/total tokens, estimated time, actual time, branch, PR, and completion notes for 10.4 through 10.7.
 
 ## 11.

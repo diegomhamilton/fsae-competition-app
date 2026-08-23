@@ -178,6 +178,37 @@ struct TestCaseJSONPersistenceServiceTests {
         #expect(submittedSnapshot?.recheckReferences == ["recheck-garage-main"])
     }
 
+    @Test("TASK#10.7 reset cleanup removes active drafts without deleting submitted history")
+    func resetCleanupRemovesActiveDraftsWithoutDeletingSubmittedHistory() async throws {
+        let rootDirectory = try temporaryApplicationSupportDirectory()
+        defer { try? FileManager.default.removeItem(at: rootDirectory) }
+        let service = TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+        let context = InspectionPersistenceContext(
+            eventID: "event-2026",
+            teamID: "car-042",
+            sessionID: "session-active",
+            stageID: "garage"
+        )
+        let draft = try completedDraft(notes: "Keep the submitted execution, clear only this draft.")
+
+        _ = try await service.saveDraft(draft, context: context)
+        _ = try await service.saveSubmittedTestCaseSnapshot(
+            draft,
+            context: context,
+            submissionID: "submission-preserved",
+            removeDraft: false
+        )
+
+        try await service.clearDraftsForSession(context: context)
+
+        #expect(try await service.loadDraftFiles(context: context).isEmpty)
+        #expect(try await service.loadSubmittedTestCaseSnapshot(
+            context: context,
+            submissionID: "submission-preserved",
+            testCaseID: draft.id
+        ) != nil)
+    }
+
     @Test("US-001 keeps submitted snapshots isolated by team-specific submission folders")
     func keepsSubmittedSnapshotsIsolatedByTeamFolder() async throws {
         let rootDirectory = try temporaryApplicationSupportDirectory()

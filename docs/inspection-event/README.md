@@ -54,6 +54,19 @@ Status must not rely on color alone. Passed, failed, pending, blocked, energized
 
 VoiceOver users must be able to complete login, session selection, stage inspection, validation correction, submission, team switching, and recheck review flows as those flows become screen-level features. For current screens, stable identifiers already cover the main session, stage, test case, step, validation, notes, evidence, and team-switch controls.
 
+## Reset and Session History Validation
+
+Map manual review to the feature scenario `Historical submissions are visible but immutable`:
+
+1. Create a team, start a session, enter distinct progress in at least one test case, then return to the Team screen.
+2. Select `Reset Active Session`, verify the confirmation explains that only in-progress draft state is cleared, and choose `Keep Session`. Reopen the stage and verify the draft remains.
+3. Request reset again and choose `Reset Session`. Verify the app returns to Sessions, the team is ready to start a new session, and the prior active draft no longer restores.
+4. Complete a new session, return to Sessions, and verify its read-only Past executions entry shows both Started and Ended timestamps.
+5. Start and reset another in-progress session for the same team. Verify the completed Past executions entry remains unchanged.
+6. Add or inspect a team with no completed session. Verify its Past executions panel says `No completed sessions yet.` and exposes no editable history controls.
+
+The reset confirmation, cancel action, reset action, history panel, and history rows use stable accessibility identifiers. Completed history rows use a lock cue plus a VoiceOver label ending in `Read-only`; color is not used to communicate immutability.
+
 ## Localization Conventions
 
 User-visible text and accessibility labels should be centralized through structured per-file `Strings` enums. Raw string literals are acceptable only for stable technical identifiers, fixture values, or test-only data.

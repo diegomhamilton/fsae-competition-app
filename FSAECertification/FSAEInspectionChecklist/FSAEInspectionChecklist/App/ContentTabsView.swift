@@ -6,6 +6,13 @@
 import SwiftUI
 
 struct ContentTabsView: View {
+    private enum Strings {
+        static let resetConfirmationTitle = "Reset active session?"
+        static let resetConfirmationMessage = "This clears only the active in-progress draft. Completed sessions and submitted history remain available."
+        static let resetConfirmationAction = "Reset Session"
+        static let resetConfirmationCancel = "Keep Session"
+    }
+
     @ObservedObject var appCoordinator: AppCoordinator
 
     var body: some View {
@@ -40,6 +47,9 @@ struct ContentTabsView: View {
                                 Task {
                                     await appCoordinator.completeActiveSession()
                                 }
+                            },
+                            resetSession: {
+                                appCoordinator.requestActiveSessionReset()
                             },
                             debugMarkAllPassed: {
                                 #if DEBUG
@@ -76,6 +86,31 @@ struct ContentTabsView: View {
                     }
                 }
             }
+        }
+        .confirmationDialog(
+            Strings.resetConfirmationTitle,
+            isPresented: Binding(
+                get: { appCoordinator.isResetConfirmationPresented },
+                set: { isPresented in
+                    if !isPresented {
+                        appCoordinator.cancelActiveSessionReset()
+                    }
+                }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button(Strings.resetConfirmationAction, role: .destructive) {
+                Task {
+                    await appCoordinator.confirmActiveSessionReset()
+                }
+            }
+            .accessibilityIdentifier(InspectionAccessibilityIdentifier.resetSessionConfirmAction.rawValue)
+            Button(Strings.resetConfirmationCancel, role: .cancel) {
+                appCoordinator.cancelActiveSessionReset()
+            }
+            .accessibilityIdentifier(InspectionAccessibilityIdentifier.resetSessionCancelAction.rawValue)
+        } message: {
+            Text(Strings.resetConfirmationMessage)
         }
     }
 }
