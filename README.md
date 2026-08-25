@@ -6,13 +6,40 @@ This is based on the Inspection Sheet PDF document available in the `context/` f
 
 ---
 
+## Architecture at a Glance
+
+The app is centered around a technical judge conducting an inspection against an FSAE team/vehicle.
+
+The core business loop is:
+
+**Select Team → Inspect → Record → Validate → Persist → Complete**
+
+At runtime, the main control path is:
+
+`AppCoordinator` → `InspectionExecutionCoordinator` → `InspectionEventStore` → local persistence
+
+For the system context, actors, business transactions, architecture invariants, and recommended code-reading path, start with the [Architecture Overview](docs/architecture-overview.md).
+
+---
+
 ## Documentation
 
-- [Inspection event technical overview](docs/inspection-event/README.md)
+### Start here
+
+- [Architecture overview](docs/architecture-overview.md)
 - [Current system map](docs/system-map.md)
+
+### Inspection workflow
+
+- [Inspection event technical overview](docs/inspection-event/README.md)
 - [Inspection event tutorials](docs/inspection-event/tutorials.md)
+
+### Development
+
 - [Review hygiene and PR rules](docs/inspection-event/review-hygiene.md)
 - [Tentpole 3 organization plan](docs/inspection-event/organization-plan.md)
+
+`docs/` describes the current implemented system and its runtime behavior. `Design/` contains proposed or historical architecture, flows, screen maps, and implementation plans that may be partially implemented or superseded.
 
 ---
 
