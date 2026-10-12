@@ -7,4 +7,6 @@ Each checkpoint uses actual SwiftUI app components with isolated DEBUG fixtures.
 
 3. [[02-result-component/README|Result input, optional actions, autosave, and recovery]]
 
-Queue, review, and final validation checkpoints follow.
+4. [[03-queue/README|Pre-run queue, drawer, and section navigation]]
+
+Review and final validation checkpoints follow.

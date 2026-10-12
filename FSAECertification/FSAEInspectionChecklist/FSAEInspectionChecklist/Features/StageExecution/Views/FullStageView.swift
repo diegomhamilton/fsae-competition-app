@@ -4,6 +4,8 @@ struct FullStageView: View {
     fileprivate enum Strings {
         static let eyebrow = "Stage"
         static let queue = "Test queue"
+        static let details = "View details"
+        static let back = "Back to test"
         static let review = "Review results"
         static let next = "Save & next test"
         static let saved = "Saved on this device"
@@ -69,6 +71,7 @@ struct FullStageView: View {
         initialStepID: String? = nil,
         initialReview: Bool = false,
         initialDetails: Bool = false,
+        initialQueue: Bool = false,
         initialDebugBadge: Bool = false,
         submitStage: @escaping () -> Void = {}
     ) {
@@ -79,6 +82,7 @@ struct FullStageView: View {
         if initialReview { navigation.showReview() }
         _focus = State(initialValue: navigation)
         _showsDetails = State(initialValue: initialDetails)
+        _showsQueue = State(initialValue: initialQueue)
         _showsTypeBadge = State(initialValue: initialDebugBadge)
         self.team = team
         self.stage = stage
@@ -92,11 +96,59 @@ struct FullStageView: View {
     }
 
     var body: some View {
-        let state = FullStageViewState(stage: stage, team: team, draftsByTestCaseID: draftsByTestCaseID)
+        Group {
+            switch focus.mode {
+            case .focus: focusedScreen
+            case .queue: queueScreen()
+            case .review: legacyReviewScreen
+            }
+        }
+        .sheet(isPresented: $showsQueue) {
+            NavigationStack {
+                queueScreen(isDrawer: true) { showsQueue = false }
+                    .navigationTitle(Strings.queue)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button(Strings.done) { showsQueue = false }
+                                .accessibilityIdentifier("execution.queue.close")
+                        }
+                    }
+            }
+        }
+        .sheet(isPresented: $showsDetails) {
+            if let testCase = activeTestCaseState, let step = activeStepState {
+                FocusedTestDetails(testCase: testCase, step: step, showsTypeBadge: $showsTypeBadge)
+            }
+        }
+        .toolbar {
+            if focus.mode == .focus {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { showsQueue = true } label: { Text(Strings.queue) }
+                        .accessibilityIdentifier("execution.queue")
+                        .disabled(isConfirmingResult)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showsDetails = true } label: { Text(Strings.details) }
+                        .accessibilityIdentifier("execution.details.open")
+                        .disabled(isConfirmingResult)
+                }
+            } else if focus.mode == .review, focus.hasReviewReturnPoint {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(Strings.back) { focus.backToTest() }
+                        .accessibilityIdentifier("execution.review.back-to-test")
+                }
+            }
+        }
+        .navigationTitle(focus.mode == .focus ? "" : stage.title)
+        .navigationBarTitleDisplayMode(focus.mode == .focus ? .inline : .large)
+        .toolbar(focus.mode == .focus ? .hidden : .visible, for: .tabBar)
+    }
+
+    private var focusedScreen: some View {
         ScreenShell(title: stage.title, subtitle: "") {
             if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {
                 FocusExecutionContext(title: testCase.title, vehicle: team,
-                    position: testPosition, total: state.testCaseCount)
+                    position: testPosition, total: focus.orderedTestCases.count)
                 if testCase.steps.count > 1 {
                     Menu {
                         ForEach(testCase.steps) { item in
@@ -129,89 +181,56 @@ struct FullStageView: View {
                     onConfirmationActivityChanged: { isConfirmingResult = $0 }
                 )
                 .id("\(testCase.id).\(step.id)")
-            } else {
-                if focus.orderedTestCases.contains(where: { hasFailedSave($0.id) }) {
-                    Label("Some results could not be saved.", systemImage: "exclamationmark.triangle")
-                        .foregroundStyle(Color.fsaeRed)
-                    Button("Retry saving") { Task { await retryFailedSaves() } }
-                        .accessibilityIdentifier("execution.overview.save-retry")
-                }
-                FullStageSummaryPanel(viewState: state)
-                Text(focus.mode == .review ? Strings.review : Strings.queue).font(.headline)
-                if focus.mode == .queue {
-                    Button(Strings.startNext, systemImage: "play.fill") {
-                        focus.startNext(draftsByTestCaseID: latestDrafts())
-                    }
-                    .buttonStyle(.borderedProminent).controlSize(.large)
-                    .accessibilityIdentifier("execution.start-next")
-                    .disabled(hasUnsavedDraft)
-                }
-                ForEach(state.sections) { section in
-                    FullStageSectionBlock(stageID: stage.id, section: section,
-                        isExpanded: expandedSectionIDs.contains(section.id),
-                        toggleExpanded: {
-                            if expandedSectionIDs.contains(section.id) { expandedSectionIDs.remove(section.id) }
-                            else { expandedSectionIDs.insert(section.id) }
-                        },
-                        openTestCase: { item in
-                            if focus.mode == .review, let stepID = item.orderedSteps.first?.id {
-                                focus.editResult(testCaseID: item.id, stepID: stepID)
-                            } else {
-                                focus.selectTestCase(id: item.id, draftsByTestCaseID: latestDrafts())
-                            }
-                        })
-                }
-                if focus.mode == .review {
-                    FullStageValidationPanel(viewState: state) { route in
-                        focus.editResult(testCaseID: route.testCaseID, stepID: route.stepID)
-                    }
-                    Button(Strings.submit, action: submitStage)
-                        .buttonStyle(.borderedProminent).controlSize(.large)
-                        .disabled(!focus.focusedValidationIssues(draftsByTestCaseID: draftsByTestCaseID).isEmpty || hasUnsavedDraft)
-                } else {
-                    Button(Strings.review) { focus.showReview() }
-                }
             }
+
         }
-        .onChange(of: focus.mode) { _, mode in
-            if mode == .review { expandedSectionIDs = Set(stage.orderedSections.map(\.id)) }
-        }
-        .sheet(isPresented: $showsQueue) {
-            NavigationStack {
-                StageChecklistView(team: team, stage: stage, draftsByTestCaseID: draftsByTestCaseID) { item in
-                    focus.selectTestCase(id: item.id, draftsByTestCaseID: latestDrafts())
-                    showsQueue = false
-                }
-                .toolbar { Button(Strings.done) { showsQueue = false } }
+    }
+
+    private func queueScreen(isDrawer: Bool = false, close: @escaping () -> Void = {}) -> some View {
+        StageQueueView(
+            team: team, stage: stage, draftsByTestCaseID: draftsByTestCaseID,
+            focusedIssues: focus.focusedValidationIssues(draftsByTestCaseID: draftsByTestCaseID),
+            hasActiveSelection: !isDrawer && focus.hasActiveSelection,
+            hasUnsavedDraft: hasUnsavedDraft,
+            startNext: { focus.startNext(draftsByTestCaseID: latestDrafts()); close() },
+            continueTest: { focus.backToTest(); close() },
+            review: { focus.showReview(); close() },
+            selectTestCase: { id in
+                focus.selectTestCase(id: id, draftsByTestCaseID: latestDrafts())
+                close()
             }
-        }
-        .sheet(isPresented: $showsDetails) {
-            if let testCase = activeTestCaseState, let step = activeStepState {
-                FocusedTestDetails(testCase: testCase, step: step, showsTypeBadge: $showsTypeBadge)
+        )
+        .safeAreaInset(edge: .bottom) { recoveryNotice }
+    }
+
+    private var recoveryNotice: some View {
+        DraftSaveRecoveryView(
+            hasFailedSave: focus.orderedTestCases.contains { hasFailedSave($0.id) },
+            retry: retryFailedSaves
+        )
+    }
+
+    private var legacyReviewScreen: some View {
+        let state = FullStageViewState(stage: stage, team: team, draftsByTestCaseID: draftsByTestCaseID)
+        return ScreenShell(title: stage.title, subtitle: "") {
+            FullStageSummaryPanel(viewState: state)
+            Text(Strings.review).font(.headline)
+            ForEach(state.sections) { section in
+                FullStageSectionBlock(stageID: stage.id, section: section, isExpanded: true,
+                    toggleExpanded: {}, openTestCase: { item in
+                        if let stepID = item.orderedSteps.first?.id {
+                            focus.editResult(testCaseID: item.id, stepID: stepID)
+                        }
+                    })
             }
-        }
-        .toolbar {
-            if focus.mode == .focus {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button { showsQueue = true } label: { Text(Strings.queue) }
-                        .accessibilityIdentifier("execution.queue")
-                        .disabled(isConfirmingResult)
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showsDetails = true } label: { Text("View details") }
-                        .accessibilityIdentifier("execution.details.open")
-                        .disabled(isConfirmingResult)
-                }
-            } else if focus.mode == .review, focus.hasReviewReturnPoint {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Back to test") { focus.backToTest() }
-                        .accessibilityIdentifier("execution.review.back-to-test")
-                }
+            FullStageValidationPanel(viewState: state) { route in
+                focus.editResult(testCaseID: route.testCaseID, stepID: route.stepID)
             }
+            Button(Strings.submit, action: submitStage)
+                .buttonStyle(.borderedProminent).controlSize(.large)
+                .disabled(!focus.focusedValidationIssues(draftsByTestCaseID: draftsByTestCaseID).isEmpty || hasUnsavedDraft)
+            recoveryNotice
         }
-        .navigationTitle(focus.mode == .focus ? "" : stage.title)
-        .navigationBarTitleDisplayMode(focus.mode == .focus ? .inline : .large)
-        .toolbar(focus.mode == .focus ? .hidden : .visible, for: .tabBar)
     }
 
     private var activeTestCaseState: InspectionTestCaseViewState? {

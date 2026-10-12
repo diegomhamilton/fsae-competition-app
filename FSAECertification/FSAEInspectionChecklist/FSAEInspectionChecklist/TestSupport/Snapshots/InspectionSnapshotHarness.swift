@@ -7,6 +7,8 @@ enum InspectionSnapshotScenario: String, CaseIterable {
     case queue, focus, ready, fail, measurement, evidence, review, details
     case saving, confirmed, safety
     case autoAdvance = "auto-advance"
+    case queueDrawer = "queue-drawer"
+    case queueSupplies = "queue-supplies"
     case evidenceReady = "evidence-ready"
     case flaggedFocus = "flagged-focus"
     case optionalNotes = "optional-notes"
@@ -53,10 +55,11 @@ struct InspectionSnapshotHarness: View {
                     return scenario != .saveFailure
                 },
                 latestDrafts: { drafts },
-                initialTestCaseID: scenario == .queue ? nil : "case-3",
+                initialTestCaseID: scenario == .queue || scenario == .queueSupplies ? nil : "case-3",
                 initialStepID: "step-3",
                 initialReview: scenario == .review,
                 initialDetails: scenario == .details,
+                initialQueue: scenario == .queueDrawer,
                 initialDebugBadge: scenario == .debugBadge
             )
             .id(scenario == .evidenceReady ? drafts["case-3"]?.stepDraft(stepID: "step-3")?.draft.evidenceAttachments.count ?? 0 : 0)

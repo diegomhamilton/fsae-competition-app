@@ -1,7 +1,7 @@
 ---
 title: "Phase 3 — Queue and review return"
 phase: 3
-status: planned
+status: queue-complete
 tags: [phase, swiftui, navigation, review]
 ---
 
@@ -16,7 +16,7 @@ Keep the dense overview on the queue and final review screens. A judge can previ
 ## Tasks
 
 - [ ] Extract queue and review presentation into dedicated UI components.
-- [ ] Provide a clear queue entry and test selection without restoring the dense execution screen.
+- [x] Provide a clear queue entry and test selection without restoring the dense execution screen.
 - [ ] Offer early review through **+** and automatically open it after the final test.
 - [ ] Add **Back to test** that restores the current vehicle, test, step, and draft values.
 - [ ] Preserve a return path to review after correcting an individual result.
@@ -38,8 +38,8 @@ Replace the old queue sheet and review detour with the extracted components in t
 
 ## Completion record
 
-- Commit: pending
-- Snapshots: pending
-- Validation: pending
+- Queue commit: the feature checkpoint containing [[../Snapshots/03-queue/README|three queue captures]].
+- Review commit: pending.
+- Validation: queue build passed; five result-status checks passed. Review and full-scheme checks follow.
 
 Previous: [[02-result-input-and-additions|Phase 2]]. Next: [[04-final-checks-and-pdf|Phase 4 — Final checks and snapshot PDF]].
