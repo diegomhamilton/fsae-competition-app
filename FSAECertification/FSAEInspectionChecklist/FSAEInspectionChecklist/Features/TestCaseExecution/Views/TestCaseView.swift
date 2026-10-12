@@ -68,6 +68,7 @@ struct TestCaseStepCarousel: View {
     let stageID: String
     let testCaseID: String
     let steps: [InspectionTestCaseStepViewState]
+    var showsTypeBadge = false
     let focusedNoteStepID: FocusState<String?>.Binding
     @Binding var scrollPosition: ScrollPosition
     @Binding var activeStepID: String?
@@ -89,6 +90,7 @@ struct TestCaseStepCarousel: View {
     var body: some View {
         if let stepState = steps.first(where: { $0.id == activeStepID }) ?? steps.first {
             VStack(alignment: .leading) {
+                if steps.count > 1 {
                 Menu {
                     ForEach(steps) { step in
                         Button(step.step.content) { scrollToStep(step.id) }
@@ -97,10 +99,12 @@ struct TestCaseStepCarousel: View {
                     Label("Step \(activeIndex + 1) of \(steps.count)", systemImage: "list.bullet")
                 }
                 .accessibilityIdentifier("execution.step-queue")
+                }
                 TestCaseStepCard(
                     stageID: stageID,
                     testCaseID: testCaseID,
                     state: stepState,
+                    showsTypeBadge: showsTypeBadge,
                     focusedNoteStepID: focusedNoteStepID,
                     openStepDetail: { openStepDetail(stepState.step) },
                     updateStepDraft: updateStepDraft,
@@ -262,6 +266,7 @@ private struct TestCaseStepCard: View {
     let testCaseID: String
     let state: InspectionTestCaseStepViewState
     let focusedNoteStepID: FocusState<String?>.Binding
+    var showsTypeBadge = false
     let openStepDetail: () -> Void
     let advanceFromStep: () -> Void
     @State private var showsOptionalInputs = false
@@ -274,6 +279,7 @@ private struct TestCaseStepCard: View {
         stageID: String,
         testCaseID: String,
         state: InspectionTestCaseStepViewState,
+        showsTypeBadge: Bool = false,
         focusedNoteStepID: FocusState<String?>.Binding,
         openStepDetail: @escaping () -> Void,
         updateStepDraft: @escaping (TestStepDraft) -> Void,
@@ -282,6 +288,7 @@ private struct TestCaseStepCard: View {
         self.stageID = stageID
         self.testCaseID = testCaseID
         self.state = state
+        self.showsTypeBadge = showsTypeBadge
         self.focusedNoteStepID = focusedNoteStepID
         self.openStepDetail = openStepDetail
         self.updateStepDraft = updateStepDraft
@@ -296,61 +303,7 @@ private struct TestCaseStepCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top, spacing: 12) {
-                Image(systemName: state.step.type.symbol)
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(state.step.type.color)
-                    .frame(width: 28)
-
-                StatusPill(text: state.step.type.label, color: state.step.type.color)
-
-                Spacer()
-
-                HStack(spacing: 8) {
-                    StatusPill(text: state.status.displayName, color: state.statusColor)
-                        .accessibilityIdentifier(
-                            InspectionAccessibilityIdentifier.testCaseStepStatus(
-                                testCaseID: testCaseID,
-                                stepID: state.id
-                            ).rawValue
-                        )
-
-                    Button(TestCaseView.Strings.openStep, systemImage: "info.circle") {
-                        openStepDetail()
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(Color.fsaePrimary)
-                    .accessibilityLabel(TestCaseView.Strings.openStep)
-                    .accessibilityIdentifier(
-                        InspectionAccessibilityIdentifier.testCaseStepOpenAction(
-                            testCaseID: testCaseID,
-                            stepID: state.id
-                        ).rawValue
-                    )
-                }
-            }
-
-            HStack {
-                if state.step.requiresEvidence {
-                    StatusPill(text: state.evidenceStatus.displayName, color: state.evidenceStatus.color)
-                }
-                ForEach(state.safetyBadges, id: \.self) { badge in
-                    StatusPill(text: badge.displayName, color: .fsaeRed)
-                        .accessibilityLabel(badge.accessibilityLabel)
-                        .accessibilityValue(badge.accessibilityLabel)
-                        .accessibilityIdentifier(
-                            InspectionAccessibilityIdentifier.testCaseStageEnergizedBadge(
-                                stageID: stageID,
-                                testCaseID: testCaseID
-                            ).rawValue
-                        )
-                }
-            }
-
-            Text(state.step.content)
-                .font(.headline)
-                .foregroundStyle(Color.fsaeText)
-                .lineLimit(3)
+            FocusedTestDescription(state: state, showsTypeBadge: showsTypeBadge)
 
             if state.step.requiredOutcome {
             HStack {

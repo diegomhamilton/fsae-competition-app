@@ -56,6 +56,8 @@ struct FullStageView: View {
     @State private var selectedTestCaseID: String?
     @State private var isReviewing = false
     @State private var showsQueue = false
+    @State private var showsDetails = false
+    @State private var showsTypeBadge = false
     @State private var confirmation: String?
     @State private var stepScrollPosition = ScrollPosition()
     @State private var activeStepID: String?
@@ -71,12 +73,16 @@ struct FullStageView: View {
         initialTestCaseID: String? = nil,
         initialStepID: String? = nil,
         initialReview: Bool = false,
+        initialDetails: Bool = false,
+        initialDebugBadge: Bool = false,
         submitStage: @escaping () -> Void = {},
         openBlockingRoute: @escaping (FullStageBlockingRoute) -> Void = { _ in }
     ) {
         _selectedTestCaseID = State(initialValue: initialTestCaseID)
         _activeStepID = State(initialValue: initialStepID)
         _isReviewing = State(initialValue: initialReview)
+        _showsDetails = State(initialValue: initialDetails)
+        _showsTypeBadge = State(initialValue: initialDebugBadge)
         self.team = team
         self.stage = stage
         self.draftsByTestCaseID = draftsByTestCaseID
@@ -99,26 +105,13 @@ struct FullStageView: View {
             subtitle: subtitle
         ) {
             if let activeTestCaseViewState, !isReviewing {
-                ContentPanel {
-                    Text(activeTestCaseViewState.title).font(.headline)
-                    Text("\(team.carNumber) · \(team.school) · \(testPosition) of \(state.testCaseCount)")
-                        .font(.subheadline).foregroundStyle(Color.fsaeSecondaryText)
-                    HStack {
-                        Button(Strings.queue, systemImage: "list.bullet") { showsQueue = true }
-                        Spacer()
-                        Label(hasUnsavedDraft ? Strings.saving : Strings.saved,
-                              systemImage: hasUnsavedDraft ? "clock" : "checkmark.circle")
-                            .font(.caption)
-                            .accessibilityIdentifier("execution.save-status")
-                    }
-                    if let confirmation {
-                        Text(confirmation).font(.caption).foregroundStyle(Color.fsaeGreen)
-                    }
-                }
+                FocusExecutionContext(title: activeTestCaseViewState.title, vehicle: team,
+                                      position: testPosition, total: state.testCaseCount)
                 TestCaseStepCarousel(
                     stageID: stage.id,
                     testCaseID: activeTestCaseViewState.id,
                     steps: activeTestCaseViewState.steps,
+                    showsTypeBadge: showsTypeBadge,
                     focusedNoteStepID: $focusedNoteStepID,
                     scrollPosition: $stepScrollPosition,
                     activeStepID: $activeStepID,
@@ -212,7 +205,31 @@ struct FullStageView: View {
             try? await Task.sleep(for: .seconds(2))
             confirmation = nil
         }
-        .navigationTitle(stage.title)
+        .sheet(isPresented: $showsDetails) {
+            if let testCase = activeTestCaseViewState,
+               let step = testCase.steps.first(where: { $0.id == activeStepID }) ?? testCase.steps.first {
+                FocusedTestDetails(testCase: testCase, step: step, showsTypeBadge: $showsTypeBadge)
+            }
+        }
+        .toolbar {
+            if selectedTestCaseID != nil && !isReviewing {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { showsQueue = true } label: {
+                        Text(Strings.queue)
+                    }
+                        .accessibilityIdentifier("execution.queue")
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showsDetails = true } label: {
+                        Text("View details")
+                    }
+                        .accessibilityIdentifier("execution.details.open")
+                }
+            }
+        }
+        .navigationTitle(selectedTestCaseID != nil && !isReviewing ? "" : stage.title)
+        .navigationBarTitleDisplayMode(selectedTestCaseID != nil && !isReviewing ? .inline : .large)
+        .toolbar(selectedTestCaseID != nil && !isReviewing ? .hidden : .visible, for: .tabBar)
     }
 
     private var orderedTestCases: [InspectionTestCase] {
@@ -247,7 +264,7 @@ struct FullStageView: View {
     }
 
     private var subtitle: String {
-        "\(stage.subtitle.isEmpty ? Strings.localDraftFallback : stage.subtitle)"
+        selectedTestCaseID != nil && !isReviewing ? "" : stage.subtitle
     }
 
     private var activeTestCaseViewState: InspectionTestCaseViewState? {

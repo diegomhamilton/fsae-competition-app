@@ -1,7 +1,7 @@
 ---
 title: "Phase 1 — Focus context and details"
 phase: 1
-status: planned
+status: complete
 tags: [phase, swiftui, focus]
 ---
 
@@ -15,11 +15,11 @@ Give the judge a quiet execution screen with a prominent queue entry, top-toolba
 
 ## Tasks
 
-- [ ] Extract the focused context and instructions into dedicated UI components.
-- [ ] Place **Test queue** independently in the toolbar and **View details** at the top.
-- [ ] Keep progress quiet and omit single-step navigation.
-- [ ] Keep the type badge only behind a DEBUG option, to the left of the description.
-- [ ] Capture focus and the details return path.
+- [x] Extract the focused context and instructions into dedicated UI components.
+- [x] Place **Test queue** independently in the toolbar and **View details** at the top.
+- [x] Keep progress quiet and omit single-step navigation.
+- [x] Keep the type badge only behind a DEBUG option, to the left of the description.
+- [x] Capture focus and the details return control.
 
 ## Component and predecessor
 
@@ -34,8 +34,8 @@ Replace the large repeated stage heading, generic local-draft subtitle, stacked 
 
 ## Completion record
 
-- Commit: pending
-- Snapshots: pending
-- Validation: pending
+- Commit: the component checkpoint containing this note.
+- Snapshots: [[../Snapshots/01-context-details/README|Context and details evidence]].
+- Validation: direct Xcode 26.2 build passed; three images passed boot rejection and visual inspection. Result-card validation is removed in Phase 2.
 
 Previous: [[00-workflow-and-baseline|Phase 0]]. Next: [[02-result-input-and-additions|Phase 2 — Result input, +, and autosave]].

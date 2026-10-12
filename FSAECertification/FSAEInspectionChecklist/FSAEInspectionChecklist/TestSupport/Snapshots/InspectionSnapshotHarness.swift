@@ -42,7 +42,9 @@ struct InspectionSnapshotHarness: View {
                 },
                 initialTestCaseID: scenario == .queue ? nil : "case-3",
                 initialStepID: "step-3",
-                initialReview: scenario == .review
+                initialReview: scenario == .review,
+                initialDetails: scenario == .details,
+                initialDebugBadge: scenario == .debugBadge
             )
         }
     }

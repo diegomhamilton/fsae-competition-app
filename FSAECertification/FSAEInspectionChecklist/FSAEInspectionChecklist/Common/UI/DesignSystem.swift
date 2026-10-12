@@ -13,10 +13,12 @@ struct ScreenShell<Content: View>: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(Color.fsaePrimary)
-                    .padding(.leading, 12)
+                if !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(Color.fsaePrimary)
+                        .padding(.leading, 12)
+                }
 
                 content
             }
