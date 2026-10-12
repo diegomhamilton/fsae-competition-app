@@ -13,6 +13,9 @@ final class InspectionExecutionCoordinator: ObservableObject {
     @Published private(set) var pendingSwitchTarget: InspectionTeam?
     @Published private(set) var draftsByStageID: [String: [String: TestCaseDraft]]
     @Published private(set) var failedDraftCaseIDsByStageID: [String: Set<String>] = [:]
+    @Published private(set) var isSubmittingStage = false
+    @Published private(set) var lastStageSubmission: SubmittedStageSnapshotFile?
+    @Published private(set) var stageSubmissionError: String?
     let teams: [InspectionTeam]
     private let stageModels: [InspectionStage]
     private let store: InspectionEventStore
@@ -117,6 +120,53 @@ final class InspectionExecutionCoordinator: ObservableObject {
         stageNavigationPath.last?.testCaseID
     }
 
+    /// Final review submits a frozen copy of the current stage only. It does not
+    /// complete the session or discard the judge's current selection and drafts.
+    @discardableResult
+    func submitActiveStage(
+        submissionID: String = UUID().uuidString,
+        submittedAt: Date = Date(),
+        evidenceAvailable: @escaping (EvidenceAttachmentMetadata) -> Bool = {
+            FocusedResultEvidenceStore.localAssetAvailable($0)
+        }
+    ) async -> Bool {
+        guard !isSubmittingStage else { return false }
+        guard let stage = activeStage, !sessionContext.hasUnsavedDraft else {
+            stageSubmissionError = String(localized: "Wait for your results to save before submitting.")
+            return false
+        }
+        guard !stage.orderedSections.flatMap(\.orderedTestCases).flatMap(\.orderedSteps).isEmpty else {
+            stageSubmissionError = String(localized: "There are no test results to submit.")
+            return false
+        }
+        let stageDrafts = draftsByStageID[stage.id] ?? [:]
+        let focusValidation = StageFocusCoordinator(stage: stage, evidenceAvailable: evidenceAvailable)
+        guard focusValidation.focusedValidationIssues(draftsByTestCaseID: stageDrafts).isEmpty else {
+            stageSubmissionError = String(localized: "Confirm all results, add required evidence, and resolve flags before submitting.")
+            return false
+        }
+        let frozenDrafts = stage.orderedSections.flatMap(\.orderedTestCases).map { testCase in
+            stageDrafts[testCase.id] ?? TestCaseDraft(testCase: testCase)
+        }
+        isSubmittingStage = true
+        stageSubmissionError = nil
+        defer { isSubmittingStage = false }
+        do {
+            let result = try await store.submitStage(
+                scope: scope(stageID: stage.id),
+                submissionID: submissionID,
+                drafts: frozenDrafts,
+                submittedAt: submittedAt,
+                access: access
+            )
+            lastStageSubmission = result.snapshot
+            return true
+        } catch {
+            stageSubmissionError = String(localized: "Stage could not be submitted. Your results are kept; try again.")
+            return false
+        }
+    }
+
     func markUnsavedDraft(_ hasUnsavedDraft: Bool) {
         sessionContext.hasUnsavedDraft = hasUnsavedDraft
     }
@@ -213,6 +263,10 @@ final class InspectionExecutionCoordinator: ObservableObject {
 
         var stageDrafts = draftsByStageID[target.stageID] ?? [:]
         var testCaseDraft = stageDrafts[testCaseID] ?? TestCaseDraft(testCase: target.testCase)
+        if testCaseDraft.stepDraft(stepID: stepDraft.stepID)?.draft != stepDraft,
+           lastStageSubmission?.stageID == target.stageID {
+            lastStageSubmission = nil
+        }
         testCaseDraft.updateStepDraft(stepDraft)
         stageDrafts[testCaseID] = testCaseDraft
         draftsByStageID[target.stageID] = stageDrafts

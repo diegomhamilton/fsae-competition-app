@@ -21,7 +21,7 @@ struct FocusedResultMenu: View {
         self.flagIssue = flagIssue
         self.review = review
         #if DEBUG
-        _showsActions = State(initialValue: InspectionSnapshotScenario.current?.rawValue == "secondary-actions")
+        _showsActions = State(initialValue: InspectionSnapshotScenario.current?.rawValue == "secondary-actions" || InspectionSnapshotScenario.current?.rawValue == "resolve-flag")
         #else
         _showsActions = State(initialValue: false)
         #endif

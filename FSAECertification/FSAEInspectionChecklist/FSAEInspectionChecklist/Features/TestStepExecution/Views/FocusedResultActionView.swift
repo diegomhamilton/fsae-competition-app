@@ -3,6 +3,7 @@ import SwiftUI
 struct FocusedResultActionView: View {
     let form: FocusedResultForm
     let confirm: () -> Void
+    var title = FocusedResultStrings.saveNext
 
     var body: some View {
         if form.didConfirm {
@@ -17,7 +18,7 @@ struct FocusedResultActionView: View {
                 .accessibilityIdentifier("execution.result-saving")
         } else {
             Button(action: confirm) {
-                Label(FocusedResultStrings.saveNext, systemImage: "arrow.right")
+                Label(title, systemImage: "arrow.right")
                     .frame(maxWidth: .infinity, minHeight: 48)
             }
                 .buttonStyle(.borderedProminent)

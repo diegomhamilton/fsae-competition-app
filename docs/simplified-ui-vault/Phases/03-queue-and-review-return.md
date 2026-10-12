@@ -1,7 +1,7 @@
 ---
 title: "Phase 3 — Queue and review return"
 phase: 3
-status: queue-complete
+status: complete
 tags: [phase, swiftui, navigation, review]
 ---
 
@@ -15,13 +15,13 @@ Keep the dense overview on the queue and final review screens. A judge can previ
 
 ## Tasks
 
-- [ ] Extract queue and review presentation into dedicated UI components.
+- [x] Extract queue and review presentation into dedicated UI components.
 - [x] Provide a clear queue entry and test selection without restoring the dense execution screen.
-- [ ] Offer early review through **+** and automatically open it after the final test.
-- [ ] Add **Back to test** that restores the current vehicle, test, step, and draft values.
-- [ ] Preserve a return path to review after correcting an individual result.
-- [ ] Keep final submission distinct from previewing review.
-- [ ] Capture queue, review, correction, and return states.
+- [x] Offer early review through **+** and automatically open it after the final test.
+- [x] Add **Back to test** that restores the current vehicle, test, step, and draft values.
+- [x] Preserve a return path to review after correcting an individual result.
+- [x] Keep final submission distinct from previewing review.
+- [x] Capture queue, review, correction, and return states.
 
 ## Component and predecessor
 
@@ -39,7 +39,7 @@ Replace the old queue sheet and review detour with the extracted components in t
 ## Completion record
 
 - Queue commit: the feature checkpoint containing [[../Snapshots/03-queue/README|three queue captures]].
-- Review commit: pending.
-- Validation: queue build passed; five result-status checks passed. Review and full-scheme checks follow.
+- Review commit: the feature checkpoint containing [[../Snapshots/04-review/README|nine review and return captures]].
+- Validation: queue and review builds passed; navigation/status/snapshot-service checks passed. Submission checks passed (six tests, nine executed cases). Full-scheme checks follow.
 
 Previous: [[02-result-input-and-additions|Phase 2]]. Next: [[04-final-checks-and-pdf|Phase 4 — Final checks and snapshot PDF]].

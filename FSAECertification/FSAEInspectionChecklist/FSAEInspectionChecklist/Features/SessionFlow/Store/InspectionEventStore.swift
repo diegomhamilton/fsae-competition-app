@@ -481,6 +481,26 @@ actor InspectionEventStore {
             }
     }
 
+    /// Creates an immutable stage submission using this store's persistence root.
+    /// Drafts remain available when a partial write fails and for review afterward.
+    func submitStage(
+        scope: InspectionSessionScope,
+        submissionID: String,
+        drafts: [TestCaseDraft],
+        submittedAt: Date = Date(),
+        access: InspectionEventUserAccess
+    ) async throws -> SubmissionSnapshotResult {
+        try requireSession(scope: scope, access: access)
+        let submissionService = SubmissionSnapshotService(persistence: persistenceService)
+        return try await submissionService.createStageSnapshot(
+            context: scope.persistenceContext,
+            submissionID: submissionID,
+            drafts: drafts,
+            submittedAt: submittedAt,
+            preserveDrafts: true
+        )
+    }
+
     private func requireEvent(_ eventID: String) throws {
         guard eventsByID[eventID] != nil else {
             throw InspectionEventStoreError.eventNotFound(eventID)

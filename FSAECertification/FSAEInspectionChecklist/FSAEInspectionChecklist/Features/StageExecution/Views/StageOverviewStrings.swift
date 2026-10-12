@@ -13,6 +13,7 @@ enum StageOverviewStrings {
     static let noTests = "There are no tests in this stage."
     static let unanswered = "Not started"
     static let draft = "Draft"
+    static let recorded = "Recorded"
     static let passed = "Pass"
     static let failed = "Fail"
     static let flagged = "Flagged"

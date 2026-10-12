@@ -9,6 +9,13 @@ enum InspectionSnapshotScenario: String, CaseIterable {
     case autoAdvance = "auto-advance"
     case queueDrawer = "queue-drawer"
     case queueSupplies = "queue-supplies"
+    case reviewIncomplete = "review-incomplete"
+    case reviewReturn = "review-return"
+    case reviewCorrection = "review-correction"
+    case reviewFlagged = "review-flagged"
+    case resolveFlag = "resolve-flag"
+    case reviewSubmitted = "review-submitted"
+    case submissionFailure = "submission-failure"
     case evidenceReady = "evidence-ready"
     case flaggedFocus = "flagged-focus"
     case optionalNotes = "optional-notes"
@@ -30,6 +37,7 @@ enum InspectionSnapshotScenario: String, CaseIterable {
 struct InspectionSnapshotHarness: View {
     let scenario: InspectionSnapshotScenario
     @State private var drafts: [String: TestCaseDraft]
+    @State private var submitted = false
     private let stage: InspectionStage
     private let team = InspectionTeam(id: 13, school: "capiba", carNumber: "13", status: .ready,
                                       currentStage: "Garage Inspection", lastSaved: "")
@@ -50,6 +58,7 @@ struct InspectionSnapshotHarness: View {
                     var value = drafts[caseID] ?? TestCaseDraft(testCase: testCase)
                     var accepted = draft
                     if scenario == .saveFailure { accepted.confirmedAt = nil }
+                    if value.stepDraft(stepID: accepted.stepID)?.draft != accepted { submitted = false }
                     value.updateStepDraft(accepted)
                     drafts[caseID] = value
                     return scenario != .saveFailure
@@ -57,10 +66,25 @@ struct InspectionSnapshotHarness: View {
                 latestDrafts: { drafts },
                 initialTestCaseID: scenario == .queue || scenario == .queueSupplies ? nil : "case-3",
                 initialStepID: "step-3",
-                initialReview: scenario == .review,
+                initialReview: [.review, .reviewIncomplete, .reviewReturn, .reviewCorrection, .reviewFlagged, .resolveFlag, .reviewSubmitted, .submissionFailure].contains(scenario),
                 initialDetails: scenario == .details,
                 initialQueue: scenario == .queueDrawer,
-                initialDebugBadge: scenario == .debugBadge
+                initialDebugBadge: scenario == .debugBadge,
+                hasSubmittedStage: submitted,
+                submitStage: {
+                    guard scenario != .submissionFailure else { return false }
+                    let service = SubmissionSnapshotService(persistence: TestCaseJSONPersistenceService(rootDirectory: URL.temporaryDirectory.appending(path: "FSAESnapshotSubmission-\(UUID().uuidString)")))
+                    do {
+                        _ = try await service.createStageSnapshot(
+                            context: InspectionPersistenceContext(eventID: "snapshot", teamID: "car-13", sessionID: "isolated", stageID: stage.id),
+                            submissionID: UUID().uuidString,
+                            drafts: stage.orderedSections.flatMap(\.orderedTestCases).compactMap { drafts[$0.id] },
+                            preserveDrafts: true
+                        )
+                        submitted = true
+                        return true
+                    } catch { return false }
+                }
             )
             .id(scenario == .evidenceReady ? drafts["case-3"]?.stepDraft(stepID: "step-3")?.draft.evidenceAttachments.count ?? 0 : 0)
         }
@@ -114,14 +138,15 @@ enum InspectionSnapshotFixtures {
     static func drafts(for scenario: InspectionSnapshotScenario, stage: InspectionStage) -> [String: TestCaseDraft] {
         var values: [String: TestCaseDraft] = [:]
         for testCase in stage.orderedSections.flatMap(\.orderedTestCases) {
-            let passed = testCase.displayOrder < 3 || scenario == .review || (testCase.displayOrder == 3 && (scenario == .ready || scenario == .saveFailure))
-            let failed = testCase.displayOrder == 3 && (scenario == .fail || scenario == .failInput || scenario == .flaggedFocus)
-            let confirmed = testCase.displayOrder < 3 || scenario == .review
+            let reviewCompleted: [InspectionSnapshotScenario] = [.review, .reviewCorrection, .reviewFlagged, .resolveFlag, .reviewSubmitted, .submissionFailure]
+            let passed = testCase.displayOrder < 3 || reviewCompleted.contains(scenario) || (testCase.displayOrder == 3 && [.ready, .saveFailure, .reviewReturn].contains(scenario))
+            let failed = testCase.displayOrder == 3 && (scenario == .fail || scenario == .failInput || scenario == .flaggedFocus || scenario == .reviewFlagged || scenario == .resolveFlag)
+            let confirmed = testCase.displayOrder < 3 || reviewCompleted.contains(scenario)
             values[testCase.id] = TestCaseDraft(testCase: testCase, stepDrafts: testCase.orderedSteps.map {
                 TestStepDraft(stepID: $0.id, outcome: failed ? .fail : passed ? .pass : .pending,
-                              notes: failed && scenario != .failInput ? "Right restraint attachment needs correction." : "",
+                              notes: failed && scenario != .failInput ? "Right restraint attachment needs correction." : scenario == .reviewReturn && testCase.displayOrder == 3 ? "Judge note retained when returning." : "",
                               confirmedAt: confirmed ? Date(timeIntervalSince1970: 1_792_000_000) : nil,
-                              flaggedForReview: scenario == .flaggedFocus && testCase.displayOrder == 3 ? true : nil)
+                              flaggedForReview: [.flaggedFocus, .reviewFlagged, .resolveFlag].contains(scenario) && testCase.displayOrder == 3 ? true : nil)
             })
         }
         return values

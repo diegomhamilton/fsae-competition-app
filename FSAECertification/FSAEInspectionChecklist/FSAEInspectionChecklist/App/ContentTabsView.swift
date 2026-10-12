@@ -105,7 +105,9 @@ private struct StageNavigationView: View {
             hasUnsavedDraft: executionCoordinator.sessionContext.hasUnsavedDraft,
             hasFailedSave: { (executionCoordinator.failedDraftCaseIDsByStageID[stage.id] ?? []).contains($0) },
             retryFailedSaves: { await executionCoordinator.retryFailedDraftSaves() },
-            initialTestCaseID: testCaseID, initialStepID: stepID
+            initialTestCaseID: testCaseID, initialStepID: stepID,
+            hasSubmittedStage: executionCoordinator.lastStageSubmission?.stageID == stage.id,
+            submitStage: { await appCoordinator.submitActiveStage() }
         )
         .id("\(executionCoordinator.sessionContext.eventID).\(executionCoordinator.sessionContext.sessionID).\(executionCoordinator.activeTeam.id).\(stage.id).\(testCaseID ?? "queue").\(stepID ?? "first")")
     }

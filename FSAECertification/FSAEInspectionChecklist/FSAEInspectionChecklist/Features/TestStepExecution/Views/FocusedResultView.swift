@@ -79,7 +79,7 @@ struct FocusedResultView: View {
                                 }
                             }
                         )
-                        FocusedResultActionView(form: form, confirm: confirm)
+                        FocusedResultActionView(form: form, confirm: confirm, title: isReviewCorrection ? FocusedResultStrings.saveReview : FocusedResultStrings.saveNext)
                     } else {
                         FocusedResultInputView(
                             form: form,

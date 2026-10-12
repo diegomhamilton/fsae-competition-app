@@ -106,6 +106,20 @@ final class AppCoordinator: ObservableObject {
     }
 
     @discardableResult
+    func submitActiveStage(
+        submissionID: String = UUID().uuidString,
+        submittedAt: Date = Date()
+    ) async -> Bool {
+        guard let executionCoordinator = eventCoordinator.executionCoordinator else {
+            return false
+        }
+        return await executionCoordinator.submitActiveStage(
+            submissionID: submissionID,
+            submittedAt: submittedAt
+        )
+    }
+
+    @discardableResult
     func requestTeamSwitch(to targetTeamID: Int) -> Bool {
         guard eventCoordinator.executionCoordinator?.requestTeamSwitch(to: targetTeamID) == true else {
             return false
