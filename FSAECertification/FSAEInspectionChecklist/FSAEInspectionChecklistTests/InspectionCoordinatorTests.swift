@@ -250,7 +250,12 @@ struct InspectionCoordinatorTests {
         #expect(await coordinator.markAllTestCasesIncompleteForDebug())
         execution = try #require(coordinator.eventCoordinator.executionCoordinator)
         #expect(!execution.canCompleteSession)
-        #expect(execution.sessionBlockerCount == 2)
+        // Two unanswered outcomes plus the required missing measurement.
+        #expect(execution.sessionBlockerCount == 3)
+        #expect(Set(execution.stages.flatMap { $0.validationSummary.issues }.map(\.issueID)) == [
+            "missingRequiredOutcome.DBG-MEASURE", "missingMeasurement.DBG-MEASURE",
+            "missingRequiredOutcome.DBG-EVIDENCE"
+        ])
 
         let egressDraft = try #require(execution.draftsByStageID["debug"]?["debug-egress"])
         let measuredStep = try #require(egressDraft.stepDraft(stepID: "DBG-MEASURE")?.draft)

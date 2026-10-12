@@ -219,7 +219,7 @@ actor InspectionEventStore {
             teamsByEvent[event.id, default: []].append(contentsOf: persistedTeams)
         }
         teamsByEventID = teamsByEvent.mapValues { records in
-            Array(Dictionary(uniqueKeysWithValues: records.map { ($0.id, $0) }).values)
+            Array(Dictionary(records.map { ($0.id, $0) }, uniquingKeysWith: { _, persisted in persisted }).values)
         }
         var restoredSessions = sessions
         for event in events {
@@ -231,10 +231,11 @@ actor InspectionEventStore {
                 restoredSessions.append(contentsOf: persistedSessions)
             }
         }
+        // Persisted records supersede their bundled seeds on relaunch. Repeated
+        // identities must not trap when a saved catalog contains those seeds.
         sessionsByKey = Dictionary(
-            uniqueKeysWithValues: restoredSessions.map { session in
-                (SessionKey(session), session)
-            }
+            restoredSessions.map { (SessionKey($0), $0) },
+            uniquingKeysWith: { _, persisted in persisted }
         )
         self.persistenceService = persistenceService
     }
