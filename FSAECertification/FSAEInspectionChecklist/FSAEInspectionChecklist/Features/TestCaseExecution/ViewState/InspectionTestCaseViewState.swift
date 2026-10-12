@@ -32,6 +32,12 @@ struct InspectionTestCaseViewState: Identifiable, Equatable, Sendable {
         }
     }
 
+    func canAdvance(from stepID: String?, hasUnsavedDraft: Bool) -> Bool {
+        guard !hasUnsavedDraft else { return false }
+        let step = stepID.map { id in steps.first { $0.id == id } } ?? steps.first
+        return step?.isComplete == true
+    }
+
     var validationSummary: InspectionTestCaseValidationSummary {
         InspectionTestCaseValidationSummary(steps: steps)
     }

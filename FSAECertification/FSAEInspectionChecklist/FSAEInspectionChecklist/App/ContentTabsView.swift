@@ -102,6 +102,7 @@ private struct StageNavigationView: View {
                         )
                     }
                 },
+                hasUnsavedDraft: executionCoordinator.sessionContext.hasUnsavedDraft,
                 submitStage: {},
                 openBlockingRoute: { route in
                     if appCoordinator.openTestCase(id: route.testCaseID) {

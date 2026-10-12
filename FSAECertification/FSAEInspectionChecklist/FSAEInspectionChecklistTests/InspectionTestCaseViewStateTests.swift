@@ -4,6 +4,28 @@ import Testing
 
 @MainActor
 struct InspectionTestCaseViewStateTests {
+    @Test("Focus mode waits for required notes and measurements before advancing")
+    func focusModeRequiresCompleteFields() {
+        let failed = stepState(id: "failed", displayOrder: 1, title: "Failed", outcome: .fail)
+        let measurement = stepState(id: "measured", displayOrder: 2, type: .measurement,
+                                    title: "Measured", outcome: .pass,
+                                    measurementRange: egressMeasurementRange())
+        let state = InspectionTestCaseViewState(id: "focus", code: "FOCUS", title: "Focus",
+                                                ruleReferences: [], stepStates: [failed, measurement])
+        #expect(!state.canAdvance(from: "failed", hasUnsavedDraft: false))
+        #expect(!state.canAdvance(from: "measured", hasUnsavedDraft: false))
+    }
+
+    @Test("Focus mode waits for local persistence and rejects stale step selection")
+    func focusModeWaitsForSave() {
+        let passed = stepState(id: "passed", displayOrder: 1, title: "Passed", outcome: .pass)
+        let state = InspectionTestCaseViewState(id: "focus", code: "FOCUS", title: "Focus",
+                                                ruleReferences: [], stepStates: [passed])
+        #expect(state.canAdvance(from: nil, hasUnsavedDraft: false))
+        #expect(!state.canAdvance(from: "passed", hasUnsavedDraft: true))
+        #expect(!state.canAdvance(from: "missing", hasUnsavedDraft: false))
+    }
+
     @Test("US-002 test case view renders steps in display order")
     func us002TestCaseViewRendersStepsInDisplayOrder() {
         let viewState = InspectionTestCaseViewState(

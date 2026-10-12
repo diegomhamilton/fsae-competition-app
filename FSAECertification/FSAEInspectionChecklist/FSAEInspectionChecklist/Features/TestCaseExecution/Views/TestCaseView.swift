@@ -20,7 +20,11 @@ struct TestCaseView: View {
         static let evidenceDeferred = "Evidence Deferred"
         static let addEvidence = "Add Evidence"
         static let notes = "Judge notes"
-        static let openStep = "Open Step"
+        static let openStep = "View details"
+        static let optionalInputs = "Add notes or evidence"
+        static let actions = "More actions"
+        static let rerun = "Rerun test"
+        static let flag = "Flag issue"
         static let dismissKeyboard = "Done"
         static let complete = "Complete"
         static let blocked = "Blocked"
@@ -83,155 +87,30 @@ struct TestCaseStepCarousel: View {
     }
 
     var body: some View {
-        let showsAdjacentPreview = steps.count > 1
-        let horizontalBleed: CGFloat = showsAdjacentPreview ? 20 : 0
-
-        VStack(alignment: .leading, spacing: 10) {
-            TestCaseStepCarouselControls(
-                activeIndex: activeIndex,
-                totalCount: steps.count,
-                previousStepID: adjacentStepID(offset: -1),
-                nextStepID: adjacentStepID(offset: 1)
-            ) { stepID in
-                scrollToStep(stepID)
-            }
-
-            ScrollView(.horizontal) {
-                LazyHStack(alignment: .top, spacing: 14) {
-                    ForEach(steps) { stepState in
-                        TestCaseStepCarouselItem(showsAdjacentPreview: showsAdjacentPreview) {
-                            TestCaseStepCard(
-                                stageID: stageID,
-                                testCaseID: testCaseID,
-                                state: stepState,
-                                focusedNoteStepID: focusedNoteStepID
-                            ) {
-                                openStepDetail(stepState.step)
-                            } updateStepDraft: { stepDraft in
-                                updateStepDraft(stepDraft)
-                            } advanceFromStep: {
-                                advanceFromStep(stepState.id)
-                            }
-                        }
-                        .id(stepState.id)
+        if let stepState = steps.first(where: { $0.id == activeStepID }) ?? steps.first {
+            VStack(alignment: .leading) {
+                Menu {
+                    ForEach(steps) { step in
+                        Button(step.step.content) { scrollToStep(step.id) }
                     }
+                } label: {
+                    Label("Step \(activeIndex + 1) of \(steps.count)", systemImage: "list.bullet")
                 }
-                .scrollTargetLayout()
-                .padding(.vertical, 2)
-            }
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.viewAligned)
-            .scrollPosition($scrollPosition)
-            .contentMargins(.horizontal, horizontalBleed, for: .scrollContent)
-            .onScrollTargetVisibilityChange(idType: String.self, threshold: 0.8) { visibleStepIDs in
-                if let visibleStepID = visibleStepIDs.first {
-                    activeStepID = visibleStepID
-                }
-            }
-            .frame(alignment: .top)
-            .padding(.horizontal, -horizontalBleed)
-
-            TestCaseStepCarouselDots(
-                steps: steps,
-                activeStepID: activeStepID ?? steps.first?.id
-            )
-        }
-    }
-
-    private func adjacentStepID(offset: Int) -> String? {
-        let index = activeIndex + offset
-
-        guard steps.indices.contains(index) else {
-            return nil
-        }
-
-        return steps[index].id
-    }
-}
-
-private struct TestCaseStepCarouselControls: View {
-    let activeIndex: Int
-    let totalCount: Int
-    let previousStepID: String?
-    let nextStepID: String?
-    let scrollToStep: (String) -> Void
-
-    var body: some View {
-        HStack(spacing: 10) {
-            Text("Step \(activeIndex + 1) of \(totalCount)")
-                .font(.caption.weight(.bold))
-                .foregroundStyle(Color.fsaeSecondaryText)
-
-            Spacer()
-
-            CarouselStepButton(systemImage: "chevron.left", stepID: previousStepID, scrollToStep: scrollToStep)
-            CarouselStepButton(systemImage: "chevron.right", stepID: nextStepID, scrollToStep: scrollToStep)
-        }
-    }
-}
-
-private struct CarouselStepButton: View {
-    let systemImage: String
-    let stepID: String?
-    let scrollToStep: (String) -> Void
-
-    var body: some View {
-        Button {
-            if let stepID {
-                scrollToStep(stepID)
-            }
-        } label: {
-            Image(systemName: systemImage)
-                .font(.caption.weight(.bold))
-                .frame(width: 30, height: 30)
-                .background(.ultraThinMaterial, in: Circle())
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(stepID == nil ? Color.fsaeSecondaryText.opacity(0.35) : Color.fsaePrimary)
-        .disabled(stepID == nil)
-    }
-}
-
-private struct TestCaseStepCarouselDots: View {
-    let steps: [InspectionTestCaseStepViewState]
-    let activeStepID: String?
-
-    var body: some View {
-        HStack(spacing: 6) {
-            ForEach(steps) { step in
-                Capsule()
-                    .fill(step.id == activeStepID ? Color.fsaePrimary : Color.fsaeBorder)
-                    .frame(width: step.id == activeStepID ? 18 : 6, height: 6)
+                .accessibilityIdentifier("execution.step-queue")
+                TestCaseStepCard(
+                    stageID: stageID,
+                    testCaseID: testCaseID,
+                    state: stepState,
+                    focusedNoteStepID: focusedNoteStepID,
+                    openStepDetail: { openStepDetail(stepState.step) },
+                    updateStepDraft: updateStepDraft,
+                    advanceFromStep: { advanceFromStep(stepState.id) }
+                )
+                .id(stepState.id)
             }
         }
-        .frame(maxWidth: .infinity)
-        .animation(.snappy, value: activeStepID)
-    }
-}
-
-private struct TestCaseStepCarouselItem<Content: View>: View {
-    let showsAdjacentPreview: Bool
-    let content: Content
-
-    init(
-        showsAdjacentPreview: Bool,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.showsAdjacentPreview = showsAdjacentPreview
-        self.content = content()
     }
 
-    var body: some View {
-        content
-            .containerRelativeFrame(.horizontal) { length, _ in
-                length * (showsAdjacentPreview ? 0.84 : 1)
-            }
-            .scrollTransition(.interactive, axis: .horizontal) { content, phase in
-                content
-                    .scaleEffect(phase.isIdentity ? 1 : 0.96)
-                    .opacity(phase.isIdentity ? 1 : 0.82)
-            }
-    }
 }
 
 private struct TestCaseHeader: View {
@@ -385,6 +264,7 @@ private struct TestCaseStepCard: View {
     let focusedNoteStepID: FocusState<String?>.Binding
     let openStepDetail: () -> Void
     let advanceFromStep: () -> Void
+    @State private var showsOptionalInputs = false
     @State private var selectedOutcome: InspectionOutcome
     @State private var noteText: String
     @State private var measurementValue: String
@@ -435,12 +315,8 @@ private struct TestCaseStepCard: View {
                             ).rawValue
                         )
 
-                    Button {
+                    Button(TestCaseView.Strings.openStep, systemImage: "info.circle") {
                         openStepDetail()
-                    } label: {
-                        Image(systemName: "chevron.right.circle")
-                            .font(.title3.weight(.semibold))
-                            .frame(width: 32, height: 32)
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(Color.fsaePrimary)
@@ -474,16 +350,28 @@ private struct TestCaseStepCard: View {
             Text(state.step.content)
                 .font(.headline)
                 .foregroundStyle(Color.fsaeText)
+                .lineLimit(3)
 
-            Picker(TestCaseView.Strings.outcome, selection: $selectedOutcome) {
-                ForEach(InspectionOutcome.allCases, id: \.self) { outcome in
-                    Text(outcome.displayName).tag(outcome)
+            if state.step.requiredOutcome {
+            HStack {
+                ForEach([InspectionOutcome.pass, .fail], id: \.self) { outcome in
+                    Button {
+                        selectedOutcome = outcome
+                    } label: {
+                        Label(outcome.displayName, systemImage: selectedOutcome == outcome ? "checkmark.circle.fill" : "circle")
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(outcome == .fail ? Color.fsaeRed : Color.fsaePrimary)
+                    .accessibilityIdentifier(InspectionAccessibilityIdentifier.testStepOutcome(stepID: state.id, outcome: outcome).rawValue)
+                    .accessibilityValue(selectedOutcome == outcome ? "Selected" : "")
                 }
             }
-            .pickerStyle(.segmented)
-            .accessibilityIdentifier(InspectionAccessibilityIdentifier.testStepOutcome(stepID: state.id, outcome: selectedOutcome).rawValue)
-            .accessibilityValue(selectedOutcome.displayName)
+            if selectedOutcome == .notApplicable {
+                Text(selectedOutcome.displayName).font(.headline)
+            }
 
+            }
             if state.step.type == .measurement {
                 HStack {
                     TextField(TestCaseView.Strings.measurementValue, text: $measurementValue)
@@ -496,6 +384,7 @@ private struct TestCaseStepCard: View {
                 }
             }
 
+            if selectedOutcome == .fail || state.step.requiresEvidence || showsOptionalInputs || !noteText.isEmpty || !evidenceAttachments.isEmpty {
             HStack(alignment: .center, spacing: 10) {
                 TextField(TestCaseView.Strings.notes, text: $noteText, axis: .vertical)
                     .focused(focusedNoteStepID, equals: state.id)
@@ -503,7 +392,7 @@ private struct TestCaseStepCard: View {
                     .textFieldStyle(.plain)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .frame(minHeight: 36, alignment: .center)
+                    .frame(minHeight: 48, alignment: .center)
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
                     .background(Color.white.opacity(0.16), in: RoundedRectangle(cornerRadius: 8))
                     .overlay {
@@ -531,7 +420,7 @@ private struct TestCaseStepCard: View {
                 } label: {
                     Image(systemName: "plus")
                         .font(.headline.weight(.semibold))
-                        .frame(width: 44, height: 36)
+                        .frame(width: 48, height: 48)
                         .background(Color.fsaePrimary.opacity(0.12), in: Capsule())
                         .overlay {
                             Capsule()
@@ -548,13 +437,33 @@ private struct TestCaseStepCard: View {
                     ).rawValue
                 )
             }
-        }
-        .onChange(of: selectedOutcome) { oldOutcome, newOutcome in
-            persistDraft()
-            #warning("PD: Review what flow makes more sense here")
-            if oldOutcome == .pending, newOutcome.satisfiesRequiredOutcome {
-                advanceFromStep()
+            } else {
+                Button(TestCaseView.Strings.optionalInputs, systemImage: "plus") {
+                    showsOptionalInputs = true
+                }
+                .accessibilityIdentifier("execution.optional-inputs")
             }
+            Menu(TestCaseView.Strings.actions, systemImage: "ellipsis.circle") {
+                Button(InspectionOutcome.notApplicable.displayName) {
+                    selectedOutcome = .notApplicable
+                }
+                Button(TestCaseView.Strings.rerun, systemImage: "arrow.counterclockwise") {
+                    selectedOutcome = .pending
+                }
+                Button(TestCaseView.Strings.flag, systemImage: "flag") {
+                    showsOptionalInputs = true
+                    selectedOutcome = .fail
+                    focusedNoteStepID.wrappedValue = state.id
+                }
+            }
+            .accessibilityIdentifier("execution.secondary-actions")
+            ForEach(state.validationIssues) { issue in
+                Text(issue.localizedMessage).font(.footnote).foregroundStyle(Color.fsaeRed)
+            }
+        }
+        .controlSize(.large)
+        .onChange(of: selectedOutcome) { _, _ in
+            persistDraft()
         }
         .onChange(of: noteText) { _, _ in
             persistDraft()
@@ -566,8 +475,7 @@ private struct TestCaseStepCard: View {
             syncLocalState(with: newState)
         }
         .padding(14)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
-        .background(Color.fsaeSurface.opacity(0.72), in: RoundedRectangle(cornerRadius: 8))
+        .background(Color.fsaeSurface, in: .rect(cornerRadius: 8))
         .overlay {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(state.validationIssues.isEmpty ? Color.fsaeBorder : Color.fsaeRed.opacity(0.5))

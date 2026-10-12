@@ -30,12 +30,7 @@ struct ActiveTeamDashboardView: View {
 
     var body: some View {
         let team = coordinator.activeTeam
-        let stageRows = coordinator.stages.map { stage in
-            ActiveTeamStageRowState(
-                stage: stage,
-                draftsByTestCaseID: coordinator.draftsByTestCaseID
-            )
-        }
+        let stages = coordinator.stages
         let selectedStageID = coordinator.activeStage?.id
 
         ScreenShell(
@@ -121,7 +116,7 @@ struct ActiveTeamDashboardView: View {
                 Text(Strings.stages)
                     .font(.headline)
                     .foregroundStyle(Color.fsaeText)
-                ForEach(stageRows) { stageRow in
+                ForEach(stages) { stage in
                     Button {
                         openStage(stage.stageID)
                     } label: {

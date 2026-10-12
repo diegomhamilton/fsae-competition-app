@@ -8,6 +8,15 @@ import SwiftUI
 struct FullStageView: View {
     fileprivate enum Strings {
         static let eyebrow = "Stage"
+        static let queue = "Test queue"
+        static let review = "Review results"
+        static let next = "Save & next test"
+        static let saved = "Saved on this device"
+        static let saving = "Changes not yet saved"
+        static let confirmation = "Result recorded"
+        static let done = "Done"
+        static let startNext = "Start next test"
+        static let failed = "Failed outcome"
         static let sectionTitle = "Sections"
         static let progress = "Stage progress"
         static let validation = "Validation blockers"
@@ -40,10 +49,14 @@ struct FullStageView: View {
     let draftsByTestCaseID: [String: TestCaseDraft]
     let openStepDetail: (InspectionTestStep) -> Void
     let updateStepDraft: (TestStepDraft, String) -> Void
+    let hasUnsavedDraft: Bool
     let submitStage: () -> Void
     let openBlockingRoute: (FullStageBlockingRoute) -> Void
     @State private var expandedSectionIDs: Set<String> = []
     @State private var selectedTestCaseID: String?
+    @State private var isReviewing = false
+    @State private var showsQueue = false
+    @State private var confirmation: String?
     @State private var stepScrollPosition = ScrollPosition()
     @State private var activeStepID: String?
     @FocusState private var focusedNoteStepID: String?
@@ -54,6 +67,7 @@ struct FullStageView: View {
         draftsByTestCaseID: [String: TestCaseDraft] = [:],
         openStepDetail: @escaping (InspectionTestStep) -> Void = { _ in },
         updateStepDraft: @escaping (TestStepDraft, String) -> Void = { _, _ in },
+        hasUnsavedDraft: Bool = false,
         submitStage: @escaping () -> Void = {},
         openBlockingRoute: @escaping (FullStageBlockingRoute) -> Void = { _ in }
     ) {
@@ -62,6 +76,7 @@ struct FullStageView: View {
         self.draftsByTestCaseID = draftsByTestCaseID
         self.openStepDetail = openStepDetail
         self.updateStepDraft = updateStepDraft
+        self.hasUnsavedDraft = hasUnsavedDraft
         self.submitStage = submitStage
         self.openBlockingRoute = openBlockingRoute
     }
@@ -77,26 +92,23 @@ struct FullStageView: View {
             title: state.teamName,
             subtitle: subtitle
         ) {
-            FullStageSummaryPanel(viewState: state)
-
-            if let activeTestCaseViewState {
+            if let activeTestCaseViewState, !isReviewing {
                 ContentPanel {
+                    Text(activeTestCaseViewState.title).font(.headline)
+                    Text("\(team.carNumber) · \(team.school) · \(testPosition) of \(state.testCaseCount)")
+                        .font(.subheadline).foregroundStyle(Color.fsaeSecondaryText)
                     HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(activeTestCaseViewState.code)
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(Color.fsaeSecondaryText)
-                            Text(activeTestCaseViewState.title)
-                                .font(.headline)
-                                .foregroundStyle(Color.fsaeText)
-                        }
+                        Button(Strings.queue, systemImage: "list.bullet") { showsQueue = true }
                         Spacer()
-                        Text(activeTestCaseViewState.progressSummary.fractionComplete, format: .percent)
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(Color.fsaeSecondaryText)
+                        Label(hasUnsavedDraft ? Strings.saving : Strings.saved,
+                              systemImage: hasUnsavedDraft ? "clock" : "checkmark.circle")
+                            .font(.caption)
+                            .accessibilityIdentifier("execution.save-status")
+                    }
+                    if let confirmation {
+                        Text(confirmation).font(.caption).foregroundStyle(Color.fsaeGreen)
                     }
                 }
-
                 TestCaseStepCarousel(
                     stageID: stage.id,
                     testCaseID: activeTestCaseViewState.id,
@@ -105,60 +117,127 @@ struct FullStageView: View {
                     scrollPosition: $stepScrollPosition,
                     activeStepID: $activeStepID,
                     openStepDetail: openStepDetail,
-                    updateStepDraft: { stepDraft in
-                        updateStepDraft(stepDraft, activeTestCaseViewState.id)
-                    },
-                    advanceFromStep: { stepID in
-                        advanceToNextStep(after: stepID, steps: activeTestCaseViewState.steps)
-                    },
+                    updateStepDraft: { updateStepDraft($0, activeTestCaseViewState.id) },
+                    advanceFromStep: { _ in },
                     scrollToStep: scrollToStep
                 )
-            }
-
-            VStack(alignment: .leading, spacing: 18) {
-                ForEach(state.sections) { section in
-                    FullStageSectionBlock(
-                        stageID: state.stageID,
-                        section: section,
-                        isExpanded: expandedSectionIDs.contains(section.id),
-                        toggleExpanded: {
-                            withAnimation(.snappy(duration: 0.28)) {
+                Button {
+                    advanceExecution(from: activeTestCaseViewState)
+                } label: {
+                    Label(Strings.next, systemImage: "arrow.right")
+                        .frame(maxWidth: .infinity, minHeight: 48)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .frame(maxWidth: .infinity)
+                .disabled(!activeTestCaseViewState.canAdvance(from: activeStepID, hasUnsavedDraft: hasUnsavedDraft))
+                .accessibilityIdentifier("execution.save-next")
+                Button(Strings.review) { isReviewing = true }
+            } else {
+                FullStageSummaryPanel(viewState: state)
+                Text(isReviewing ? Strings.review : Strings.queue).font(.headline)
+                if !isReviewing, let nextTest = orderedTestCases.first(where: {
+                    !InspectionTestCaseViewState(testCase: $0, draft: draftsByTestCaseID[$0.id] ?? TestCaseDraft(testCase: $0)).validationSummary.isPassing
+                }) ?? orderedTestCases.first {
+                    Button(Strings.startNext, systemImage: "play.fill") { selectTestCase(nextTest.id) }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                        .accessibilityIdentifier("execution.start-next")
+                }
+                VStack(alignment: .leading, spacing: 18) {
+                    ForEach(state.sections) { section in
+                        FullStageSectionBlock(
+                            stageID: state.stageID,
+                            section: section,
+                            isExpanded: expandedSectionIDs.contains(section.id),
+                            toggleExpanded: {
                                 if expandedSectionIDs.contains(section.id) {
                                     expandedSectionIDs.remove(section.id)
                                 } else {
                                     expandedSectionIDs.insert(section.id)
                                 }
                             }
+                        ) { testCase in
+                            selectTestCase(testCase.id)
                         }
-                    ) { testCase in
-                        selectedTestCaseID = testCase.id
                     }
                 }
-            }
 
-            FullStageValidationPanel(
-                viewState: state,
-                openBlockingRoute: openBlockingRoute
-            )
-
-            Button {
-                submitStage()
-            } label: {
-                Label(Strings.submit, systemImage: "paperplane.fill")
-                    .frame(maxWidth: .infinity)
+                if isReviewing {
+                    FullStageValidationPanel(viewState: state, openBlockingRoute: openBlockingRoute)
+                    Button {
+                        submitStage()
+                    } label: {
+                        Label(Strings.submit, systemImage: "paperplane.fill")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .disabled(!state.canSubmit || hasUnsavedDraft)
+                    .accessibilityLabel(state.canSubmit ? Strings.submitReady : Strings.submitBlocked)
+                    .accessibilityIdentifier(
+                        state.canSubmit
+                        ? InspectionAccessibilityIdentifier.testCaseStageSubmitAction(stageID: state.stageID).rawValue
+                        : InspectionAccessibilityIdentifier.testCaseStageBlockedSubmitAction(stageID: state.stageID).rawValue
+                    )
+                } else {
+                    Button(Strings.review) { isReviewing = true }
+                }
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .disabled(!state.canSubmit)
-            .opacity(state.canSubmit ? 1 : 0.7)
-            .accessibilityLabel(state.canSubmit ? Strings.submitReady : Strings.submitBlocked)
-            .accessibilityIdentifier(
-                state.canSubmit
-                ? InspectionAccessibilityIdentifier.testCaseStageSubmitAction(stageID: state.stageID).rawValue
-                : InspectionAccessibilityIdentifier.testCaseStageBlockedSubmitAction(stageID: state.stageID).rawValue
-            )
+        }
+        .onChange(of: isReviewing) { _, reviewing in
+            if reviewing {
+                expandedSectionIDs = Set(state.sections.map(\.id))
+            }
+        }
+        .sheet(isPresented: $showsQueue) {
+            NavigationStack {
+                StageChecklistView(team: team, stage: stage, draftsByTestCaseID: draftsByTestCaseID) { testCase in
+                    selectTestCase(testCase.id)
+                    showsQueue = false
+                }
+                .toolbar {
+                    Button(Strings.done) { showsQueue = false }
+                }
+            }
+        }
+        .task(id: confirmation) {
+            guard confirmation != nil else { return }
+            try? await Task.sleep(for: .seconds(2))
+            confirmation = nil
         }
         .navigationTitle(stage.title)
+    }
+
+    private var orderedTestCases: [InspectionTestCase] {
+        stage.orderedSections.flatMap(\.orderedTestCases)
+    }
+
+    private var testPosition: Int {
+        (orderedTestCases.firstIndex { $0.id == selectedTestCaseID } ?? 0) + 1
+    }
+
+    private func selectTestCase(_ id: String) {
+        selectedTestCaseID = id
+        isReviewing = false
+        activeStepID = orderedTestCases.first { $0.id == id }?.orderedSteps.first?.id
+        stepScrollPosition = ScrollPosition()
+        focusedNoteStepID = nil
+    }
+
+    private func advanceExecution(from testCase: InspectionTestCaseViewState) {
+        let index = testCase.steps.firstIndex { $0.id == activeStepID } ?? 0
+        if testCase.steps.indices.contains(index + 1) {
+            scrollToStep(testCase.steps[index + 1].id)
+        } else if testCase.validationSummary.isPassing {
+            let nextIndex = testPosition
+            if orderedTestCases.indices.contains(nextIndex) {
+                selectTestCase(orderedTestCases[nextIndex].id)
+            } else {
+                isReviewing = true
+            }
+        }
+        confirmation = Strings.confirmation
     }
 
     private var subtitle: String {
@@ -365,6 +444,9 @@ private struct FullStageTestCaseRow: View {
 
     private var metadataLabels: some View {
         Group {
+            if testCase.state.steps.contains(where: { $0.outcome == .fail }) {
+                StatusPill(text: FullStageView.Strings.failed, color: .fsaeRed)
+            }
             Text(testCase.code)
                 .font(.caption.weight(.bold))
                 .foregroundStyle(Color.fsaeSecondaryText)
