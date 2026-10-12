@@ -14,6 +14,9 @@ struct FocusedResultView: View {
     let onConfirmationActivityChanged: (Bool) -> Void
     @State private var form: FocusedResultForm
     @State private var showsPhotoPicker = false
+    @State private var showsPhotoSources = false
+    @State private var showsCamera = false
+    @State private var pendingPhotoSource: FocusedPhotoSourcePicker.Source?
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var previewPhotoURL: URL?
     @State private var previewPhotoURLs: [URL] = []
@@ -85,7 +88,7 @@ struct FocusedResultView: View {
                             form: form,
                             testCaseID: testCaseID,
                             focusedField: $focusedField,
-                            addPhoto: { showsPhotoPicker = true }
+                            addPhoto: { showsPhotoSources = true }
                         )
                     }
                 }
@@ -97,7 +100,7 @@ struct FocusedResultView: View {
                         form.beginNotes()
                         focusedField = .notes
                     },
-                    addPhoto: { showsPhotoPicker = true },
+                    addPhoto: { showsPhotoSources = true },
                     flagIssue: {
                         form.flagIssue()
                         focusedField = .notes
@@ -141,6 +144,26 @@ struct FocusedResultView: View {
         .controlSize(.large)
         .disabled(form.isConfirming || form.didConfirm)
         .accessibilityIdentifier("execution.result-component")
+        .sheet(isPresented: $showsPhotoSources, onDismiss: openRequestedPhotoSource) {
+            FocusedPhotoSourcePicker { source in
+                pendingPhotoSource = source
+                showsPhotoSources = false
+            }
+            .presentationDetents([.medium])
+        }
+        .fullScreenCover(isPresented: $showsCamera) {
+            FocusedCameraCapture(
+                captured: { data in
+                    showsCamera = false
+                    importCapturedPhoto(data)
+                },
+                cancelled: { showsCamera = false }
+            )
+            .ignoresSafeArea()
+        }
+        .onChange(of: form.isImportingPhoto) { _, importing in
+            onConfirmationActivityChanged(importing)
+        }
         .photosPicker(isPresented: $showsPhotoPicker, selection: $selectedPhoto, matching: .images)
         .quickLookPreview($previewPhotoURL, in: previewPhotoURLs)
         .onChange(of: focusedField) { _, newValue in
@@ -183,6 +206,8 @@ struct FocusedResultView: View {
                 onConfirmationActivityChanged(true)
                 _ = await form.confirm()
                 if !form.didConfirm { onConfirmationActivityChanged(false) }
+            case "photo-sources":
+                showsPhotoSources = true
             case "optional-notes":
                 form.beginNotes()
             case "auto-advance":
@@ -206,6 +231,27 @@ struct FocusedResultView: View {
             }
         }
         #endif
+    }
+
+    private func openRequestedPhotoSource() {
+        guard let source = pendingPhotoSource else { return }
+        pendingPhotoSource = nil
+        switch source {
+        case .camera: showsCamera = true
+        case .library: showsPhotoPicker = true
+        }
+    }
+
+    private func importCapturedPhoto(_ data: Data?) {
+        guard !form.isImportingPhoto else { return }
+        form.beginPhotoImport()
+        Task {
+            guard let data else { form.finishPhotoImport(nil); return }
+            do {
+                let attachment = try await FocusedResultEvidenceStore.shared.storePhoto(data, source: .camera)
+                form.finishPhotoImport(attachment)
+            } catch { form.finishPhotoImport(nil) }
+        }
     }
 
     private func confirm() {

@@ -18,7 +18,7 @@ actor FocusedResultEvidenceStore {
         self.baseDirectory = baseDirectory
     }
 
-    func storePhoto(_ data: Data) throws -> EvidenceAttachmentMetadata {
+    func storePhoto(_ data: Data, source: EvidenceAttachmentSource = .photoLibrary) throws -> EvidenceAttachmentMetadata {
         guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil),
               CGImageSourceGetCount(imageSource) > 0,
               let typeIdentifier = CGImageSourceGetType(imageSource) else {
@@ -34,7 +34,7 @@ actor FocusedResultEvidenceStore {
             id: id,
             displayName: String(localized: "Photo evidence"),
             mediaType: .photo,
-            source: .photoLibrary,
+            source: source,
             createdAt: Date(),
             localRelativePath: relativePath
         )

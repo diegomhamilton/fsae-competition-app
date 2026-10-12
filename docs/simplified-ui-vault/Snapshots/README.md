@@ -11,4 +11,6 @@ Each checkpoint uses actual SwiftUI app components with isolated DEBUG fixtures.
 
 5. [[04-review/README|Review, return paths, flags, and submission]]
 
-Photo capture and final validation checkpoints follow.
+6. [[05-photo-capture/README|Camera and library source choice with real stored evidence]]
+
+Final validation is recorded in [[../Phases/04-final-checks-and-pdf|Phase 4]].

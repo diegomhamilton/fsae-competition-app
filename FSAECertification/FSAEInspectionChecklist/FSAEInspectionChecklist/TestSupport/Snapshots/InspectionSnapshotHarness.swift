@@ -16,6 +16,7 @@ enum InspectionSnapshotScenario: String, CaseIterable {
     case resolveFlag = "resolve-flag"
     case reviewSubmitted = "review-submitted"
     case submissionFailure = "submission-failure"
+    case photoSources = "photo-sources"
     case evidenceReady = "evidence-ready"
     case flaggedFocus = "flagged-focus"
     case optionalNotes = "optional-notes"
@@ -111,7 +112,7 @@ enum InspectionSnapshotFixtures {
         let cases = titles.enumerated().map { index, title in
             let number = index + 1
             let measured = (scenario == .measurement || scenario == .measurementReady) && number == 3
-            let evidence = (scenario == .evidence || scenario == .evidenceReady) && number == 3
+            let evidence = [.evidence, .evidenceReady, .photoSources].contains(scenario) && number == 3
             let step = InspectionTestStep(
                 id: "step-\(number)", code: "G-\(number)", ruleReference: "T.13.8", title: title,
                 type: measured ? .measurement : .check,

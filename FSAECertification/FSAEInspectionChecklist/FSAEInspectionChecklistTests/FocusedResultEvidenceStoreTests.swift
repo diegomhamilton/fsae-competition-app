@@ -39,6 +39,20 @@ struct FocusedResultEvidenceStoreTests {
         #expect(decoded.evidenceAttachments.first?.localRelativePath?.hasPrefix("Evidence/") == true)
     }
 
+    @Test("Camera evidence persists real bytes and its source through serialization")
+    func capturedPhotoRetainsCameraSource() async throws {
+        let directory = URL.temporaryDirectory.appending(path: "fsae-camera-test-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = FocusedResultEvidenceStore(baseDirectory: directory)
+        let png = try #require(Data(base64Encoded: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aBEkAAAAASUVORK5CYII="))
+        let attachment = try await store.storePhoto(png, source: .camera)
+        let url = try await store.fileURL(for: attachment)
+        #expect(try Data(contentsOf: url) == png)
+        let restored = try JSONDecoder().decode(EvidenceAttachmentMetadata.self, from: JSONEncoder().encode(attachment))
+        #expect(restored.source == .camera)
+        #expect(FocusedResultEvidenceStore.localAssetAvailable(restored, baseDirectory: directory))
+    }
+
     @Test("Invalid image data is rejected and no fake photo metadata is produced")
     func invalidImageIsRejected() async throws {
         let directory = URL.temporaryDirectory.appending(path: "fsae-invalid-evidence-\(UUID().uuidString)")

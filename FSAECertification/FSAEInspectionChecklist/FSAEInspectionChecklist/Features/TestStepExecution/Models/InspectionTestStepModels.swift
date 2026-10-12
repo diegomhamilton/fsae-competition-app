@@ -339,6 +339,7 @@ nonisolated enum EvidenceMediaType: String, Codable, Hashable, Sendable {
 nonisolated enum EvidenceAttachmentSource: String, Codable, Hashable, Sendable {
     case mockAttachment
     case photoLibrary
+    case camera
 }
 
 nonisolated struct InspectionAccessibilityIdentifier: RawRepresentable, Equatable, Hashable, Sendable {

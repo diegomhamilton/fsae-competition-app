@@ -45,4 +45,4 @@ Remove the independent competing Pass/Fail/save arrangement, separate Add notes 
 
 Previous: [[01-focus-context-and-details|Phase 1]]. Next: [[03-queue-and-review-return|Phase 3 — Queue and review return]].
 
-Photos come from the real photo-library picker, are copied into application storage, and can be previewed. Direct camera capture is not implemented. Required evidence rejects mock metadata and missing image files. Review flags persist independently of the outcome and must be resolved/reconfirmed before stage submission.
+Photos come from the real photo-library picker, are copied into application storage, and can be previewed. Direct camera capture and a source chooser are implemented in a separate component checkpoint: [[../Snapshots/05-photo-capture/README|photo capture evidence]]. Hardware capture still needs a physical iPhone check. Required evidence rejects mock metadata and missing image files. Review flags persist independently of the outcome and must be resolved/reconfirmed before stage submission.
