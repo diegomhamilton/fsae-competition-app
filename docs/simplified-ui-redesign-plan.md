@@ -1,8 +1,8 @@
-# Simplified inspection UI — design review
+# Simplified inspection UI — reviewed design and implementation
 
 Updated: 2026-10-12
 Branch: `simplified-ui-redesign`
-Phase: implementation authorized by the user on 2026-10-12. Build component-sized replacements, capture each task, and finish with the Obsidian vault and PDF.
+Phase: implementation complete; final validation and artifact delivery on 2026-10-12.
 
 ## Current snapshot
 
@@ -27,7 +27,7 @@ Behavior-driven progression (the implementation need not have exactly three stat
 
 Autosaved draft values and a confirmed result are different concepts. The action must wait for required fields and persistence. A failure outcome must reveal its required notes before the component becomes ready. Photo capture here is a design requirement; the existing app's mock attachment action is not real capture.
 
-Open design decisions: whether measurement/photo entry replaces outcome selection or supplements it according to the official test schema, and the exact presentation of the result summary/edit action. The user authorized implementation of the reviewed plan.
+Implementation follows the official schema: measurements supplement outcome when required; photo-only input does not invent an outcome. Valid input becomes a concise editable summary and the primary save action.
 
 ## Latest element decisions from human review
 
@@ -41,12 +41,12 @@ Open design decisions: whether measurement/photo entry replaces outcome selectio
 - Check/type badge (20): available only as a DEBUG option, positioned to the left of the test-case description. This does not hide safety warnings, which remain visible in normal use.
 - Generic local-draft subtitle (21): remove.
 
-## Screen proposal for review — no implementation
+## Reviewed layout now implemented
 
 1. Top toolbar: a labeled Test queue entry on the leading side, View details on the trailing side. Keep this row separate from the context line.
 2. Context: current test name, then vehicle identity and quiet test progress. Do not repeat a large stage heading.
 3. Task: the essential test description/criteria, plus any applicable safety warning. A DEBUG-only type badge may precede the description.
-4. Result: the three-state component alongside +. Required measurements, failure notes, or evidence appear here only when needed by this test.
+4. Result: the adaptive result component alongside +. Required measurements, failure notes, or evidence appear here only when needed by this test.
 5. Failure feedback: an inline message with a corrective action only when needed. No persistent successful-save label, routine Blocked badge, or initial validation error.
 
 The + menu includes notes/evidence, existing exceptional actions, and early review. Test queue and View details remain independently visible. Session navigation and the dense overview belong outside the execution screen.
@@ -66,6 +66,16 @@ The user authorized this layout for implementation on 2026-10-12.
 - `design_review` is a clean registered worktree at `0157377`, the source organization change associated with PR #59. It splits the app into App, Common/UI, feature folders, coordinators, and test support, with organization and review documentation. The commit is already an ancestor of this UI branch. There is no uncommitted design proposal to recover there.
 - `m10-design-review` is not a registered worktree. It contains an Xcode project configuration and workspace metadata, with no Swift source or design document. Its project file matches the older signing configuration, not the newly committed development team. It does not contain a separate UI redesign.
 
-## Next design step
+## Implementation checkpoints
 
-Implement the described result behavior without forcing a fixed state count. Replace each predecessor in the same commit as its component and include task snapshots. Follow the learned ios-bass-app validation workflow. Keep queue and final review as separate overview surfaces. Track issue #72 against section navigation on those surfaces, not by restoring the dense execution overview.
+- `9832364`: build workflow, isolated fixtures, vertical Obsidian Canvas, and baseline.
+- `9f62aac`: focus context, toolbar details, safety and DEBUG-only badge.
+- `d0ad464`: result input/action, optional additions, real evidence storage, autosave and confirmation gates; predecessor views removed.
+- `c5bb76b`: ordered queue navigation and shared confirmed-result status; old checklist removed.
+- `b002245`: compact review, explicit return/correction paths, flag resolution and real draft-preserving submission; old private panels and no-op submission removed.
+- `94156a5`: startup catalog restoration regression repaired; full scheme passes (138 tests / 141 cases). Release build passes.
+- `dcd9f3b`: native camera and photo source chooser replacing the library-only entry; evidence actor moved into Services.
+
+Each feature includes its task snapshots and validation note. The complete delivery evidence is in [the Obsidian vault](simplified-ui-vault/Home.md). GitHub issue #72 stays open; queue section navigation is implemented locally, while its exact content mapping and physical accessibility scenario remain to be verified. No push or GitHub issue update was performed.
+
+Delivery: 34 accepted snapshots in `output/pdf/simplified-ui-redesign-snapshots.pdf` (36 rendered and visually checked pages), plus the native vertical Canvas in the completed vault.

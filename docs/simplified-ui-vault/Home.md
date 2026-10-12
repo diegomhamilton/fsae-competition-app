@@ -28,4 +28,14 @@ The judge's path is **queue → focused test → review**. During execution, sho
 - Preserve session switching as disabled. Keep deferred concurrency work outside this redesign.
 - The final PDF includes the task snapshots, captions, and validation limits.
 
-The design source is `../simplified-ui-redesign-plan.md`. The implementation authorization is the user's **Start!** request of 12 October 2026.
+## Completed delivery
+
+Implemented on `simplified-ui-redesign` in individual component commits. Each replacement removes its predecessor and includes its snapshots. All five phases are complete.
+
+- [[Snapshots/README|34 accepted snapshots]] in a 36-page PDF at `output/pdf/simplified-ui-redesign-snapshots.pdf` in the repository.
+- [[Workflow/Final-validation|138 tests / 141 executed cases passed]], zero failures or skips; Release build passed.
+- [[Workflow/Cleanup-and-other-changes|Cleanup decisions and other-branch review]].
+
+Physical camera, native touch-flow, VoiceOver, large text, and outdoor ergonomics remain device-review checks. The deterministic captures demonstrate appearance, while automated checks exercise navigation and persistence.
+
+The reviewed design is recorded in the repository's `docs/simplified-ui-redesign-plan.md`. The implementation authorization is the user's **Start!** request of 12 October 2026.

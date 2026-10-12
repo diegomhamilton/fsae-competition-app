@@ -1,7 +1,7 @@
 ---
 title: "Phase 0 — Workflow and baseline"
 phase: 0
-status: planned
+status: complete
 tags: [phase, workflow, baseline]
 ---
 
@@ -15,11 +15,11 @@ Learn the proven iOS build and snapshot workflow from ios-bass-app, retain a con
 
 ## Tasks
 
-- [ ] Record the active branch and baseline commit without integrating deferred work.
-- [ ] Confirm the Xcode version, scheme, available simulator destination, and validation tool availability once.
-- [ ] Create the checkpoint and screenshot helpers.
-- [ ] Build or test the baseline; boot, install, and launch as separate observable steps.
-- [ ] Capture and visually inspect the baseline execution screen.
+- [x] Record the active branch and baseline commit without integrating deferred work.
+- [x] Confirm the Xcode version, scheme, available simulator destination, and validation tool availability once.
+- [x] Create the checkpoint and screenshot helpers.
+- [x] Build or test the baseline; boot, install, and launch as separate observable steps.
+- [x] Capture and visually inspect the baseline execution screen.
 
 ## Component and predecessor
 
@@ -34,8 +34,8 @@ This is a workflow task. It changes no execution component. Its evidence becomes
 
 ## Completion record
 
-- Commit: pending
-- Snapshots: pending
-- Validation: pending
+- Commit: `9832364` (workflow and baseline).
+- Snapshots: [[../Snapshots/00-baseline/README|baseline execution]].
+- Validation: Xcode 26.2 build passed. Direct Xcode CLI fallback used because XcodeBuildMCP is unavailable. Dedicated FSAE UI Review simulator retained after rejecting a capture of an unrelated app on the earlier shared simulator.
 
 Next: [[01-focus-context-and-details|Phase 1 — Focus context and details]].

@@ -15,11 +15,11 @@ The repository-wide open-issue search returned one issue, #72. Individual reads 
 | [#64 Switching stages empties another stage's progress](https://github.com/diegomhamilton/fsae-competition-app/issues/64) | Closed as completed on 2026-07-18, local time | The issue comment identifies [PR #68](https://github.com/diegomhamilton/fsae-competition-app/pull/68) as its fix. The local code contains stage-scoped draft state and all-stage restoration; do not undo these while redesigning. |
 | [#72 Groups of test cases should expand/collapse](https://github.com/diegomhamilton/fsae-competition-app/issues/72) | Open | Relevant to grouped queue navigation and final review. |
 
-Closed issue status is not proof that every current branch is regression-free. No new runtime validation was performed during this documentation refresh.
+Closed issue status is not proof that every current branch is regression-free. Redesign validation is recorded in the [implementation vault](simplified-ui-vault/Phases/04-final-checks-and-pdf.md).
 
 ## Active issue: #72
 
-The issue requests expandable/collapsible groups such as Spare parts and Changing Procedure. Current queue/review views already contain expandable section controls, but this alone does not establish that the specific groups in the issue are mapped correctly.
+The issue requests expandable/collapsible groups such as Spare parts and Changing Procedure. The redesigned queue has independent expandable section controls; review presents grouped results for final checking. Queue snapshots verify expansion and collapse with isolated fixtures. This does not establish that the specific groups in the issue are mapped correctly in every bundled stage.
 
 Before treating #72 as resolved:
 
@@ -43,13 +43,13 @@ The original document described #55 and #56 as open and inferred possible causes
 
 For focused execution, an unanswered test is neutral. Show a specific missing-field message only when it is actionable; avoid simultaneously showing a red border, Blocked badge, and generic missing-outcome message before the judge acts.
 
-## Result component under human review
+## Result component implemented after human review
 
 Pass, Fail, and Save & next belong to one changing component, rather than three competing actions. The user's requested progression is result input, ready to save, then saving/confirmation and automatic next-test navigation. A neighboring + menu exposes optional notes/evidence and existing exceptional actions.
 
 Input controls follow the step's actual requirements: pass/fail, measurement with unit, or photo/evidence as appropriate. Required notes and other required fields must be satisfied before Save & next is offered. Values remain editable, and failed saving never advances the test.
 
-This is a design direction only. No new UI implementation or status-model change is approved yet. See [the redesign plan](simplified-ui-redesign-plan.md).
+The user authorized implementation on 2026-10-12. Components are implemented with confirmed-result status, recoverable persistence, real photo evidence, and reversible review navigation. See [the implementation checkpoints](simplified-ui-redesign-plan.md).
 
 ## Scope exclusions
 

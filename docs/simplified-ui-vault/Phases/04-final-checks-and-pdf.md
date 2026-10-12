@@ -1,7 +1,7 @@
 ---
 title: "Phase 4 — Final checks and snapshot PDF"
 phase: 4
-status: planned
+status: complete
 tags: [phase, validation, screenshots, pdf]
 ---
 
@@ -15,13 +15,13 @@ Verify the integrated queue → focus → review flow and deliver one PDF contai
 
 ## Tasks
 
-- [ ] Freeze the final source commit before checkpoint validation.
-- [ ] Run the complete scheme once, with result-bundle evidence and authoritative test counts.
-- [ ] Install the tested product after simulator boot readiness.
-- [ ] Refresh final screenshots whenever a visual change invalidated earlier evidence.
-- [ ] Inspect every task's images and ensure its checkpoint note matches the source shown.
-- [ ] Generate and render the PDF; visually verify page layout, image clarity, captions, and ordering.
-- [ ] Update phase notes and the snapshot index with completed commits and artifact links.
+- [x] Freeze the final source commit before checkpoint validation.
+- [x] Run the complete scheme once, with result-bundle evidence and authoritative test counts.
+- [x] Install the tested product after simulator boot readiness.
+- [x] Refresh final screenshots whenever a visual change invalidated earlier evidence.
+- [x] Inspect every task's images and ensure its checkpoint note matches the source shown.
+- [x] Generate and render the PDF; visually verify page layout, image clarity, captions, and ordering.
+- [x] Update phase notes and the snapshot index with completed commits and artifact links.
 
 ## Component and predecessor
 
@@ -36,9 +36,9 @@ This is a validation and delivery task. It introduces no additional UI component
 
 ## Completion record
 
-- Commit: pending
-- Snapshots: pending
-- Validation: pending
-- PDF: pending
+- Final source: `94156a5`; UI component source: `dcd9f3b`. The delivery commit contains this completed note and the PDF.
+- Snapshots: [[../Snapshots/README|all 34 accepted task captures]], including baseline. No later repair changed their UI presentation.
+- Validation: 138 tests / 141 executed cases passed, zero failures or skips; Release build passed. [[../Workflow/Final-validation|Full result and repair record]]. Tested Debug product reinstalled after boot readiness. Camera usage description is present in both configurations; snapshot launch hooks are excluded from Release.
+- PDF: `output/pdf/simplified-ui-redesign-snapshots.pdf` in the repository. 36 pages, all rendered and visually inspected; captions and image bounds verified.
 
 Previous: [[03-queue-and-review-return|Phase 3]].

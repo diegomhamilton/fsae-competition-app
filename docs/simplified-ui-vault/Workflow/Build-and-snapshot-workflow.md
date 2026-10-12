@@ -16,7 +16,7 @@ From the FSAE repository root:
 ```sh
 export FSAE_DEVELOPER_DIR=/Applications/Xcode26-2.app/Contents/Developer
 export FSAE_DERIVED_DATA=/tmp/FSAESimplifiedUIDerivedData
-export FSAE_SIMULATOR_ID=34AA36AD-2704-4759-A347-01A023DEB371
+export FSAE_SIMULATOR_ID=07400928-689C-439C-A2A9-4734BFF9B89B
 tools/ui-validation/checkpoint.sh status
 tools/ui-validation/checkpoint.sh version
 tools/ui-validation/checkpoint.sh destinations
