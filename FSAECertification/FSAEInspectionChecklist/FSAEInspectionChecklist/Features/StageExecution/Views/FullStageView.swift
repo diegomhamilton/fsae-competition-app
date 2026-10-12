@@ -68,9 +68,15 @@ struct FullStageView: View {
         openStepDetail: @escaping (InspectionTestStep) -> Void = { _ in },
         updateStepDraft: @escaping (TestStepDraft, String) -> Void = { _, _ in },
         hasUnsavedDraft: Bool = false,
+        initialTestCaseID: String? = nil,
+        initialStepID: String? = nil,
+        initialReview: Bool = false,
         submitStage: @escaping () -> Void = {},
         openBlockingRoute: @escaping (FullStageBlockingRoute) -> Void = { _ in }
     ) {
+        _selectedTestCaseID = State(initialValue: initialTestCaseID)
+        _activeStepID = State(initialValue: initialStepID)
+        _isReviewing = State(initialValue: initialReview)
         self.team = team
         self.stage = stage
         self.draftsByTestCaseID = draftsByTestCaseID

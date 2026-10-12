@@ -1,0 +1,71 @@
+# Simplified inspection UI — design review
+
+Updated: 2026-10-12
+Branch: `simplified-ui-redesign`
+Phase: implementation authorized by the user on 2026-10-12. Build component-sized replacements, capture each task, and finish with the Obsidian vault and PDF.
+
+## Current snapshot
+
+- `9a95d7a`: queue/focus/review UI implementation and focused validation tests.
+- `96f0f5c`: signing settings, committed separately at the user's request.
+- `102e6d9`: manual-validation task-list update, committed at the user's request.
+- The screenshot has 21 labeled elements: 12 controls and nine text/status blocks. The combined vehicle/progress line contains three facts; counting those separately yields 23 elements. Decorative icons and the phone status bar are excluded.
+
+## Judge priorities
+
+Keep the vehicle, current test, essential criteria, required input, and next action clear. Show safety warnings whenever applicable. Make progress quiet and hide routine successful autosave status. Give the test queue a prominent standalone entry rather than bury it in an information card or secondary menu. Reveal required measurements, failure notes, or evidence when needed. Put View details in the top toolbar. Move optional inputs, early review, and exceptional actions behind secondary access. Unanswered tests should be neutral rather than display repeated blocking errors.
+
+## User-directed result component
+
+Combine Pass, Fail, and Save & next into one component. Its result input depends on the step: outcome selection, unit measurement, or photo/evidence input as supported by the step's requirements. A + button sits alongside the component in a horizontal row and provides optional notes/evidence and the options currently under More actions.
+
+Behavior-driven progression (the implementation need not have exactly three states):
+
+1. Input: show the required result controls and a neutral status.
+2. Ready: once required input is valid, replace the status with Save & next test. Keep a concise result summary and a way to edit it rather than retain a competing set of result buttons.
+3. Saving/confirmation: replace the action with saving feedback, briefly confirm success, and open the next test. On failure, retain the result and offer retry without advancing.
+
+Autosaved draft values and a confirmed result are different concepts. The action must wait for required fields and persistence. A failure outcome must reveal its required notes before the component becomes ready. Photo capture here is a design requirement; the existing app's mock attachment action is not real capture.
+
+Open design decisions: whether measurement/photo entry replaces outcome selection or supplements it according to the official test schema, and the exact presentation of the result summary/edit action. The user authorized implementation of the reviewed plan.
+
+## Latest element decisions from human review
+
+- Test queue (11): prominent, directly accessible, and separate from vehicle/progress/save information. Do not place it inside the + menu.
+- Saved on this device (7): hide during normal operation. Show an actionable save failure with retry. The result component can still show transient Saving feedback to prevent duplicate confirmation and briefly confirm successful advancement; do not add a persistent saved badge.
+- View details (8): top toolbar access to full instructions, rules, and references.
+- Review results (12): early review remains available through +; review must have an explicit Back to test action restoring the same vehicle, test, step, and entered values. Arriving at review automatically after the last test must also permit returning to that last test. Opening a result for correction must retain a return path to review. Previewing review never submits results.
+- Step navigation (14): omit Step 1 of 1 for single-step tests; retain step navigation for multi-step cases.
+- Missing-outcome message (18): show only after an attempted incomplete action, not on initial display. Keep required-field help close to the relevant input.
+- Blocked (19): remove the routine badge. Show specific failure feedback only when there is an actual failure, rather than labeling an unanswered test Blocked. A recorded Fail result should show its result and required note, not imply that saving failed.
+- Check/type badge (20): available only as a DEBUG option, positioned to the left of the test-case description. This does not hide safety warnings, which remain visible in normal use.
+- Generic local-draft subtitle (21): remove.
+
+## Screen proposal for review — no implementation
+
+1. Top toolbar: a labeled Test queue entry on the leading side, View details on the trailing side. Keep this row separate from the context line.
+2. Context: current test name, then vehicle identity and quiet test progress. Do not repeat a large stage heading.
+3. Task: the essential test description/criteria, plus any applicable safety warning. A DEBUG-only type badge may precede the description.
+4. Result: the three-state component alongside +. Required measurements, failure notes, or evidence appear here only when needed by this test.
+5. Failure feedback: an inline message with a corrective action only when needed. No persistent successful-save label, routine Blocked badge, or initial validation error.
+
+The + menu includes notes/evidence, existing exceptional actions, and early review. Test queue and View details remain independently visible. Session navigation and the dense overview belong outside the execution screen.
+
+The user authorized this layout for implementation on 2026-10-12.
+
+## Deferred and excluded work
+
+- Concurrency cleanup remains deferred. Preserve `concurrency_warnings` and `codex/stash-concurrency-warnings` at `1ae3b99`. Its worktree is clean, so there are no uncommitted changes to put in a Git stash. No concurrency commit or merge was made on this UI branch.
+- Session switching/reset/history is excluded from this redesign. The user disabled it because it was not working properly. Preserve the existing branch/worktree, and do not re-enable or integrate it during UI work.
+- The persistence worktree was deleted at the user's request. Its existing branch history was retained; the worktree's staged rollback was not integrated.
+- The three .orig merge backups were deleted at the user's request.
+- Mutation test output and the copied-history file pbcopy remain local and are ignored by Git.
+
+## Design-review folder summary
+
+- `design_review` is a clean registered worktree at `0157377`, the source organization change associated with PR #59. It splits the app into App, Common/UI, feature folders, coordinators, and test support, with organization and review documentation. The commit is already an ancestor of this UI branch. There is no uncommitted design proposal to recover there.
+- `m10-design-review` is not a registered worktree. It contains an Xcode project configuration and workspace metadata, with no Swift source or design document. Its project file matches the older signing configuration, not the newly committed development team. It does not contain a separate UI redesign.
+
+## Next design step
+
+Implement the described result behavior without forcing a fixed state count. Replace each predecessor in the same commit as its component and include task snapshots. Follow the learned ios-bass-app validation workflow. Keep queue and final review as separate overview surfaces. Track issue #72 against section navigation on those surfaces, not by restoring the dense execution overview.

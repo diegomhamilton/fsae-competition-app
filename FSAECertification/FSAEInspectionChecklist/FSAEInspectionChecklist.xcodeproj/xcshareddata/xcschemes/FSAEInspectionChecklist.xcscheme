@@ -46,17 +46,6 @@
                ReferencedContainer = "container:FSAEInspectionChecklist.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9ECA43D92F80C1030083BF80"
-               BuildableName = "FSAEInspectionChecklistUITests.xctest"
-               BlueprintName = "FSAEInspectionChecklistUITests"
-               ReferencedContainer = "container:FSAEInspectionChecklist.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
