@@ -1,7 +1,7 @@
 ---
 title: "Phase 2 — Result input, +, and autosave"
 phase: 2
-status: planned
+status: complete
 tags: [phase, swiftui, input, persistence]
 ---
 
@@ -15,14 +15,14 @@ One result component presents the controls required by the current step. Once th
 
 ## Tasks
 
-- [ ] Extract the result component with input driven by the official step schema.
-- [ ] Support Pass/Fail, measurements with units and numeric keyboard, and required evidence as the schema specifies.
-- [ ] Reveal required failure notes before the result is ready to confirm.
-- [ ] Replace the status/action area in place when the result is ready; retain an edit path.
-- [ ] Consolidate notes/evidence and existing More actions into **+**.
-- [ ] Autosave field values; hide routine successful-save badges.
-- [ ] Show transient saving/confirmation feedback, preserve input on failure, and advance only after successful persistence.
-- [ ] Capture each relevant result and recovery state.
+- [x] Extract the result component with input driven by the official step schema.
+- [x] Support Pass/Fail, measurements with units and numeric keyboard, and required evidence as the schema specifies.
+- [x] Reveal required failure notes before the result is ready to confirm.
+- [x] Replace the status/action area in place when the result is ready; retain an edit path.
+- [x] Consolidate notes/evidence and existing More actions into **+**.
+- [x] Autosave field values; hide routine successful-save badges.
+- [x] Show transient saving/confirmation feedback, preserve input on failure, and advance only after successful persistence.
+- [x] Capture each relevant result and recovery state.
 
 ## Component and predecessor
 
@@ -39,8 +39,10 @@ Remove the independent competing Pass/Fail/save arrangement, separate Add notes 
 
 ## Completion record
 
-- Commit: pending
-- Snapshots: pending
-- Validation: pending
+- Commit: the result-component checkpoint containing this note.
+- Snapshots: [[../Snapshots/02-result-component/README|16 result and recovery captures]].
+- Validation: 32 tests passed in the initial focused run; a timestamp-precision fixture was corrected and all five persistence checks then passed. The final full-scheme run is recorded in Phase 4. Simulator build and image gates passed; all images were visually inspected.
 
 Previous: [[01-focus-context-and-details|Phase 1]]. Next: [[03-queue-and-review-return|Phase 3 — Queue and review return]].
+
+Photos come from the real photo-library picker, are copied into application storage, and can be previewed. Direct camera capture is not implemented. Required evidence rejects mock metadata and missing image files. Review flags persist independently of the outcome and must be resolved/reconfirmed before stage submission.

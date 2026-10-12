@@ -5,4 +5,6 @@ Each checkpoint uses actual SwiftUI app components with isolated DEBUG fixtures.
 1. [[00-baseline/README|Baseline]]
 2. [[01-context-details/README|Context, details, and debug badge]]
 
-Later result, queue, review, and final validation checkpoints are added as their replacements pass validation.
+3. [[02-result-component/README|Result input, optional actions, autosave, and recovery]]
+
+Queue, review, and final validation checkpoints follow.

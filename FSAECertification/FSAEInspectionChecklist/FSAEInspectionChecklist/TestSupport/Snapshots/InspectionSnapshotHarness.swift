@@ -1,9 +1,18 @@
 #if DEBUG
 import SwiftUI
+import UIKit
 
 /// Isolated review fixtures: no judge session or persisted production draft is changed.
 enum InspectionSnapshotScenario: String, CaseIterable {
     case queue, focus, ready, fail, measurement, evidence, review, details
+    case saving, confirmed, safety
+    case autoAdvance = "auto-advance"
+    case evidenceReady = "evidence-ready"
+    case flaggedFocus = "flagged-focus"
+    case optionalNotes = "optional-notes"
+    case measurementReady = "measurement-ready"
+    case failInput = "fail-input"
+    case secondaryActions = "secondary-actions"
     case saveFailure = "save-failure"
     case multiStep = "multi-step"
     case debugBadge = "debug-badge"
@@ -34,18 +43,37 @@ struct InspectionSnapshotHarness: View {
         NavigationStack {
             FullStageView(
                 team: team, stage: stage, draftsByTestCaseID: drafts,
-                updateStepDraft: { draft, caseID in
-                    guard let testCase = stage.orderedSections.flatMap(\.orderedTestCases).first(where: { $0.id == caseID }) else { return }
+                saveStepDraft: { draft, caseID in
+                    guard let testCase = stage.orderedSections.flatMap(\.orderedTestCases).first(where: { $0.id == caseID }) else { return false }
                     var value = drafts[caseID] ?? TestCaseDraft(testCase: testCase)
-                    value.updateStepDraft(draft)
+                    var accepted = draft
+                    if scenario == .saveFailure { accepted.confirmedAt = nil }
+                    value.updateStepDraft(accepted)
                     drafts[caseID] = value
+                    return scenario != .saveFailure
                 },
+                latestDrafts: { drafts },
                 initialTestCaseID: scenario == .queue ? nil : "case-3",
                 initialStepID: "step-3",
                 initialReview: scenario == .review,
                 initialDetails: scenario == .details,
                 initialDebugBadge: scenario == .debugBadge
             )
+            .id(scenario == .evidenceReady ? drafts["case-3"]?.stepDraft(stepID: "step-3")?.draft.evidenceAttachments.count ?? 0 : 0)
+        }
+        .task {
+            guard scenario == .evidenceReady else { return }
+            let image = UIGraphicsImageRenderer(size: CGSize(width: 300, height: 200)).pngData { context in
+                UIColor.systemBlue.setFill()
+                context.fill(CGRect(x: 0, y: 0, width: 300, height: 200))
+                NSString(string: "Isolated evidence fixture").draw(at: CGPoint(x: 20, y: 80), withAttributes: [.foregroundColor: UIColor.white, .font: UIFont.boldSystemFont(ofSize: 18)])
+            }
+            guard let attachment = try? await FocusedResultEvidenceStore.shared.storePhoto(image),
+                  var value = drafts["case-3"],
+                  var step = value.stepDraft(stepID: "step-3")?.draft else { return }
+            step.evidenceAttachments = [attachment]
+            value.updateStepDraft(step)
+            drafts["case-3"] = value
         }
     }
 }
@@ -55,13 +83,14 @@ enum InspectionSnapshotFixtures {
         let titles = ["DRIVER HELMET", "FIRE EXTINGUISHERS", "ARM RESTRAINTS", "DRIVER SUIT", "GLOVES", "SHOES", "WET TIRES", "SPARE PARTS", "CHANGING PROCEDURE"]
         let cases = titles.enumerated().map { index, title in
             let number = index + 1
-            let measured = scenario == .measurement && number == 3
-            let evidence = scenario == .evidence && number == 3
+            let measured = (scenario == .measurement || scenario == .measurementReady) && number == 3
+            let evidence = (scenario == .evidence || scenario == .evidenceReady) && number == 3
             let step = InspectionTestStep(
                 id: "step-\(number)", code: "G-\(number)", ruleReference: "T.13.8", title: title,
                 type: measured ? .measurement : .check,
                 content: measured ? "Measure the driver exit time. Record the elapsed time in seconds." : evidence ? "Record a clear photo of the installed arm restraints." : "Required for all drivers. Must be commercially manufactured. No label required.",
                 requiredOutcome: !evidence, requiresEvidence: evidence,
+                safetyBadges: scenario == .safety && number == 3 ? [.energized] : [],
                 measurementRange: measured ? MeasurementRange(unit: .seconds, minimum: 0, maximum: 5, maximumFractionDigits: 2) : nil
             )
             var steps = [step]
@@ -83,10 +112,13 @@ enum InspectionSnapshotFixtures {
         var values: [String: TestCaseDraft] = [:]
         for testCase in stage.orderedSections.flatMap(\.orderedTestCases) {
             let passed = testCase.displayOrder < 3 || scenario == .review || (testCase.displayOrder == 3 && (scenario == .ready || scenario == .saveFailure))
-            let failed = testCase.displayOrder == 3 && scenario == .fail
+            let failed = testCase.displayOrder == 3 && (scenario == .fail || scenario == .failInput || scenario == .flaggedFocus)
+            let confirmed = testCase.displayOrder < 3 || scenario == .review
             values[testCase.id] = TestCaseDraft(testCase: testCase, stepDrafts: testCase.orderedSteps.map {
                 TestStepDraft(stepID: $0.id, outcome: failed ? .fail : passed ? .pass : .pending,
-                              notes: failed ? "Right restraint attachment needs correction." : "")
+                              notes: failed && scenario != .failInput ? "Right restraint attachment needs correction." : "",
+                              confirmedAt: confirmed ? Date(timeIntervalSince1970: 1_792_000_000) : nil,
+                              flaggedForReview: scenario == .flaggedFocus && testCase.displayOrder == 3 ? true : nil)
             })
         }
         return values
