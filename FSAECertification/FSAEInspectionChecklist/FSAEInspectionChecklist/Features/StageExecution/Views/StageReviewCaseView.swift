@@ -54,6 +54,10 @@ struct StageReviewCaseView: View {
         }
     }
     @ViewBuilder private func resultDetails(_ step: InspectionTestCaseStepViewState) -> some View {
+        if step.flaggedForReview == true {
+            Label(step.outcome.displayName, systemImage: step.outcome == .fail ? "xmark.circle.fill" : "checkmark.circle.fill")
+                .font(.title3).foregroundStyle(step.outcome.color)
+        }
         if !step.measurementInput.isEmpty {
             Text("\(step.measurementInput) \(step.step.measurementRange?.unit.symbol ?? "")").font(.title2)
         }
