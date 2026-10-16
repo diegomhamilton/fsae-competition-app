@@ -5,6 +5,7 @@ struct StageQueueSectionView: View {
     let draftsByTestCaseID: [String: TestCaseDraft]
     let focusedIssues: [FullStageValidationIssue]
     let isExpanded: Bool
+    let currentTestCaseID: String?
     let toggleExpanded: () -> Void
     let selectTestCase: (String) -> Void
 
@@ -38,6 +39,15 @@ struct StageQueueSectionView: View {
                         status: StageResultStatus.testCase(state, issues: focusedIssues.filter { $0.testCaseID == testCase.id }),
                         select: { selectTestCase(testCase.id) }
                     )
+                    .padding(.horizontal, 8)
+                    .background(currentTestCaseID == testCase.id ? Color.fsaePrimary.opacity(0.09) : Color.clear, in: .rect(cornerRadius: 16))
+                    .overlay(alignment: .topTrailing) {
+                        if currentTestCaseID == testCase.id {
+                            Label(StageOverviewStrings.currentTest, systemImage: "location.fill").font(.caption.bold())
+                                .foregroundStyle(Color.fsaePrimary)
+                        }
+                    }
+                    .id(testCase.id)
                 }
             }
         }
