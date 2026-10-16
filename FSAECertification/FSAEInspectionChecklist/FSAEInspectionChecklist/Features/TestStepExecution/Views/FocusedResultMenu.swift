@@ -34,7 +34,7 @@ struct FocusedResultMenu: View {
             Label(FocusedResultStrings.more, systemImage: "plus")
                 .labelStyle(.iconOnly)
                 .font(.title2)
-                .frame(minWidth: 56, minHeight: 56)
+                .frame(minWidth: 64, minHeight: 64)
                 .background(Color.fsaePrimary.opacity(0.12), in: .circle)
         }
         .foregroundStyle(form.isConfirming || form.didConfirm || form.isImportingPhoto ? Color.fsaeSecondaryText : Color.fsaePrimary)
