@@ -4,6 +4,40 @@ import Testing
 
 @MainActor
 struct FocusedResultFormTests {
+    @Test("Changing an outcome retains valid evidence without requiring a replacement")
+    func outcomeEditKeepsEvidenceReady() async {
+        let photo = EvidenceAttachmentMetadata(id: "photo", displayName: "Photo", mediaType: .photo,
+            source: .camera, createdAt: .now, localRelativePath: "Evidence/photo.png")
+        let form = FocusedResultForm(state: state(requiresEvidence: true, attachments: [photo], outcome: .pass),
+            autosaveDelay: .seconds(60), evidenceAvailable: { $0.localRelativePath != nil }) { _ in true }
+        form.editResult(includingEvidence: false)
+        #expect(!form.isEditingEvidence)
+        form.selectOutcome(.pass)
+        #expect(form.isReady)
+        #expect(form.draft.evidenceAttachments == [photo])
+        #expect(await form.flush())
+    }
+
+    @Test("Retake failure preserves evidence; success replaces only the requested photo")
+    func retakePreservesUntilSuccess() async {
+        let original = EvidenceAttachmentMetadata(id: "original", displayName: "Original", mediaType: .photo,
+            source: .photoLibrary, createdAt: .now, localRelativePath: "Evidence/original.png")
+        let replacement = EvidenceAttachmentMetadata(id: "replacement", displayName: "Replacement", mediaType: .photo,
+            source: .camera, createdAt: .now, localRelativePath: "Evidence/replacement.png")
+        let form = FocusedResultForm(state: state(requiredOutcome: false, requiresEvidence: true, attachments: [original]),
+            autosaveDelay: .seconds(60), evidenceAvailable: { $0.localRelativePath != nil }) { _ in true }
+        form.preparePhotoReplacement(original.id)
+        form.beginPhotoImport()
+        form.finishPhotoImport(nil)
+        #expect(form.draft.evidenceAttachments == [original])
+        #expect(form.isReady)
+        form.preparePhotoReplacement(original.id)
+        form.beginPhotoImport()
+        form.finishPhotoImport(replacement)
+        #expect(form.draft.evidenceAttachments == [replacement])
+        #expect(await form.flush())
+    }
+
     @Test("Unanswered results start neutral; failure requires a reason")
     func incompleteResultIsNeutral() async {
         let form = FocusedResultForm(state: state(), autosaveDelay: .seconds(60)) { _ in true }

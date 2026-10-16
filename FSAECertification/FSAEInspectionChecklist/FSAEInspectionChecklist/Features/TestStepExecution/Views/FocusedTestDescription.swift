@@ -21,12 +21,12 @@ struct FocusedTestDescription: View {
                 }
                 #endif
                 Text(state.step.content)
-                    .font(.body)
+                    .font(.title)
                     .foregroundStyle(Color.fsaeText)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .padding(.vertical)
+        .padding(.vertical, 8)
         .accessibilityIdentifier("execution.description")
     }
 }

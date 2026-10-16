@@ -7,7 +7,7 @@ struct FocusedResultSummaryView: View {
     let viewEvidence: () -> Void
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline) {
+        VStack(alignment: .leading, spacing: 12) {
             VStack(alignment: .leading) {
                 if form.draft.flaggedForReview == true {
                     Label(FocusedResultStrings.flaggedForReview, systemImage: "flag.fill")
@@ -17,28 +17,26 @@ struct FocusedResultSummaryView: View {
                 }
                 if form.step.requiredOutcome {
                     Label(form.draft.outcome.displayName, systemImage: form.draft.outcome == .fail ? "xmark.circle.fill" : "checkmark.circle.fill")
-                        .font(.headline)
+                        .font(.title2.bold())
                         .foregroundStyle(form.draft.outcome.color)
                         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseStepStatus(testCaseID: testCaseID, stepID: form.step.id).rawValue)
                 }
                 if let value = form.draft.measurementValue {
-                    Text(value.formattedValue).font(.headline)
+                    Text(value.formattedValue).font(.title2.bold())
                 } else if form.step.type == .measurement {
-                    Text(form.draft.measurementInput).font(.headline)
-                }
-                if !form.draft.notes.isEmpty {
-                    Text(form.draft.notes).font(.callout).lineLimit(2)
+                    Text(form.draft.measurementInput).font(.title2.bold())
                 }
                 if form.draft.evidenceAttachments.contains(where: { $0.localRelativePath != nil }) {
                     Button(FocusedResultStrings.viewPhotos, systemImage: "photo", action: viewEvidence)
                         .font(.callout)
                 }
             }
-            Spacer()
-            Button(FocusedResultStrings.edit, systemImage: "pencil", action: edit)
-                .labelStyle(.iconOnly)
+            if form.step.requiredOutcome || form.step.type == .measurement {
+            Button(FocusedResultStrings.change, systemImage: "pencil", action: edit)
+                .labelStyle(.titleAndIcon)
                 .frame(minWidth: 48, minHeight: 48)
                 .accessibilityIdentifier("execution.result.edit")
+            }
         }
     }
 }
