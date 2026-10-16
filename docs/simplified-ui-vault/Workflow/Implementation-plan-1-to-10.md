@@ -30,12 +30,9 @@ Keep the queue's rounded appearance. Improve the task's visual size without show
 
 ## PR sequence
 
-### Foundation PR - existing simplified execution
+### Shared feature branch
 
-- Proposed head: `simplified-ui-redesign`; proposed base: `develop`, verified against the current integration branch before publishing.
-- Package the already implemented queue/focus/review redesign and its existing snapshot report. Keep the signing change in its existing separate commit.
-- This establishes the foundation independently of the ten new improvements. It prevents the existing redesign from being mixed into each new feature diff.
-- No foundation PR has been created or pushed by this planning update.
+The user selected `simplified-ui-redesign` as the shared feature branch. Do not open a foundation PR or target `develop`. All three implementation PRs target `simplified-ui-redesign` directly, start from this shared base, and include actual screenshot evidence in their descriptions. Do not merge them without user review.
 
 ### PR 1 - Larger, adaptive focused inputs
 
@@ -99,7 +96,7 @@ Commit boundary: one coordinated transition component replacing the abrupt switc
 
 ## Branch and review policy
 
-Implement PR 1, then PR 2, then PR 3. Prefer merging the foundation before the first feature PR, then branch each slice from updated `develop`. If work proceeds before predecessor merges, use stacked branches and target each immediate predecessor so the diff contains only that slice. Rebase/retarget dependent PRs after a squash merge; do not merge duplicate predecessor commits back into the integration branch.
+Implement PR 1, then PR 2, then PR 3 on separate branches from `simplified-ui-redesign`. Every PR targets that shared feature branch. Keep diffs independent; validate the combined result in a temporary integration branch and resolve any overlap before delivery. Do not merge PRs as part of implementation.
 
 Each implementation PR starts as a draft with Summary, Scope, Notes, and Validation. Each task commit adds its replacement component, removes its predecessor, and includes its snapshot checkpoint. Record actual PR URLs and source commits in the vault when created. No invented PR numbers or links.
 
