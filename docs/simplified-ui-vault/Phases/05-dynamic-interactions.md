@@ -2,7 +2,7 @@
 title: "Next pass - Dynamic focused execution"
 domain: inspection-event
 feature: focused-execution-interactions
-status: ready-for-implementation
+status: implemented-in-draft-prs
 owners: [planner-agent, developer-agent, tester-agent]
 source_files:
   - openspec/changes/technical-inspection-event-development-plan/tasks.md
@@ -18,7 +18,7 @@ approved: 2026-10-15
 
 [[../Home|Vault home]] · [[../Plan.canvas|Vertical plan]]
 
-The judge approved the proposed interaction ideas on 15 October 2026. The latest approval expands the immediate implementation scope to improvements 1-10: larger controls and screen usage, transforming inputs, navigation continuity, coordinated next-test transitions, large measurement entry, photo previews, and whole-card review editing. See [[../Workflow/Implementation-plan-1-to-10|the PR and implementation plan]]. Milestone **11. UI Improvements**, tasks **11.8** and **11.9**, is the authoritative task tracker. This note records scope and acceptance criteria; it does not claim these changes are implemented. The existing 36-page snapshot PDF remains the reference baseline.
+The judge approved the proposed interaction ideas on 15 October 2026. The latest approval expands the immediate implementation scope to improvements 1-10: larger controls and screen usage, transforming inputs, navigation continuity, coordinated next-test transitions, large measurement entry, photo previews, and whole-card review editing. See [[../Workflow/Implementation-plan-1-to-10|the PR and implementation plan]]. Milestone **11. UI Improvements**, tasks **11.8** and **11.9**, is the authoritative task tracker. The accepted scope is implemented in draft PRs #87-#89. See [[../Workflow/Dynamic-implementation-delivery|the delivery record]] for source commits, evidence and validation limits. The existing 36-page snapshot PDF remains the reference baseline.
 
 ## Current focus - task 11.8
 
@@ -74,4 +74,4 @@ Keep presentation and animations in focused SwiftUI components, navigation/retur
 
 Before implementation, define behavior checks for note expansion/collapse without losing input, failure-required notes, persistence-gated advancement, review-return targets, and scroll/section restoration. Use distinct note and measurement values to check field identity. Capture stable input, editor, ready, queue-return, review-return, and next-test states. Verify compact widths, larger text, keyboard visibility, reduced motion, and VoiceOver context; screenshots alone do not prove those interactions.
 
-No new app implementation, screenshots, PDF revision, or runtime validation is included in this planning update.
+Implementation, new snapshots and the updated PDF are available in the delivery record. The original PDF remains unchanged, so its page references above remain valid.
