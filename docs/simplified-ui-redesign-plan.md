@@ -86,3 +86,8 @@ Delivery: 34 accepted snapshots in `output/pdf/simplified-ui-redesign-snapshots.
 The judge accepted the dynamic interaction proposals. Prioritize transforming inputs (including an expanding note editor), preserving queue/review position, and coordinated saved/progress/next-test transitions. Include larger typography and controls and preserve the rounded queue style. The remaining accepted ideas are recorded as follow-up tasks in **11. UI Improvements**, items **11.8-11.9**, in the OpenSpec task list. [Scope, PDF page references, and acceptance criteria](simplified-ui-vault/Phases/05-dynamic-interactions.md).
 
 This update records prioritization only; the new interaction pass is not implemented. The existing PDF and completed source checkpoints remain the reference baseline.
+
+
+## Implementation scope and PR sequence - 2026-10-15
+
+The user approved implementing improvements **1-10**, including the previously deferred large measurement input, photo previews, and whole-card review editing. Improvements **11-15 remain deferred**. The [PR and implementation plan](simplified-ui-vault/Workflow/Implementation-plan-1-to-10.md) sequences an existing-redesign foundation PR followed by three implementation PRs: focused inputs (1-4, 8-9), navigation/review continuity (5-6, 10), and next-test transitions (7). Each slice replaces predecessor components, captures its task states, and records validation. This record plans the work; no new app implementation or PR publication is included in this update.

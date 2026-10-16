@@ -2,7 +2,7 @@
 title: "Next pass - Dynamic focused execution"
 domain: inspection-event
 feature: focused-execution-interactions
-status: approved-for-planning
+status: ready-for-implementation
 owners: [planner-agent, developer-agent, tester-agent]
 source_files:
   - openspec/changes/technical-inspection-event-development-plan/tasks.md
@@ -18,7 +18,7 @@ approved: 2026-10-15
 
 [[../Home|Vault home]] · [[../Plan.canvas|Vertical plan]]
 
-The judge approved the proposed interaction ideas on 15 October 2026. Prioritize transforming inputs, preserving position, and coordinated next-test transitions. Milestone **11. UI Improvements**, tasks **11.8** and **11.9**, is the authoritative task tracker. This note records scope and acceptance criteria; it does not claim these changes are implemented. The existing 36-page snapshot PDF remains the reference baseline.
+The judge approved the proposed interaction ideas on 15 October 2026. The latest approval expands the immediate implementation scope to improvements 1-10: larger controls and screen usage, transforming inputs, navigation continuity, coordinated next-test transitions, large measurement entry, photo previews, and whole-card review editing. See [[../Workflow/Implementation-plan-1-to-10|the PR and implementation plan]]. Milestone **11. UI Improvements**, tasks **11.8** and **11.9**, is the authoritative task tracker. This note records scope and acceptance criteria; it does not claim these changes are implemented. The existing 36-page snapshot PDF remains the reference baseline.
 
 ## Current focus - task 11.8
 
@@ -51,9 +51,9 @@ Reference pages: **17-19**.
 - The final test opens review; corrections return to review rather than continuing the normal queue.
 - Keep motion brief. Respect Reduce Motion, retain text/icon status cues and VoiceOver context, and avoid adding artificial save delays for animation.
 
-## Subsequent work - task 11.9
+## Interaction extensions - task 11.9
 
-All ideas remain accepted; the following are recorded for later slices rather than silently dropped or included in the immediate implementation scope.
+Tasks 11.9.1-11.9.3 are now included in the current implementation scope (improvements 8-10). Tasks 11.9.4-11.9.8 remain accepted follow-ups (improvements 11-15). The table retains the full backlog and acceptance direction.
 
 | Task | Follow-up | Reference | Acceptance direction |
 | --- | --- | --- | --- |

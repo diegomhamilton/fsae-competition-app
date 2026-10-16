@@ -123,13 +123,13 @@
 
 ### Approved dynamic interaction direction - 2026-10-15
 
-Scope and acceptance details: [Dynamic focused execution](../../../docs/simplified-ui-vault/Phases/05-dynamic-interactions.md). Preserve the rounded queue style. The following are planned work, not completed implementation.
+Scope and acceptance details: [Dynamic focused execution](../../../docs/simplified-ui-vault/Phases/05-dynamic-interactions.md). [PR and implementation plan for approved improvements 1-10](../../../docs/simplified-ui-vault/Workflow/Implementation-plan-1-to-10.md). Preserve the rounded queue style. The following are planned work, not completed implementation.
 
 - [ ] 11.8 Prioritize dynamic focused execution with larger text/controls and better use of screen space.
   - [ ] 11.8.1 Transform result input into confirmation in place; expand Add note into an editor and contract it into an editable preview; automatically reveal required failure notes. Reference PDF pages 6-8 and 15.
   - [ ] 11.8.2 Preserve queue/review scroll position and section expansion, reveal the current test on queue entry, and identify the corrected result when returning to review. Reference pages 22-25 and 27-30.
   - [ ] 11.8.3 Coordinate saved feedback, progress, and next-test transitions; preserve persistence gating and retry; respect Reduce Motion. Reference pages 17-19.
-- [ ] 11.9 Retain the other approved interaction ideas for subsequent UI slices.
+- [ ] 11.9 Track approved interaction extensions: 11.9.1-11.9.3 are current scope (improvements 8-10); 11.9.4-11.9.8 remain deferred (improvements 11-15).
   - [ ] 11.9.1 Prominent measurement value/unit with tap-to-enter and immediate range feedback; keep the judge's outcome explicit. Pages 10-11.
   - [ ] 11.9.2 Photo capture action transforms into preview with View/Retake. Pages 12-13 and 34-35.
   - [ ] 11.9.3 Larger review labels and whole-card correction targets. Page 25.

@@ -44,3 +44,8 @@ The reviewed design is recorded in the repository's `docs/simplified-ui-redesign
 ## Approved next pass - 15 October 2026
 
 [[Phases/05-dynamic-interactions|Dynamic focused execution]] records the next three priorities and the remaining accepted ideas under UI Improvements milestone 11. The next pass focuses on transforming inputs, preserving position, and coordinated next-test transitions, with larger controls and the queue's rounded style. These are planned tasks; the original implementation and PDF remain unchanged.
+
+
+## Implementation scope - improvements 1 to 10
+
+The latest approval includes larger measurement entry, photo previews, and whole-card review editing in the current pass. [[Workflow/Implementation-plan-1-to-10|Three implementation PRs follow the existing redesign foundation]], with component-sized commits, per-task snapshots, full validation, and an updated PDF. Improvements 11-15 remain deferred. The plan is ready; new app code and PR creation have not started.

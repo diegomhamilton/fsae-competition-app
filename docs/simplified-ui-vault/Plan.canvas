@@ -59,6 +59,16 @@
       "width": 600,
       "height": 400,
       "color": "2"
+    },
+    {
+      "id": "implementation-plan-1-to-10",
+      "type": "file",
+      "file": "Workflow/Implementation-plan-1-to-10.md",
+      "x": 0,
+      "y": 3120,
+      "width": 600,
+      "height": 400,
+      "color": "2"
     }
   ],
   "edges": [
@@ -106,6 +116,15 @@
       "toSide": "top",
       "toEnd": "arrow",
       "label": "Feedback approved 15 October"
+    },
+    {
+      "id": "phase-5-to-implementation-plan",
+      "fromNode": "phase-5",
+      "fromSide": "bottom",
+      "toNode": "implementation-plan-1-to-10",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Implement improvements 1-10"
     }
   ]
 }
