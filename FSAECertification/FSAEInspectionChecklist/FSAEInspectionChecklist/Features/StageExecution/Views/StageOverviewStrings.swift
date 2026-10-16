@@ -1,4 +1,6 @@
 enum StageOverviewStrings {
+    static let currentTest = "Current test"
+    static let updated = "Updated"
     static let chooseTest = "Choose a test"
     static let start = "Start next test"
     static let resume = "Resume next test"
