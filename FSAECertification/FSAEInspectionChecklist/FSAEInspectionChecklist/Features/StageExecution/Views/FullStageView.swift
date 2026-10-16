@@ -76,7 +76,7 @@ struct FullStageView: View {
     }
 
     var body: some View {
-        Group {
+        ExecutionAdvanceTransition(sequence: focus.advanceSequence) {
             switch focus.mode {
             case .focus: focusedScreen
             case .queue: queueScreen()
