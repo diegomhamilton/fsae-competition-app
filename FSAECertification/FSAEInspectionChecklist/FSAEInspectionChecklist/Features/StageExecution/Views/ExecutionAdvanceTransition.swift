@@ -14,7 +14,7 @@ struct ExecutionAdvanceTransition<Content: View>: View {
         #endif
     }
     var body: some View {
-        ZStack(alignment: .topLeading) {
+        Group {
             content()
                 .id(sequence)
                 .transition(usesReducedMotion ? .identity : .asymmetric(
