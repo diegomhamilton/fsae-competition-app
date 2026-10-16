@@ -4,6 +4,24 @@ import Testing
 
 @MainActor
 struct StageFocusCoordinatorTests {
+    @Test("Advancement transitions occur once after confirmation and never after a failed gate")
+    func transitionRequiresConfirmedResult() throws {
+        let stage = focusStage()
+        let coordinator = StageFocusCoordinator(stage: stage)
+        #expect(coordinator.selectTestCase(id: "first", stepID: "first-1", draftsByTestCaseID: [:]))
+        #expect(!coordinator.advanceAfterSave(draftsByTestCaseID: [:]))
+        #expect(coordinator.advanceSequence == 0)
+        let testCase = try #require(coordinator.activeTestCase)
+        let draft = TestCaseDraft(testCase: testCase, stepDrafts: [
+            TestStepDraft(stepID: "first-1", outcome: .pass, confirmedAt: .now)
+        ])
+        #expect(coordinator.advanceAfterSave(draftsByTestCaseID: ["first": draft]))
+        #expect(coordinator.activeStepID == "first-2")
+        #expect(coordinator.advanceSequence == 1)
+        #expect(!coordinator.advanceAfterSave(draftsByTestCaseID: ["first": draft]))
+        #expect(coordinator.advanceSequence == 1)
+    }
+
     @Test("Judge starts the first incomplete step in official section, case and step order")
     func resumeFirstIncompleteInOfficialOrder() throws {
         let stage = focusStage()
