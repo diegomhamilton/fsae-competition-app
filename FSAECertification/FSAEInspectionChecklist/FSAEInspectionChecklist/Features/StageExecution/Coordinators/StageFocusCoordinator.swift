@@ -28,6 +28,7 @@ final class StageFocusCoordinator {
         let stepID: String
     }
 
+    let overview: StageOverviewPresentation
     let stage: InspectionStage
     private(set) var mode: Mode = .queue
     private(set) var selectedTestCaseID: String?
@@ -42,6 +43,7 @@ final class StageFocusCoordinator {
             FocusedResultEvidenceStore.localAssetAvailable($0)
         }
     ) {
+        self.overview = StageOverviewPresentation(firstSectionID: stage.orderedSections.first?.id)
         self.stage = stage
         self.evidenceAvailable = evidenceAvailable
     }
@@ -178,6 +180,7 @@ final class StageFocusCoordinator {
         }
 
         if isEditingFromReview {
+            overview.lastCorrectedCaseID = testCase.id
             returnToReview()
             return true
         }

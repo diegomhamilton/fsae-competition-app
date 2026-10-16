@@ -49,6 +49,16 @@ struct FullStageView: View {
             navigation.selectTestCase(id: initialTestCaseID, stepID: initialStepID, draftsByTestCaseID: draftsByTestCaseID)
         }
         if initialReview { navigation.showReview() }
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-inspection-review-position") {
+            navigation.overview.rememberReviewOffset(340)
+            navigation.overview.lastCorrectedCaseID = "case-3"
+        }
+        if ProcessInfo.processInfo.arguments.contains("-inspection-queue-position") {
+            navigation.selectTestCase(id: "case-8", draftsByTestCaseID: draftsByTestCaseID)
+            if let first = stage.orderedSections.first { navigation.overview.toggleSection(first.id) }
+        }
+        #endif
         _focus = State(initialValue: navigation)
         _showsDetails = State(initialValue: initialDetails)
         _showsQueue = State(initialValue: initialQueue)
@@ -173,6 +183,8 @@ struct FullStageView: View {
             focusedIssues: focus.focusedValidationIssues(draftsByTestCaseID: draftsByTestCaseID),
             hasActiveSelection: !isDrawer && focus.hasActiveSelection,
             hasUnsavedDraft: hasUnsavedDraft,
+            presentation: focus.overview,
+            selectedTestCaseID: focus.selectedTestCaseID,
             startNext: { focus.startNext(draftsByTestCaseID: latestDrafts()); close() },
             continueTest: { focus.backToTest(); close() },
             review: { focus.showReview(); close() },
@@ -199,6 +211,7 @@ struct FullStageView: View {
         return StageReviewView(
             team: team, stage: stage, draftsByTestCaseID: draftsByTestCaseID,
             focusedIssues: issues,
+            presentation: focus.overview,
             editResult: { caseID, stepID in focus.editResult(testCaseID: caseID, stepID: stepID) }
         )
         .disabled(isSubmittingStage)
