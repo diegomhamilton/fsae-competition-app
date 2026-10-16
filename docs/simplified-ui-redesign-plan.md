@@ -79,3 +79,10 @@ The user authorized this layout for implementation on 2026-10-12.
 Each feature includes its task snapshots and validation note. The complete delivery evidence is in [the Obsidian vault](simplified-ui-vault/Home.md). GitHub issue #72 stays open; queue section navigation is implemented locally, while its exact content mapping and physical accessibility scenario remain to be verified. No push or GitHub issue update was performed.
 
 Delivery: 34 accepted snapshots in `output/pdf/simplified-ui-redesign-snapshots.pdf` (36 rendered and visually checked pages), plus the native vertical Canvas in the completed vault.
+
+
+## Approved follow-up - 2026-10-15
+
+The judge accepted the dynamic interaction proposals. Prioritize transforming inputs (including an expanding note editor), preserving queue/review position, and coordinated saved/progress/next-test transitions. Include larger typography and controls and preserve the rounded queue style. The remaining accepted ideas are recorded as follow-up tasks in **11. UI Improvements**, items **11.8-11.9**, in the OpenSpec task list. [Scope, PDF page references, and acceptance criteria](simplified-ui-vault/Phases/05-dynamic-interactions.md).
+
+This update records prioritization only; the new interaction pass is not implemented. The existing PDF and completed source checkpoints remain the reference baseline.

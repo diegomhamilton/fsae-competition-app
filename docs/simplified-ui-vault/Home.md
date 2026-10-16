@@ -39,3 +39,8 @@ Implemented on `simplified-ui-redesign` in individual component commits. Each re
 Physical camera, native touch-flow, VoiceOver, large text, and outdoor ergonomics remain device-review checks. The deterministic captures demonstrate appearance, while automated checks exercise navigation and persistence.
 
 The reviewed design is recorded in the repository's `docs/simplified-ui-redesign-plan.md`. The implementation authorization is the user's **Start!** request of 12 October 2026.
+
+
+## Approved next pass - 15 October 2026
+
+[[Phases/05-dynamic-interactions|Dynamic focused execution]] records the next three priorities and the remaining accepted ideas under UI Improvements milestone 11. The next pass focuses on transforming inputs, preserving position, and coordinated next-test transitions, with larger controls and the queue's rounded style. These are planned tasks; the original implementation and PDF remain unchanged.
