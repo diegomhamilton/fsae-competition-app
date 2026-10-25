@@ -5,7 +5,7 @@ struct FullStageView: View {
         static let queue = "Test queue"
         static let details = "View details"
         static let back = "Back to test"
-        static let review = "Review results"
+        static let review = "Review stage"
         static let done = "Done"
     }
 
