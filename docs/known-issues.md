@@ -15,11 +15,11 @@ Remove resolved entries after the fix and meaningful regression coverage land. K
 
 ## Outcome editing after notes
 
-Priority: P2. Status: callback-level conflict reproduced; native touch confirmation pending.
+Priority: P2. Status: fix proposed in [PR #109](https://github.com/diegomhamilton/fsae-competition-app/pull/109), awaiting integration and native touch confirmation. The fix preserves requested outcome/measurement edits when notes lose focus; its full scheme passed 158 tests / 162 executed cases at `bdfd4d4`.
 
 On reviewed source `8a7705f`, choose Pass, add a valid optional note with the keyboard focused, then tap the compact outcome/pencil pill above the note. The pill calls `editResult(includingEvidence: false)` and clears focus (`FocusedResultInputView.swift:18–20`). The notes-to-nil focus callback calls `finishInput()` (`FocusedResultView.swift:217–219`), clearing `isEditingOutcome` (`FocusedResultForm.swift:135–141`). Valid input returns to the summary instead of offering Pass/Fail choices; another edit action is needed. Fail with a valid required note follows the same state path.
 
-An isolated callback replay fails the expectation that outcome-edit mode survives. This demonstrates the state conflict, not SwiftUI focus timing on a device. Fix by preserving the requested edit intent across programmatic focus dismissal, and verify both outcome changes and Done behavior without losing notes. App behavior has not been changed by the documentation review.
+An isolated callback replay fails the expectation that outcome-edit mode survives. This demonstrates the state conflict, not SwiftUI focus timing on a device. Fix by preserving the requested edit intent across programmatic focus dismissal, and verify both outcome changes and Done behavior without losing notes. The documentation PR does not change app behavior; the fix remains isolated in PR #109.
 
 ## Add Team first-focus stall with debugger attached
 
