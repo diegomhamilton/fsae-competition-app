@@ -64,7 +64,8 @@ enum StageResultStatus: Equatable {
         case .unanswered, .exception: .fsaeGray
         case .draft: .fsaePrimary
         case .pass: .fsaeGreen
-        case .fail, .flagged: .fsaeRed
+        case .fail: .fsaeRed
+        case .flagged: .fsaeAmber
         }
     }
 }
