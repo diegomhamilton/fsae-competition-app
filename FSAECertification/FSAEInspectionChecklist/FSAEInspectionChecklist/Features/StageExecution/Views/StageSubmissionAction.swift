@@ -37,7 +37,7 @@ struct StageSubmissionAction: View {
                     Label(Strings.submit, systemImage: "paperplane.fill")
                         .frame(maxWidth: .infinity, minHeight: 48)
                 }
-                .buttonStyle(.borderedProminent).tint(Color.fsaePrimary)
+                .inspectionButtonStyle().tint(Color.fsaePrimary)
                 .controlSize(.large).disabled(!canSubmit)
                 .accessibilityIdentifier("execution.review.submit")
             }

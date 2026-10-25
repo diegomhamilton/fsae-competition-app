@@ -46,7 +46,7 @@ struct CreateTeamSheet: View {
                         Label(Strings.createTeamAction, systemImage: "plus.circle.fill")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .inspectionButtonStyle()
                     .disabled(submissionEntry == nil)
                     .accessibilityIdentifier(
                         InspectionAccessibilityIdentifier.sessionSelectorCreateTeamAction.rawValue)
@@ -64,8 +64,10 @@ struct CreateTeamSheet: View {
                         focusedField = nil
                         dismiss()
                     }
+                    .inspectionButtonStyle()
                     .accessibilityIdentifier("session-selector.add-team.cancel")
                 }
+                .sharedBackgroundVisibility(.hidden)
             }
             .accessibilityIdentifier(
                 InspectionAccessibilityIdentifier.sessionSelectorCreateTeamForm.rawValue)

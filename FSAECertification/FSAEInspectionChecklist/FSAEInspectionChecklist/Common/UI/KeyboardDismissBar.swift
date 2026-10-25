@@ -16,7 +16,7 @@ struct KeyboardDismissBar: View {
                 Spacer()
                 Button(title, action: dismiss)
                     .font(.body.weight(.semibold))
-                    .buttonStyle(.plain)
+                    .inspectionButtonStyle()
                     .foregroundStyle(Color.fsaePrimary)
             }
             .padding(.horizontal, 20)

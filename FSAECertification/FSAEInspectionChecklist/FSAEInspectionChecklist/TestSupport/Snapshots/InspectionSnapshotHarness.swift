@@ -96,6 +96,7 @@ struct InspectionSnapshotHarness: View {
             )
             .id(scenario == .evidenceReady ? drafts["case-3"]?.stepDraft(stepID: "step-3")?.draft.evidenceAttachments.count ?? 0 : 0)
         }
+        .inspectionButtonStyle()
         .task {
             guard scenario == .evidenceReady else { return }
             let image = UIGraphicsImageRenderer(size: CGSize(width: 300, height: 200)).pngData { context in
