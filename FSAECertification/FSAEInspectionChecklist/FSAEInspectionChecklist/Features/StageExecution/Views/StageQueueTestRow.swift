@@ -15,15 +15,21 @@ struct StageQueueTestRow: View {
 
         Button(action: select) {
             layout {
-                Text(state.title)
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                if status == .pass || status == .fail {
+                HStack(alignment: .firstTextBaseline) {
                     Image(systemName: status.symbol)
+                        .font(.headline)
                         .foregroundStyle(status.color)
-                } else {
-                    StageResultBadge(status: status)
+                    VStack(alignment: .leading) {
+                        Text(state.title)
+                            .font(.headline)
+                            .fixedSize(horizontal: false, vertical: true)
+                        if status != .pass && status != .fail {
+                            Text(status.title)
+                                .font(.caption)
+                                .foregroundStyle(status.color)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 HStack {
                     if isCurrent {
