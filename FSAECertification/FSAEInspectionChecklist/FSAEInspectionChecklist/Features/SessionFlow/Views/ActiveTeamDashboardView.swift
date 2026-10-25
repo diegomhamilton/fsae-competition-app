@@ -8,7 +8,6 @@ import SwiftUI
 struct ActiveTeamDashboardView: View {
     fileprivate enum Strings {
         static let eyebrow = "Active Team"
-        static let subtitle = "Review the locally stored session and stage progress."
         static let overallProgress = "Overall progress"
         static let openBlockers = "Open blockers"
         static let currentStage = "Current Stage"
@@ -36,7 +35,7 @@ struct ActiveTeamDashboardView: View {
 
         ScreenShell(
             title: "\(team.carNumber) \(team.school)",
-            subtitle: Strings.subtitle
+            subtitle: ""
         ) {
 
             HStack(spacing: 12) {
