@@ -24,6 +24,8 @@ enum StageOverviewStrings {
     static let collapsed = "Collapsed"
     static let photoUnavailable = "Photo unavailable"
 
+    static let testSections = "Test sections"
+
     static func vehicle(_ team: InspectionTeam) -> String {
         "\(team.carNumber) · \(team.school)"
     }
