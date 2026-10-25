@@ -99,7 +99,7 @@
             {
               "displayOrder": 17,
               "type": "measurement",
-              "content": "Maintain continuous water spray for 120 seconds."
+              "content": "Maintain continuous water spray for 120 seconds."
             },
             {
               "displayOrder": 18,
@@ -109,7 +109,7 @@
             {
               "displayOrder": 19,
               "type": "measurement",
-              "content": "Monitor the vehicle for 120 seconds after spray stops."
+              "content": "Monitor the vehicle for 120 seconds after spray stops."
             },
             {
               "displayOrder": 20,

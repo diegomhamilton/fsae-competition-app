@@ -30,9 +30,9 @@
             { "displayOrder": 14, "type": "action", "content": "Instruct the ESO to activate the TS again after reset." },
             { "displayOrder": 15, "type": "precondition", "content": "Before spray starts, verify no personnel are near the vehicle." },
             { "displayOrder": 16, "type": "action", "content": "Start the water spray with the vehicle on jack stands." },
-            { "displayOrder": 17, "type": "measurement", "content": "Maintain continuous water spray for 120 seconds." },
+            { "displayOrder": 17, "type": "measurement", "content": "Maintain continuous water spray for 120 seconds." },
             { "displayOrder": 18, "type": "action", "content": "Stop the water spray." },
-            { "displayOrder": 19, "type": "measurement", "content": "Monitor the vehicle for 120 seconds after spray stops." },
+            { "displayOrder": 19, "type": "measurement", "content": "Monitor the vehicle for 120 seconds after spray stops." },
             { "displayOrder": 20, "type": "measurement", "content": "Verify the vehicle does not enter a fault condition for the full 240-second test window." },
             { "displayOrder": 21, "type": "context", "content": "If Step 20 passes, mark the Rain Test as successful and complete." },
             { "displayOrder": 22, "type": "action", "content": "Contact the EV inspection leader to obtain the approval sticker." }
