@@ -10,17 +10,11 @@ struct CreateTeamSheet: View {
         static let cancel = "Cancel"
     }
 
-    private enum Field: Hashable {
-        case displayName
-        case carNumber
-    }
-
     let createTeam: (LocalTeamCatalogEntry) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var displayName = ""
     @State private var carNumber = ""
     @State private var creationError: String?
-    @FocusState private var focusedField: Field?
 
     var body: some View {
         NavigationStack {
@@ -28,16 +22,10 @@ struct CreateTeamSheet: View {
                 Section {
                     TextField(Strings.teamNamePlaceholder, text: $displayName)
                         .textInputAutocapitalization(.words)
-                        .autocorrectionDisabled()
-                        .focused($focusedField, equals: .displayName)
-                        .submitLabel(.next)
-                        .onSubmit { focusedField = .carNumber }
                         .accessibilityIdentifier(
                             InspectionAccessibilityIdentifier.sessionSelectorCreateTeamNameField.rawValue)
                     TextField(Strings.carNumberPlaceholder, text: $carNumber)
                         .keyboardType(.numberPad)
-                        .autocorrectionDisabled()
-                        .focused($focusedField, equals: .carNumber)
                         .accessibilityIdentifier(
                             InspectionAccessibilityIdentifier.sessionSelectorCreateTeamCarNumberField.rawValue)
                     Button {
@@ -60,12 +48,9 @@ struct CreateTeamSheet: View {
             .navigationTitle(Strings.createTeamTitle)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(Strings.cancel) {
-                        focusedField = nil
-                        dismiss()
-                    }
-                    .inspectionButtonStyle()
-                    .accessibilityIdentifier("session-selector.add-team.cancel")
+                    Button(Strings.cancel) { dismiss() }
+                        .inspectionButtonStyle()
+                        .accessibilityIdentifier("session-selector.add-team.cancel")
                 }
                 .sharedBackgroundVisibility(.hidden)
             }
@@ -96,8 +81,11 @@ struct CreateTeamSheet: View {
             return
         }
 
-        focusedField = nil
+        let createTeam = createTeam
         createTeam(entry)
+        displayName = ""
+        carNumber = ""
+        creationError = nil
         dismiss()
     }
 }
