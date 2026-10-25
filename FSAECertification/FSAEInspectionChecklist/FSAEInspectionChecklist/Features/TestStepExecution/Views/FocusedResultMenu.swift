@@ -37,10 +37,9 @@ struct FocusedResultMenu: View {
                 .frame(minWidth: 32, minHeight: 32)
 
         }
-        .buttonStyle(.glass)
-        .controlSize(.regular)
-        .buttonBorderShape(.circle)
-        .foregroundStyle(form.isConfirming || form.didConfirm || form.isImportingPhoto ? Color.fsaeSecondaryText : Color.fsaePrimary)
+        .inspectionButtonStyle(
+            tint: form.isConfirming || form.didConfirm || form.isImportingPhoto ? .fsaeSecondaryText : .fsaePrimary
+        )
         .disabled(form.isImportingPhoto)
         .accessibilityIdentifier("execution.secondary-actions")
         .confirmationDialog(FocusedResultStrings.more, isPresented: $showsActions, titleVisibility: .visible) {

@@ -95,8 +95,10 @@ struct SessionSelectorView: View {
                 Button(Strings.createTeamTitle, systemImage: "plus") {
                     showsAddTeam = true
                 }
+                .inspectionButtonStyle()
                 .accessibilityIdentifier("session-selector.add-team")
             }
+            .sharedBackgroundVisibility(.hidden)
         }
         .sheet(isPresented: $showsAddTeam) {
             CreateTeamSheet(createTeam: createTeam)

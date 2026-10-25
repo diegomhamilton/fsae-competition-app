@@ -79,6 +79,8 @@ struct FullStageView: View {
         queueScreen()
         .navigationTitle(stage.title)
         .navigationBarTitleDisplayMode(.large)
+        // The persistent owner updates visibility when the route changes, including a pop.
+        .toolbar(focus.mode == .focus ? .hidden : .visible, for: .tabBar)
         .navigationDestination(item: Binding(
             get: { focus.route(after: nil) },
             set: { if $0 == nil { focus.popNavigation(after: nil) } }
@@ -94,8 +96,10 @@ struct FullStageView: View {
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
                             Button(Strings.done) { showsQueue = false }
+                                .inspectionButtonStyle()
                                 .accessibilityIdentifier("execution.queue.close")
                         }
+                        .sharedBackgroundVisibility(.hidden)
                     }
             }
         }
@@ -116,9 +120,14 @@ struct FullStageView: View {
         }
         .navigationTitle(route.mode == .review ? Strings.review : "")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar(route.mode == .focus ? .hidden : .visible, for: .tabBar)
         #if DEBUG
         .task {
+            if InspectionSnapshotScenario.current == .queueReturn, route.mode == .focus {
+                // Replay a native animated pop in an isolated TabView, without device input.
+                do { try await Task.sleep(for: .seconds(2)) } catch { return }
+                withAnimation { focus.showQueue() }
+                return
+            }
             guard route.mode == .review else { return }
             switch InspectionSnapshotScenario.current?.rawValue {
             case "review-return": focus.backToTest()
@@ -134,8 +143,7 @@ struct FullStageView: View {
         FocusedExecutionLayout {
             if let testCase = activeTestCaseState {
                 FocusExecutionContext(title: testCase.title, vehicle: team,
-                    position: testPosition, total: focus.orderedTestCases.count,
-                    showsDetails: { showsDetails = true }, isSavingInformation: isConfirmingResult)
+                    position: testPosition, total: focus.orderedTestCases.count)
             }
         } content: {
             if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {
@@ -176,6 +184,18 @@ struct FullStageView: View {
                 .id("\(testCase.id).\(step.id)")
             }
 
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(Strings.details, systemImage: "info.circle") {
+                    showsDetails = true
+                }
+                .labelStyle(.iconOnly)
+                .inspectionButtonStyle()
+                .accessibilityIdentifier("execution.details.open")
+                .disabled(isConfirmingResult)
+            }
+            .sharedBackgroundVisibility(.hidden)
         }
     }
 

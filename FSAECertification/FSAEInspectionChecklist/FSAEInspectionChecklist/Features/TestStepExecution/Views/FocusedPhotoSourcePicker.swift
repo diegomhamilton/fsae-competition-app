@@ -39,7 +39,7 @@ struct FocusedPhotoSourcePicker: View {
                 } label: {
                     Label(Strings.take, systemImage: "camera").frame(maxWidth: .infinity, minHeight: 48)
                 }
-                .buttonStyle(.borderedProminent).tint(Color.fsaePrimary)
+                .inspectionButtonStyle().tint(Color.fsaePrimary)
                 .disabled(!cameraAvailable || requestingAccess)
                 .accessibilityIdentifier("execution.evidence.camera")
                 if !cameraAvailable { Text(Strings.unavailable).font(.callout).foregroundStyle(Color.fsaeSecondaryText) }
@@ -53,13 +53,19 @@ struct FocusedPhotoSourcePicker: View {
                 Button { choose(.library) } label: {
                     Label(Strings.choose, systemImage: "photo.on.rectangle").frame(maxWidth: .infinity, minHeight: 48)
                 }
-                .buttonStyle(.bordered).tint(Color.fsaePrimary)
+                .inspectionButtonStyle()
                 .accessibilityIdentifier("execution.evidence.library")
                 Spacer(minLength: 0)
             }
             .padding().controlSize(.large)
             .navigationTitle(Strings.title).navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button(Strings.cancel) { dismiss() } } }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(Strings.cancel) { dismiss() }
+                        .inspectionButtonStyle()
+                }
+                .sharedBackgroundVisibility(.hidden)
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import UIKit
 /// Isolated review fixtures: no judge session or persisted production draft is changed.
 enum InspectionSnapshotScenario: String, CaseIterable {
     case queue, focus, ready, fail, measurement, evidence, review, details
+    case queueReturn = "queue-return"
     case longest
     case saving, confirmed, safety
     case autoAdvance = "auto-advance"
@@ -58,6 +59,24 @@ struct InspectionSnapshotHarness: View {
     }
 
     var body: some View {
+        Group {
+            if scenario == .queueReturn {
+                TabView {
+                    Tab("Team", systemImage: "gauge.with.dots.needle.50percent") {
+                        inspectionNavigation
+                    }
+                    Tab("Sessions", systemImage: "person.2") {
+                        Color.clear
+                    }
+                }
+            } else {
+                inspectionNavigation
+            }
+        }
+        .inspectionButtonStyle()
+    }
+
+    private var inspectionNavigation: some View {
         NavigationStack {
             FullStageView(
                 team: team, stage: stage, draftsByTestCaseID: drafts,
@@ -96,6 +115,7 @@ struct InspectionSnapshotHarness: View {
             )
             .id(scenario == .evidenceReady ? drafts["case-3"]?.stepDraft(stepID: "step-3")?.draft.evidenceAttachments.count ?? 0 : 0)
         }
+        .inspectionButtonStyle()
         .task {
             guard scenario == .evidenceReady else { return }
             let image = UIGraphicsImageRenderer(size: CGSize(width: 300, height: 200)).pngData { context in

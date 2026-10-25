@@ -11,6 +11,7 @@ struct ContentView: View {
     var body: some View {
         ContentTabsView(appCoordinator: appCoordinator)
             .tint(Color.fsaePrimary)
+            .inspectionButtonStyle()
             .preferredColorScheme(.light)
             .task {
                 appCoordinator.completeMockLogin()

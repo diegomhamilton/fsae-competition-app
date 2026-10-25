@@ -34,7 +34,7 @@ struct CreateTeamSheet: View {
                         Label(Strings.createTeamAction, systemImage: "plus.circle.fill")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .inspectionButtonStyle()
                     .disabled(submissionEntry == nil)
                     .accessibilityIdentifier(
                         InspectionAccessibilityIdentifier.sessionSelectorCreateTeamAction.rawValue)
@@ -48,9 +48,12 @@ struct CreateTeamSheet: View {
             .navigationTitle(Strings.createTeamTitle)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(Strings.cancel) { dismiss() }
+                    Button(Strings.cancel, systemImage: "xmark") { dismiss() }
+                        .labelStyle(.iconOnly)
+                        .inspectionButtonStyle()
                         .accessibilityIdentifier("session-selector.add-team.cancel")
                 }
+                .sharedBackgroundVisibility(.hidden)
             }
             .accessibilityIdentifier(
                 InspectionAccessibilityIdentifier.sessionSelectorCreateTeamForm.rawValue)

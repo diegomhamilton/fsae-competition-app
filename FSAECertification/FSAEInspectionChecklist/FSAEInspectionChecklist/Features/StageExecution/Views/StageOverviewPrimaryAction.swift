@@ -10,7 +10,7 @@ struct StageOverviewPrimaryAction: View {
         Button(action: action) {
             Label(title, systemImage: symbol).frame(maxWidth: .infinity, minHeight: 56)
         }
-        .buttonStyle(.borderedProminent)
+        .inspectionButtonStyle()
         .tint(Color.fsaePrimary)
         .controlSize(.large)
         .accessibilityIdentifier(identifier)

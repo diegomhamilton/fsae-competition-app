@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct FocusedTestDescription: View {
+    #if DEBUG
+    @AppStorage(InternalSettingsView.showDebugActionsKey) private var showDebugActions = false
+    #endif
     let state: InspectionTestCaseStepViewState
     var showsTypeBadge = false
 
@@ -15,7 +18,7 @@ struct FocusedTestDescription: View {
             }
             HStack(alignment: .top) {
                 #if DEBUG
-                if showsTypeBadge {
+                if showDebugActions && showsTypeBadge {
                     StatusPill(text: state.step.type.label, color: state.step.type.color)
                         .accessibilityIdentifier("execution.debug-type-badge")
                 }
