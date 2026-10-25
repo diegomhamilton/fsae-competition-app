@@ -8,7 +8,7 @@ owners:
   - Documenter
 source_files:
   - openspec/changes/technical-inspection-event-development-plan/design.md
-  - docs/prompts/tasks/TASK-9-documentation-and-review-hygiene/05-operations-summary.md
+  - docs/maintenance.md
   - .github/PULL_REQUEST_TEMPLATE.md
 related_scenarios:
   - Design/UserStories/InspectionEvents/features/inspection_event_use_cases.feature
@@ -69,3 +69,7 @@ Avoid commits that mix unrelated behavior, broad formatting, generated files, an
 
 Feature PRs may preserve task-sized internal commits while under review. Before merge, squash task branches into the feature branch and use the PR description to preserve the meaningful checkpoints, validation commands, and scenario links.
 
+
+## Documentation review
+
+Update current documentation with behavior changes. Delete obsolete phase plans, completed prompt output and old evidence collections; put remaining acceptance gaps in the active backlog/validation checklist. Store PR-specific commands and evidence in the PR rather than creating dated repository reports.

@@ -20,7 +20,7 @@ related_scenarios:
 
 ## Purpose
 
-The inspection event app is a local-first SwiftUI tool for judges who need to select a team session, inspect official technical inspection stages, record outcomes, persist draft work, submit immutable stage snapshots, and track failed test cases through recheck review. The current implementation is intentionally incremental: session selection, stage-first navigation, draft editing, validation, and local JSON draft persistence are wired into the app; stage submission, recheck review, sticker eligibility, remote services, and UI automation remain follow-up slices.
+The inspection event app is a local-first SwiftUI tool for judges who need to select a team session, inspect official technical inspection stages, record outcomes, persist draft work, submit immutable stage snapshots, and track failed test cases through recheck review. The current implementation is intentionally incremental: session selection, stage-first navigation, draft editing, validation, and local JSON draft persistence are wired into the app; immutable stage submission is wired through review. Recheck review, sticker eligibility, remote services, and dedicated UI automation remain follow-up slices. Team switching remains disabled.
 
 ## Architecture
 
@@ -28,11 +28,11 @@ The app follows a Swift 6, SwiftUI, and Concurrency-first MVC shape.
 
 Models define immutable inspection content and mutable draft state. Core values include `InspectionStage`, `InspectionSection`, `InspectionTestCase`, `InspectionTestStep`, `TestCaseDraft`, `TestStepDraft`, `ValidationIssue`, `SubmissionSnapshot`, and local persistence schema records.
 
-Views stay as SwiftUI composition surfaces. They render coordinator-backed state and keep only local presentation state. The current judge shell exposes Sessions, Team, and Stage as top-level tabs. Test case and focused step editing are pushed inside the Stage tab rather than exposed as separate top-level destinations. User-visible strings should live in structured `Strings` enums so localization work can migrate to string catalogs later.
+Views stay as SwiftUI composition surfaces. They render coordinator-backed state and keep only local presentation state. The current judge shell exposes Sessions and Team, plus Internal Settings in DEBUG. Team pushes a stage queue with focused test and review destinations owned by `StageFocusCoordinator`. The predecessor carousel and step-detail screens have been removed. User-visible strings should live in structured `Strings` enums so localization work can migrate to string catalogs later.
 
-Coordinators own routing and user intents. `AppCoordinator` handles launch/login/root screen selection. `InspectionEventCoordinator` owns the active event and session lifecycle. `SessionSelectionCoordinator` owns roster decisions. `InspectionExecutionCoordinator` owns stage navigation, test case and test step push routes, draft save, and team-switch routing.
+Coordinators own routing and user intents. `AppCoordinator` handles launch/login/root screen selection. `InspectionEventCoordinator` owns the active event and session lifecycle. `SessionSelectionCoordinator` owns roster decisions. `InspectionExecutionCoordinator` owns session-scoped drafts, legacy route adapters, draft saves and immutable stage submission; `StageFocusCoordinator` owns queue/focus/review history. Team switching remains disabled.
 
-Services provide async boundaries. `InspectionContentService` loads bundled official stage JSON. `InspectionValidationService` validates outcomes, notes, measurement ranges, and required evidence. `InspectionEventStore` and `TestCaseJSONPersistenceService` preserve scoped local draft records. `SubmissionSnapshotService` can write immutable stage submission artifacts, but the Stage tab submit button is not wired to that service yet.
+Services provide async boundaries. `InspectionContentService` loads bundled official stage JSON. `InspectionValidationService` validates outcomes, notes, measurement ranges, and required evidence. `InspectionEventStore` and `TestCaseJSONPersistenceService` preserve scoped local draft records. Review submission reaches `SubmissionSnapshotService` through the app/execution coordinators and `InspectionEventStore`; confirmed, valid results are frozen into immutable snapshots with drafts retained.
 
 ## Recheck Behavior
 
@@ -44,7 +44,7 @@ Sticker eligibility is intended to derive from required submitted stages plus op
 
 Swift Testing covers domain models, coordinators, services, persistence, and view helpers in the same implementation slices as the code under test. Test names and documentation should map positive, negative, and edge cases back to `inspection_event_use_cases.feature`.
 
-Dedicated UI automation and snapshot tests belong to Task 8. The current navigation hooks are closer to the target shape after the Stage-tab refactor, but implementation PRs should still include focused unit tests plus manual validation notes until the dedicated UI target exists.
+Dedicated UI automation and snapshot tests belong to Task 8. The current navigation hooks are closer to the target shape after the queue/focus/review refactor, but implementation PRs should still include focused unit tests plus manual validation notes until the dedicated UI target exists.
 
 ## Accessibility Conventions
 

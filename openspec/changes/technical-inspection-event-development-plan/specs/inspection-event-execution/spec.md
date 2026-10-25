@@ -1,4 +1,8 @@
-## ADDED Requirements
+# Inspection execution requirements
+
+Implementation boundary: queue/focus/review, local drafts and immutable stage submission are wired. Team switching is disabled; reset/history, rechecks and sticker eligibility remain deferred requirements tracked in [active tasks](../../tasks.md). Requirements below are acceptance targets, not a completion ledger.
+
+## Requirements
 
 ### Requirement: Judge can move from login to an active inspection session
 The system SHALL provide a judge-facing flow from login into team session selection and then into an active inspection session.
@@ -18,11 +22,11 @@ The system SHALL provide a judge-facing flow from login into team session select
 ### Requirement: Judge can inspect stages, test cases, and test steps
 The system SHALL allow a judge to navigate from active team dashboard to stage, test case, and test step views while preserving the active team/session context.
 
-#### Scenario: Guided navigation keeps case work inside Stage
-- **WHEN** the TASK#10.3 guided navigation refactor is complete
-- **THEN** the top-level judge navigation exposes Sessions, Team, and Stage as the primary landmarks.
-- **AND** the system does not expose a standalone Case tab.
-- **AND** selecting a test case keeps the judge in the Stage workflow while showing case-level execution UI.
+#### Scenario: Guided navigation keeps inspection work inside the active stage
+- **WHEN** the judge opens a stage from Team
+- **THEN** the system presents the stage queue within the Team navigation stack.
+- **AND** Sessions and Team remain the primary tabs, with Internal Settings available in DEBUG.
+- **AND** selecting a test opens focused execution; review and corrections preserve session context and return targets.
 
 #### Scenario: Open stage from active team dashboard
 - **WHEN** the judge opens a stage from the active team dashboard
