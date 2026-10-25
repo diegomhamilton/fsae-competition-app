@@ -8,8 +8,6 @@ import SwiftUI
 struct SessionSelectorView: View {
     fileprivate enum Strings {
         static let title = "Active Inspections"
-        static let subtitle =
-            "Select Team to start or resume a locally stored inspection session for the current event."
         static let createTeamTitle = "Add Team"
         static let emptyCatalog = "No local teams yet."
         static let emptyCatalogDetail = "Add a team to start the local inspection workflow."
@@ -32,8 +30,7 @@ struct SessionSelectorView: View {
 
     var body: some View {
         ScreenShell(
-            title: Strings.title,
-            subtitle: Strings.subtitle
+            title: Strings.title
         ) {
             if coordinator.teams.isEmpty {
                 ContentPanel {
