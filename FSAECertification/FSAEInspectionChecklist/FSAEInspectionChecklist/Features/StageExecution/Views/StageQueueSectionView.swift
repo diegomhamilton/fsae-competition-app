@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StageQueueSectionView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var rotationDegrees: Double?
 
     private var usesReducedMotion: Bool {
         #if DEBUG
@@ -32,8 +33,8 @@ struct StageQueueSectionView: View {
                     }
                     Spacer()
                     Image(systemName: "chevron.down")
-                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
-                        .animation(usesReducedMotion ? nil : .easeInOut(duration: 0.2), value: isExpanded)
+                        .rotationEffect(.degrees(rotationDegrees ?? (isExpanded ? 180 : 0)))
+                        .animation(usesReducedMotion ? nil : .easeInOut(duration: 0.2), value: rotationDegrees)
                 }
                 .frame(minHeight: 56)
             }
@@ -62,6 +63,10 @@ struct StageQueueSectionView: View {
                     .id(testCase.id)
                 }
             }
+        }
+        .onChange(of: isExpanded) { wasExpanded, _ in
+            // Increasing angles keep both expansion and collapse clockwise.
+            rotationDegrees = (rotationDegrees ?? (wasExpanded ? 180 : 0)) + 180
         }
         .padding()
         .background(Color.fsaeSurface, in: .rect(cornerRadius: 16))
