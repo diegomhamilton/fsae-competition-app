@@ -15,8 +15,10 @@ struct StageQueueTestRow: View {
                 Spacer()
                 Image(systemName: "chevron.right").foregroundStyle(Color.fsaePrimary)
             }
-            .frame(minHeight: 64)
+            .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
             .padding(.vertical)
+            .padding(.horizontal, 8)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .foregroundStyle(Color.fsaeText)

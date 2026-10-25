@@ -23,7 +23,9 @@ struct StageQueueSectionView: View {
                     Spacer()
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                 }
-                .frame(minHeight: 56)
+                .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+                .padding()
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .foregroundStyle(Color.fsaeText)
@@ -31,27 +33,29 @@ struct StageQueueSectionView: View {
             .accessibilityIdentifier("execution.queue.section.\(section.id)")
 
             if isExpanded {
-                ForEach(section.orderedTestCases) { testCase in
-                    let state = InspectionTestCaseViewState(testCase: testCase,
-                        draft: draftsByTestCaseID[testCase.id] ?? TestCaseDraft(testCase: testCase))
-                    StageQueueTestRow(
-                        state: state,
-                        status: StageResultStatus.testCase(state, issues: focusedIssues.filter { $0.testCaseID == testCase.id }),
-                        select: { selectTestCase(testCase.id) }
-                    )
-                    .padding(.horizontal, 8)
-                    .background(currentTestCaseID == testCase.id ? Color.fsaePrimary.opacity(0.09) : Color.clear, in: .rect(cornerRadius: 16))
-                    .overlay(alignment: .topTrailing) {
-                        if currentTestCaseID == testCase.id {
-                            Label(StageOverviewStrings.currentTest, systemImage: "location.fill").font(.caption.bold())
-                                .foregroundStyle(Color.fsaePrimary)
+                VStack(alignment: .leading) {
+                    ForEach(section.orderedTestCases) { testCase in
+                        let state = InspectionTestCaseViewState(testCase: testCase,
+                            draft: draftsByTestCaseID[testCase.id] ?? TestCaseDraft(testCase: testCase))
+                        StageQueueTestRow(
+                            state: state,
+                            status: StageResultStatus.testCase(state, issues: focusedIssues.filter { $0.testCaseID == testCase.id }),
+                            select: { selectTestCase(testCase.id) }
+                        )
+                        .background(currentTestCaseID == testCase.id ? Color.fsaePrimary.opacity(0.09) : Color.clear, in: .rect(cornerRadius: 16))
+                        .overlay(alignment: .topTrailing) {
+                            if currentTestCaseID == testCase.id {
+                                Label(StageOverviewStrings.currentTest, systemImage: "location.fill").font(.caption.bold())
+                                    .foregroundStyle(Color.fsaePrimary)
+                                    .allowsHitTesting(false)
+                            }
                         }
+                        .id(testCase.id)
                     }
-                    .id(testCase.id)
                 }
+                .padding([.horizontal, .bottom])
             }
         }
-        .padding()
         .background(Color.fsaeSurface, in: .rect(cornerRadius: 16))
     }
 }
