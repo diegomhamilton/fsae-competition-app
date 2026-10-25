@@ -7,12 +7,12 @@ struct StageQueueView: View {
     let focusedIssues: [FullStageValidationIssue]
     let hasActiveSelection: Bool
     var hasUnsavedDraft = false
+    let presentation: StageOverviewPresentation
+    let selectedTestCaseID: String?
     let startNext: () -> Void
     let continueTest: () -> Void
     let review: () -> Void
     let selectTestCase: (String) -> Void
-    @State private var expandedSectionIDs: Set<String> = []
-    @State private var initializedExpansion = false
 
     var body: some View {
         let testCases = stage.orderedSections.flatMap(\.orderedTestCases)
@@ -20,8 +20,8 @@ struct StageQueueView: View {
         let confirmed = total - Set(focusedIssues.filter { !$0.issueID.hasPrefix("flaggedIssue.") }.map(\.stepID)).count
         let hasDraft = !draftsByTestCaseID.isEmpty
 
-        ScrollView {
-            VStack(alignment: .leading) {
+        RestoringOverviewScroll(savedOffset: presentation.queueOffset,
+            rememberOffset: presentation.rememberQueueOffset, revealID: presentation.queueRevealID) {
                 StageOverviewHeader(team: team, confirmedCount: confirmed, totalCount: total)
                 if total == 0 {
                     Text(StageOverviewStrings.noTests).foregroundStyle(Color.fsaeSecondaryText)
@@ -58,31 +58,27 @@ struct StageQueueView: View {
                         section: section,
                         draftsByTestCaseID: draftsByTestCaseID,
                         focusedIssues: focusedIssues,
-                        isExpanded: expandedSectionIDs.contains(section.id),
-                        toggleExpanded: {
-                            if expandedSectionIDs.contains(section.id) {
-                                expandedSectionIDs.remove(section.id)
-                            } else {
-                                expandedSectionIDs.insert(section.id)
-                            }
-                        },
+                        isExpanded: presentation.expandedSectionIDs.contains(section.id),
+                        currentTestCaseID: selectedTestCaseID,
+                        toggleExpanded: { presentation.toggleSection(section.id) },
                         selectTestCase: selectTestCase
                     )
                 }
-            }
-            .padding()
         }
         .background(Color.fsaeBackground)
-        .onAppear {
-            guard !initializedExpansion else { return }
-            initializedExpansion = true
-            #if DEBUG
-            if InspectionSnapshotScenario.current?.rawValue == "queue-supplies", let last = stage.orderedSections.last {
-                expandedSectionIDs.insert(last.id)
-                return
-            }
-            #endif
-            if let first = stage.orderedSections.first { expandedSectionIDs.insert(first.id) }
+        .onAppear { prepareQueue() }
+        .onChange(of: selectedTestCaseID) { _, _ in prepareQueue() }
+    }
+
+    private func prepareQueue() {
+        let section = stage.orderedSections.first { section in
+            section.orderedTestCases.contains { $0.id == selectedTestCaseID }
         }
+        presentation.prepareQueue(testCaseID: selectedTestCaseID, sectionID: section?.id)
+        #if DEBUG
+        if InspectionSnapshotScenario.current?.rawValue == "queue-supplies", let last = stage.orderedSections.last {
+            presentation.expandedSectionIDs = [last.id]
+        }
+        #endif
     }
 }
