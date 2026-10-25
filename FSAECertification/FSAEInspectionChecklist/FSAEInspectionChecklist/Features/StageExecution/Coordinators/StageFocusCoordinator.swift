@@ -298,3 +298,16 @@ final class StageFocusCoordinator {
         return issues
     }
 }
+
+extension StageFocusCoordinator {
+    /// Keep an unfinished inspection position; otherwise find the first unfinished result.
+    @discardableResult
+    func continueInspection(draftsByTestCaseID: [String: TestCaseDraft]) -> Bool {
+        if let testCase = activeTestCase,
+           let active = stepStates(for: testCase, drafts: draftsByTestCaseID).first(where: { $0.id == activeStepID }),
+           !isConfirmed(active) {
+            return backToTest()
+        }
+        return startNext(draftsByTestCaseID: draftsByTestCaseID)
+    }
+}
