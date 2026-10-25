@@ -20,10 +20,14 @@ struct FocusedTestDescription: View {
                         .accessibilityIdentifier("execution.debug-type-badge")
                 }
                 #endif
-                Text(state.step.content)
-                    .font(.title)
-                    .foregroundStyle(Color.fsaeText)
-                    .fixedSize(horizontal: false, vertical: true)
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(Array(state.step.content.components(separatedBy: "\n\n").enumerated()), id: \.offset) { _, paragraph in
+                        Text(paragraph)
+                            .font(.title2)
+                            .foregroundStyle(Color.fsaeText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
             }
         }
         .padding(.vertical, 8)

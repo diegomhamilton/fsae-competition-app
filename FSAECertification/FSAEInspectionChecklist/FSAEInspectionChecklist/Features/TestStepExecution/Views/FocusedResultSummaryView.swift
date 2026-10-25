@@ -3,16 +3,16 @@ import SwiftUI
 struct FocusedResultSummaryView: View {
     let form: FocusedResultForm
     let testCaseID: String
+    let editTransition: Namespace.ID
     let edit: () -> Void
     let viewEvidence: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            VStack(alignment: .leading) {
+        HStack(alignment: .center, spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
                 if form.draft.flaggedForReview == true {
                     Label(FocusedResultStrings.flaggedForReview, systemImage: "flag.fill")
-                        .font(.callout)
-                        .foregroundStyle(Color.fsaeAmber)
+                        .font(.callout).foregroundStyle(Color.fsaeAmber)
                         .accessibilityIdentifier("execution.result.flagged")
                 }
                 if form.step.requiredOutcome {
@@ -31,12 +31,22 @@ struct FocusedResultSummaryView: View {
                         .font(.callout)
                 }
             }
+            Spacer(minLength: 0)
             if form.step.requiredOutcome || form.step.type == .measurement {
-            Button(FocusedResultStrings.change, systemImage: "pencil", action: edit)
-                .labelStyle(.titleAndIcon)
-                .frame(minWidth: 48, minHeight: 48)
+                Button(action: edit) {
+                    Label(FocusedResultStrings.edit, systemImage: "pencil")
+                        .labelStyle(.iconOnly)
+                        .font(.title3)
+                        .frame(width: 48, height: 48)
+                        .contentShape(.circle)
+                }
+                .buttonStyle(.plain)
+                .buttonBorderShape(.circle)
+                .matchedGeometryEffect(id: "result-edit", in: editTransition)
                 .accessibilityIdentifier("execution.result.edit")
             }
         }
+        .padding(16)
+        .glassEffect(.regular.tint((form.draft.outcome.color).opacity(0.18)), in: .rect(cornerRadius: 24))
     }
 }

@@ -5,6 +5,7 @@ import UIKit
 /// Isolated review fixtures: no judge session or persisted production draft is changed.
 enum InspectionSnapshotScenario: String, CaseIterable {
     case queue, focus, ready, fail, measurement, evidence, review, details
+    case longest
     case saving, confirmed, safety
     case autoAdvance = "auto-advance"
     case queueDrawer = "queue-drawer"
@@ -50,6 +51,12 @@ struct InspectionSnapshotHarness: View {
         _drafts = State(initialValue: InspectionSnapshotFixtures.drafts(for: scenario, stage: stage))
     }
 
+    private var longestCase: InspectionTestCase? {
+        stage.orderedSections.flatMap(\.orderedTestCases).max {
+            ($0.orderedSteps.map { $0.content.count }.max() ?? 0) < ($1.orderedSteps.map { $0.content.count }.max() ?? 0)
+        }
+    }
+
     var body: some View {
         NavigationStack {
             FullStageView(
@@ -65,8 +72,8 @@ struct InspectionSnapshotHarness: View {
                     return scenario != .saveFailure
                 },
                 latestDrafts: { drafts },
-                initialTestCaseID: scenario == .queue || scenario == .queueSupplies ? nil : "case-3",
-                initialStepID: "step-3",
+                initialTestCaseID: scenario == .longest ? longestCase?.id : scenario == .queue || scenario == .queueSupplies ? nil : "case-3",
+                initialStepID: scenario == .longest ? longestCase?.orderedSteps.max(by: { $0.content.count < $1.content.count })?.id : "step-3",
                 initialReview: [.review, .reviewIncomplete, .reviewReturn, .reviewCorrection, .reviewFlagged, .resolveFlag, .reviewSubmitted, .submissionFailure].contains(scenario),
                 initialDetails: scenario == .details,
                 initialQueue: scenario == .queueDrawer,
@@ -108,6 +115,12 @@ struct InspectionSnapshotHarness: View {
 
 enum InspectionSnapshotFixtures {
     static func stage(for scenario: InspectionSnapshotScenario) -> InspectionStage {
+        if scenario == .longest,
+           let url = Bundle.main.url(forResource: OfficialInspectionResource.body.fileName, withExtension: "json"),
+           let data = try? Data(contentsOf: url),
+           let stage = try? InspectionContentService().decodeStage(data, resourceName: OfficialInspectionResource.body.fileName) {
+            return stage
+        }
         let titles = ["DRIVER HELMET", "FIRE EXTINGUISHERS", "ARM RESTRAINTS", "DRIVER SUIT", "GLOVES", "SHOES", "WET TIRES", "SPARE PARTS", "CHANGING PROCEDURE"]
         let cases = titles.enumerated().map { index, title in
             let number = index + 1

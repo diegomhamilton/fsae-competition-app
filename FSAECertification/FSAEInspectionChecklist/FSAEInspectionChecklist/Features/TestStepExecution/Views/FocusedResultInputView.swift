@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct FocusedResultInputView: View {
+    @Environment(\.dynamicTypeSize) private var textSize
     let form: FocusedResultForm
     let testCaseID: String
     let focusedField: FocusState<FocusedResultField?>.Binding
@@ -11,32 +12,45 @@ struct FocusedResultInputView: View {
             if form.isEditingNotes {
                 if !form.draft.outcome.satisfiesRequiredOutcome {
                     Label(FocusedResultStrings.notes, systemImage: "note.text").font(.title2.bold())
+                        .padding(12).glassEffect(.regular, in: .capsule)
                 } else {
-                Button {
-                    form.setNotesEditing(false)
-                    form.editResult(includingEvidence: false)
-                    focusedField.wrappedValue = nil
-                } label: {
-                    Label(form.draft.outcome.displayName, systemImage: form.draft.outcome == .fail ? "xmark.circle.fill" : "checkmark.circle.fill")
-                        .font(.title2.bold()).foregroundStyle(form.draft.outcome.color)
-                }
-                .frame(minHeight: 48)
+                    Button {
+                        form.setNotesEditing(false)
+                        form.editResult(includingEvidence: false)
+                        focusedField.wrappedValue = nil
+                    } label: {
+                        HStack {
+                            Label(form.draft.outcome.displayName, systemImage: form.draft.outcome == .fail ? "xmark.circle.fill" : "checkmark.circle.fill")
+                                .font(.title2.bold())
+                            Spacer()
+                            Image(systemName: "pencil").font(.title3)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 48)
+                        .padding(12)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(form.draft.outcome.color)
+                    .glassEffect(.regular.tint((form.draft.outcome.color).opacity(0.18)).interactive(), in: .rect(cornerRadius: 24))
+                    .accessibilityIdentifier("execution.result.edit")
                 }
             } else if form.step.requiredOutcome && !form.isEditingMeasurement {
-                HStack(spacing: 12) {
-                    ForEach([InspectionOutcome.pass, .fail], id: \.self) { outcome in
+                let layout = textSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(spacing: 16))
+                    : AnyLayout(HStackLayout(spacing: 20))
+                layout {
+                    ForEach([InspectionOutcome.fail, .pass], id: \.self) { outcome in
                         Button {
                             form.selectOutcome(outcome)
                             if outcome == .fail { focusedField.wrappedValue = .notes }
                         } label: {
-                            VStack(spacing: 8) {
-                                Image(systemName: form.draft.outcome == outcome ? "checkmark.circle.fill" : "circle")
-                                Text(outcome.displayName)
-                            }
-                            .font(.title2.bold()).frame(maxWidth: .infinity, minHeight: 132)
+                            Label(outcome.displayName, systemImage: outcome == .fail ? "xmark" : "checkmark")
+                                .font(.title2.bold())
+                                .frame(maxWidth: .infinity, minHeight: 80)
+                                .contentShape(.rect(cornerRadius: 24))
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(outcome == .fail ? Color.fsaeRed : Color.fsaePrimary)
+                        .buttonStyle(.plain)
+                        .foregroundStyle(outcome == .fail ? Color.fsaeRed : Color.fsaeGreen)
+                        .glassEffect(.regular.tint((outcome == .fail ? Color.fsaeRed : Color.fsaeGreen).opacity(0.18)).interactive(), in: .rect(cornerRadius: 24))
                         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testStepOutcome(stepID: form.step.id, outcome: outcome).rawValue)
                         .accessibilityValue(form.draft.outcome == outcome ? FocusedResultStrings.selected : "")
                     }

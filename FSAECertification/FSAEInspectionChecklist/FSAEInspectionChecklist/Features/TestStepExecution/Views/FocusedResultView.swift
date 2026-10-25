@@ -13,6 +13,7 @@ struct FocusedResultView: View {
     let onReview: () -> Void
     let isReviewCorrection: Bool
     let onConfirmationActivityChanged: (Bool) -> Void
+    @Namespace private var editTransition
     @State private var form: FocusedResultForm
     @State private var showsPhotoPicker = false
     @State private var showsPhotoSources = false
@@ -62,39 +63,8 @@ struct FocusedResultView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            HStack(alignment: .bottom) {
-                VStack(alignment: .leading) {
-                    if form.isReady || form.isConfirming || form.didConfirm {
-                        FocusedResultSummaryView(
-                            form: form,
-                            testCaseID: testCaseID,
-                            edit: {
-                                form.editResult(includingEvidence: false)
-                                if state.step.type == .measurement { focusedField = .measurement }
-                            },
-                            viewEvidence: {
-                                Task {
-                                    var urls: [URL] = []
-                                    for attachment in form.draft.evidenceAttachments where attachment.localRelativePath != nil {
-                                        if let url = try? await FocusedResultEvidenceStore.shared.fileURL(for: attachment) { urls.append(url) }
-                                    }
-                                    previewPhotoURLs = urls
-                                    previewPhotoURL = urls.first
-                                }
-                            }
-                        )
-                        FocusedResultActionView(form: form, confirm: confirm, title: isReviewCorrection ? FocusedResultStrings.saveReview : FocusedResultStrings.saveNext)
-                    } else {
-                        FocusedResultInputView(
-                            form: form,
-                            testCaseID: testCaseID,
-                            focusedField: $focusedField,
-                            addPhoto: { form.preparePhotoReplacement(nil); showsPhotoSources = true }
-                        )
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
+            HStack {
+                Spacer()
                 FocusedResultMenu(
                     form: form,
                     addNotes: {
@@ -109,6 +79,51 @@ struct FocusedResultView: View {
                     review: returnToReview
                 )
             }
+            VStack(alignment: .leading) {
+                if form.isReady || form.isConfirming || form.didConfirm {
+                    FocusedResultSummaryView(
+                        form: form,
+                        testCaseID: testCaseID,
+                        editTransition: editTransition,
+                        edit: {
+                            form.editResult(includingEvidence: false)
+                            if state.step.type == .measurement { focusedField = .measurement }
+                        },
+                        viewEvidence: {
+                            Task {
+                                var urls: [URL] = []
+                                for attachment in form.draft.evidenceAttachments where attachment.localRelativePath != nil {
+                                    if let url = try? await FocusedResultEvidenceStore.shared.fileURL(for: attachment) { urls.append(url) }
+                                }
+                                previewPhotoURLs = urls
+                                previewPhotoURL = urls.first
+                            }
+                        }
+                    )
+                    FocusedResultActionView(form: form, confirm: confirm, title: isReviewCorrection ? FocusedResultStrings.saveReview : FocusedResultStrings.saveNext)
+                } else {
+                    HStack {
+                        Spacer()
+                        if form.isEditingOutcome || form.isEditingMeasurement {
+                            Label(FocusedResultStrings.editMode, systemImage: "pencil")
+                                .font(.headline)
+                                .foregroundStyle(Color.fsaePrimary)
+                                .padding(.horizontal, 16).frame(minHeight: 48)
+                                .glassEffect(.regular, in: .capsule)
+                                .matchedGeometryEffect(id: "result-edit", in: editTransition)
+                                .accessibilityIdentifier("execution.result.edit-mode")
+                        }
+                    }
+                    FocusedResultInputView(
+                        form: form,
+                        testCaseID: testCaseID,
+                        focusedField: $focusedField,
+                        addPhoto: { form.preparePhotoReplacement(nil); showsPhotoSources = true }
+                    )
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
             FocusedNotesEditor(form: form, testCaseID: testCaseID, focusedField: $focusedField)
             ForEach(form.draft.evidenceAttachments.filter { $0.localRelativePath != nil }) { attachment in
                 FocusedEvidenceTile(attachment: attachment, view: {
@@ -125,27 +140,30 @@ struct FocusedResultView: View {
                 ProgressView(FocusedResultStrings.photoLoading)
             }
             if form.photoFailed {
-                Text(FocusedResultStrings.photoFailed)
-                    .font(.callout)
-                    .foregroundStyle(Color.fsaeRed)
+                Label(FocusedResultStrings.photoFailed, systemImage: "exclamationmark.triangle")
+                    .modifier(FocusedResultMessageSurface())
             }
             if form.saveFailed {
-                Label(FocusedResultStrings.saveFailed, systemImage: "exclamationmark.triangle")
-                    .font(.callout)
-                    .foregroundStyle(Color.fsaeRed)
-                    .accessibilityIdentifier("execution.save-failure")
-                Button(FocusedResultStrings.retry, systemImage: "arrow.clockwise") {
-                    Task { await form.flush() }
+                VStack(alignment: .leading, spacing: 12) {
+                    Label(FocusedResultStrings.saveFailed, systemImage: "exclamationmark.triangle")
+                        .accessibilityIdentifier("execution.save-failure")
+                    Button(FocusedResultStrings.retry, systemImage: "arrow.clockwise") {
+                        Task { await form.flush() }
+                    }
+                    .frame(minHeight: 44)
+                    .accessibilityIdentifier("execution.save-retry")
                 }
-                .accessibilityIdentifier("execution.save-retry")
+                .modifier(FocusedResultMessageSurface())
             }
-            if form.attemptedCompletion {
-                ForEach(form.validationIssues) { issue in
-                    Text(issue.code == .missingRequiredEvidence ? FocusedResultStrings.requiredEvidence : issue.localizedMessage)
-                        .font(.callout)
-                        .foregroundStyle(Color.fsaeRed)
-                        .accessibilityIdentifier("execution.validation.\(issue.id)")
+            if form.attemptedCompletion && !form.validationIssues.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(form.validationIssues) { issue in
+                        Label(issue.code == .missingRequiredEvidence ? FocusedResultStrings.requiredEvidence : issue.localizedMessage,
+                              systemImage: "exclamationmark.circle")
+                            .accessibilityIdentifier("execution.validation.\(issue.id)")
+                    }
                 }
+                .modifier(FocusedResultMessageSurface())
             }
             if isReviewCorrection {
                 Button(FocusedResultStrings.returnToReview, systemImage: "arrow.uturn.backward", action: returnToReview)
@@ -154,13 +172,15 @@ struct FocusedResultView: View {
                     .accessibilityIdentifier("execution.review.return")
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 180, alignment: .center)
-        .padding(20)
-        .background(Color.fsaeSurface, in: .rect(cornerRadius: 28))
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.horizontal, 4)
+        .padding(.vertical, 12)
+
         .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: form.isReady)
         .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: form.isEditingNotes)
         .controlSize(.large)
         .disabled(form.isConfirming || form.didConfirm)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("execution.result-component")
         .sheet(isPresented: $showsPhotoSources, onDismiss: openRequestedPhotoSource) {
             FocusedPhotoSourcePicker { source in
@@ -320,5 +340,18 @@ struct FocusedResultView: View {
         Task {
             if await form.flush() { onReview() }
         }
+    }
+}
+
+/// Floating status copy needs an opaque reading surface, just like the notes editor.
+private struct FocusedResultMessageSurface: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.callout)
+            .foregroundStyle(Color.fsaeRed)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .background(Color.fsaeSurface, in: .rect(cornerRadius: 20))
+            .overlay { RoundedRectangle(cornerRadius: 20).stroke(Color.fsaeRed.opacity(0.25), lineWidth: 1) }
     }
 }

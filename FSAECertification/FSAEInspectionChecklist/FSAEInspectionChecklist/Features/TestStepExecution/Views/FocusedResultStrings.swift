@@ -2,6 +2,7 @@ import Foundation
 
 enum FocusedResultStrings {
     static let writeNote = String(localized: "Write a note…")
+    static let editMode = String(localized: "Edit mode")
     static let change = String(localized: "Change")
     static let retake = String(localized: "Retake")
     static let saveReview = "Save & return to review"
