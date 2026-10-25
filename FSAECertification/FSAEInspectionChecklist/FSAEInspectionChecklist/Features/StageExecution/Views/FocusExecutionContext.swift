@@ -10,7 +10,7 @@ struct FocusExecutionContext: View {
     let position: Int
     let total: Int
     var showsDetails: () -> Void = {}
-    var isBusy = false
+    var isSavingInformation = false
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -27,7 +27,7 @@ struct FocusExecutionContext: View {
                 }
                 .accessibilityLabel(Strings.details)
                 .accessibilityIdentifier("execution.details.open")
-                .disabled(isBusy)
+                .disabled(isSavingInformation)
             }
             HStack {
                 Text("\(vehicle.carNumber) · \(vehicle.school)")

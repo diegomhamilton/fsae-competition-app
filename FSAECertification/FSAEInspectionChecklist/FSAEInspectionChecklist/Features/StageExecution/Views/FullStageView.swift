@@ -132,7 +132,7 @@ struct FullStageView: View {
             if let testCase = activeTestCaseState {
                 FocusExecutionContext(title: testCase.title, vehicle: team,
                     position: testPosition, total: focus.orderedTestCases.count,
-                    showsDetails: { showsDetails = true }, isBusy: isConfirmingResult)
+                    showsDetails: { showsDetails = true }, isSavingInformation: isConfirmingResult)
             }
         } content: {
             if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {
