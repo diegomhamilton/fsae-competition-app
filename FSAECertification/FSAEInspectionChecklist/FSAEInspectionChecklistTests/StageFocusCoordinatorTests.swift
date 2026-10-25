@@ -267,3 +267,45 @@ private func focusStage(requiresEvidence: Bool = false) -> InspectionStage {
         InspectionSection(id: "earlier", title: "Earlier", displayOrder: 1, testCases: [second, first])
     ])
 }
+
+extension StageFocusCoordinatorTests {
+    @Test("Continue inspection preserves an unfinished selection even when earlier tests remain")
+    func continuePreservesUnfinishedSelection() {
+        let coordinator = StageFocusCoordinator(stage: focusStage())
+        #expect(coordinator.selectTestCase(id: "second", draftsByTestCaseID: [:]))
+        coordinator.showQueue()
+        #expect(coordinator.continueInspection(draftsByTestCaseID: [:]))
+        #expect(coordinator.selectedTestCaseID == "second")
+        #expect(coordinator.activeStepID == "second-1")
+        #expect(coordinator.mode == .focus)
+    }
+
+    @Test("Continue inspection skips a confirmed selection and finds unfinished work")
+    func continueSkipsConfirmedSelection() throws {
+        let coordinator = StageFocusCoordinator(stage: focusStage())
+        #expect(coordinator.selectTestCase(id: "second", draftsByTestCaseID: [:]))
+        let testCase = try #require(coordinator.activeTestCase)
+        let drafts = [testCase.id: TestCaseDraft(testCase: testCase, stepDrafts: [
+            TestStepDraft(stepID: "second-1", outcome: .pass, confirmedAt: .now)
+        ])]
+        coordinator.showQueue()
+        #expect(coordinator.continueInspection(draftsByTestCaseID: drafts))
+        #expect(coordinator.selectedTestCaseID == "first")
+        #expect(coordinator.activeStepID == "first-1")
+    }
+
+    @Test("Continue inspection starts without a selection and opens review when finished")
+    func continueStartsAndFinishesStage() {
+        let coordinator = StageFocusCoordinator(stage: focusStage())
+        #expect(coordinator.continueInspection(draftsByTestCaseID: [:]))
+        #expect(coordinator.activeStepID == "first-1")
+        let drafts = Dictionary(uniqueKeysWithValues: coordinator.orderedTestCases.map { testCase in
+            (testCase.id, TestCaseDraft(testCase: testCase, stepDrafts: testCase.orderedSteps.map {
+                TestStepDraft(stepID: $0.id, outcome: .pass, confirmedAt: .now)
+            }))
+        })
+        coordinator.showQueue()
+        #expect(coordinator.continueInspection(draftsByTestCaseID: drafts))
+        #expect(coordinator.mode == .review)
+    }
+}

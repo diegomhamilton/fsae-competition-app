@@ -97,7 +97,7 @@ struct FullStageView: View {
         }
         .sheet(isPresented: $showsQueue) {
             NavigationStack {
-                queueScreen(isDrawer: true) { showsQueue = false }
+                queueScreen { showsQueue = false }
                     .navigationTitle(Strings.queue)
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
@@ -176,16 +176,14 @@ struct FullStageView: View {
         }
     }
 
-    private func queueScreen(isDrawer: Bool = false, close: @escaping () -> Void = {}) -> some View {
+    private func queueScreen(close: @escaping () -> Void = {}) -> some View {
         StageQueueView(
             team: team, stage: stage, draftsByTestCaseID: draftsByTestCaseID,
             focusedIssues: focus.focusedValidationIssues(draftsByTestCaseID: draftsByTestCaseID),
-            hasActiveSelection: !isDrawer && focus.hasActiveSelection,
             hasUnsavedDraft: hasUnsavedDraft,
             presentation: focus.overview,
             selectedTestCaseID: focus.selectedTestCaseID,
-            startNext: { focus.startNext(draftsByTestCaseID: latestDrafts()); close() },
-            continueTest: { focus.backToTest(); close() },
+            startNext: { focus.continueInspection(draftsByTestCaseID: latestDrafts()); close() },
             review: { focus.showReview(); close() },
             selectTestCase: { id in
                 focus.selectTestCase(id: id, draftsByTestCaseID: latestDrafts())
