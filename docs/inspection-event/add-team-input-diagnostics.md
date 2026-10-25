@@ -18,6 +18,8 @@ related_scenarios:
 
 On a physical iPhone running iOS 26.6.1, launched from Xcode with the debugger attached, the first taps on Team display name fail to respond promptly. Switching to Car number produces system keyboard messages, including a gesture gate timeout and a negative-width `TUIKeyplane.right` constraint. After the initial delay, the view is responsive.
 
+The user then stopped Xcode and opened the same installed app from the iPhone Home Screen: first focus was responsive. This controlled comparison identifies debugger-attached execution as the trigger in this report; it does not establish the exact blocking debugger operation, transport, or system component.
+
 PR #104's autocorrection/focus changes did not resolve the reported physical-device problem. The keyboard warnings do not establish the operation responsible for the stall. No app constraints target the system keyboard layout guide. A normal simulator interaction succeeded both before and after #104, so simulator success is not evidence of a device fix.
 
 ## Controlled comparison
@@ -29,7 +31,7 @@ Use the same checkout and the same Debug build for both runs. Do not replace ano
 3. For repeatable Xcode launches, select the shared `FSAEInspectionChecklist-DeviceValidation` scheme. Its Run action uses Debug with **Debug executable disabled**. The normal scheme and test debugging are unchanged. Repeat the same steps.
 4. Record whether the device was connected over a cable or network, keyboard language/type, and whether the behavior occurs only on the first keyboard use after process launch or on every sheet presentation. If testing the transport, change only that variable after the debugger comparison.
 
-The debugger is a hypothesis, not an established cause. A responsive standalone run narrows the issue to the development execution environment; it does not prove which debugger feature or transport caused it. A standalone stall requires a main-thread trace rather than another unmeasured input workaround.
+The standalone result narrows this report to the development execution environment; it does not prove which debugger feature or transport caused it. A standalone stall requires a main-thread trace rather than another unmeasured input workaround.
 
 ## Trace if standalone still stalls
 
@@ -39,6 +41,8 @@ Classify the captured work before changing code: application work or repeated Sw
 
 ## Current validation limits
 
-The shared scheme is an investigation aid, not a shipped behavior change or a confirmed fix. No physical-device action was performed while the user reviewed PR #105. Standalone and attached-device trace results remain pending.
+The shared scheme is an investigation aid, not a shipped behavior change. No physical-device action was performed by this session while the user reviewed PR #105. The user confirmed standalone responsiveness on the same installed build. An attached-device trace remains necessary only if diagnosing the development-tool stall further; the exact internal cause is unresolved.
+
+The newer testing-only `codex/team-first-focus-convergence` combines the shared redesign base, #105, and this scheme. It removes #104's unsuccessful input workaround so the device review preserves the form behavior that was responsive without the debugger. The older convergence branch is retained unchanged.
 
 Apple's [Understanding hangs in your app](https://developer.apple.com/documentation/xcode/understanding-hangs-in-your-app) describes analyzing the main run loop and main-thread work to establish the cause of an interaction delay.
