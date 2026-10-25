@@ -40,6 +40,21 @@ actor FocusedResultEvidenceStore {
         )
     }
 
+    func thumbnailData(for attachment: EvidenceAttachmentMetadata) throws -> Data {
+        let url = try fileURL(for: attachment)
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+              let thumbnail = CGImageSourceCreateThumbnailAtIndex(source, 0, [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceThumbnailMaxPixelSize: 640,
+                kCGImageSourceCreateThumbnailWithTransform: true
+              ] as CFDictionary) else { throw StoreError.invalidImage }
+        let data = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(data, UTType.jpeg.identifier as CFString, 1, nil) else { throw StoreError.invalidImage }
+        CGImageDestinationAddImage(destination, thumbnail, nil)
+        guard CGImageDestinationFinalize(destination) else { throw StoreError.invalidImage }
+        return data as Data
+    }
+
     func fileURL(for attachment: EvidenceAttachmentMetadata) throws -> URL {
         guard let path = attachment.localRelativePath,
               path.hasPrefix("Evidence/"),

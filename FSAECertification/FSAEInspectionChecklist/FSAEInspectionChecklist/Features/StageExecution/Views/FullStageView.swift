@@ -136,10 +136,13 @@ struct FullStageView: View {
     }
 
     private var focusedScreen: some View {
-        ScreenShell(title: stage.title, subtitle: "") {
-            if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {
+        FocusedExecutionLayout {
+            if let testCase = activeTestCaseState {
                 FocusExecutionContext(title: testCase.title, vehicle: team,
                     position: testPosition, total: focus.orderedTestCases.count)
+            }
+        } content: {
+            if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {
                 if testCase.steps.count > 1 {
                     Menu {
                         ForEach(testCase.steps) { item in
