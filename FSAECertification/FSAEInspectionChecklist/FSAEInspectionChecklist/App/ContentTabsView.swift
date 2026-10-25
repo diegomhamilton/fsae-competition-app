@@ -70,6 +70,14 @@ struct ContentTabsView: View {
                     }
                 }
             }
+
+            #if DEBUG
+            Tab(InternalSettingsView.Strings.title, systemImage: "gearshape", value: .internalSettings) {
+                NavigationStack {
+                    InternalSettingsView()
+                }
+            }
+            #endif
         }
     }
 }

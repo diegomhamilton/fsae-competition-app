@@ -6,6 +6,9 @@
 import SwiftUI
 
 struct ActiveTeamDashboardView: View {
+    #if DEBUG
+    @AppStorage(InternalSettingsView.showDebugActionsKey) private var showDebugActions = false
+    #endif
     fileprivate enum Strings {
         static let eyebrow = "Active Team"
         static let overallProgress = "Overall progress"
@@ -14,6 +17,7 @@ struct ActiveTeamDashboardView: View {
         static let openStage = "Open Stage"
         static let completeSession = "Complete Session"
         static let completeSessionBlocked = "Resolve validation blockers before completing this session."
+        static let debugActions = "Debug Actions"
         static let debugMarkAllPassed = "Mark All Passed"
         static let debugMarkAllIncomplete = "Mark All Incomplete"
         static let stages = "Stages"
@@ -85,29 +89,31 @@ struct ActiveTeamDashboardView: View {
                     InspectionAccessibilityIdentifier.activeTeamDashboardCompleteSessionAction(teamID: team.id).rawValue
                 )
                 #if DEBUG
-                Text("Debug Actions")
-                Button {
-                    debugMarkAllPassed()
-                } label: {
-                    Label(Strings.debugMarkAllPassed, systemImage: "checkmark.circle")
-                        .frame(maxWidth: .infinity)
+                if showDebugActions {
+                    Text(Strings.debugActions)
+                    Button {
+                        debugMarkAllPassed()
+                    } label: {
+                        Label(Strings.debugMarkAllPassed, systemImage: "checkmark.circle")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllPassedAction(teamID: team.id).rawValue
+                    )
+                    Button {
+                        debugMarkAllIncomplete()
+                    } label: {
+                        Label(Strings.debugMarkAllIncomplete, systemImage: "xmark.circle")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllIncompleteAction(teamID: team.id).rawValue
+                    )
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .accessibilityIdentifier(
-                    InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllPassedAction(teamID: team.id).rawValue
-                )
-                Button {
-                    debugMarkAllIncomplete()
-                } label: {
-                    Label(Strings.debugMarkAllIncomplete, systemImage: "xmark.circle")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .accessibilityIdentifier(
-                    InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllIncompleteAction(teamID: team.id).rawValue
-                )
                 #endif
             }
 

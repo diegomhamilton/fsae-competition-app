@@ -5,6 +5,26 @@ import Testing
 
 @MainActor
 struct InspectionCoordinatorTests {
+    #if DEBUG
+    @Test("Internal Settings stays selected when leaving Team or an open Stage")
+    func internalSettingsRemainsSelected() {
+        let coordinator = AppCoordinator(stages: stages())
+        let bindings = ContentViewBindings(appCoordinator: coordinator)
+
+        for screen in [ProposedScreen.dashboard, .stageChecklist] {
+            coordinator.selectScreen(screen)
+            bindings.selectedScreenBinding.wrappedValue = .internalSettings
+            bindings.stagePresentedBinding.wrappedValue = false
+            #expect(coordinator.selectedScreen == .internalSettings)
+            #expect(bindings.selectedScreenBinding.wrappedValue == .internalSettings)
+            #expect(!bindings.stagePresentedBinding.wrappedValue)
+        }
+
+        bindings.selectedScreenBinding.wrappedValue = .dashboard
+        #expect(coordinator.selectedScreen == .dashboard)
+    }
+    #endif
+
     @Test("Native stage Back returns to Team without overriding a switch to Sessions")
     func stagePresentationBelongsToTeamNavigation() {
         let coordinator = AppCoordinator(stages: stages())
