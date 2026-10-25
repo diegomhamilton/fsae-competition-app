@@ -19,7 +19,7 @@ enum FocusedResultStrings {
     static let flag = String(localized: "Flag issue")
     static let resolveFlag = String(localized: "Resolve flag")
     static let flaggedForReview = String(localized: "Flagged for review")
-    static let review = String(localized: "Review results")
+    static let review = String(localized: "Review stage")
     static let returnToReview = String(localized: "Return to review")
     static let measurement = String(localized: "Measurement")
     static let done = String(localized: "Done")

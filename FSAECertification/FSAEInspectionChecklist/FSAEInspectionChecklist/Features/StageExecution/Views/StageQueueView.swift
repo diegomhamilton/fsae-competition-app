@@ -5,12 +5,10 @@ struct StageQueueView: View {
     let stage: InspectionStage
     let draftsByTestCaseID: [String: TestCaseDraft]
     let focusedIssues: [FullStageValidationIssue]
-    let hasActiveSelection: Bool
     var hasUnsavedDraft = false
     let presentation: StageOverviewPresentation
     let selectedTestCaseID: String?
     let startNext: () -> Void
-    let continueTest: () -> Void
     let review: () -> Void
     let selectTestCase: (String) -> Void
 
@@ -18,14 +16,20 @@ struct StageQueueView: View {
         let testCases = stage.orderedSections.flatMap(\.orderedTestCases)
         let total = testCases.flatMap(\.orderedSteps).count
         let confirmed = total - Set(focusedIssues.filter { !$0.issueID.hasPrefix("flaggedIssue.") }.map(\.stepID)).count
-        let hasDraft = !draftsByTestCaseID.isEmpty
+        let hasDraft = selectedTestCaseID != nil || !draftsByTestCaseID.isEmpty
 
         RestoringOverviewScroll(savedOffset: presentation.queueOffset,
             rememberOffset: presentation.rememberQueueOffset, revealID: presentation.queueRevealID) {
-                StageOverviewHeader(team: team, confirmedCount: confirmed, totalCount: total)
+                StageOverviewHeader(
+                    team: team, confirmedCount: confirmed, totalCount: total,
+                    needsReviewCount: Set(focusedIssues.filter {
+                        $0.issueID.hasPrefix("flaggedIssue.")
+                    }.map(\.stepID)).count,
+                    review: total > 0 && confirmed < total ? review : nil
+                )
                 if total == 0 {
                     Text(StageOverviewStrings.noTests).foregroundStyle(Color.fsaeSecondaryText)
-                } else if !focusedIssues.isEmpty {
+                } else if confirmed < total {
                     StageOverviewPrimaryAction(
                         title: hasDraft ? StageOverviewStrings.resume : StageOverviewStrings.start,
                         symbol: "play.fill", identifier: "execution.start-next", action: startNext
@@ -39,20 +43,10 @@ struct StageQueueView: View {
                 }
 
                 HStack {
-                    if hasActiveSelection {
-                        Button(StageOverviewStrings.continueTest, systemImage: "arrow.left", action: continueTest)
-                            .frame(minHeight: 48)
-                            .accessibilityIdentifier("execution.queue.continue")
-                    }
                     Spacer()
-                    if !focusedIssues.isEmpty {
-                        Button(StageOverviewStrings.review, systemImage: "checklist", action: review)
-                            .frame(minHeight: 48)
-                            .accessibilityIdentifier("execution.queue.review")
-                    }
                 }
 
-                Text(StageOverviewStrings.chooseTest).font(.headline)
+                Text(StageOverviewStrings.testSections).font(.headline)
                 ForEach(stage.orderedSections) { section in
                     StageQueueSectionView(
                         section: section,

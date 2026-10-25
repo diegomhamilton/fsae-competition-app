@@ -1,11 +1,11 @@
 enum StageOverviewStrings {
-    static let currentTest = "Current test"
+    static let currentTest = "Current"
     static let updated = "Updated"
     static let chooseTest = "Choose a test"
-    static let start = "Start next test"
-    static let resume = "Resume next test"
+    static let start = "Start inspection"
+    static let resume = "Continue inspection"
     static let continueTest = "Continue current test"
-    static let review = "Review results"
+    static let review = "Review stage"
     static let results = "Results"
     static let resolve = "Needs attention"
     static let ready = "All results confirmed"
@@ -15,14 +15,15 @@ enum StageOverviewStrings {
     static let noTests = "There are no tests in this stage."
     static let unanswered = "Not started"
     static let draft = "Draft"
-    static let recorded = "Recorded"
     static let passed = "Pass"
     static let failed = "Fail"
-    static let flagged = "Flagged"
+    static let flagged = "Needs review"
     static let exception = "N/A"
     static let expanded = "Expanded"
     static let collapsed = "Collapsed"
     static let photoUnavailable = "Photo unavailable"
+
+    static let testSections = "Test sections"
 
     static func vehicle(_ team: InspectionTeam) -> String {
         "\(team.carNumber) · \(team.school)"
@@ -30,6 +31,10 @@ enum StageOverviewStrings {
 
     static func progress(confirmed: Int, total: Int) -> String {
         "\(confirmed) of \(total) results confirmed"
+    }
+
+    static func needsReview(_ count: Int) -> String {
+        "\(count) \(count == 1 ? "result needs" : "results need") review"
     }
 
     static func notes(_ notes: String) -> String { "Notes: \(notes)" }

@@ -5,7 +5,7 @@ struct FullStageView: View {
         static let queue = "Test queue"
         static let details = "View details"
         static let back = "Back to test"
-        static let review = "Review results"
+        static let review = "Review stage"
         static let done = "Done"
     }
 
@@ -79,25 +79,17 @@ struct FullStageView: View {
         queueScreen()
         .navigationTitle(stage.title)
         .navigationBarTitleDisplayMode(.large)
-        .navigationDestination(isPresented: Binding(
-            get: { focus.mode != .queue },
-            set: { if !$0 { focus.showQueue() } }
-        )) {
-            executionScreen
-        }
-    }
-
-    private var executionScreen: some View {
-        ExecutionAdvanceTransition(sequence: focus.advanceSequence) {
-            switch focus.mode {
-            case .focus: focusedScreen
-            case .queue: Color.clear
-            case .review: reviewScreen
+        .navigationDestination(item: Binding(
+            get: { focus.route(after: nil) },
+            set: { if $0 == nil { focus.popNavigation(after: nil) } }
+        )) { route in
+            StageExecutionDestination(route: route, coordinator: focus) { destination in
+                executionScreen(for: destination)
             }
         }
         .sheet(isPresented: $showsQueue) {
             NavigationStack {
-                queueScreen(isDrawer: true) { showsQueue = false }
+                queueScreen { showsQueue = false }
                     .navigationTitle(Strings.queue)
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
@@ -112,11 +104,22 @@ struct FullStageView: View {
                 FocusedTestDetails(testCase: testCase, step: step, showsTypeBadge: $showsTypeBadge)
             }
         }
-        .navigationTitle(focus.mode == .focus ? "" : focus.mode == .review ? Strings.review : stage.title)
-        .navigationBarTitleDisplayMode(focus.mode == .queue ? .large : .inline)
-        .toolbar(focus.mode == .focus ? .hidden : .visible, for: .tabBar)
+    }
+
+    private func executionScreen(for route: StageExecutionRoute) -> some View {
+        ExecutionAdvanceTransition(sequence: focus.advanceSequence) {
+            switch route.mode {
+            case .focus: focusedScreen
+            case .queue: Color.clear
+            case .review: reviewScreen
+            }
+        }
+        .navigationTitle(route.mode == .review ? Strings.review : "")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar(route.mode == .focus ? .hidden : .visible, for: .tabBar)
         #if DEBUG
         .task {
+            guard route.mode == .review else { return }
             switch InspectionSnapshotScenario.current?.rawValue {
             case "review-return": focus.backToTest()
             case "review-correction": focus.editResult(testCaseID: "case-1", stepID: "step-1")
@@ -176,16 +179,14 @@ struct FullStageView: View {
         }
     }
 
-    private func queueScreen(isDrawer: Bool = false, close: @escaping () -> Void = {}) -> some View {
+    private func queueScreen(close: @escaping () -> Void = {}) -> some View {
         StageQueueView(
             team: team, stage: stage, draftsByTestCaseID: draftsByTestCaseID,
             focusedIssues: focus.focusedValidationIssues(draftsByTestCaseID: draftsByTestCaseID),
-            hasActiveSelection: !isDrawer && focus.hasActiveSelection,
             hasUnsavedDraft: hasUnsavedDraft,
             presentation: focus.overview,
             selectedTestCaseID: focus.selectedTestCaseID,
-            startNext: { focus.startNext(draftsByTestCaseID: latestDrafts()); close() },
-            continueTest: { focus.backToTest(); close() },
+            startNext: { focus.continueInspection(draftsByTestCaseID: latestDrafts()); close() },
             review: { focus.showReview(); close() },
             selectTestCase: { id in
                 focus.selectTestCase(id: id, draftsByTestCaseID: latestDrafts())
