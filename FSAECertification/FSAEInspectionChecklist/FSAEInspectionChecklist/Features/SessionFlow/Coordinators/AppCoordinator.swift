@@ -49,6 +49,12 @@ final class AppCoordinator: ObservableObject {
     }
 
     func selectScreen(_ screen: ProposedScreen) {
+        #if DEBUG
+        if screen == .internalSettings {
+            selectedScreen = screen
+            return
+        }
+        #endif
         selectedScreen = ProposedScreen.topLevelJudgeLandmarks.contains(screen) ? screen : .stageChecklist
     }
 
@@ -102,6 +108,20 @@ final class AppCoordinator: ObservableObject {
         return await executionCoordinator.saveStepDraft(
             stepDraft,
             testCaseID: testCaseID
+        )
+    }
+
+    @discardableResult
+    func submitActiveStage(
+        submissionID: String = UUID().uuidString,
+        submittedAt: Date = Date()
+    ) async -> Bool {
+        guard let executionCoordinator = eventCoordinator.executionCoordinator else {
+            return false
+        }
+        return await executionCoordinator.submitActiveStage(
+            submissionID: submissionID,
+            submittedAt: submittedAt
         )
     }
 

@@ -43,7 +43,7 @@
 - [x] 5.4 Implement `InspectionValidationService` rules for missing outcome, failed note requirement, invalid measurement, and missing evidence.
 - [x] 5.5 Add coordinator tests for opening a test case, opening a test step, applying edits, and returning edits to the parent test case.
 - [x] 5.6 Refactor the existing stage step card pattern into a test case view that renders ordered steps and validation summaries.
-- [ ] 5.7 Manually validate the Test Case view with mock JSONs and record positive, negative, and edge cases from the `.feature` file.
+- [x] 5.7 Manually validate the Test Case view with mock JSONs and record positive, negative, and edge cases from the `.feature` file.
 
 ## 6. Test Case List and Stage Slice
 
@@ -105,7 +105,7 @@
 - [ ] 10.7 Add session recovery and history: reset an active session with confirmation, preserve past completed executions, show past sessions with start/end timestamps, and document the validation path for checking past executions.
 - [ ] 10.8 Track actual token and time usage for each Task 10 PR while completing Task 10. Update `task-10-full-suite-session-plan.xlsx` with estimated tokens, actual input/output/total tokens, estimated time, actual time, branch, PR, and completion notes for 10.4 through 10.7.
 
-## 11.
+## 11. UI Improvements
 - [ ] 11.0 UI Improvements:
     11.0.1 "Add Team" should be a button that when clicked expanded the section to input team's name and number
     11.0.2 [x] Stage View should show directly the same information that is currently seen in TestCaseView
@@ -119,6 +119,26 @@
 - [ ] 11.5 Implement `RecheckService` so failed test cases create open recheck items and accepted reviews close them.
 - [ ] 11.6 Implement sticker eligibility calculation from submitted stages and open rechecks.
 - [ ] 11.7 Add stopwatch-style timing support for egress-test measurement steps.
+
+
+### Approved dynamic interaction direction - 2026-10-15
+
+Scope and acceptance details: [Dynamic focused execution](../../../docs/simplified-ui-vault/Phases/05-dynamic-interactions.md). [PR and implementation plan for approved improvements 1-10](../../../docs/simplified-ui-vault/Workflow/Implementation-plan-1-to-10.md). Preserve the rounded queue style. The following are planned work, not completed implementation.
+
+- [ ] 11.8 Prioritize dynamic focused execution with larger text/controls and better use of screen space.
+  - [x] 11.8.1 Transform result input into confirmation in place; expand Add note into an editor and contract it into an editable preview; automatically reveal required failure notes. Reference PDF pages 6-8 and 15.
+  - [x] 11.8.2 Preserve queue/review scroll position and section expansion, reveal the current test on queue entry, and identify the corrected result when returning to review. Reference pages 22-25 and 27-30.
+  - [x] 11.8.3 Coordinate saved feedback, progress, and next-test transitions; preserve persistence gating and retry; respect Reduce Motion. Reference pages 17-19.
+  - [x] 11.8.4 Replace tall adjacent outcome buttons with separated adaptive glass tap controls in a bottom action area; validate the longest bundled description and keyboard Done presentation.
+- [ ] 11.9 Track approved interaction extensions: 11.9.1-11.9.3 are current scope (improvements 8-10); 11.9.4-11.9.8 remain deferred (improvements 11-15).
+  - [x] 11.9.1 Prominent measurement value/unit with tap-to-enter and immediate range feedback; keep the judge's outcome explicit. Pages 10-11.
+  - [x] 11.9.2 Photo capture action transforms into preview with View/Retake. Pages 12-13 and 34-35.
+  - [x] 11.9.3 Larger review labels and whole-card correction targets. Page 25.
+  - [ ] 11.9.4 Contextual + actions derived from existing notes/evidence. Pages 14 and 30.
+  - [ ] 11.9.5 Brief Undo after advancement that preserves saved values and immutable history. Pages 18-19.
+  - [ ] 11.9.6 Distinct selection, saved, and failure haptics with visible/accessibility equivalents.
+  - [ ] 11.9.7 Inline expandable criteria alongside complete toolbar rule details; safety warnings always visible.
+  - [ ] 11.9.8 Subtle press feedback for large controls with no layout jumps and reduced-motion support.
 
 ## 12. Parking Lot
 - [ ] 12.1 Refactor step metadata layout to avoid wrapping/truncation in compact widths and larger Dynamic Type.

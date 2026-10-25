@@ -1,9 +1,48 @@
 import Foundation
+import SwiftUI
 import Testing
 @testable import FSAEInspectionChecklist
 
 @MainActor
 struct InspectionCoordinatorTests {
+    #if DEBUG
+    @Test("Internal Settings stays selected when leaving Team or an open Stage")
+    func internalSettingsRemainsSelected() {
+        let coordinator = AppCoordinator(stages: stages())
+        let bindings = ContentViewBindings(appCoordinator: coordinator)
+
+        for screen in [ProposedScreen.dashboard, .stageChecklist] {
+            coordinator.selectScreen(screen)
+            bindings.selectedScreenBinding.wrappedValue = .internalSettings
+            bindings.stagePresentedBinding.wrappedValue = false
+            #expect(coordinator.selectedScreen == .internalSettings)
+            #expect(bindings.selectedScreenBinding.wrappedValue == .internalSettings)
+            #expect(!bindings.stagePresentedBinding.wrappedValue)
+        }
+
+        bindings.selectedScreenBinding.wrappedValue = .dashboard
+        #expect(coordinator.selectedScreen == .dashboard)
+    }
+    #endif
+
+    @Test("Native stage Back returns to Team without overriding a switch to Sessions")
+    func stagePresentationBelongsToTeamNavigation() {
+        let coordinator = AppCoordinator(stages: stages())
+        let bindings = ContentViewBindings(appCoordinator: coordinator)
+        coordinator.selectScreen(.stageChecklist)
+        #expect(bindings.selectedScreenBinding.wrappedValue == .dashboard)
+        #expect(bindings.stagePresentedBinding.wrappedValue)
+
+        bindings.stagePresentedBinding.wrappedValue = false
+        #expect(coordinator.selectedScreen == .dashboard)
+        #expect(!bindings.stagePresentedBinding.wrappedValue)
+
+        coordinator.selectScreen(.stageChecklist)
+        bindings.selectedScreenBinding.wrappedValue = .sessionSelector
+        bindings.stagePresentedBinding.wrappedValue = false
+        #expect(coordinator.selectedScreen == .sessionSelector)
+    }
+
     @Test("TASK#10.4 production app launch does not seed mock teams")
     func productionAppLaunchDoesNotSeedMockTeams() {
         let coordinator = AppCoordinator(stages: stages())
@@ -250,7 +289,12 @@ struct InspectionCoordinatorTests {
         #expect(await coordinator.markAllTestCasesIncompleteForDebug())
         execution = try #require(coordinator.eventCoordinator.executionCoordinator)
         #expect(!execution.canCompleteSession)
-        #expect(execution.sessionBlockerCount == 2)
+        // Two unanswered outcomes plus the required missing measurement.
+        #expect(execution.sessionBlockerCount == 3)
+        #expect(Set(execution.stages.flatMap { $0.validationSummary.issues }.map(\.issueID)) == [
+            "missingRequiredOutcome.DBG-MEASURE", "missingMeasurement.DBG-MEASURE",
+            "missingRequiredOutcome.DBG-EVIDENCE"
+        ])
 
         let egressDraft = try #require(execution.draftsByStageID["debug"]?["debug-egress"])
         let measuredStep = try #require(egressDraft.stepDraft(stepID: "DBG-MEASURE")?.draft)

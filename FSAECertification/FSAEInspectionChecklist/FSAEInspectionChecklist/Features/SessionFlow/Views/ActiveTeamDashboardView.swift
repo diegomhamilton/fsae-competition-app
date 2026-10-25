@@ -6,15 +6,18 @@
 import SwiftUI
 
 struct ActiveTeamDashboardView: View {
+    #if DEBUG
+    @AppStorage(InternalSettingsView.showDebugActionsKey) private var showDebugActions = false
+    #endif
     fileprivate enum Strings {
         static let eyebrow = "Active Team"
-        static let subtitle = "Review the locally stored session and stage progress."
         static let overallProgress = "Overall progress"
         static let openBlockers = "Open blockers"
         static let currentStage = "Current Stage"
         static let openStage = "Open Stage"
         static let completeSession = "Complete Session"
         static let completeSessionBlocked = "Resolve validation blockers before completing this session."
+        static let debugActions = "Debug Actions"
         static let debugMarkAllPassed = "Mark All Passed"
         static let debugMarkAllIncomplete = "Mark All Incomplete"
         static let stages = "Stages"
@@ -30,21 +33,16 @@ struct ActiveTeamDashboardView: View {
 
     var body: some View {
         let team = coordinator.activeTeam
-        let stageRows = coordinator.stages.map { stage in
-            ActiveTeamStageRowState(
-                stage: stage,
-                draftsByTestCaseID: coordinator.draftsByTestCaseID
-            )
-        }
+        let stages = coordinator.stages
+        let progress = InspectionProgressSummary(stages: stages)
         let selectedStageID = coordinator.activeStage?.id
 
         ScreenShell(
-            title: "\(team.carNumber) \(team.school)",
-            subtitle: Strings.subtitle
+            title: "\(team.carNumber) \(team.school)"
         ) {
 
             HStack(spacing: 12) {
-                MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: Strings.overallProgress, systemImage: "chart.pie", color: .fsaeGreen)
+                MetricTile(value: progress.percentageText, label: "\(Strings.overallProgress) · \(progress.countText)", systemImage: "chart.pie", color: .fsaeGreen)
                 MetricTile(value: "\(stages.map(\.blockerCount).reduce(0, +))", label: Strings.openBlockers, systemImage: "exclamationmark.triangle", color: .fsaeAmber)
             }
 
@@ -69,7 +67,7 @@ struct ActiveTeamDashboardView: View {
                     Label(Strings.openStage, systemImage: "arrow.right.circle.fill")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .inspectionButtonStyle()
                 .controlSize(.large)
                 .accessibilityIdentifier(
                     InspectionAccessibilityIdentifier.activeTeamDashboardOpenCurrentStageAction(
@@ -83,7 +81,7 @@ struct ActiveTeamDashboardView: View {
                     Label(Strings.completeSession, systemImage: "checkmark.seal.fill")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .inspectionButtonStyle()
                 .controlSize(.large)
                 .disabled(!coordinator.canCompleteSession)
                 .accessibilityHint(coordinator.canCompleteSession ? "" : Strings.completeSessionBlocked)
@@ -91,29 +89,29 @@ struct ActiveTeamDashboardView: View {
                     InspectionAccessibilityIdentifier.activeTeamDashboardCompleteSessionAction(teamID: team.id).rawValue
                 )
                 #if DEBUG
-                Text("Debug Actions")
-                Button {
-                    debugMarkAllPassed()
-                } label: {
-                    Label(Strings.debugMarkAllPassed, systemImage: "checkmark.circle")
-                        .frame(maxWidth: .infinity)
+                if showDebugActions {
+                    Text(Strings.debugActions)
+                    Button {
+                        debugMarkAllPassed()
+                    } label: {
+                        Label(Strings.debugMarkAllPassed, systemImage: "checkmark.circle")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .inspectionButtonStyle()
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllPassedAction(teamID: team.id).rawValue
+                    )
+                    Button {
+                        debugMarkAllIncomplete()
+                    } label: {
+                        Label(Strings.debugMarkAllIncomplete, systemImage: "xmark.circle")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .inspectionButtonStyle()
+                    .accessibilityIdentifier(
+                        InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllIncompleteAction(teamID: team.id).rawValue
+                    )
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .accessibilityIdentifier(
-                    InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllPassedAction(teamID: team.id).rawValue
-                )
-                Button {
-                    debugMarkAllIncomplete()
-                } label: {
-                    Label(Strings.debugMarkAllIncomplete, systemImage: "xmark.circle")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.small)
-                .accessibilityIdentifier(
-                    InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllIncompleteAction(teamID: team.id).rawValue
-                )
                 #endif
             }
 
@@ -121,7 +119,7 @@ struct ActiveTeamDashboardView: View {
                 Text(Strings.stages)
                     .font(.headline)
                     .foregroundStyle(Color.fsaeText)
-                ForEach(stageRows) { stageRow in
+                ForEach(stages) { stage in
                     Button {
                         openStage(stage.stageID)
                     } label: {
@@ -143,14 +141,6 @@ struct ActiveTeamDashboardView: View {
 
         }
         .navigationTitle("\(team.carNumber) \(team.school)")
-    }
-
-    private func overallProgressPercent(stages: [FullStageViewState]) -> Int {
-        guard !stages.isEmpty else {
-            return 0
-        }
-
-        return Int(stages.map(\.progressFraction).reduce(0, +) / Double(stages.count) * 100)
     }
 }
 
@@ -182,6 +172,9 @@ private struct StageRow: View {
                     ).rawValue
                 )
             }
+            Text("\(state.progressText) · \(InspectionProgressSummary(completeStepCount: state.completeStepCount, totalStepCount: state.stepCount).percentageText)")
+                .font(.caption)
+                .foregroundStyle(Color.fsaeSecondaryText)
             ProgressView(value: state.progressFraction)
                 .tint(state.blockerCount == 0 ? Color.fsaeGreen : Color.fsaePrimary)
         }

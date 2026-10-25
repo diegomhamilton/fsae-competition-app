@@ -307,6 +307,23 @@ nonisolated struct EvidenceAttachmentMetadata: Identifiable, Codable, Hashable, 
     let mediaType: EvidenceMediaType
     let source: EvidenceAttachmentSource
     let createdAt: Date
+    let localRelativePath: String?
+
+    init(
+        id: String,
+        displayName: String,
+        mediaType: EvidenceMediaType,
+        source: EvidenceAttachmentSource,
+        createdAt: Date,
+        localRelativePath: String? = nil
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.mediaType = mediaType
+        self.source = source
+        self.createdAt = createdAt
+        self.localRelativePath = localRelativePath
+    }
 
     var accessibilityValue: String {
         "Attachment \(displayName) added"
@@ -321,6 +338,8 @@ nonisolated enum EvidenceMediaType: String, Codable, Hashable, Sendable {
 
 nonisolated enum EvidenceAttachmentSource: String, Codable, Hashable, Sendable {
     case mockAttachment
+    case photoLibrary
+    case camera
 }
 
 nonisolated struct InspectionAccessibilityIdentifier: RawRepresentable, Equatable, Hashable, Sendable {

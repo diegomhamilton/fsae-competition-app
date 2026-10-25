@@ -10,8 +10,7 @@ struct EmptyFlowState: View {
 
     var body: some View {
         ScreenShell(
-            title: title,
-            subtitle: ""
+            title: title
         ) {
             ContentPanel {
                 Text(title)

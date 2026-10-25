@@ -202,7 +202,9 @@ struct InspectionEventStoreTests {
                 session(id: "session-b", eventID: "event-2026", teamID: "car-099"),
                 session(id: "session-c", eventID: "event-2027", teamID: "car-007")
             ],
-            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
         )
         let access = InspectionEventUserAccess(
             userID: "judge-a",
@@ -244,7 +246,9 @@ struct InspectionEventStoreTests {
                 session(id: "session-a", eventID: "event-2026", teamID: "car-042"),
                 session(id: "session-b", eventID: "event-2026", teamID: "car-099")
             ],
-            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
         )
         let teamAAccess = access(teamID: "car-042")
         let teamBAccess = access(teamID: "car-099")
@@ -300,6 +304,28 @@ struct InspectionEventStoreTests {
         }
     }
 
+    @Test("Relaunch merges catalog records with bundled seeds without duplicate-key crashes")
+    func savedCatalogOverridesBundledSeeds() async throws {
+        let root = try temporaryStoreDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let teams = LocalTeamCatalogService(rootDirectory: root)
+        let sessions = LocalSessionCatalogService(rootDirectory: root)
+        let seedTeam = team(id: "car-042", eventID: "event-2026", carNumber: "42")
+        let savedTeam = InspectionEventTeamRecord(id: seedTeam.id, eventID: seedTeam.eventID,
+                                                   displayName: "Updated name", carNumber: "42")
+        let seedSession = session(id: "session-a", eventID: "event-2026", teamID: seedTeam.id)
+        let savedSession = seedSession.markingSaved(stageID: "ev", at: Date(timeIntervalSince1970: 1_780_002_000))
+        try teams.saveTeams([savedTeam], eventID: seedTeam.eventID)
+        try sessions.saveSessions([savedSession], eventID: seedTeam.eventID, teamID: seedTeam.id)
+        let store = InspectionEventStore(events: [event(id: seedTeam.eventID)], teams: [seedTeam], sessions: [seedSession],
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: root),
+            teamCatalogService: teams, sessionCatalogService: sessions)
+        let restoredTeams = try await store.teams(eventID: seedTeam.eventID, access: access(teamID: seedTeam.id))
+        let restoredSessions = try await store.sessions(eventID: seedTeam.eventID, teamID: seedTeam.id, access: access(teamID: seedTeam.id))
+        #expect(restoredTeams == [savedTeam])
+        #expect(restoredSessions == [savedSession])
+    }
+
     @Test("US-006 serializes async draft mutations through the actor store")
     func serializesAsyncDraftMutationsThroughActorStore() async throws {
         let rootDirectory = try temporaryStoreDirectory()
@@ -314,7 +340,9 @@ struct InspectionEventStoreTests {
                 session(id: "session-a", eventID: "event-2026", teamID: "car-042"),
                 session(id: "session-b", eventID: "event-2026", teamID: "car-099")
             ],
-            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory)
+            persistenceService: TestCaseJSONPersistenceService(rootDirectory: rootDirectory),
+            teamCatalogService: LocalTeamCatalogService(rootDirectory: rootDirectory),
+            sessionCatalogService: LocalSessionCatalogService(rootDirectory: rootDirectory)
         )
         let teamAScope = InspectionSessionScope(
             eventID: "event-2026",

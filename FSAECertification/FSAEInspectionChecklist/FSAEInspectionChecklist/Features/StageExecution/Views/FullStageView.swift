@@ -1,461 +1,265 @@
-//
-//  FullStageView.swift
-//  FSAEInspectionChecklist
-//
-
 import SwiftUI
 
 struct FullStageView: View {
-    fileprivate enum Strings {
-        static let eyebrow = "Stage"
-        static let sectionTitle = "Sections"
-        static let progress = "Stage progress"
-        static let validation = "Validation blockers"
-        static let blockerCount = "blockers"
-        static let expandBlockersHint = "Tap to show or hide validation blockers."
-        static let submitReady = "Ready to submit"
-        static let submitBlocked = "Submission blocked"
-        static let submit = "Submit Stage"
-        static let noBlockers = "No blockers found for this stage."
-        static let openTestCase = "Open Test Case"
-        static let complete = "Complete"
-        static let blocked = "Blocked"
-        static let noBlockersShort = "No blockers"
-        static let testCase = "test case"
-        static let testCases = "test cases"
-        static let expandSectionHint = "Tap to expand or collapse this section."
-        static let localDraftFallback = "Review ordered test cases and validation from local draft state."
-
-        enum Accessibility {
-            static let summary = "Stage summary"
-            static let validationSummary = "Stage validation summary"
-            static let submit = "Submit stage"
-            static let blockedSubmit = "Submission blocked"
-            static let energizedBadge = "Caution, energized dynamic test step"
-        }
+    private enum Strings {
+        static let queue = "Test queue"
+        static let details = "View details"
+        static let back = "Back to test"
+        static let review = "Review stage"
+        static let done = "Done"
     }
 
     let team: InspectionTeam
     let stage: InspectionStage
     let draftsByTestCaseID: [String: TestCaseDraft]
-    let openStepDetail: (InspectionTestStep) -> Void
-    let updateStepDraft: (TestStepDraft, String) -> Void
-    let submitStage: () -> Void
-    let openBlockingRoute: (FullStageBlockingRoute) -> Void
-    @State private var expandedSectionIDs: Set<String> = []
-    @State private var selectedTestCaseID: String?
-    @State private var stepScrollPosition = ScrollPosition()
-    @State private var activeStepID: String?
-    @FocusState private var focusedNoteStepID: String?
+    let saveStepDraft: @MainActor (TestStepDraft, String) async -> Bool
+    let latestDrafts: @MainActor () -> [String: TestCaseDraft]
+    let hasUnsavedDraft: Bool
+    let hasFailedSave: @MainActor (String) -> Bool
+    let retryFailedSaves: @MainActor () async -> Bool
+    let submitStage: @MainActor () async -> Bool
+    let hasSubmittedStage: Bool
+    @State private var focus: StageFocusCoordinator
+    @State private var showsQueue = false
+    @State private var showsDetails = false
+    @State private var showsTypeBadge = false
+    @State private var isConfirmingResult = false
+    @State private var isSubmittingStage = false
 
     init(
         team: InspectionTeam,
         stage: InspectionStage,
         draftsByTestCaseID: [String: TestCaseDraft] = [:],
-        openStepDetail: @escaping (InspectionTestStep) -> Void = { _ in },
-        updateStepDraft: @escaping (TestStepDraft, String) -> Void = { _, _ in },
-        submitStage: @escaping () -> Void = {},
-        openBlockingRoute: @escaping (FullStageBlockingRoute) -> Void = { _ in }
+        saveStepDraft: @escaping @MainActor (TestStepDraft, String) async -> Bool = { _, _ in false },
+        latestDrafts: (@MainActor () -> [String: TestCaseDraft])? = nil,
+        hasUnsavedDraft: Bool = false,
+        hasFailedSave: @escaping @MainActor (String) -> Bool = { _ in false },
+        retryFailedSaves: @escaping @MainActor () async -> Bool = { false },
+        initialTestCaseID: String? = nil,
+        initialStepID: String? = nil,
+        initialReview: Bool = false,
+        initialDetails: Bool = false,
+        initialQueue: Bool = false,
+        initialDebugBadge: Bool = false,
+        hasSubmittedStage: Bool = false,
+        submitStage: @escaping @MainActor () async -> Bool = { false }
     ) {
+        let navigation = StageFocusCoordinator(stage: stage)
+        if let initialTestCaseID {
+            navigation.selectTestCase(id: initialTestCaseID, stepID: initialStepID, draftsByTestCaseID: draftsByTestCaseID)
+        }
+        if initialReview { navigation.showReview() }
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-inspection-review-position") {
+            navigation.overview.rememberReviewOffset(340)
+            navigation.overview.lastCorrectedCaseID = "case-3"
+        }
+        if ProcessInfo.processInfo.arguments.contains("-inspection-queue-position") {
+            navigation.selectTestCase(id: "case-8", draftsByTestCaseID: draftsByTestCaseID)
+            if let first = stage.orderedSections.first { navigation.overview.toggleSection(first.id) }
+        }
+        #endif
+        _focus = State(initialValue: navigation)
+        _showsDetails = State(initialValue: initialDetails)
+        _showsQueue = State(initialValue: initialQueue)
+        _showsTypeBadge = State(initialValue: initialDebugBadge)
         self.team = team
         self.stage = stage
         self.draftsByTestCaseID = draftsByTestCaseID
-        self.openStepDetail = openStepDetail
-        self.updateStepDraft = updateStepDraft
+        self.saveStepDraft = saveStepDraft
+        self.latestDrafts = latestDrafts ?? { draftsByTestCaseID }
+        self.hasUnsavedDraft = hasUnsavedDraft
+        self.hasFailedSave = hasFailedSave
+        self.retryFailedSaves = retryFailedSaves
         self.submitStage = submitStage
-        self.openBlockingRoute = openBlockingRoute
+        self.hasSubmittedStage = hasSubmittedStage
     }
 
     var body: some View {
-        let state = FullStageViewState(
-            stage: stage,
-            team: team,
-            draftsByTestCaseID: draftsByTestCaseID
-        )
-
-        ScreenShell(
-            title: state.teamName,
-            subtitle: subtitle
-        ) {
-            FullStageSummaryPanel(viewState: state)
-
-            if let activeTestCaseViewState {
-                ContentPanel {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(activeTestCaseViewState.code)
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(Color.fsaeSecondaryText)
-                            Text(activeTestCaseViewState.title)
-                                .font(.headline)
-                                .foregroundStyle(Color.fsaeText)
-                        }
-                        Spacer()
-                        Text(activeTestCaseViewState.progressSummary.fractionComplete, format: .percent)
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(Color.fsaeSecondaryText)
-                    }
-                }
-
-                TestCaseStepCarousel(
-                    stageID: stage.id,
-                    testCaseID: activeTestCaseViewState.id,
-                    steps: activeTestCaseViewState.steps,
-                    focusedNoteStepID: $focusedNoteStepID,
-                    scrollPosition: $stepScrollPosition,
-                    activeStepID: $activeStepID,
-                    openStepDetail: openStepDetail,
-                    updateStepDraft: { stepDraft in
-                        updateStepDraft(stepDraft, activeTestCaseViewState.id)
-                    },
-                    advanceFromStep: { stepID in
-                        advanceToNextStep(after: stepID, steps: activeTestCaseViewState.steps)
-                    },
-                    scrollToStep: scrollToStep
-                )
-            }
-
-            VStack(alignment: .leading, spacing: 18) {
-                ForEach(state.sections) { section in
-                    FullStageSectionBlock(
-                        stageID: state.stageID,
-                        section: section,
-                        isExpanded: expandedSectionIDs.contains(section.id),
-                        toggleExpanded: {
-                            withAnimation(.snappy(duration: 0.28)) {
-                                if expandedSectionIDs.contains(section.id) {
-                                    expandedSectionIDs.remove(section.id)
-                                } else {
-                                    expandedSectionIDs.insert(section.id)
-                                }
-                            }
-                        }
-                    ) { testCase in
-                        selectedTestCaseID = testCase.id
-                    }
-                }
-            }
-
-            FullStageValidationPanel(
-                viewState: state,
-                openBlockingRoute: openBlockingRoute
-            )
-
-            Button {
-                submitStage()
-            } label: {
-                Label(Strings.submit, systemImage: "paperplane.fill")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .disabled(!state.canSubmit)
-            .opacity(state.canSubmit ? 1 : 0.7)
-            .accessibilityLabel(state.canSubmit ? Strings.submitReady : Strings.submitBlocked)
-            .accessibilityIdentifier(
-                state.canSubmit
-                ? InspectionAccessibilityIdentifier.testCaseStageSubmitAction(stageID: state.stageID).rawValue
-                : InspectionAccessibilityIdentifier.testCaseStageBlockedSubmitAction(stageID: state.stageID).rawValue
-            )
-        }
+        queueScreen()
         .navigationTitle(stage.title)
-    }
-
-    private var subtitle: String {
-        "\(stage.subtitle.isEmpty ? Strings.localDraftFallback : stage.subtitle)"
-    }
-
-    private var activeTestCaseViewState: InspectionTestCaseViewState? {
-        guard let selectedTestCaseID,
-              let testCase = stage.orderedSections
-                .flatMap(\.orderedTestCases)
-                .first(where: { $0.id == selectedTestCaseID }) else {
-            return nil
+        .navigationBarTitleDisplayMode(.large)
+        // The persistent owner updates visibility when the route changes, including a pop.
+        .toolbar(focus.mode == .focus ? .hidden : .visible, for: .tabBar)
+        .navigationDestination(item: Binding(
+            get: { focus.route(after: nil) },
+            set: { if $0 == nil { focus.popNavigation(after: nil) } }
+        )) { route in
+            StageExecutionDestination(route: route, coordinator: focus) { destination in
+                executionScreen(for: destination)
+            }
         }
+        .sheet(isPresented: $showsQueue) {
+            NavigationStack {
+                queueScreen { showsQueue = false }
+                    .navigationTitle(Strings.queue)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button(Strings.done) { showsQueue = false }
+                                .inspectionButtonStyle()
+                                .accessibilityIdentifier("execution.queue.close")
+                        }
+                        .sharedBackgroundVisibility(.hidden)
+                    }
+            }
+        }
+        .sheet(isPresented: $showsDetails) {
+            if let testCase = activeTestCaseState, let step = activeStepState {
+                FocusedTestDetails(testCase: testCase, step: step, showsTypeBadge: $showsTypeBadge)
+            }
+        }
+    }
 
-        return InspectionTestCaseViewState(
-            testCase: testCase,
-            draft: draftsByTestCaseID[testCase.id] ?? TestCaseDraft(testCase: testCase)
+    private func executionScreen(for route: StageExecutionRoute) -> some View {
+        ExecutionAdvanceTransition(sequence: focus.advanceSequence) {
+            switch route.mode {
+            case .focus: focusedScreen
+            case .queue: Color.clear
+            case .review: reviewScreen
+            }
+        }
+        .navigationTitle(route.mode == .review ? Strings.review : "")
+        .navigationBarTitleDisplayMode(.inline)
+        #if DEBUG
+        .task {
+            if InspectionSnapshotScenario.current == .queueReturn, route.mode == .focus {
+                // Replay a native animated pop in an isolated TabView, without device input.
+                do { try await Task.sleep(for: .seconds(2)) } catch { return }
+                withAnimation { focus.showQueue() }
+                return
+            }
+            guard route.mode == .review else { return }
+            switch InspectionSnapshotScenario.current?.rawValue {
+            case "review-return": focus.backToTest()
+            case "review-correction": focus.editResult(testCaseID: "case-1", stepID: "step-1")
+            case "resolve-flag": focus.editResult(testCaseID: "case-3", stepID: "step-3")
+            default: break
+            }
+        }
+        #endif
+    }
+
+    private var focusedScreen: some View {
+        FocusedExecutionLayout {
+            if let testCase = activeTestCaseState {
+                FocusExecutionContext(title: testCase.title, vehicle: team,
+                    position: testPosition, total: focus.orderedTestCases.count)
+            }
+        } content: {
+            if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {
+                if testCase.steps.count > 1 {
+                    Menu {
+                        ForEach(testCase.steps) { item in
+                            Button(item.step.title) { focus.selectStep(id: item.id) }
+                        }
+                    } label: {
+                        Text("Step \((testCase.steps.firstIndex { $0.id == step.id } ?? 0) + 1) of \(testCase.steps.count)")
+                    }
+                    .frame(minHeight: 48)
+                    .accessibilityIdentifier("execution.step-selector")
+                    .disabled(isConfirmingResult)
+                }
+                FocusedTestDescription(state: step, showsTypeBadge: showsTypeBadge)
+            }
+        } result: {
+            if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {
+                FocusedResultView(
+                    state: step, testCaseID: testCase.id, stageID: stage.id,
+                    initialSaveFailure: hasFailedSave(testCase.id),
+                    isReviewCorrection: focus.isEditingFromReview,
+                    saveDraft: { await saveStepDraft($0, testCase.id) },
+                    onConfirmedNext: {
+                        // A delayed confirmation must not move a newly selected test.
+                        guard focus.mode == .focus, focus.selectedTestCaseID == testCase.id,
+                              focus.activeStepID == step.id else { return }
+                        focus.advanceAfterSave(draftsByTestCaseID: latestDrafts())
+                    },
+                    onReview: {
+                        guard focus.mode == .focus, focus.selectedTestCaseID == testCase.id,
+                              focus.activeStepID == step.id else { return }
+                        focus.showReview()
+                    },
+                    onConfirmationActivityChanged: { isConfirmingResult = $0 }
+                )
+                .id("\(testCase.id).\(step.id)")
+            }
+
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(Strings.details, systemImage: "info.circle") {
+                    showsDetails = true
+                }
+                .labelStyle(.iconOnly)
+                .inspectionButtonStyle()
+                .accessibilityIdentifier("execution.details.open")
+                .disabled(isConfirmingResult)
+            }
+            .sharedBackgroundVisibility(.hidden)
+        }
+    }
+
+    private func queueScreen(close: @escaping () -> Void = {}) -> some View {
+        StageQueueView(
+            team: team, stage: stage, draftsByTestCaseID: draftsByTestCaseID,
+            focusedIssues: focus.focusedValidationIssues(draftsByTestCaseID: draftsByTestCaseID),
+            hasUnsavedDraft: hasUnsavedDraft,
+            presentation: focus.overview,
+            selectedTestCaseID: focus.selectedTestCaseID,
+            startNext: { focus.continueInspection(draftsByTestCaseID: latestDrafts()); close() },
+            review: { focus.showReview(); close() },
+            selectTestCase: { id in
+                focus.selectTestCase(id: id, draftsByTestCaseID: latestDrafts())
+                close()
+            }
+        )
+        .safeAreaInset(edge: .bottom) { recoveryNotice }
+    }
+
+    private var recoveryNotice: some View {
+        DraftSaveRecoveryView(
+            hasFailedSave: focus.orderedTestCases.contains { hasFailedSave($0.id) },
+            retry: retryFailedSaves
         )
     }
 
-    private func advanceToNextStep(after stepID: String, steps: [InspectionTestCaseStepViewState]) {
-        guard let currentIndex = steps.firstIndex(where: { $0.id == stepID }) else { return }
-        let nextIndex = steps.index(after: currentIndex)
-        guard steps.indices.contains(nextIndex) else { return }
-        scrollToStep(steps[nextIndex].id)
-    }
-
-    private func scrollToStep(_ stepID: String) {
-        focusedNoteStepID = nil
-        activeStepID = stepID
-        withAnimation(.snappy) {
-            stepScrollPosition.scrollTo(id: stepID)
+    private var reviewScreen: some View {
+        let issues = focus.focusedValidationIssues(draftsByTestCaseID: draftsByTestCaseID)
+        let results = focus.orderedTestCases.map {
+            draftsByTestCaseID[$0.id] ?? TestCaseDraft(testCase: $0)
         }
-    }
-}
-
-private struct FullStageSummaryPanel: View {
-    let viewState: FullStageViewState
-
-    var body: some View {
-        ContentPanel {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(viewState.teamName)
-                        .font(.headline)
-                        .foregroundStyle(Color.fsaeText)
-                        .accessibilityIdentifier(
-                            InspectionAccessibilityIdentifier.testCaseStageSummary(stageID: viewState.stageID).rawValue
-                        )
-                    Text("\(viewState.testCaseCount) test cases · \(viewState.blockerText)")
-                        .font(.subheadline)
-                        .foregroundStyle(Color.fsaeSecondaryText)
-                }
-                Spacer()
-                StatusPill(
-                    text: viewState.canSubmit ? FullStageView.Strings.submitReady : FullStageView.Strings.submitBlocked,
-                    color: viewState.canSubmit ? .fsaeGreen : .fsaeAmber
+        return StageReviewView(
+            team: team, stage: stage, draftsByTestCaseID: draftsByTestCaseID,
+            focusedIssues: issues,
+            presentation: focus.overview,
+            editResult: { caseID, stepID in focus.editResult(testCaseID: caseID, stepID: stepID) }
+        )
+        .disabled(isSubmittingStage)
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: 0) {
+                recoveryNotice
+                StageSubmissionAction(
+                    canSubmit: !results.isEmpty && issues.isEmpty && !hasUnsavedDraft,
+                    hasSubmitted: hasSubmittedStage,
+                    results: results,
+                    submit: submitStage,
+                    onActivityChanged: { isSubmittingStage = $0 }
                 )
             }
-
-            ProgressView(value: viewState.progressFraction)
-                .tint(viewState.canSubmit ? Color.fsaeGreen : Color.fsaePrimary)
-                .accessibilityLabel(FullStageView.Strings.progress)
-                .accessibilityValue(viewState.progressText)
-                .accessibilityIdentifier(
-                    InspectionAccessibilityIdentifier.testCaseStageSummary(stageID: viewState.stageID).rawValue
-                )
-
-            HStack {
-                Label(viewState.progressText, systemImage: "checkmark.circle")
-                    .font(.caption)
-                    .foregroundStyle(Color.fsaeSecondaryText)
-                Spacer()
-                Label(viewState.blockerText, systemImage: viewState.canSubmit ? "checkmark.seal" : "exclamationmark.triangle")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(viewState.canSubmit ? Color.fsaeGreen : Color.fsaeAmber)
-            }
-        }
-    }
-}
-
-private struct FullStageSectionBlock: View {
-    let stageID: String
-    let section: FullStageSectionViewState
-    let isExpanded: Bool
-    let toggleExpanded: () -> Void
-    let openTestCase: (InspectionTestCase) -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Button(action: toggleExpanded) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(section.title)
-                            .font(.headline)
-                            .foregroundStyle(Color.fsaeText)
-                        if !section.subtitle.isEmpty {
-                            Text(section.subtitle)
-                                .font(.subheadline)
-                                .foregroundStyle(Color.fsaeSecondaryText)
-                                .multilineTextAlignment(.leading)
-                        }
-                    }
-                    Spacer()
-                    HStack(spacing: 8) {
-                        Text(testCaseCountLabel)
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color.fsaeSecondaryText)
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(Color.fsaeSecondaryText)
-                            .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                            .animation(.snappy(duration: 0.28), value: isExpanded)
-                    }
-                }
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("\(section.title)\(section.subtitle.isEmpty ? "" : ", \(section.subtitle)"), \(testCaseCountLabel)")
-            .accessibilityHint(FullStageView.Strings.expandSectionHint)
-            .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
-            .accessibilityIdentifier(
-                    InspectionAccessibilityIdentifier.testCaseStageSection(stageID: section.stageID, sectionID: section.id).rawValue
-                )
-
-            if isExpanded {
-                VStack(spacing: 12) {
-                    ForEach(section.testCases) { testCase in
-                        Button {
-                            openTestCase(testCase.testCase)
-                        } label: {
-                            FullStageTestCaseRow(stageID: stageID, testCase: testCase)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier(
-                            InspectionAccessibilityIdentifier.testCaseStageRow(stageID: stageID, testCaseID: testCase.id).rawValue
-                        )
-                    }
-                }
-            }
         }
     }
 
-    private var testCaseCountLabel: String {
-        let label = section.testCases.count == 1
-            ? FullStageView.Strings.testCase
-            : FullStageView.Strings.testCases
-        return "\(section.testCases.count) \(label)"
-    }
-}
-
-private struct FullStageTestCaseRow: View {
-    let stageID: String
-    let testCase: FullStageTestCaseViewState
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 6) {
-                    ViewThatFits(in: .horizontal) {
-                        HStack(spacing: 6) {
-                            metadataLabels
-                        }
-                        VStack(alignment: .leading, spacing: 6) {
-                            metadataLabels
-                        }
-                    }
-
-                    Text(testCase.title)
-                        .font(.headline)
-                        .foregroundStyle(Color.fsaeText)
-                        .multilineTextAlignment(.leading)
-
-                    if let firstRule = testCase.ruleReferences.first {
-                        Text(firstRule)
-                            .font(.caption)
-                            .foregroundStyle(Color.fsaeSecondaryText)
-                    }
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right.circle")
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(Color.fsaePrimary)
-                    .accessibilityLabel(FullStageView.Strings.openTestCase)
-            }
-
-            HStack {
-                Label(testCase.progressSummary.completeStepCount.description + "/" + testCase.progressSummary.totalStepCount.description, systemImage: "checkmark.circle")
-                    .font(.caption)
-                    .foregroundStyle(Color.fsaeSecondaryText)
-                Spacer()
-                Label(testCase.validationSummary.isPassing ? FullStageView.Strings.noBlockersShort : "\(testCase.validationSummary.blockerCount) blockers", systemImage: testCase.validationSummary.isPassing ? "checkmark.seal" : "exclamationmark.triangle")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(testCase.validationSummary.isPassing ? Color.fsaeGreen : Color.fsaeAmber)
-            }
-        }
-        .padding(14)
-        .background(Color.fsaeSurface, in: RoundedRectangle(cornerRadius: 8))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(testCase.validationSummary.isPassing ? Color.fsaeBorder : Color.fsaeAmber.opacity(0.55))
-        }
+    private var activeTestCaseState: InspectionTestCaseViewState? {
+        guard let testCase = focus.activeTestCase else { return nil }
+        return InspectionTestCaseViewState(testCase: testCase,
+            draft: draftsByTestCaseID[testCase.id] ?? TestCaseDraft(testCase: testCase))
     }
 
-    private var metadataLabels: some View {
-        Group {
-            Text(testCase.code)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(Color.fsaeSecondaryText)
-            StatusPill(text: testCase.validationSummary.isPassing ? FullStageView.Strings.complete : FullStageView.Strings.blocked, color: testCase.validationSummary.isPassing ? .fsaeGreen : .fsaeAmber)
-                .accessibilityLabel(testCase.validationSummary.isPassing ? FullStageView.Strings.complete : FullStageView.Strings.blocked)
-                .accessibilityIdentifier(
-                    InspectionAccessibilityIdentifier.testCaseStageStatus(stageID: stageID, testCaseID: testCase.id).rawValue
-                )
-        }
-    }
-}
-
-private struct FullStageValidationPanel: View {
-    let viewState: FullStageViewState
-    let openBlockingRoute: (FullStageBlockingRoute) -> Void
-    @State private var isExpanded = false
-
-    var body: some View {
-        ContentPanel {
-            Button {
-                withAnimation(.snappy(duration: 0.28)) {
-                    isExpanded.toggle()
-                }
-            } label: {
-                HStack(alignment: .firstTextBaseline) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(FullStageView.Strings.validation)
-                            .font(.headline)
-                            .foregroundStyle(Color.fsaeText)
-                        Text(blockerCountLabel)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(viewState.canSubmit ? Color.fsaeGreen : Color.fsaeRed)
-                    }
-                    Spacer()
-                    HStack(spacing: 8) {
-                        StatusPill(
-                            text: viewState.canSubmit ? FullStageView.Strings.submitReady : FullStageView.Strings.submitBlocked,
-                            color: viewState.canSubmit ? .fsaeGreen : .fsaeRed
-                        )
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(Color.fsaeSecondaryText)
-                            .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                            .animation(.snappy(duration: 0.28), value: isExpanded)
-                    }
-                }
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(FullStageView.Strings.validation)
-            .accessibilityHint(FullStageView.Strings.expandBlockersHint)
-            .accessibilityValue(isExpanded ? "Expanded, \(blockerCountLabel)" : "Collapsed, \(blockerCountLabel)")
-            .accessibilityIdentifier(
-                InspectionAccessibilityIdentifier.testCaseStageValidationSummary(stageID: viewState.stageID).rawValue
-            )
-
-            if viewState.validationSummary.issues.isEmpty {
-                Text(FullStageView.Strings.noBlockers)
-                    .font(.footnote)
-                    .foregroundStyle(Color.fsaeSecondaryText)
-            } else if isExpanded {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(viewState.validationSummary.issues) { issue in
-                        Button {
-                            openBlockingRoute(
-                                FullStageBlockingRoute(
-                                    stageID: issue.stageID,
-                                    testCaseID: issue.testCaseID,
-                                    stepID: issue.stepID,
-                                    issueID: issue.issueID
-                                )
-                            )
-                        } label: {
-                            Label {
-                                Text("\(issue.testCaseCode) · \(issue.stepTitle): \(issue.message)")
-                            } icon: {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .font(.footnote)
-                        .foregroundStyle(Color.fsaeRed)
-                        .accessibilityIdentifier(
-                            InspectionAccessibilityIdentifier.testCaseStageValidationSummary(stageID: issue.stageID).rawValue
-                        )
-                    }
-                }
-            }
-        }
+    private var activeStepState: InspectionTestCaseStepViewState? {
+        activeTestCaseState?.steps.first { $0.id == focus.activeStepID }
     }
 
-    private var blockerCountLabel: String {
-        let count = viewState.validationSummary.blockerCount
-        return "\(count) \(FullStageView.Strings.blockerCount)"
+    private var testPosition: Int {
+        (focus.orderedTestCases.firstIndex { $0.id == focus.selectedTestCaseID } ?? 0) + 1
     }
 }

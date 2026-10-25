@@ -218,6 +218,8 @@ nonisolated struct TestStepDraft: Codable, Hashable, Sendable {
     var measurementInput: String
     var measurementValue: MeasurementValue?
     var evidenceAttachments: [EvidenceAttachmentMetadata]
+    var confirmedAt: Date?
+    var flaggedForReview: Bool?
 
     init(
         stepID: String,
@@ -225,7 +227,9 @@ nonisolated struct TestStepDraft: Codable, Hashable, Sendable {
         notes: String = "",
         measurementInput: String = "",
         measurementValue: MeasurementValue? = nil,
-        evidenceAttachments: [EvidenceAttachmentMetadata] = []
+        evidenceAttachments: [EvidenceAttachmentMetadata] = [],
+        confirmedAt: Date? = nil,
+        flaggedForReview: Bool? = nil
     ) {
         self.stepID = stepID
         self.outcome = outcome
@@ -233,6 +237,8 @@ nonisolated struct TestStepDraft: Codable, Hashable, Sendable {
         self.measurementInput = measurementInput
         self.measurementValue = measurementValue
         self.evidenceAttachments = evidenceAttachments
+        self.confirmedAt = confirmedAt
+        self.flaggedForReview = flaggedForReview
     }
 
     init(step: InspectionTestStep) {

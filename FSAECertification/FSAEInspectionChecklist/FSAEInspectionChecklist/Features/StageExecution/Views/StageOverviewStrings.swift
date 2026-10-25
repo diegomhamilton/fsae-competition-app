@@ -1,0 +1,43 @@
+enum StageOverviewStrings {
+    static let currentTest = "Current"
+    static let updated = "Updated"
+    static let chooseTest = "Choose a test"
+    static let start = "Start inspection"
+    static let resume = "Continue inspection"
+    static let continueTest = "Continue current test"
+    static let review = "Review stage"
+    static let results = "Results"
+    static let resolve = "Needs attention"
+    static let ready = "All results confirmed"
+    static let readyDescription = "Check the results before submitting this stage."
+    static let edit = "Edit result"
+    static let unconfirmed = "Not confirmed"
+    static let noTests = "There are no tests in this stage."
+    static let unanswered = "Not started"
+    static let draft = "Draft"
+    static let passed = "Pass"
+    static let failed = "Fail"
+    static let flagged = "Needs review"
+    static let exception = "N/A"
+    static let expanded = "Expanded"
+    static let collapsed = "Collapsed"
+    static let photoUnavailable = "Photo unavailable"
+
+    static let testSections = "Test sections"
+
+    static func vehicle(_ team: InspectionTeam) -> String {
+        "\(team.carNumber) · \(team.school)"
+    }
+
+    static func progress(confirmed: Int, total: Int) -> String {
+        "\(confirmed) of \(total) results confirmed"
+    }
+
+    static func needsReview(_ count: Int) -> String {
+        "\(count) \(count == 1 ? "result needs" : "results need") review"
+    }
+
+    static func notes(_ notes: String) -> String { "Notes: \(notes)" }
+    static func photoCount(_ count: Int) -> String { count == 1 ? "1 photo" : "\(count) photos" }
+    static func sectionCount(_ count: Int) -> String { count == 1 ? "1 test" : "\(count) tests" }
+}

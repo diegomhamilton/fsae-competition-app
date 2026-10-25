@@ -12,10 +12,17 @@ final class InspectionExecutionCoordinator: ObservableObject {
     @Published var stageNavigationPath: [StageNavigationRoute] = []
     @Published private(set) var pendingSwitchTarget: InspectionTeam?
     @Published private(set) var draftsByStageID: [String: [String: TestCaseDraft]]
+    @Published private(set) var failedDraftCaseIDsByStageID: [String: Set<String>] = [:]
+    @Published private(set) var isSubmittingStage = false
+    @Published private(set) var lastStageSubmission: SubmittedStageSnapshotFile?
+    @Published private(set) var stageSubmissionError: String?
     let teams: [InspectionTeam]
     private let stageModels: [InspectionStage]
     private let store: InspectionEventStore
     private let access: InspectionEventUserAccess
+    private var draftSaveTask: Task<Bool, Never>?
+    private var latestDraftSaveTokens: [InspectionSessionScope: [String: UUID]] = [:]
+    private var unsavedTestCaseIDs: [InspectionSessionScope: Set<String>] = [:]
 
     init(
         sessionContext: InspectionSessionContext,
@@ -59,6 +66,10 @@ final class InspectionExecutionCoordinator: ObservableObject {
 
     var draftsByTestCaseID: [String: TestCaseDraft] {
         draftsByStageID[sessionContext.activeStageID] ?? [:]
+    }
+
+    var failedDraftCaseIDs: Set<String> {
+        failedDraftCaseIDsByStageID[sessionContext.activeStageID] ?? []
     }
 
     var activeTeam: InspectionTeam {
@@ -107,6 +118,53 @@ final class InspectionExecutionCoordinator: ObservableObject {
 
     private var activeTestCaseID: String? {
         stageNavigationPath.last?.testCaseID
+    }
+
+    /// Final review submits a frozen copy of the current stage only. It does not
+    /// complete the session or discard the judge's current selection and drafts.
+    @discardableResult
+    func submitActiveStage(
+        submissionID: String = UUID().uuidString,
+        submittedAt: Date = Date(),
+        evidenceAvailable: @escaping (EvidenceAttachmentMetadata) -> Bool = {
+            FocusedResultEvidenceStore.localAssetAvailable($0)
+        }
+    ) async -> Bool {
+        guard !isSubmittingStage else { return false }
+        guard let stage = activeStage, !sessionContext.hasUnsavedDraft else {
+            stageSubmissionError = String(localized: "Wait for your results to save before submitting.")
+            return false
+        }
+        guard !stage.orderedSections.flatMap(\.orderedTestCases).flatMap(\.orderedSteps).isEmpty else {
+            stageSubmissionError = String(localized: "There are no test results to submit.")
+            return false
+        }
+        let stageDrafts = draftsByStageID[stage.id] ?? [:]
+        let focusValidation = StageFocusCoordinator(stage: stage, evidenceAvailable: evidenceAvailable)
+        guard focusValidation.focusedValidationIssues(draftsByTestCaseID: stageDrafts).isEmpty else {
+            stageSubmissionError = String(localized: "Confirm all results, add required evidence, and resolve flags before submitting.")
+            return false
+        }
+        let frozenDrafts = stage.orderedSections.flatMap(\.orderedTestCases).map { testCase in
+            stageDrafts[testCase.id] ?? TestCaseDraft(testCase: testCase)
+        }
+        isSubmittingStage = true
+        stageSubmissionError = nil
+        defer { isSubmittingStage = false }
+        do {
+            let result = try await store.submitStage(
+                scope: scope(stageID: stage.id),
+                submissionID: submissionID,
+                drafts: frozenDrafts,
+                submittedAt: submittedAt,
+                access: access
+            )
+            lastStageSubmission = result.snapshot
+            return true
+        } catch {
+            stageSubmissionError = String(localized: "Stage could not be submitted. Your results are kept; try again.")
+            return false
+        }
     }
 
     func markUnsavedDraft(_ hasUnsavedDraft: Bool) {
@@ -198,28 +256,91 @@ final class InspectionExecutionCoordinator: ObservableObject {
 
     @discardableResult
     func saveStepDraft(_ stepDraft: TestStepDraft, testCaseID: String) async -> Bool {
-        guard let target = testCaseAndStage(id: testCaseID) else {
+        guard let target = testCaseAndStage(id: testCaseID),
+              target.testCase.orderedSteps.contains(where: { $0.id == stepDraft.stepID }) else {
             return false
         }
 
         var stageDrafts = draftsByStageID[target.stageID] ?? [:]
         var testCaseDraft = stageDrafts[testCaseID] ?? TestCaseDraft(testCase: target.testCase)
+        if testCaseDraft.stepDraft(stepID: stepDraft.stepID)?.draft != stepDraft,
+           lastStageSubmission?.stageID == target.stageID {
+            lastStageSubmission = nil
+        }
         testCaseDraft.updateStepDraft(stepDraft)
         stageDrafts[testCaseID] = testCaseDraft
         draftsByStageID[target.stageID] = stageDrafts
+        return await persistDraft(testCaseDraft, stageID: target.stageID, attemptedStep: stepDraft)
+    }
+
+    /// Retries the current whole-case values, including edits made after a failed
+    /// write. Recovery never manufactures an explicit result confirmation.
+    @discardableResult
+    func retryFailedDraftSaves() async -> Bool {
+        let stageID = sessionContext.activeStageID
+        guard let activeStage = stage(id: stageID) else { return false }
+        let failedIDs = failedDraftCaseIDsByStageID[stageID] ?? []
+        var allSucceeded = true
+        for testCase in activeStage.orderedSections.flatMap(\.orderedTestCases) where failedIDs.contains(testCase.id) {
+            guard let currentDraft = draftsByStageID[stageID]?[testCase.id] else {
+                allSucceeded = false
+                continue
+            }
+            let saved = await persistDraft(currentDraft, stageID: stageID)
+            allSucceeded = saved && allSucceeded
+        }
+        return allSucceeded && (failedDraftCaseIDsByStageID[stageID] ?? []).isEmpty
+    }
+
+    private func persistDraft(_ draftSnapshot: TestCaseDraft, stageID: String, attemptedStep: TestStepDraft? = nil) async -> Bool {
+        let testCaseID = draftSnapshot.id
         sessionContext.hasUnsavedDraft = true
 
-        do {
-            _ = try await store.saveDraft(
-                testCaseDraft,
-                scope: scope(stageID: target.stageID),
-                access: access
-            )
-            sessionContext.hasUnsavedDraft = false
-            return true
-        } catch {
-            return false
+        // Capture the complete case and its scope before suspension. Chaining writes
+        // prevents rapid edits from persisting an older whole-case snapshot last.
+        let saveScope = scope(stageID: stageID)
+        let saveToken = UUID()
+        latestDraftSaveTokens[saveScope, default: [:]][testCaseID] = saveToken
+        unsavedTestCaseIDs[saveScope, default: []].insert(testCaseID)
+        let previousSave = draftSaveTask
+        let saveTask = Task { [store, access] in
+            if let previousSave {
+                _ = await previousSave.value
+            }
+            do {
+                _ = try await store.saveDraft(draftSnapshot, scope: saveScope, access: access)
+                return true
+            } catch {
+                return false
+            }
         }
+        draftSaveTask = saveTask
+        let saved = await saveTask.value
+
+        if !saved, let attemptedStep, attemptedStep.confirmedAt != nil,
+           var currentCaseDraft = draftsByStageID[stageID]?[testCaseID],
+           currentCaseDraft.stepDraft(stepID: attemptedStep.stepID)?.draft == attemptedStep {
+            // A failed confirmation must stay editable, without losing judge input
+            // or clearing a newer result that arrived while this write was pending.
+            var unconfirmedDraft = attemptedStep
+            unconfirmedDraft.confirmedAt = nil
+            currentCaseDraft.updateStepDraft(unconfirmedDraft)
+            draftsByStageID[stageID]?[testCaseID] = currentCaseDraft
+        }
+
+        // Only the newest successful write for this case can clear its dirty state.
+        // A success elsewhere must not hide a failed save that still needs retry.
+        if latestDraftSaveTokens[saveScope]?[testCaseID] == saveToken {
+            if saved {
+                unsavedTestCaseIDs[saveScope]?.remove(testCaseID)
+                latestDraftSaveTokens[saveScope]?.removeValue(forKey: testCaseID)
+                failedDraftCaseIDsByStageID[stageID]?.remove(testCaseID)
+            } else {
+                failedDraftCaseIDsByStageID[stageID, default: []].insert(testCaseID)
+            }
+        }
+        sessionContext.hasUnsavedDraft = unsavedTestCaseIDs.values.contains { !$0.isEmpty }
+        return saved
     }
 
     #if DEBUG
@@ -358,7 +479,8 @@ private extension TestStepDraft {
             outcome: .pass,
             measurementInput: measurementInput,
             measurementValue: measurementValue,
-            evidenceAttachments: []
+            evidenceAttachments: [],
+            confirmedAt: completedAt
         )
     }
 }

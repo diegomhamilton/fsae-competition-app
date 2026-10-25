@@ -219,7 +219,7 @@ actor InspectionEventStore {
             teamsByEvent[event.id, default: []].append(contentsOf: persistedTeams)
         }
         teamsByEventID = teamsByEvent.mapValues { records in
-            Array(Dictionary(uniqueKeysWithValues: records.map { ($0.id, $0) }).values)
+            Array(Dictionary(records.map { ($0.id, $0) }, uniquingKeysWith: { _, persisted in persisted }).values)
         }
         var restoredSessions = sessions
         for event in events {
@@ -231,10 +231,11 @@ actor InspectionEventStore {
                 restoredSessions.append(contentsOf: persistedSessions)
             }
         }
+        // Persisted records supersede their bundled seeds on relaunch. Repeated
+        // identities must not trap when a saved catalog contains those seeds.
         sessionsByKey = Dictionary(
-            uniqueKeysWithValues: restoredSessions.map { session in
-                (SessionKey(session), session)
-            }
+            restoredSessions.map { (SessionKey($0), $0) },
+            uniquingKeysWith: { _, persisted in persisted }
         )
         self.persistenceService = persistenceService
     }
@@ -479,6 +480,26 @@ actor InspectionEventStore {
                     lhs.updatedAt > rhs.updatedAt
                 }
             }
+    }
+
+    /// Creates an immutable stage submission using this store's persistence root.
+    /// Drafts remain available when a partial write fails and for review afterward.
+    func submitStage(
+        scope: InspectionSessionScope,
+        submissionID: String,
+        drafts: [TestCaseDraft],
+        submittedAt: Date = Date(),
+        access: InspectionEventUserAccess
+    ) async throws -> SubmissionSnapshotResult {
+        try requireSession(scope: scope, access: access)
+        let submissionService = SubmissionSnapshotService(persistence: persistenceService)
+        return try await submissionService.createStageSnapshot(
+            context: scope.persistenceContext,
+            submissionID: submissionID,
+            drafts: drafts,
+            submittedAt: submittedAt,
+            preserveDrafts: true
+        )
     }
 
     private func requireEvent(_ eventID: String) throws {
