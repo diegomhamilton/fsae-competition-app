@@ -9,7 +9,6 @@ struct SessionSelectorView: View {
     fileprivate enum Strings {
 //        static let eyebrow = "Session Selection"
         static let title = "Active Inspections"
-        static let subtitle = "Select Team to start or resume a locally stored inspection session for the current event."
         static let resumeAvailable = "Resume available"
         static let blocked = "Blocked"
         static let localDrafts = "Local drafts are saved by team and session."
@@ -41,8 +40,7 @@ struct SessionSelectorView: View {
 
     var body: some View {
         ScreenShell(
-            title: Strings.title,
-            subtitle: Strings.subtitle
+            title: Strings.title
         ) {
             createTeamPanel
 

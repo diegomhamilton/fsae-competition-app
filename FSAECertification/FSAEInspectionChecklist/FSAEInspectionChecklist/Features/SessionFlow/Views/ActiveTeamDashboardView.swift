@@ -38,8 +38,7 @@ struct ActiveTeamDashboardView: View {
         let selectedStageID = coordinator.activeStage?.id
 
         ScreenShell(
-            title: "\(team.carNumber) \(team.school)",
-            subtitle: ""
+            title: "\(team.carNumber) \(team.school)"
         ) {
 
             HStack(spacing: 12) {
