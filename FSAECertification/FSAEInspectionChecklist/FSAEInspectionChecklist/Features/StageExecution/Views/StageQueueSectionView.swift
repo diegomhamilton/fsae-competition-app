@@ -1,6 +1,17 @@
 import SwiftUI
 
 struct StageQueueSectionView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var rotationDegrees: Double?
+
+    private var usesReducedMotion: Bool {
+        #if DEBUG
+        reduceMotion || ProcessInfo.processInfo.arguments.contains("-inspection-reduce-motion")
+        #else
+        reduceMotion
+        #endif
+    }
+
     let section: InspectionSection
     let draftsByTestCaseID: [String: TestCaseDraft]
     let focusedIssues: [FullStageValidationIssue]
@@ -21,7 +32,9 @@ struct StageQueueSectionView: View {
                             .foregroundStyle(Color.fsaeSecondaryText)
                     }
                     Spacer()
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                    Image(systemName: "chevron.down")
+                        .rotationEffect(.degrees(rotationDegrees ?? (isExpanded ? 180 : 0)))
+                        .animation(usesReducedMotion ? nil : .easeInOut(duration: 0.5), value: rotationDegrees)
                 }
                 .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                 .padding()
@@ -55,6 +68,10 @@ struct StageQueueSectionView: View {
                 }
                 .padding([.horizontal, .bottom])
             }
+        }
+        .onChange(of: isExpanded) { wasExpanded, _ in
+            // Increasing angles keep both expansion and collapse clockwise.
+            rotationDegrees = (rotationDegrees ?? (wasExpanded ? 180 : 0)) + 180
         }
         .background(Color.fsaeSurface, in: .rect(cornerRadius: 16))
     }
