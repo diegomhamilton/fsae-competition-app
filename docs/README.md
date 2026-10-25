@@ -21,8 +21,7 @@ This index describes the maintained documentation for the current feature implem
 | [Technical overview](inspection-event/README.md) | Architecture, rechecks, accessibility and localization conventions | Feature boundaries or conventions change |
 | [Source organization](inspection-event/organization-plan.md) | Current folders and file-placement rules | Source layout changes |
 | [Extension tutorials](inspection-event/tutorials.md) | Add content, validation, identifiers and persona scenarios | An extension point changes |
-| [Review hygiene](inspection-event/review-hygiene.md) | Branch, commit and PR requirements | Review workflow changes |
-| [Prompt templates](prompts/README.md) | Reusable planning prompts for active backlog work | Planning workflow changes |
+| [Planning and review hygiene](inspection-event/review-hygiene.md) | Reusable planning prompts, branch, commit and PR requirements | Planning/review workflow changes |
 | [OpenSpec backlog](../openspec/changes/technical-inspection-event-development-plan/tasks.md) | Unfinished requirements and acceptance gates | Scope changes or completion is verified |
 
 Repository guidance remains in [CLAUDE.md](../CLAUDE.md), role responsibilities in `.agents/`, and domain guidance in `.skills/`. OpenSpec proposals/design/specs define requirements, including explicitly deferred capabilities; they are not proof of implementation. The [behavioral scenarios](../Design/UserStories/InspectionEvents/features/inspection_event_use_cases.feature) remain the acceptance backbone.

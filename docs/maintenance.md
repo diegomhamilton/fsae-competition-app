@@ -19,7 +19,7 @@ Use the system map as the detailed routing/state/service reference; UI behavior 
 
 Documenter maintains the index, system map, UI behavior, known issues and tutorials. Tester maintains validation scope and source-qualified results. Planner maintains unfinished OpenSpec tasks and reusable prompts. Feature authors update these surfaces with their changes; review must compare documentation to source.
 
-Reusable prompt templates remain; completed prompt runs do not. Keep unresolved requirements in OpenSpec tasks/specs, including reset/history, disabled team switching, rechecks, stickers and improvements 11–15. Requirements documents must distinguish implemented and deferred behavior.
+Reusable planning prompts live in [review hygiene](inspection-event/review-hygiene.md#planning-an-implementation-slice); completed prompt runs do not. Keep unresolved requirements in OpenSpec tasks/specs, including reset/history, disabled team switching, rechecks, stickers and improvements 11–15. Requirements documents must distinguish implemented and deferred behavior.
 
 ## Repository cleanup boundaries
 

@@ -73,3 +73,159 @@ Feature PRs may preserve task-sized internal commits while under review. Before 
 ## Documentation review
 
 Update current documentation with behavior changes. Delete obsolete phase plans, completed prompt output and old evidence collections; put remaining acceptance gaps in the active backlog/validation checklist. Store PR-specific commands and evidence in the PR rather than creating dated repository reports.
+
+## Planning an implementation slice
+
+Use the reusable SPDD chain below for unfinished work in the [active backlog](../../openspec/changes/technical-inspection-event-development-plan/tasks.md). Start from the [system map](../system-map.md), relevant capability spec, role guidance and behavioral scenarios. Keep decisions and acceptance requirements in maintained documentation or OpenSpec; do not commit completed prompt runs or copied chat handoffs.
+
+Run Requirements, Entities, Approach, Structure, Operations, Norms and Safeguards in that order. Replace placeholders with the current task and preceding step’s result.
+
+### Requirements Prompt
+
+You are helping with SPDD for this task:
+
+Task: `<paste task>`
+
+Describe the essence of the requirement in one clear sentence.
+
+Then list:
+
+- User-visible outcome
+- Acceptance source, especially `.feature` scenarios if relevant
+- Required behavior
+- Out of scope behavior
+- Completion signal
+
+Keep this focused on what must be true, not how to build it.
+
+### Entities Prompt
+
+Given this task:
+
+Task: `<paste task>`
+
+Identify the domain entities involved.
+
+For each entity, describe:
+
+- Responsibility
+- Key fields or state
+- Relationships to other entities
+- Whether it is immutable content, mutable draft state, UI state, service state, or test fixture data
+
+Use the project's inspection-event language: stages, sections, test cases, test steps, outcomes, measurements, evidence, validation, submissions, rechecks, sessions, teams, and judges.
+
+### Approach Prompt
+
+Given this task and entities:
+
+Task: `<paste task>`
+
+Entities: `<paste entity summary>`
+
+Propose a high-level implementation approach.
+
+Include:
+
+- Files or areas likely affected
+- Test-first strategy
+- Existing patterns to follow
+- SwiftUI / Swift 6 / Concurrency considerations
+- Accessibility and localization considerations
+- Manual validation path
+
+Do not write code yet. Explain the solution shape and collaboration points.
+
+### Structure Prompt
+
+Given this task and approach:
+
+Task: `<paste task>`
+
+Approach: `<paste approach>`
+
+Define the implementation structure.
+
+Include:
+
+- Models, views, coordinators, services, fixtures, and tests involved
+- Dependencies between them
+- Suggested commit boundaries
+- Risks from coupling or ordering
+- How this task fits into the current OpenSpec slice
+
+Prefer the existing MVC + Coordinators + Services architecture.
+
+### Operations Prompt
+
+Given this task, approach, and structure:
+
+Task: `<paste task>`
+
+Structure: `<paste structure>`
+
+Decompose this into concrete, reviewable operations.
+
+For each operation, include:
+
+- Exact action
+- Expected files or test targets
+- Verification command or manual check
+- Build ownership: agent-run, user-run, or not applicable
+- Manual validation notes to capture when the user will build or inspect locally
+- Commit boundary and a proposed commit title of 52 characters or fewer
+- Whether the operation can be committed without breaking compilation
+- Done condition
+
+Make the operations small enough for TDD and task-sized commits.
+
+Do not build the code automatically. Specify the exact user-run build or inspection signal the user should report back, and keep the agent's verification to static review unless the user explicitly asks the agent to build.
+
+When a task will become a PR, include the PR title in this format:
+
+`TASK#{TASK NUMBER}: <short task summary>`
+
+### Norms Prompt
+
+Apply the project norms to this task:
+
+Task: `<paste task>`
+
+Check the proposed work against these norms:
+
+- TDD for models, services, coordinators, and view helpers
+- Swift 6 and Concurrency-first boundaries
+- SwiftUI views with small local UI state only
+- Structured `Strings` enums for localizable text
+- Stable accessibility identifiers separate from localized labels
+- Feature scenarios as acceptance backbone
+- One feature branch / PR per major slice unless review context gets too broad
+- PR titles must start with `TASK#{TASK NUMBER}:` using the OpenSpec task number, for example `TASK#5.1: Add test case model tests`
+- Each task must be split into reviewable commits with commit titles of 52 characters or fewer
+- Commits must not intentionally leave the project in a non-compiling state
+- Do not build the code automatically; capture build and validation as user-run unless the user explicitly asks the agent to build
+- Manual validation notes in PR description
+
+Return any adjustments needed before implementation.
+
+### Safeguards Prompt
+
+Act as the SPDD safeguard reviewer for this task:
+
+Task: `<paste task>`
+
+Plan: `<paste operations>`
+
+Review for:
+
+- Scope creep
+- Missing failing tests
+- Accessibility gaps
+- Localization gaps
+- Unsafe concurrency or shared mutable state
+- JSON fixture/schema assumptions
+- Incomplete validation paths
+- PR review risk
+- Manual validation omissions
+
+Return blockers first, then recommendations, then a final go/no-go.
