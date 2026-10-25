@@ -56,23 +56,17 @@ struct ContentTabsView: View {
                                 #endif
                             }
                         )
+                        .navigationDestination(isPresented: bindings.stagePresentedBinding) {
+                            if let stage = executionCoordinator.activeStage {
+                                StageNavigationView(
+                                    appCoordinator: appCoordinator,
+                                    executionCoordinator: executionCoordinator,
+                                    stage: stage
+                                )
+                            }
+                        }
                     } else {
                         EmptyFlowState(title: "Select a team to start inspection.")
-                    }
-                }
-            }
-
-            Tab("Stage", systemImage: "checklist", value: .stageChecklist) {
-                if let executionCoordinator = bindings.executionCoordinator,
-                   let stage = executionCoordinator.activeStage {
-                    StageNavigationView(
-                        appCoordinator: appCoordinator,
-                        executionCoordinator: executionCoordinator,
-                        stage: stage
-                    )
-                } else {
-                    NavigationStack {
-                        EmptyFlowState(title: "Open a team stage to inspect.")
                     }
                 }
             }
@@ -86,12 +80,10 @@ private struct StageNavigationView: View {
     let stage: InspectionStage
 
     var body: some View {
-        NavigationStack(path: $executionCoordinator.stageNavigationPath) {
-            focusedStage()
+        focusedStage()
             .navigationDestination(for: StageNavigationRoute.self) { route in
                 destination(for: route)
             }
-        }
     }
 
     private func focusedStage(testCaseID: String? = nil, stepID: String? = nil) -> some View {

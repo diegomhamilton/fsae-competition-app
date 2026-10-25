@@ -76,10 +76,22 @@ struct FullStageView: View {
     }
 
     var body: some View {
+        queueScreen()
+        .navigationTitle(stage.title)
+        .navigationBarTitleDisplayMode(.large)
+        .navigationDestination(isPresented: Binding(
+            get: { focus.mode != .queue },
+            set: { if !$0 { focus.showQueue() } }
+        )) {
+            executionScreen
+        }
+    }
+
+    private var executionScreen: some View {
         ExecutionAdvanceTransition(sequence: focus.advanceSequence) {
             switch focus.mode {
             case .focus: focusedScreen
-            case .queue: queueScreen()
+            case .queue: Color.clear
             case .review: reviewScreen
             }
         }
@@ -98,26 +110,6 @@ struct FullStageView: View {
         .sheet(isPresented: $showsDetails) {
             if let testCase = activeTestCaseState, let step = activeStepState {
                 FocusedTestDetails(testCase: testCase, step: step, showsTypeBadge: $showsTypeBadge)
-            }
-        }
-        .toolbar {
-            if focus.mode == .focus {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button { showsQueue = true } label: { Text(Strings.queue) }
-                        .accessibilityIdentifier("execution.queue")
-                        .disabled(isConfirmingResult)
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showsDetails = true } label: { Text(Strings.details) }
-                        .accessibilityIdentifier("execution.details.open")
-                        .disabled(isConfirmingResult)
-                }
-            } else if focus.mode == .review, focus.hasReviewReturnPoint {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(Strings.back) { focus.backToTest() }
-                        .accessibilityIdentifier("execution.review.back-to-test")
-                        .disabled(isSubmittingStage)
-                }
             }
         }
         .navigationTitle(focus.mode == .focus ? "" : focus.mode == .review ? Strings.review : stage.title)
@@ -139,7 +131,8 @@ struct FullStageView: View {
         FocusedExecutionLayout {
             if let testCase = activeTestCaseState {
                 FocusExecutionContext(title: testCase.title, vehicle: team,
-                    position: testPosition, total: focus.orderedTestCases.count)
+                    position: testPosition, total: focus.orderedTestCases.count,
+                    showsDetails: { showsDetails = true }, isSavingInformation: isConfirmingResult)
             }
         } content: {
             if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {

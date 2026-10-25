@@ -15,9 +15,19 @@ struct ContentViewBindings {
 
     var selectedScreenBinding: Binding<ProposedScreen> {
         Binding(
-            get: { appCoordinator.selectedScreen },
+            get: { appCoordinator.selectedScreen == .stageChecklist ? .dashboard : appCoordinator.selectedScreen },
             set: { appCoordinator.selectScreen($0) }
         )
     }
 
+    var stagePresentedBinding: Binding<Bool> {
+        Binding(
+            get: { appCoordinator.selectedScreen == .stageChecklist },
+            set: { presented in
+                if !presented && appCoordinator.selectedScreen == .stageChecklist {
+                    appCoordinator.selectScreen(.dashboard)
+                }
+            }
+        )
+    }
 }
