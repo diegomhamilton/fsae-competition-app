@@ -52,7 +52,7 @@ struct StageQueueView: View {
                     }
                 }
 
-                Text(StageOverviewStrings.chooseTest).font(.headline)
+                Text(StageOverviewStrings.testSections).font(.headline)
                 ForEach(stage.orderedSections) { section in
                     StageQueueSectionView(
                         section: section,
