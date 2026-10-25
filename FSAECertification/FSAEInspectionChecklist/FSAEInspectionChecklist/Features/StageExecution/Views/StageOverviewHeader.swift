@@ -19,7 +19,7 @@ struct StageOverviewHeader: View {
             if needsReviewCount > 0 {
                 Label(StageOverviewStrings.needsReview(needsReviewCount), systemImage: "flag.fill")
                     .font(.subheadline)
-                    .foregroundStyle(Color.fsaeRed)
+                    .foregroundStyle(Color.fsaeAmber)
             }
             if let review {
                 Button(StageOverviewStrings.review, systemImage: "checklist", action: review)
