@@ -34,7 +34,7 @@ struct StageQueueSectionView: View {
                     Spacer()
                     Image(systemName: "chevron.down")
                         .rotationEffect(.degrees(rotationDegrees ?? (isExpanded ? 180 : 0)))
-                        .animation(usesReducedMotion ? nil : .easeInOut(duration: 0.2), value: rotationDegrees)
+                        .animation(usesReducedMotion ? nil : .easeInOut(duration: 0.5), value: rotationDegrees)
                 }
                 .frame(minHeight: 56)
             }
