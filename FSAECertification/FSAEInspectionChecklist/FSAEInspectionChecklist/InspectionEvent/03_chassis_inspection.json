@@ -19,7 +19,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "25 mm clearance aft of AI Plate, Front Bulkhead including diagonals, and to pedals @ full travel and adjustment."
+              "content": "25 mm clearance aft of AI Plate, Front Bulkhead including diagonals, and to pedals @ full travel and adjustment."
             }
           ]
         },
@@ -35,7 +35,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Steel, aluminum, or machined titanium (no welded Ti). Alt matl. OK for pad face. Entire pedal-to-frame system capable of 2kN (tested only by organizers)."
+              "content": "Steel, aluminum, or machined titanium (no welded Ti).\nAlt matl. OK for pad face.\nEntire pedal-to-frame system capable of 2kN (tested only by organizers)."
             }
           ]
         }
@@ -62,7 +62,7 @@
             {
               "displayOrder": 2,
               "type": "check",
-              "content": "Maximum freeplay at the steering wheel is 7 degrees."
+              "content": "Maximum freeplay at the steering wheel is 7 degrees."
             },
             {
               "displayOrder": 3,
@@ -82,7 +82,7 @@
             {
               "displayOrder": 6,
               "type": "check",
-              "content": "Rear steer is limited to 6 degrees total and must have mechanical stops."
+              "content": "Rear steer is limited to 6 degrees total and must have mechanical stops."
             }
           ]
         },
@@ -130,7 +130,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Continuous perimeter, near round with no concave sections. Driver operable quick disconnect. Not higher than top of Front Hoop, in any angular position. 250 mm max rearward of Front Hoop (F.5.7.5)."
+              "content": "Continuous perimeter, near round with no concave sections.\nDriver operable quick disconnect.\nNot higher than top of Front Hoop, in any angular position.\n250 mm max rearward of Front Hoop (F.5.7.5)."
             }
           ]
         },
@@ -178,7 +178,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Control arms, knuckle, spring load path, single wheel nuts. Exempt: lug nuts, multi-piece wheels, anti-roll bars, dampers. All fasteners must be tight (esp: jam nuts)."
+              "content": "Control arms, knuckle, spring load path, single wheel nuts.\nExempt: lug nuts, multi-piece wheels, anti-roll bars, dampers.\nAll fasteners must be tight (esp: jam nuts)."
             }
           ]
         },
@@ -210,7 +210,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Pedal assembly: including adjustment mechanism, caliper to knuckle mounts, rotor to hat. Exempt: COTS caliper body assembly."
+              "content": "Pedal assembly: including adjustment mechanism, caliper to knuckle mounts, rotor to hat.\nExempt: COTS caliper body assembly."
             }
           ]
         },
@@ -297,7 +297,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Single fastener connection at MH-MHB node preferred. For mid-MHB or mid-Upper-MH mounts: SES failure calculations and structural brace required. Some light items may freely attach per F.5.11.3. Components offset longitudinally, not resting on tube. Suspension only permitted at nodes. Powertrain mounts discouraged."
+              "content": "Single fastener connection at MH-MHB node preferred.\nFor mid-MHB or mid-Upper-MH mounts: SES failure calculations and structural brace required.\nSome light items may freely attach per F.5.11.3.\nComponents offset longitudinally, not resting on tube.\nSuspension only permitted at nodes.\nPowertrain mounts discouraged."
             }
           ]
         },
@@ -384,7 +384,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Plates 2.0 mm (0.08\")."
+              "content": "Plates 2.0 mm (0.08\")."
             }
           ]
         },
@@ -400,7 +400,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Tear-out strength requirements in SES. Double-shear preferred."
+              "content": "Tear-out strength requirements in SES.\nDouble-shear preferred."
             }
           ]
         }
@@ -422,7 +422,7 @@
             {
               "displayOrder": 1,
               "type": "measurement",
-              "content": "Must be <=75mm, and must be <=90mm. Record ride height measurement."
+              "content": "Must be <=75mm, and must be <=90mm.\nRecord ride height measurement."
             }
           ]
         },
@@ -438,7 +438,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Must be fully bonded to AIP. IA must not be degraded or damaged."
+              "content": "Must be fully bonded to AIP.\nIA must not be degraded or damaged."
             }
           ]
         },
@@ -486,7 +486,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "No portion of front wing or mountings block the front view of bulkhead. F.8.6.2 detaches below peak load. Fasteners match SES documentation."
+              "content": "No portion of front wing or mountings block the front view of bulkhead.\nF.8.6.2 detaches below peak load.\nFasteners match SES documentation."
             }
           ]
         },
@@ -524,7 +524,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Sufficient diagonal tubing to fully triangulate in between required. Applies to Upper, Lower, and Diagonal structural tubes."
+              "content": "Sufficient diagonal tubing to fully triangulate in between required.\nApplies to Upper, Lower, and Diagonal structural tubes."
             }
           ]
         },
@@ -620,7 +620,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Tech may use ultrasound to measure wall thickness and/or ask that 4 mm dia holes be drilled. See table F.3.2.1 Requirements by Application."
+              "content": "Tech may use ultrasound to measure wall thickness and/or ask that 4 mm dia holes be drilled.\nSee table F.3.2.1 Requirements by Application."
             }
           ]
         }
@@ -658,7 +658,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "A fully structural path (triangulated if tube) back to the Upper and Lower SIS is required. Crushable objects should have 25mm gap to the accumulator."
+              "content": "A fully structural path (triangulated if tube) back to the Upper and Lower SIS is required.\nCrushable objects should have 25mm gap to the accumulator."
             }
           ]
         }
@@ -680,7 +680,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Three-point bending: 275 x 500 mm or 138 x 500 mm. Perimeter shear: 100 x 100 mm or 3-point. Lap joint. Engraved with date and specimen name."
+              "content": "Three-point bending: 275 x 500 mm or 138 x 500 mm.\nPerimeter shear: 100 x 100 mm or 3-point.\nLap joint.\nEngraved with date and specimen name."
             }
           ]
         },
@@ -759,7 +759,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Helmet of 95th percentile male (PERCY) to be 50 mm below the lines between top of front and main roll hoops and between top of main hoop to rear attachment point of main hoop bracing. Center of bottom circle placed minimum 915 mm from pedals."
+              "content": "Helmet of 95th percentile male (PERCY) to be 50 mm below the lines between top of front and main roll hoops and between top of main hoop to rear attachment point of main hoop bracing.\nCenter of bottom circle placed minimum 915 mm from pedals."
             }
           ]
         },
@@ -775,7 +775,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Template to pass from above cockpit to bottom of top SIS tube and less than 320mm from lowest point inside cockpit. Steering wheel & column, seat and padding can be removed; no removing firewall. Fore/aft translation of template OK."
+              "content": "Template to pass from above cockpit to bottom of top SIS tube and less than 320mm from lowest point inside cockpit.\nSteering wheel & column, seat and padding can be removed; no removing firewall.\nFore/aft translation of template OK."
             }
           ]
         },
@@ -791,7 +791,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Template to pass from rearwards of the steering column to 100 mm rearwards of the pedals. Steering wheel may be removed; padding may be removed if removable with no tools & with driver in seat."
+              "content": "Template to pass from rearwards of the steering column to 100 mm rearwards of the pedals.\nSteering wheel may be removed; padding may be removed if removable with no tools & with driver in seat."
             }
           ]
         }

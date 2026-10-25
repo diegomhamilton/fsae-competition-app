@@ -17,7 +17,9 @@ struct FocusedNotesEditor: View {
                     .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseNotesField(testCaseID: testCaseID, stepID: form.step.id).rawValue)
 
             }
-            .padding(16).background(Color.fsaeBackground, in: .rect(cornerRadius: 20))
+            .padding(16).background(Color.fsaeSurface, in: .rect(cornerRadius: 20))
+                .overlay { RoundedRectangle(cornerRadius: 20).stroke(Color.fsaeBorder, lineWidth: 1) }
+                .shadow(color: .black.opacity(0.06), radius: 8, y: 2)
         } else if !form.draft.notes.isEmpty {
             Button {
                 form.beginNotes()
@@ -28,7 +30,9 @@ struct FocusedNotesEditor: View {
                     Text(form.draft.notes).font(.title3).lineLimit(3)
                 }
                 .frame(maxWidth: .infinity, minHeight: 64, alignment: .leading).padding(16)
-                .background(Color.fsaeBackground, in: .rect(cornerRadius: 20))
+                .background(Color.fsaeSurface, in: .rect(cornerRadius: 20))
+                .overlay { RoundedRectangle(cornerRadius: 20).stroke(Color.fsaeBorder, lineWidth: 1) }
+                .shadow(color: .black.opacity(0.06), radius: 8, y: 2)
             }
             .buttonStyle(.plain).foregroundStyle(Color.fsaeText)
             .accessibilityIdentifier("execution.notes.preview")

@@ -156,6 +156,9 @@ struct FullStageView: View {
                     .disabled(isConfirmingResult)
                 }
                 FocusedTestDescription(state: step, showsTypeBadge: showsTypeBadge)
+            }
+        } result: {
+            if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {
                 FocusedResultView(
                     state: step, testCaseID: testCase.id, stageID: stage.id,
                     initialSaveFailure: hasFailedSave(testCase.id),
