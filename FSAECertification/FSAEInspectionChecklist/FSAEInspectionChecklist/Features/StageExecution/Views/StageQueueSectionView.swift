@@ -1,6 +1,16 @@
 import SwiftUI
 
 struct StageQueueSectionView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var usesReducedMotion: Bool {
+        #if DEBUG
+        reduceMotion || ProcessInfo.processInfo.arguments.contains("-inspection-reduce-motion")
+        #else
+        reduceMotion
+        #endif
+    }
+
     let section: InspectionSection
     let draftsByTestCaseID: [String: TestCaseDraft]
     let focusedIssues: [FullStageValidationIssue]
@@ -21,7 +31,9 @@ struct StageQueueSectionView: View {
                             .foregroundStyle(Color.fsaeSecondaryText)
                     }
                     Spacer()
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                    Image(systemName: "chevron.down")
+                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
+                        .animation(usesReducedMotion ? nil : .easeInOut(duration: 0.2), value: isExpanded)
                 }
                 .frame(minHeight: 56)
             }
