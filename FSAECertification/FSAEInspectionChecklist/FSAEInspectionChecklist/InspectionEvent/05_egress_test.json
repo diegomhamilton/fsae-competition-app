@@ -42,12 +42,12 @@
             {
               "displayOrder": 6,
               "type": "measurement",
-              "content": "Measure helmet clearance to the line between the top of the Front Hoop and Main Hoop. Required: at least 50 mm (2 in)."
+              "content": "Measure helmet clearance to the line between the top of the Front Hoop and Main Hoop.\n\nRequired: at least 50 mm (2 in)."
             },
             {
               "displayOrder": 7,
               "type": "measurement",
-              "content": "Measure helmet clearance to the line between the top of the Main Hoop and the base of the Main Hoop bracing. Required: at least 50 mm (2 in)."
+              "content": "Measure helmet clearance to the line between the top of the Main Hoop and the base of the Main Hoop bracing.\n\nRequired: at least 50 mm (2 in)."
             },
             {
               "displayOrder": 8,
@@ -67,7 +67,7 @@
             {
               "displayOrder": 11,
               "type": "measurement",
-              "content": "Measure shoulder harness angle relative to horizontal. Required: between 10° above and 20° below horizontal."
+              "content": "Measure shoulder harness angle relative to horizontal.\n\nRequired: between 10° above and 20° below horizontal."
             },
             {
               "displayOrder": 12,
@@ -82,7 +82,7 @@
             {
               "displayOrder": 14,
               "type": "measurement",
-              "content": "Measure elapsed egress time from when the driver removes one hand from the steering wheel to when both feet are on the ground in ready-to-run condition. Required: less than 5 seconds."
+              "content": "Measure elapsed egress time from when the driver removes one hand from the steering wheel to when both feet are on the ground in ready-to-run condition.\n\nRequired: less than 5 seconds."
             },
             {
               "displayOrder": 15,

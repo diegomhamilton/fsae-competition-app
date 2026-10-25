@@ -71,7 +71,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "HV insulating gloves which are 12 months or less from their test date. Must include leather gloves to protect the insulating gloves from mechanical damages. Test report must be provided."
+              "content": "HV insulating gloves which are 12 months or less from their test date.\n\nMust include leather gloves to protect the insulating gloves from mechanical damages.\n\nTest report must be provided."
             }
           ]
         },
@@ -122,7 +122,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Two HV insulating blankets of minimum 0.83 m² each. Test report must be provided."
+              "content": "Two HV insulating blankets of minimum 0.83 m² each.\n\nTest report must be provided."
             }
           ]
         },
@@ -282,7 +282,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Accumulator may have holes/openings with a maximum diameter of 10mm. Only round holes are allowed. Must not have a line of sight to the driver, with the firewall installed or not."
+              "content": "Accumulator may have holes/openings with a maximum diameter of 10mm.\n\nOnly round holes are allowed.\n\nMust not have a line of sight to the driver, with the firewall installed or not."
             }
           ]
         },
@@ -504,7 +504,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "The charger must include a Push-Pull OR Push-Rotate emergency stop switch. The E-Stop switch must have a minimum diameter of 25mm, open the shutdown circuit and hold the position when pressed. Must be labelled with the International Electrical Symbol (a red spark on a white edged blue triangle)."
+              "content": "The charger must include a Push-Pull OR Push-Rotate emergency stop switch.\n\nThe E-Stop switch must have a minimum diameter of 25mm, open the shutdown circuit and hold the position when pressed.\n\nMust be labelled with the International Electrical Symbol (a red spark on a white edged blue triangle)."
             }
           ]
         },
@@ -570,7 +570,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Carefully check all components of the accumulator and car to confirm they match what was provided on the datasheets tab of the ESF. ESF documentation is attached to the inspection sheet."
+              "content": "Carefully check all components of the accumulator and car to confirm they match what was provided on the datasheets tab of the ESF.\n\nESF documentation is attached to the inspection sheet."
             }
           ]
         },
@@ -618,7 +618,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Maintenance Plugs must not require tools to remove or install. Removal and installation must be possible using HV insulated gloves + leather gloves."
+              "content": "Maintenance Plugs must not require tools to remove or install.\n\nRemoval and installation must be possible using HV insulated gloves + leather gloves."
             }
           ]
         },
@@ -763,7 +763,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "No \"always energized\" TS cables leave the accumulator container. All TS wires leaving accumulator must be disconnected by an AIR."
+              "content": "No \"always energized\" TS cables leave the accumulator container.\n\nAll TS wires leaving accumulator must be disconnected by an AIR."
             }
           ]
         }
@@ -856,7 +856,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Accumulator Indicator indicates if voltage above 60VDC is present outside of the container. Check indicator during the charging demonstration."
+              "content": "Accumulator Indicator indicates if voltage above 60VDC is present outside of the container.\n\nCheck indicator during the charging demonstration."
             }
           ]
         },
@@ -889,7 +889,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "When charging, press the E-Stop button. The E-Stop button on charger must open the shutdown circuit and stop the charging."
+              "content": "When charging, press the E-Stop button.\n\nThe E-Stop button on charger must open the shutdown circuit and stop the charging."
             }
           ]
         },
@@ -1018,7 +1018,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "The cockpit firewall must separate the driver from any Tractive System components other than Outboard Wheel Motors and associated cables. Must be made of aluminum and grounded to the chassis."
+              "content": "The cockpit firewall must separate the driver from any Tractive System components other than Outboard Wheel Motors and associated cables.\n\nMust be made of aluminum and grounded to the chassis."
             }
           ]
         },
@@ -1032,7 +1032,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "The foot pedal must have a positive stop to prevent sensors from being mechanically overstressed. Two springs must be used to return the accelerator pedal to the off position and each spring must work with the other disconnected. The springs in the APPS are not acceptable return springs."
+              "content": "The foot pedal must have a positive stop to prevent sensors from being mechanically overstressed.\n\nTwo springs must be used to return the accelerator pedal to the off position and each spring must work with the other disconnected.\n\nThe springs in the APPS are not acceptable return springs."
             }
           ]
         },
@@ -1048,7 +1048,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Brake pedal overtravel switch must open shutdown circuit. Not resetable, must not rely on software to work."
+              "content": "Brake pedal overtravel switch must open shutdown circuit.\n\nNot resetable, must not rely on software to work."
             }
           ]
         },
@@ -1081,7 +1081,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "High pressure hydraulic pumps and lines must have 1 mm thick steel or aluminum shields to protect driver and workers. (Brakes & clutch exempt.)"
+              "content": "High pressure hydraulic pumps and lines must have 1 mm thick steel or aluminum shields to protect driver and workers.\n\n(Brakes & clutch exempt.)"
             }
           ]
         },
@@ -1113,7 +1113,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Fluid Leaks are not permitted. Firewalls must prevent contact with driver."
+              "content": "Fluid Leaks are not permitted.\n\nFirewalls must prevent contact with driver."
             }
           ]
         },
@@ -1129,7 +1129,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Scattershields are required for clutches, chains, belts, CVT rotating parts, etc. Must not be perforated and must end parallel to lowest part of front and rear sprockets. Attached with min. 6mm fasteners (CRITICAL FASTENERS)."
+              "content": "Scattershields are required for clutches, chains, belts, CVT rotating parts, etc.\n\nMust not be perforated and must end parallel to lowest part of front and rear sprockets.\n\nAttached with min. 6mm fasteners (CRITICAL FASTENERS)."
             }
           ]
         },
@@ -1145,7 +1145,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Scattershields must be made of approved materials. OEM motor drive sprocket cover is OK."
+              "content": "Scattershields must be made of approved materials.\n\nOEM motor drive sprocket cover is OK."
             }
           ]
         },
@@ -1177,7 +1177,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Compressed gas cylinders must be an unmodified COTS cylinder (labeled), filled with nonflammable gas and with a regulator on tank. Securely mounted, axis not pointed at driver, rearward of Main Hoop within the frame envelope, or in structural sidepod; not in cockpit, with appropriate lines & fittings."
+              "content": "Compressed gas cylinders must be an unmodified COTS cylinder (labeled), filled with nonflammable gas and with a regulator on tank.\n\nSecurely mounted, axis not pointed at driver, rearward of Main Hoop within the frame envelope, or in structural sidepod; not in cockpit, with appropriate lines & fittings."
             }
           ]
         },
@@ -1266,7 +1266,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "TS wiring must be enclosed in separate orange nonconductive conduit OR be an orange shielded cable. The conduit or cable must be securely anchored at each end to allow it to withstand a force of 200N without straining the cable or crimp."
+              "content": "TS wiring must be enclosed in separate orange nonconductive conduit OR be an orange shielded cable.\n\nThe conduit or cable must be securely anchored at each end to allow it to withstand a force of 200N without straining the cable or crimp."
             }
           ]
         },
@@ -1282,7 +1282,7 @@
             {
               "displayOrder": 1,
               "type": "measurement",
-              "content": "Measure resistance between electrically conductive surfaces and GLV System Ground must be < 300mOhm. Measure resistance between parts which may become electrically conductive (Carbon Fiber parts) and GLV System Ground must be <5 Ohm."
+              "content": "Measure resistance between electrically conductive surfaces and GLV System Ground must be < 300mOhm.\n\nMeasure resistance between parts which may become electrically conductive (Carbon Fiber parts) and GLV System Ground must be <5 Ohm."
             }
           ]
         },
@@ -1543,7 +1543,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Shutdown buttons must be a push-pull OR push-rotate emergency stop button. Must hold when operated to the OFF position."
+              "content": "Shutdown buttons must be a push-pull OR push-rotate emergency stop button.\n\nMust hold when operated to the OFF position."
             }
           ]
         },
@@ -1559,7 +1559,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "One Shutdown button must be on each side of the vehicle. It must have a diameter 40mm minimum. Must not be easily removable or mounted onto removable bodywork."
+              "content": "One Shutdown button must be on each side of the vehicle.\n\nIt must have a diameter 40mm minimum.\n\nMust not be easily removable or mounted onto removable bodywork."
             }
           ]
         },
@@ -1575,7 +1575,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "One Shutdown button must be mounted in the cockpit. It must have a diameter 24mm minimum. Located in easy reach of the belted-in driver and not obstructed by the steering wheel or any other part."
+              "content": "One Shutdown button must be mounted in the cockpit.\n\nIt must have a diameter 24mm minimum.\n\nLocated in easy reach of the belted-in driver and not obstructed by the steering wheel or any other part."
             }
           ]
         },
@@ -1608,7 +1608,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "OFF and ON positions must be clearly marked. ON position must be in horizontal position."
+              "content": "OFF and ON positions must be clearly marked.\n\nON position must be in horizontal position."
             }
           ]
         },
@@ -1673,7 +1673,7 @@
             {
               "displayOrder": 1,
               "type": "check",
-              "content": "Measure isolation between TSMP and chassis ground. Choose next voltage level above TS Voltage (250V or 500V)."
+              "content": "Measure isolation between TSMP and chassis ground.\n\nChoose next voltage level above TS Voltage (250V or 500V)."
             }
           ]
         },
@@ -1991,7 +1991,7 @@
             {
               "displayOrder": 1,
               "type": "measurement",
-              "content": "The vehicle must make a characteristic sound when Ready-to-Drive. Must be sounded continuously for min 1 second and max 3 seconds. Minimum sound level of 80dBA. The vehicle must not make other sounds similar to Ready-to-Drive sound."
+              "content": "The vehicle must make a characteristic sound when Ready-to-Drive.\n\nMust be sounded continuously for min 1 second and max 3 seconds.\n\nMinimum sound level of 80dBA.\n\nThe vehicle must not make other sounds similar to Ready-to-Drive sound."
             }
           ]
         },
@@ -2164,7 +2164,7 @@
             {
               "displayOrder": 4,
               "type": "action",
-              "content": "Press accelerator — axle must not turn. Repeat for each APPS sensor."
+              "content": "Press accelerator — axle must not turn.\n\nRepeat for each APPS sensor."
             }
           ]
         },
@@ -2212,7 +2212,7 @@
             {
               "displayOrder": 7,
               "type": "context",
-              "content": "The TS may not automatically return to active state. The driver must not be able to reactivate the Tractive System."
+              "content": "The TS may not automatically return to active state.\n\nThe driver must not be able to reactivate the Tractive System."
             }
           ]
         },
