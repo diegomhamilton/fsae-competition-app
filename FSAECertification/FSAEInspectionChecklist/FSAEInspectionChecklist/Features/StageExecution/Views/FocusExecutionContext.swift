@@ -9,7 +9,7 @@ struct FocusExecutionContext: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(title)
-                .font(.title2).bold()
+                .font(.largeTitle).bold()
                 .foregroundStyle(Color.fsaeText)
                 .accessibilityAddTraits(.isHeader)
             HStack {
@@ -17,7 +17,7 @@ struct FocusExecutionContext: View {
                 Spacer()
                 Text("\(position) of \(total)").monospacedDigit()
             }
-            .font(.subheadline)
+            .font(.title3)
             .foregroundStyle(Color.fsaeSecondaryText)
         }
         .padding(.vertical)

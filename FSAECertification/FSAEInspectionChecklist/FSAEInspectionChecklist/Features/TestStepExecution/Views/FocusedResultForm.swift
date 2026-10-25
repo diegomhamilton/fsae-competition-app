@@ -23,6 +23,7 @@ final class FocusedResultForm {
     @ObservationIgnored private let saveDraft: @MainActor (TestStepDraft) async -> Bool
     @ObservationIgnored private let autosaveDelay: Duration
     @ObservationIgnored private let evidenceAvailable: @MainActor (EvidenceAttachmentMetadata) -> Bool
+    @ObservationIgnored private var replacingPhotoID: String?
     @ObservationIgnored private var revision = 0
     @ObservationIgnored private var savedRevision = 0
     @ObservationIgnored private var debounceTask: Task<Void, Never>?
@@ -116,10 +117,10 @@ final class FocusedResultForm {
         changed()
     }
 
-    func editResult() {
+    func editResult(includingEvidence: Bool = true) {
         isEditingOutcome = step.requiredOutcome
         if step.type == .measurement { isEditingMeasurement = true }
-        if step.requiresEvidence { isEditingEvidence = true }
+        isEditingEvidence = includingEvidence && step.requiresEvidence
         if !step.requiredOutcome && step.type != .measurement && !step.requiresEvidence { beginNotes() }
         attemptedCompletion = false
     }
@@ -163,6 +164,8 @@ final class FocusedResultForm {
         changed()
     }
 
+    func preparePhotoReplacement(_ id: String?) { replacingPhotoID = id }
+
     func beginPhotoImport() {
         isImportingPhoto = true
         photoFailed = false
@@ -170,10 +173,13 @@ final class FocusedResultForm {
 
     func finishPhotoImport(_ attachment: EvidenceAttachmentMetadata?) {
         isImportingPhoto = false
+        let replacedID = replacingPhotoID
+        replacingPhotoID = nil
         guard let attachment else {
             photoFailed = true
             return
         }
+        if let replacedID { draft.evidenceAttachments.removeAll { $0.id == replacedID } }
         draft.evidenceAttachments.append(attachment)
         isEditingEvidence = false
         changed()

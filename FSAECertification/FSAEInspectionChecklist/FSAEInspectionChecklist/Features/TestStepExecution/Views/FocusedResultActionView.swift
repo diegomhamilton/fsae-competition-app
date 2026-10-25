@@ -10,16 +10,18 @@ struct FocusedResultActionView: View {
             Label(FocusedResultStrings.confirmed, systemImage: "checkmark.circle.fill")
                 .font(.headline)
                 .foregroundStyle(Color.fsaeGreen)
-                .frame(maxWidth: .infinity, minHeight: 56)
+                .frame(maxWidth: .infinity, minHeight: 80)
                 .accessibilityIdentifier("execution.result-confirmation")
         } else if form.isConfirming {
             ProgressView(FocusedResultStrings.saving)
-                .frame(maxWidth: .infinity, minHeight: 56)
+                .frame(maxWidth: .infinity, minHeight: 80)
                 .accessibilityIdentifier("execution.result-saving")
         } else {
             Button(action: confirm) {
                 Label(title, systemImage: "arrow.right")
-                    .frame(maxWidth: .infinity, minHeight: 48)
+                    .font(.title3.bold())
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity, minHeight: 80)
             }
                 .buttonStyle(.borderedProminent)
                 .tint(Color.fsaePrimary)

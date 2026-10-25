@@ -114,6 +114,7 @@ struct StageFocusCoordinatorTests {
 
         #expect(coordinator.advanceAfterSave(draftsByTestCaseID: drafts))
         #expect(coordinator.mode == .review)
+        #expect(coordinator.overview.lastCorrectedCaseID == "second")
         #expect(!coordinator.isEditingFromReview)
         #expect(coordinator.backToTest())
         #expect(coordinator.selectedTestCaseID == "first")
