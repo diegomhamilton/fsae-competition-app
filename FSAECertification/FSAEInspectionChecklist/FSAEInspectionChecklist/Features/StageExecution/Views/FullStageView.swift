@@ -136,8 +136,7 @@ struct FullStageView: View {
         FocusedExecutionLayout {
             if let testCase = activeTestCaseState {
                 FocusExecutionContext(title: testCase.title, vehicle: team,
-                    position: testPosition, total: focus.orderedTestCases.count,
-                    showsDetails: { showsDetails = true }, isSavingInformation: isConfirmingResult)
+                    position: testPosition, total: focus.orderedTestCases.count)
             }
         } content: {
             if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {
@@ -178,6 +177,18 @@ struct FullStageView: View {
                 .id("\(testCase.id).\(step.id)")
             }
 
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(Strings.details, systemImage: "info.circle") {
+                    showsDetails = true
+                }
+                .labelStyle(.iconOnly)
+                .inspectionButtonStyle()
+                .accessibilityIdentifier("execution.details.open")
+                .disabled(isConfirmingResult)
+            }
+            .sharedBackgroundVisibility(.hidden)
         }
     }
 

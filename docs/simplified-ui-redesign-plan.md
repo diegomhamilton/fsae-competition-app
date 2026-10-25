@@ -94,10 +94,12 @@ The user approved implementing improvements **1-10**, including the previously d
 
 ## Native Liquid Glass buttons — 2026-10-25
 
-Action buttons share `inspectionButtonStyle()`, which configures SwiftUI's native `.glass` button style with regular glass, an 18% color tint, the standard capsule shape, and the large control size. SwiftUI owns padding, pressed feedback, disabled appearance, and interaction behavior. The app applies this as its default; Pass/Fail override only their red/green tint. Toolbar actions, including Add Team and sheet dismissal, use the same configuration and hide the additional toolbar glass background.
+Action buttons share `inspectionButtonStyle()`, which configures SwiftUI's native `.glass` button style with regular glass, an 18% color tint, a rounded rectangle with the previous Pass/Fail corner radius of 24 points, and the large control size. SwiftUI owns padding, pressed feedback, disabled appearance, and interaction behavior. The app applies this as its default; Pass/Fail override only their red/green tint. Toolbar actions, including Add Team and sheet dismissal, use the same configuration and hide the additional toolbar glass background.
 
 Tappable navigation/review rows, photo previews, and embedded editing controls retain their content layouts. System back navigation, confirmation dialogs, and camera/photo picker controls keep platform presentation. No workflow, labels, or accessibility identifiers change.
 
 Manual review checklist: Sessions → Add Team (toolbar and form); Team → Open stage and Complete Session (including disabled state); inspection Pass/Fail, Save & next, secondary actions, photo choices, and review actions. Confirm matching corners, readable text, and native press feedback.
 
 Validation: generic iOS Simulator build succeeded for arm64 and x86_64; `git diff --check` passed. Visually inspected Add Team and the isolated Pass/Fail inspection fixture in the running iPhone 17 Pro simulator. Remaining interactive checklist items require manual review.
+
+The test information action now lives in the focused test's top-right toolbar. It retains its View details label, accessibility identifier, details sheet, and saving-state guard; the test heading no longer contains a separate info control.
