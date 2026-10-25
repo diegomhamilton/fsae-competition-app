@@ -42,6 +42,8 @@ Sticker eligibility is intended to derive from required submitted stages plus op
 
 ## Testing Approach
 
+[Add Team input diagnostics](add-team-input-diagnostics.md) records the first-focus device stall and the debugger-versus-standalone comparison.
+
 Swift Testing covers domain models, coordinators, services, persistence, and view helpers in the same implementation slices as the code under test. Test names and documentation should map positive, negative, and edge cases back to `inspection_event_use_cases.feature`.
 
 Dedicated UI automation and snapshot tests belong to Task 8. The current navigation hooks are closer to the target shape after the Stage-tab refactor, but implementation PRs should still include focused unit tests plus manual validation notes until the dedicated UI target exists.
