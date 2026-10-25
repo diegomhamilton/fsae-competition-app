@@ -45,8 +45,10 @@ struct FocusedTestDetails: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(Strings.done) { dismiss() }
+                        .inspectionButtonStyle()
                         .accessibilityIdentifier("execution.details.done")
                 }
+                .sharedBackgroundVisibility(.hidden)
             }
         }
         .accessibilityIdentifier("execution.details")

@@ -94,8 +94,10 @@ struct FullStageView: View {
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
                             Button(Strings.done) { showsQueue = false }
+                                .inspectionButtonStyle()
                                 .accessibilityIdentifier("execution.queue.close")
                         }
+                        .sharedBackgroundVisibility(.hidden)
                     }
             }
         }

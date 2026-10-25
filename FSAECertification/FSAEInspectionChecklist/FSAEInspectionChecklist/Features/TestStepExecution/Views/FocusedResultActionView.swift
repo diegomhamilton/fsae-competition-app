@@ -23,7 +23,7 @@ struct FocusedResultActionView: View {
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, minHeight: 80)
             }
-                .buttonStyle(.glassProminent)
+                .inspectionButtonStyle()
                 .tint(Color.fsaePrimary)
                 .accessibilityIdentifier("execution.save-next")
         }

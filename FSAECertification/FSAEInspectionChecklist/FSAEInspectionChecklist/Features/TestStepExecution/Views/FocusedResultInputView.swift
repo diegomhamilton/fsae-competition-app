@@ -28,9 +28,7 @@ struct FocusedResultInputView: View {
                         .frame(maxWidth: .infinity, minHeight: 48)
                         .padding(12)
                     }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(form.draft.outcome.color)
-                    .glassEffect(.regular.tint((form.draft.outcome.color).opacity(0.18)).interactive(), in: .rect(cornerRadius: 24))
+                    .inspectionButtonStyle(tint: form.draft.outcome.color)
                     .accessibilityIdentifier("execution.result.edit")
                 }
             } else if form.step.requiredOutcome && !form.isEditingMeasurement {
@@ -48,9 +46,7 @@ struct FocusedResultInputView: View {
                                 .frame(maxWidth: .infinity, minHeight: 80)
                                 .contentShape(.rect(cornerRadius: 24))
                         }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(outcome == .fail ? Color.fsaeRed : Color.fsaeGreen)
-                        .glassEffect(.regular.tint((outcome == .fail ? Color.fsaeRed : Color.fsaeGreen).opacity(0.18)).interactive(), in: .rect(cornerRadius: 24))
+                        .inspectionButtonStyle(tint: outcome == .fail ? .fsaeRed : .fsaeGreen)
                         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testStepOutcome(stepID: form.step.id, outcome: outcome).rawValue)
                         .accessibilityValue(form.draft.outcome == outcome ? FocusedResultStrings.selected : "")
                     }
@@ -62,7 +58,7 @@ struct FocusedResultInputView: View {
             if form.step.requiresEvidence && form.draft.evidenceAttachments.isEmpty {
                 Button(FocusedResultStrings.addPhoto, systemImage: "camera", action: addPhoto)
                     .font(.title2.bold()).frame(maxWidth: .infinity, minHeight: 100)
-                    .buttonStyle(.bordered).disabled(form.isImportingPhoto)
+                    .inspectionButtonStyle().disabled(form.isImportingPhoto)
                     .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseEvidenceAction(testCaseID: testCaseID, stepID: form.step.id).rawValue)
             }
         }

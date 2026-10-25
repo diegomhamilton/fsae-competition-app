@@ -16,6 +16,7 @@ struct FocusedEvidenceTile: View {
                 .frame(maxWidth: .infinity, maxHeight: 160)
                 .clipShape(.rect(cornerRadius: 20))
             }
+            .buttonStyle(.plain)
             .accessibilityLabel(FocusedResultStrings.viewPhotos)
             .accessibilityIdentifier("execution.evidence.preview.\(attachment.id)")
             Button(FocusedResultStrings.retake, systemImage: "camera.rotate", action: retake)

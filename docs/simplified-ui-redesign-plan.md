@@ -91,3 +91,13 @@ This update records prioritization only; the new interaction pass is not impleme
 ## Implementation scope and PR sequence - 2026-10-15
 
 The user approved implementing improvements **1-10**, including the previously deferred large measurement input, photo previews, and whole-card review editing. Improvements **11-15 remain deferred**. The [PR and implementation plan](simplified-ui-vault/Workflow/Implementation-plan-1-to-10.md) sequences an existing-redesign foundation PR followed by three implementation PRs: focused inputs (1-4, 8-9), navigation/review continuity (5-6, 10), and next-test transitions (7). Each slice replaces predecessor components, captures its task states, and records validation. This record plans the work; no new app implementation or PR publication is included in this update.
+
+## Native Liquid Glass buttons — 2026-10-25
+
+Action buttons share `inspectionButtonStyle()`, which configures SwiftUI's native `.glass` button style with regular glass, an 18% color tint, the standard capsule shape, and the large control size. SwiftUI owns padding, pressed feedback, disabled appearance, and interaction behavior. The app applies this as its default; Pass/Fail override only their red/green tint. Toolbar actions, including Add Team and sheet dismissal, use the same configuration and hide the additional toolbar glass background.
+
+Tappable navigation/review rows, photo previews, and embedded editing controls retain their content layouts. System back navigation, confirmation dialogs, and camera/photo picker controls keep platform presentation. No workflow, labels, or accessibility identifiers change.
+
+Manual review checklist: Sessions → Add Team (toolbar and form); Team → Open stage and Complete Session (including disabled state); inspection Pass/Fail, Save & next, secondary actions, photo choices, and review actions. Confirm matching corners, readable text, and native press feedback.
+
+Validation: generic iOS Simulator build succeeded for arm64 and x86_64; `git diff --check` passed. Visually inspected Add Team and the isolated Pass/Fail inspection fixture in the running iPhone 17 Pro simulator. Remaining interactive checklist items require manual review.

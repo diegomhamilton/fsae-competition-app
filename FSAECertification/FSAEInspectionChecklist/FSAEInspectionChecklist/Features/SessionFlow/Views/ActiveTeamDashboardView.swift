@@ -67,7 +67,7 @@ struct ActiveTeamDashboardView: View {
                     Label(Strings.openStage, systemImage: "arrow.right.circle.fill")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .inspectionButtonStyle()
                 .controlSize(.large)
                 .accessibilityIdentifier(
                     InspectionAccessibilityIdentifier.activeTeamDashboardOpenCurrentStageAction(
@@ -81,7 +81,7 @@ struct ActiveTeamDashboardView: View {
                     Label(Strings.completeSession, systemImage: "checkmark.seal.fill")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .inspectionButtonStyle()
                 .controlSize(.large)
                 .disabled(!coordinator.canCompleteSession)
                 .accessibilityHint(coordinator.canCompleteSession ? "" : Strings.completeSessionBlocked)
@@ -97,8 +97,7 @@ struct ActiveTeamDashboardView: View {
                         Label(Strings.debugMarkAllPassed, systemImage: "checkmark.circle")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
+                    .inspectionButtonStyle()
                     .accessibilityIdentifier(
                         InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllPassedAction(teamID: team.id).rawValue
                     )
@@ -108,8 +107,7 @@ struct ActiveTeamDashboardView: View {
                         Label(Strings.debugMarkAllIncomplete, systemImage: "xmark.circle")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
+                    .inspectionButtonStyle()
                     .accessibilityIdentifier(
                         InspectionAccessibilityIdentifier.activeTeamDashboardDebugMarkAllIncompleteAction(teamID: team.id).rawValue
                     )
