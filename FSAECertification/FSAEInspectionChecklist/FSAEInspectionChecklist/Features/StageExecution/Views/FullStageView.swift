@@ -79,6 +79,8 @@ struct FullStageView: View {
         queueScreen()
         .navigationTitle(stage.title)
         .navigationBarTitleDisplayMode(.large)
+        // The persistent owner updates visibility when the route changes, including a pop.
+        .toolbar(focus.mode == .focus ? .hidden : .visible, for: .tabBar)
         .navigationDestination(item: Binding(
             get: { focus.route(after: nil) },
             set: { if $0 == nil { focus.popNavigation(after: nil) } }
@@ -118,9 +120,14 @@ struct FullStageView: View {
         }
         .navigationTitle(route.mode == .review ? Strings.review : "")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar(route.mode == .focus ? .hidden : .visible, for: .tabBar)
         #if DEBUG
         .task {
+            if InspectionSnapshotScenario.current == .queueReturn, route.mode == .focus {
+                // Replay a native animated pop in an isolated TabView, without device input.
+                do { try await Task.sleep(for: .seconds(2)) } catch { return }
+                withAnimation { focus.showQueue() }
+                return
+            }
             guard route.mode == .review else { return }
             switch InspectionSnapshotScenario.current?.rawValue {
             case "review-return": focus.backToTest()
