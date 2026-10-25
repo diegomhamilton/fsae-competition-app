@@ -215,8 +215,7 @@ struct FocusedResultView: View {
             }
         }
         .onChange(of: focusedField) { previous, newValue in
-            form.setNotesEditing(newValue == .notes)
-            if previous != nil && newValue == nil { form.finishInput() }
+            form.focusChanged(from: previous, to: newValue)
         }
         .onChange(of: selectedPhoto) { _, newValue in
             guard let newValue, !form.isImportingPhoto else { return }
