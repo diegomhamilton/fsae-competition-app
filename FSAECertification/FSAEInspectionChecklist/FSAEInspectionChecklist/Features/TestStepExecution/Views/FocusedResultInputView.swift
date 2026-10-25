@@ -7,16 +7,33 @@ struct FocusedResultInputView: View {
     let addPhoto: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading) {
-            if form.step.requiredOutcome {
-                HStack {
+        VStack(alignment: .leading, spacing: 20) {
+            if form.isEditingNotes {
+                if !form.draft.outcome.satisfiesRequiredOutcome {
+                    Label(FocusedResultStrings.notes, systemImage: "note.text").font(.title2.bold())
+                } else {
+                Button {
+                    form.setNotesEditing(false)
+                    form.editResult(includingEvidence: false)
+                    focusedField.wrappedValue = nil
+                } label: {
+                    Label(form.draft.outcome.displayName, systemImage: form.draft.outcome == .fail ? "xmark.circle.fill" : "checkmark.circle.fill")
+                        .font(.title2.bold()).foregroundStyle(form.draft.outcome.color)
+                }
+                .frame(minHeight: 48)
+                }
+            } else if form.step.requiredOutcome && !form.isEditingMeasurement {
+                HStack(spacing: 12) {
                     ForEach([InspectionOutcome.pass, .fail], id: \.self) { outcome in
                         Button {
                             form.selectOutcome(outcome)
                             if outcome == .fail { focusedField.wrappedValue = .notes }
                         } label: {
-                            Label(outcome.displayName, systemImage: form.draft.outcome == outcome ? "checkmark.circle.fill" : "circle")
-                                .frame(maxWidth: .infinity, minHeight: 48)
+                            VStack(spacing: 8) {
+                                Image(systemName: form.draft.outcome == outcome ? "checkmark.circle.fill" : "circle")
+                                Text(outcome.displayName)
+                            }
+                            .font(.title2.bold()).frame(maxWidth: .infinity, minHeight: 132)
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(outcome == .fail ? Color.fsaeRed : Color.fsaePrimary)
@@ -25,63 +42,14 @@ struct FocusedResultInputView: View {
                     }
                 }
             }
-
-            if form.step.type == .measurement {
-                HStack {
-                    TextField(
-                        FocusedResultStrings.measurement,
-                        text: Binding(get: { form.draft.measurementInput }, set: form.updateMeasurement)
-                    )
-                    .font(.title2)
-                    .textFieldStyle(.roundedBorder)
-                    .measurementKeyboard()
-                    .focused(focusedField, equals: .measurement)
-                    .accessibilityIdentifier(InspectionAccessibilityIdentifier.measurementField(stepID: form.step.id).rawValue)
-                    Text(form.step.measurementRange?.unit.symbol ?? "")
-                        .font(.title3)
-                }
+            if form.step.type == .measurement && !form.isEditingNotes {
+                FocusedMeasurementInput(form: form, focusedField: focusedField)
             }
-
-            if form.showsNotes {
-                TextField(
-                    form.draft.outcome == .fail ? FocusedResultStrings.requiredNotes : FocusedResultStrings.notes,
-                    text: Binding(get: { form.draft.notes }, set: form.updateNotes),
-                    axis: .vertical
-                )
-                .lineLimit(2...5)
-                .textFieldStyle(.roundedBorder)
-                .focused(focusedField, equals: .notes)
-                .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseNotesField(testCaseID: testCaseID, stepID: form.step.id).rawValue)
-            }
-
-            if form.step.requiresEvidence {
-                Button(FocusedResultStrings.addPhoto, systemImage: "camera") { addPhoto() }
-                    .disabled(form.isImportingPhoto)
-                    .buttonStyle(.bordered)
-                    .frame(minHeight: 48)
+            if form.step.requiresEvidence && form.draft.evidenceAttachments.isEmpty {
+                Button(FocusedResultStrings.addPhoto, systemImage: "camera", action: addPhoto)
+                    .font(.title2.bold()).frame(maxWidth: .infinity, minHeight: 100)
+                    .buttonStyle(.bordered).disabled(form.isImportingPhoto)
                     .accessibilityIdentifier(InspectionAccessibilityIdentifier.testCaseEvidenceAction(testCaseID: testCaseID, stepID: form.step.id).rawValue)
-            }
-
-            ForEach(form.draft.evidenceAttachments) { attachment in
-                Label(attachment.displayName, systemImage: "photo")
-                    .font(.callout)
-                    .contextMenu {
-                        Button(FocusedResultStrings.removePhoto, systemImage: "trash", role: .destructive) {
-                            form.removeAttachment(attachment.id)
-                        }
-                    }
-            }
-
-            if form.isEditingMeasurement || form.isEditingNotes || form.isEditingEvidence {
-                Button {
-                    focusedField.wrappedValue = nil
-                    form.finishInput()
-                } label: {
-                    Label(FocusedResultStrings.done, systemImage: "checkmark")
-                        .frame(maxWidth: .infinity, minHeight: 48)
-                }
-                .buttonStyle(.bordered)
-                .accessibilityIdentifier("execution.result.done")
             }
         }
     }

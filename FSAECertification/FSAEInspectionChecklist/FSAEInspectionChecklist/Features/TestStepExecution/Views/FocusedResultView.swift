@@ -5,6 +5,7 @@ import SwiftUI
 /// One place to enter, amend, persist, and confirm the active step's result.
 /// Requirements come from the step schema rather than a fixed visual state enum.
 struct FocusedResultView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let state: InspectionTestCaseStepViewState
     let testCaseID: String
     let stageID: String
@@ -68,7 +69,7 @@ struct FocusedResultView: View {
                             form: form,
                             testCaseID: testCaseID,
                             edit: {
-                                form.editResult()
+                                form.editResult(includingEvidence: false)
                                 if state.step.type == .measurement { focusedField = .measurement }
                             },
                             viewEvidence: {
@@ -88,7 +89,7 @@ struct FocusedResultView: View {
                             form: form,
                             testCaseID: testCaseID,
                             focusedField: $focusedField,
-                            addPhoto: { showsPhotoSources = true }
+                            addPhoto: { form.preparePhotoReplacement(nil); showsPhotoSources = true }
                         )
                     }
                 }
@@ -100,13 +101,25 @@ struct FocusedResultView: View {
                         form.beginNotes()
                         focusedField = .notes
                     },
-                    addPhoto: { showsPhotoSources = true },
+                    addPhoto: { form.preparePhotoReplacement(nil); showsPhotoSources = true },
                     flagIssue: {
                         form.flagIssue()
                         focusedField = .notes
                     },
                     review: returnToReview
                 )
+            }
+            FocusedNotesEditor(form: form, testCaseID: testCaseID, focusedField: $focusedField)
+            ForEach(form.draft.evidenceAttachments.filter { $0.localRelativePath != nil }) { attachment in
+                FocusedEvidenceTile(attachment: attachment, view: {
+                    Task {
+                        previewPhotoURL = try? await FocusedResultEvidenceStore.shared.fileURL(for: attachment)
+                        previewPhotoURLs = previewPhotoURL.map { [$0] } ?? []
+                    }
+                }, retake: {
+                    form.preparePhotoReplacement(attachment.id)
+                    showsPhotoSources = true
+                })
             }
             if form.isImportingPhoto {
                 ProgressView(FocusedResultStrings.photoLoading)
@@ -141,6 +154,11 @@ struct FocusedResultView: View {
                     .accessibilityIdentifier("execution.review.return")
             }
         }
+        .frame(maxWidth: .infinity, minHeight: 180, alignment: .center)
+        .padding(20)
+        .background(Color.fsaeSurface, in: .rect(cornerRadius: 28))
+        .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: form.isReady)
+        .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: form.isEditingNotes)
         .controlSize(.large)
         .disabled(form.isConfirming || form.didConfirm)
         .accessibilityIdentifier("execution.result-component")
@@ -166,8 +184,19 @@ struct FocusedResultView: View {
         }
         .photosPicker(isPresented: $showsPhotoPicker, selection: $selectedPhoto, matching: .images)
         .quickLookPreview($previewPhotoURL, in: previewPhotoURLs)
-        .onChange(of: focusedField) { _, newValue in
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button(FocusedResultStrings.done) {
+                    focusedField = nil
+                    form.finishInput()
+                }
+                .accessibilityIdentifier("execution.result.done")
+            }
+        }
+        .onChange(of: focusedField) { previous, newValue in
             form.setNotesEditing(newValue == .notes)
+            if previous != nil && newValue == nil { form.finishInput() }
         }
         .onChange(of: selectedPhoto) { _, newValue in
             guard let newValue, !form.isImportingPhoto else { return }
@@ -210,6 +239,7 @@ struct FocusedResultView: View {
                 showsPhotoSources = true
             case "optional-notes":
                 form.beginNotes()
+                focusedField = .notes
             case "auto-advance":
                 if state.id == "step-3" {
                     form.selectOutcome(.pass)
@@ -228,6 +258,10 @@ struct FocusedResultView: View {
                 form.setNotesEditing(true)
             default:
                 break
+            }
+            if ProcessInfo.processInfo.arguments.contains("-inspection-invalid-measurement") {
+                form.selectOutcome(.pass)
+                form.updateMeasurement("6.25")
             }
         }
         #endif
