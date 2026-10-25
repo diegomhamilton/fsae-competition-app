@@ -31,6 +31,7 @@ struct ActiveTeamDashboardView: View {
     var body: some View {
         let team = coordinator.activeTeam
         let stages = coordinator.stages
+        let progress = InspectionProgressSummary(stages: stages)
         let selectedStageID = coordinator.activeStage?.id
 
         ScreenShell(
@@ -39,7 +40,7 @@ struct ActiveTeamDashboardView: View {
         ) {
 
             HStack(spacing: 12) {
-                MetricTile(value: "\(overallProgressPercent(stages: stages))%", label: Strings.overallProgress, systemImage: "chart.pie", color: .fsaeGreen)
+                MetricTile(value: progress.percentageText, label: "\(Strings.overallProgress) · \(progress.countText)", systemImage: "chart.pie", color: .fsaeGreen)
                 MetricTile(value: "\(stages.map(\.blockerCount).reduce(0, +))", label: Strings.openBlockers, systemImage: "exclamationmark.triangle", color: .fsaeAmber)
             }
 
@@ -139,14 +140,6 @@ struct ActiveTeamDashboardView: View {
         }
         .navigationTitle("\(team.carNumber) \(team.school)")
     }
-
-    private func overallProgressPercent(stages: [FullStageViewState]) -> Int {
-        guard !stages.isEmpty else {
-            return 0
-        }
-
-        return Int(stages.map(\.progressFraction).reduce(0, +) / Double(stages.count) * 100)
-    }
 }
 
 private struct StageRow: View {
@@ -177,6 +170,9 @@ private struct StageRow: View {
                     ).rawValue
                 )
             }
+            Text("\(state.progressText) · \(InspectionProgressSummary(completeStepCount: state.completeStepCount, totalStepCount: state.stepCount).percentageText)")
+                .font(.caption)
+                .foregroundStyle(Color.fsaeSecondaryText)
             ProgressView(value: state.progressFraction)
                 .tint(state.blockerCount == 0 ? Color.fsaeGreen : Color.fsaePrimary)
         }
