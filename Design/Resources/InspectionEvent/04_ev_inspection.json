@@ -44,7 +44,7 @@
           "displayOrder": 4,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "HV insulating gloves which are 12 months or less from their test date.\n\nMust include leather gloves to protect the insulating gloves from mechanical damages.\n\nTest report must be provided." }
+            { "displayOrder": 1, "type": "check", "content": "HV insulating gloves which are 12 months or less from their test date.\n\nMust include leather gloves to protect the insulating gloves from mechanical damages.\n\nTest report must be provided." }
           ]
         },
         {
@@ -74,7 +74,7 @@
           "displayOrder": 7,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Two HV insulating blankets of minimum 0.83 m² each.\n\nTest report must be provided." }
+            { "displayOrder": 1, "type": "check", "content": "Two HV insulating blankets of minimum 0.83 m² each.\n\nTest report must be provided." }
           ]
         },
         {
@@ -114,7 +114,7 @@
           "displayOrder": 11,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Two 4 mm banana-banana type measuring tips." }
+            { "displayOrder": 1, "type": "check", "content": "Two 4 mm banana-banana type measuring tips." }
           ]
         },
         {
@@ -336,7 +336,7 @@
           "displayOrder": 32,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "The conduit or shielded cable must be securely anchored at each end to allow it to withstand a force of 200 N without straining the cable end crimp." }
+            { "displayOrder": 1, "type": "check", "content": "The conduit or shielded cable must be securely anchored at each end to allow it to withstand a force of 200 N without straining the cable end crimp." }
           ]
         }
       ]
@@ -574,10 +574,10 @@
           "displayOrder": 54,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "measurement", "content": "IMD must open shutdown circuit in 30 seconds when isolation fault is present." },
+            { "displayOrder": 1, "type": "measurement", "content": "IMD must open shutdown circuit in 30 seconds when isolation fault is present." },
             { "displayOrder": 2, "type": "action", "content": "Accumulator in valid charge condition." },
             { "displayOrder": 3, "type": "action", "content": "Connect TSMP(-) and GLVS ground using the IMD test resistor." },
-            { "displayOrder": 4, "type": "action", "content": "IMD shall detect an insulation fault, turn off the charger and open AIRs in 30 seconds." },
+            { "displayOrder": 4, "type": "action", "content": "IMD shall detect an insulation fault, turn off the charger and open AIRs in 30 seconds." },
             { "displayOrder": 5, "type": "action", "content": "Repeat the test using the TSMP(+)." }
           ]
         },
@@ -674,7 +674,7 @@
           "displayOrder": 63,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "High pressure hydraulic pumps and lines must have 1 mm thick steel or aluminum shields to protect driver and workers.\n\n(Brakes & clutch exempt.)" }
+            { "displayOrder": 1, "type": "check", "content": "High pressure hydraulic pumps and lines must have 1 mm thick steel or aluminum shields to protect driver and workers.\n\n(Brakes & clutch exempt.)" }
           ]
         },
         {
@@ -684,7 +684,7 @@
           "displayOrder": 64,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Catch cans must be sealed: 10% of system volume or 0.5 L minimum." }
+            { "displayOrder": 1, "type": "check", "content": "Catch cans must be sealed: 10% of system volume or 0.5 L minimum." }
           ]
         },
         {
@@ -800,7 +800,7 @@
           "displayOrder": 75,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "measurement", "content": "Measure resistance between electrically conductive surfaces and GLV System Ground must be < 300mOhm.\n\nMeasure resistance between parts which may become electrically conductive (Carbon Fiber parts) and GLV System Ground must be <5 Ohm." }
+            { "displayOrder": 1, "type": "measurement", "content": "Measure resistance between electrically conductive surfaces and GLV System Ground must be < 300mOhm.\n\nMeasure resistance between parts which may become electrically conductive (Carbon Fiber parts) and GLV System Ground must be <5 Ohm." }
           ]
         },
         {
@@ -920,7 +920,7 @@
           "displayOrder": 87,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "MSD must be operable in 10 seconds or less by an untrained person." }
+            { "displayOrder": 1, "type": "check", "content": "MSD must be operable in 10 seconds or less by an untrained person." }
           ]
         },
         {
@@ -1050,10 +1050,10 @@
           "displayOrder": 100,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "measurement", "content": "IMD must open the shutdown circuit in 30 seconds when isolation fault is present." },
+            { "displayOrder": 1, "type": "measurement", "content": "IMD must open the shutdown circuit in 30 seconds when isolation fault is present." },
             { "displayOrder": 2, "type": "action", "content": "Activate Tractive System; IMD indicator OFF, TSSI is GREEN." },
             { "displayOrder": 3, "type": "action", "content": "Connect IMD test box between TSMP HV- and GLV Ground." },
-            { "displayOrder": 4, "type": "action", "content": "IMD must trip in 30 seconds and TS voltage must decrease below 60VDC in 5 seconds; IMD indicator is ON (RED), TSSI is flashing RED." },
+            { "displayOrder": 4, "type": "action", "content": "IMD must trip in 30 seconds and TS voltage must decrease below 60VDC in 5 seconds; IMD indicator is ON (RED), TSSI is flashing RED." },
             { "displayOrder": 5, "type": "action", "content": "Remove test box and reset." }
           ]
         },
@@ -1066,7 +1066,7 @@
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Turn the TSMS OFF." },
-            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1078,7 +1078,7 @@
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Turn the GLVMS OFF." },
-            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1090,7 +1090,7 @@
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Push the Left Shutdown Button." },
-            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1102,7 +1102,7 @@
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Push the Cockpit Shutdown Button." },
-            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1114,7 +1114,7 @@
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Turn the BOTS OFF." },
-            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1126,7 +1126,7 @@
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Remove the MSD." },
-            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1138,7 +1138,7 @@
           "steps": [
             { "displayOrder": 1, "type": "precondition", "content": "All shutdown circuit switches must be ON." },
             { "displayOrder": 2, "type": "action", "content": "Open the Outboard Wheel Motor Interlocks (if applicable)." },
-            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1150,7 +1150,7 @@
           "steps": [
             { "displayOrder": 1, "type": "action", "content": "Unmount the Inertia Switch." },
             { "displayOrder": 2, "type": "action", "content": "Activate TS, shake the switch and check if TS deactivates." },
-            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
+            { "displayOrder": 3, "type": "measurement", "content": "TS Voltage must decrease below 60VDC in 5 seconds." }
           ]
         },
         {
@@ -1180,7 +1180,7 @@
           "displayOrder": 111,
           "badges": ["CAUTION: ENERGIZED"],
           "steps": [
-            { "displayOrder": 1, "type": "measurement", "content": "The vehicle must make a characteristic sound when Ready-to-Drive.\n\nMust be sounded continuously for min 1 second and max 3 seconds.\n\nMinimum sound level of 80dBA.\n\nThe vehicle must not make other sounds similar to Ready-to-Drive sound." }
+            { "displayOrder": 1, "type": "measurement", "content": "The vehicle must make a characteristic sound when Ready-to-Drive.\n\nMust be sounded continuously for min 1 second and max 3 seconds.\n\nMinimum sound level of 80dBA.\n\nThe vehicle must not make other sounds similar to Ready-to-Drive sound." }
           ]
         },
         {
@@ -1261,7 +1261,7 @@
             { "displayOrder": 2, "type": "action", "content": "Enable TS." },
             { "displayOrder": 3, "type": "action", "content": "Press and hold Brake (may require driver in car)." },
             { "displayOrder": 4, "type": "action", "content": "Turn up simulated current (5kW at nominal voltage)." },
-            { "displayOrder": 5, "type": "action", "content": "TS must shut off in 0.5 sec." },
+            { "displayOrder": 5, "type": "action", "content": "TS must shut off in 0.5 sec." },
             { "displayOrder": 6, "type": "action", "content": "Release brake and turn off simulated current." },
             { "displayOrder": 7, "type": "context", "content": "The TS may not automatically return to active state.\n\nThe driver must not be able to reactivate the Tractive System." }
           ]

@@ -14,7 +14,7 @@
           "displayOrder": 1,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "25 mm clearance aft of AI Plate, Front Bulkhead including diagonals, and to pedals @ full travel and adjustment." }
+            { "displayOrder": 1, "type": "check", "content": "25 mm clearance aft of AI Plate, Front Bulkhead including diagonals, and to pedals @ full travel and adjustment." }
           ]
         },
         {
@@ -41,11 +41,11 @@
           "badges": [],
           "steps": [
             { "displayOrder": 1, "type": "check", "content": "All steerable wheels must have positive stops to prevent linkage lock-up or contact with other parts." },
-            { "displayOrder": 2, "type": "check", "content": "Maximum freeplay at the steering wheel is 7 degrees." },
+            { "displayOrder": 2, "type": "check", "content": "Maximum freeplay at the steering wheel is 7 degrees." },
             { "displayOrder": 3, "type": "check", "content": "No steer-by-wire is permitted on the front wheels." },
             { "displayOrder": 4, "type": "check", "content": "No cables or belts are permitted in the steering system." },
             { "displayOrder": 5, "type": "check", "content": "Bonded joints in the steering column must have metal backup." },
-            { "displayOrder": 6, "type": "check", "content": "Rear steer is limited to 6 degrees total and must have mechanical stops." }
+            { "displayOrder": 6, "type": "check", "content": "Rear steer is limited to 6 degrees total and must have mechanical stops." }
           ]
         },
         {
@@ -75,7 +75,7 @@
           "displayOrder": 6,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Continuous perimeter, near round with no concave sections.\n\nDriver operable quick disconnect.\n\nNot higher than top of Front Hoop, in any angular position.\n\n250 mm max rearward of Front Hoop (F.5.7.5)." }
+            { "displayOrder": 1, "type": "check", "content": "Continuous perimeter, near round with no concave sections.\n\nDriver operable quick disconnect.\n\nNot higher than top of Front Hoop, in any angular position.\n\n250 mm max rearward of Front Hoop (F.5.7.5)." }
           ]
         },
         {
@@ -237,7 +237,7 @@
           "displayOrder": 21,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Plates 2.0 mm (0.08\")." }
+            { "displayOrder": 1, "type": "check", "content": "Plates 2.0 mm (0.08\")." }
           ]
         },
         {
@@ -389,7 +389,7 @@
           "displayOrder": 35,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Tech may use ultrasound to measure wall thickness and/or ask that 4 mm dia holes be drilled.\n\nSee table F.3.2.1 Requirements by Application." }
+            { "displayOrder": 1, "type": "check", "content": "Tech may use ultrasound to measure wall thickness and/or ask that 4 mm dia holes be drilled.\n\nSee table F.3.2.1 Requirements by Application." }
           ]
         }
       ]
@@ -431,7 +431,7 @@
           "displayOrder": 38,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Three-point bending: 275 x 500 mm or 138 x 500 mm.\n\nPerimeter shear: 100 x 100 mm or 3-point.\n\nLap joint.\n\nEngraved with date and specimen name." }
+            { "displayOrder": 1, "type": "check", "content": "Three-point bending: 275 x 500 mm or 138 x 500 mm.\n\nPerimeter shear: 100 x 100 mm or 3-point.\n\nLap joint.\n\nEngraved with date and specimen name." }
           ]
         },
         {
@@ -481,7 +481,7 @@
           "displayOrder": 43,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Helmet of 95th percentile male (PERCY) to be 50 mm below the lines between top of front and main roll hoops and between top of main hoop to rear attachment point of main hoop bracing.\n\nCenter of bottom circle placed minimum 915 mm from pedals." }
+            { "displayOrder": 1, "type": "check", "content": "Helmet of 95th percentile male (PERCY) to be 50 mm below the lines between top of front and main roll hoops and between top of main hoop to rear attachment point of main hoop bracing.\n\nCenter of bottom circle placed minimum 915 mm from pedals." }
           ]
         },
         {
@@ -501,7 +501,7 @@
           "displayOrder": 45,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Template to pass from rearwards of the steering column to 100 mm rearwards of the pedals.\n\nSteering wheel may be removed; padding may be removed if removable with no tools & with driver in seat." }
+            { "displayOrder": 1, "type": "check", "content": "Template to pass from rearwards of the steering column to 100 mm rearwards of the pedals.\n\nSteering wheel may be removed; padding may be removed if removable with no tools & with driver in seat." }
           ]
         }
       ]

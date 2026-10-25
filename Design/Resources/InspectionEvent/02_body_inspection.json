@@ -44,7 +44,7 @@
           "displayOrder": 4,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "On front & both sides of car.\n\nMinimum 150 mm tall, 18 mm stroke & spacing.\n\nWhite-on-black or black-on-white only.\n\nBackground shape: round, oval, rectangular or square.\n\nVisibility must not be obstructed." }
+            { "displayOrder": 1, "type": "check", "content": "On front & both sides of car.\n\nMinimum 150 mm tall, 18 mm stroke & spacing.\n\nWhite-on-black or black-on-white only.\n\nBackground shape: round, oval, rectangular or square.\n\nVisibility must not be obstructed." }
           ]
         },
         {
@@ -64,7 +64,7 @@
           "displayOrder": 6,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "School name or recognized initials.\n\nBoth sides of car, easily visible location, 50 mm tall min, Roman letters, high contrast background." }
+            { "displayOrder": 1, "type": "check", "content": "School name or recognized initials.\n\nBoth sides of car, easily visible location, 50 mm tall min, Roman letters, high contrast background." }
           ]
         },
         {
@@ -74,7 +74,7 @@
           "displayOrder": 7,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "25 cm wide x 20 cm high available space, located on centerline of upper front bodywork (nose) of car." }
+            { "displayOrder": 1, "type": "check", "content": "25 cm wide x 20 cm high available space, located on centerline of upper front bodywork (nose) of car." }
           ]
         },
         {
@@ -84,7 +84,7 @@
           "displayOrder": 8,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "If >0.25 kg, must be secured by two points (typical GoPro-brand camera is <0.25 kg).\n\nNo cameras mounted to helmet." }
+            { "displayOrder": 1, "type": "check", "content": "If >0.25 kg, must be secured by two points (typical GoPro-brand camera is <0.25 kg).\n\nNo cameras mounted to helmet." }
           ]
         },
         {
@@ -114,7 +114,7 @@
           "displayOrder": 11,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Installed on any bar that could be hit by the driver's helmet.\n\n12 mm thick.\n\nSpecification: SFI 45.1 or FIA 8857/2001.\n\nPipe insulation or other foams not OK." }
+            { "displayOrder": 1, "type": "check", "content": "Installed on any bar that could be hit by the driver's helmet.\n\n12 mm thick.\n\nSpecification: SFI 45.1 or FIA 8857/2001.\n\nPipe insulation or other foams not OK." }
           ]
         },
         {
@@ -190,7 +190,7 @@
           "displayOrder": 18,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Max 25 mm (1\") forward gap to helmet.\n\nHelmet contact point min 50 mm (2\") from any edge.\n\nApplies to ALL DRIVERS (may be adjusted for each driver)." }
+            { "displayOrder": 1, "type": "check", "content": "Max 25 mm (1\") forward gap to helmet.\n\nHelmet contact point min 50 mm (2\") from any edge.\n\nApplies to ALL DRIVERS (may be adjusted for each driver)." }
           ]
         },
         {
@@ -200,7 +200,7 @@
           "displayOrder": 19,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Helmet 50 mm (2.0\") below lines between top of front and main roll hoops, and top of main hoop to rear attachment point of main hoop bracing.\n\nApplies for every driver." }
+            { "displayOrder": 1, "type": "check", "content": "Helmet 50 mm (2.0\") below lines between top of front and main roll hoops, and top of main hoop to rear attachment point of main hoop bracing.\n\nApplies for every driver." }
           ]
         },
         {
@@ -220,7 +220,7 @@
           "displayOrder": 21,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "measurement", "content": "5 seconds max to actuate cockpit master switch and exit to side of vehicle, from driving position, wearing safety equipment.\n\nWings must remain fixed in position.\n\nSee egress worksheet." }
+            { "displayOrder": 1, "type": "measurement", "content": "5 seconds max to actuate cockpit master switch and exit to side of vehicle, from driving position, wearing safety equipment.\n\nWings must remain fixed in position.\n\nSee egress worksheet." }
           ]
         }
       ]
@@ -256,7 +256,7 @@
           "displayOrder": 24,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "No large openings (>~6mm) in bodywork into driver compartment in front of or alongside driver.\n\nBody/nose min 38 mm radius, +/-45° all directions." }
+            { "displayOrder": 1, "type": "check", "content": "No large openings (>~6mm) in bodywork into driver compartment in front of or alongside driver.\n\nBody/nose min 38 mm radius, +/-45° all directions." }
           ]
         },
         {
@@ -266,7 +266,7 @@
           "displayOrder": 25,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "measurement", "content": "Minimum 1525 mm." }
+            { "displayOrder": 1, "type": "measurement", "content": "Minimum 1525 mm." }
           ]
         },
         {
@@ -276,7 +276,7 @@
           "displayOrder": 26,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Horizontal, lateral tube at the rear.\n\nOrange color.\n\n300 mm wide by 25-30 mm O.D.\n\nVisible to person standing 1 meter behind car.\n\n75 mm min ground clearance.\n\nRear tires must come off the ground using Quick-Jack (lifts to 200 mm).\n\nExposed around the lower 180° of its circumference." }
+            { "displayOrder": 1, "type": "check", "content": "Horizontal, lateral tube at the rear.\n\nOrange color.\n\n300 mm wide by 25-30 mm O.D.\n\nVisible to person standing 1 meter behind car.\n\n75 mm min ground clearance.\n\nRear tires must come off the ground using Quick-Jack (lifts to 200 mm).\n\nExposed around the lower 180° of its circumference." }
           ]
         },
         {
@@ -306,7 +306,7 @@
           "displayOrder": 29,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Non-perforated, non-brittle material from foot area to firewall.\n\nMultiple panels OK if gaps less than 3 mm (1/8\")." }
+            { "displayOrder": 1, "type": "check", "content": "Non-perforated, non-brittle material from foot area to firewall.\n\nMultiple panels OK if gaps less than 3 mm (1/8\")." }
           ]
         },
         {
@@ -326,7 +326,7 @@
           "displayOrder": 31,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "203 mm (8.0\") min diameter.\n\nWheels with single wheel nut must have positive retainer.\n\nAluminum lug nuts hard-anodized and pristine condition." }
+            { "displayOrder": 1, "type": "check", "content": "203 mm (8.0\") min diameter.\n\nWheels with single wheel nut must have positive retainer.\n\nAluminum lug nuts hard-anodized and pristine condition." }
           ]
         }
       ]
@@ -362,7 +362,7 @@
           "displayOrder": 34,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Belts must be protected by firewalls.\n\nAll belts attached securely to Primary Structure.\n\nTabs 1.6 mm (0.063\") thick min, 60 mm² shear area; tabs combining lap & sub belts 90 mm².\n\nDouble-shear preferred.\n\nTabs welded on both sides; bolt-on tabs use minimum of two 1/4\" dia Grade 5 bolts.\n\nTabs aligned with load direction of belt, may be pre-bent." }
+            { "displayOrder": 1, "type": "check", "content": "Belts must be protected by firewalls.\n\nAll belts attached securely to Primary Structure.\n\nTabs 1.6 mm (0.063\") thick min, 60 mm² shear area; tabs combining lap & sub belts 90 mm².\n\nDouble-shear preferred.\n\nTabs welded on both sides; bolt-on tabs use minimum of two 1/4\" dia Grade 5 bolts.\n\nTabs aligned with load direction of belt, may be pre-bent." }
           ]
         },
         {
@@ -382,7 +382,7 @@
           "displayOrder": 36,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Mounting points 175-235 mm (~7\" - 9\") apart.\n\nTube wrap OK." }
+            { "displayOrder": 1, "type": "check", "content": "Mounting points 175-235 mm (~7\" - 9\") apart.\n\nTube wrap OK." }
           ]
         },
         {
@@ -402,7 +402,7 @@
           "displayOrder": 38,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Lap & Shoulder: 10 mm Grade 8.8 (3/8\" SAE Grade 5).\n\nSub: 8 mm (5/16\"), or as specified by harness manufacturer.\n\nPins required in clip-brackets.\n\nSpecial rules for eye-type attachments: aligned, fully tight, see T.2.4.5.\n\nCRITICAL (positive locking) per T.8." }
+            { "displayOrder": 1, "type": "check", "content": "Lap & Shoulder: 10 mm Grade 8.8 (3/8\" SAE Grade 5).\n\nSub: 8 mm (5/16\"), or as specified by harness manufacturer.\n\nPins required in clip-brackets.\n\nSpecial rules for eye-type attachments: aligned, fully tight, see T.2.4.5.\n\nCRITICAL (positive locking) per T.8." }
           ]
         },
         {
@@ -412,7 +412,7 @@
           "displayOrder": 39,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Min 150 mm width, 235 cm² area AND height adjustment of 175 mm (7\"); OR 280 mm (11\") height.\n\n38 mm (1.5\") thick.\n\nNear vertical.\n\nPad and mount must take 900 N rearward and 300 N lateral forces.\n\nEnergy absorbing material: SFI Standard 45.2 or FIA Tech List 17 (CONFOR blue CF45 or CF45M), with 20mm inspection hole in its cover.\n\nMount must be within Main Hoop Bracing envelope, or add extra tube per F.5.10." }
+            { "displayOrder": 1, "type": "check", "content": "Min 150 mm width, 235 cm² area AND height adjustment of 175 mm (7\"); OR 280 mm (11\") height.\n\n38 mm (1.5\") thick.\n\nNear vertical.\n\nPad and mount must take 900 N rearward and 300 N lateral forces.\n\nEnergy absorbing material: SFI Standard 45.2 or FIA Tech List 17 (CONFOR blue CF45 or CF45M), with 20mm inspection hole in its cover.\n\nMount must be within Main Hoop Bracing envelope, or add extra tube per F.5.10." }
           ]
         }
       ]
@@ -438,7 +438,7 @@
           "displayOrder": 41,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Horizontal leading edges min 5 mm radius.\n\nVertical forward-facing edges min 3 mm radius.\n\nOther edges: not sharp per GR.1.5." }
+            { "displayOrder": 1, "type": "check", "content": "Horizontal leading edges min 5 mm radius.\n\nVertical forward-facing edges min 3 mm radius.\n\nOther edges: not sharp per GR.1.5." }
           ]
         },
         {
@@ -448,7 +448,7 @@
           "displayOrder": 42,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Max forward: 700 mm ahead of the front tires.\n\nMax width: OUTSIDE of the front tires (at hub height).\n\nMax height: 250 mm if in front of tires (without driver)." }
+            { "displayOrder": 1, "type": "check", "content": "Max forward: 700 mm ahead of the front tires.\n\nMax width: OUTSIDE of the front tires (at hub height).\n\nMax height: 250 mm if in front of tires (without driver)." }
           ]
         },
         {
@@ -458,7 +458,7 @@
           "displayOrder": 43,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Max rearward: 250 mm behind the rear tires.\n\nMax forward: Headrest support (undertrays exempt).\n\nMax width: INSIDE of the rear tires (at hub height).\n\nMax height: 1.2 m above ground (without driver)." }
+            { "displayOrder": 1, "type": "check", "content": "Max rearward: 250 mm behind the rear tires.\n\nMax forward: Headrest support (undertrays exempt).\n\nMax width: INSIDE of the rear tires (at hub height).\n\nMax height: 1.2 m above ground (without driver)." }
           ]
         },
         {
@@ -468,7 +468,7 @@
           "displayOrder": 44,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Max width: Line between front & rear tires (at hub height).\n\nMax height: 500 mm (exempt if within 400 mm of car centerline)." }
+            { "displayOrder": 1, "type": "check", "content": "Max width: Line between front & rear tires (at hub height).\n\nMax height: 500 mm (exempt if within 400 mm of car centerline)." }
           ]
         }
       ]

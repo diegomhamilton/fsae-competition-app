@@ -94,7 +94,7 @@
           "displayOrder": 9,
           "badges": [],
           "steps": [
-            { "displayOrder": 1, "type": "check", "content": "Hand-held, dry chemical (no AFFF or halon), min specification: 10BC; 1A10BC; 34B; 5A 34B; 20BE; or 1A 10BE.\n\nMin 0.9 kg (2 lb).\n\nTwo required: must present both at Tech." }
+            { "displayOrder": 1, "type": "check", "content": "Hand-held, dry chemical (no AFFF or halon), min specification: 10BC; 1A10BC; 34B; 5A 34B; 20BE; or 1A 10BE.\n\nMin 0.9 kg (2 lb).\n\nTwo required: must present both at Tech." }
           ]
         }
       ]
