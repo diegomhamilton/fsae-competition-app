@@ -7,7 +7,6 @@ struct FullStageView: View {
         static let back = "Back to test"
         static let review = "Review stage"
         static let done = "Done"
-        static let stage = "Stage"
     }
 
     let team: InspectionTeam
@@ -116,17 +115,6 @@ struct FullStageView: View {
         .navigationTitle(focus.mode == .focus ? "" : focus.mode == .review ? Strings.review : stage.title)
         .navigationBarTitleDisplayMode(focus.mode == .queue ? .large : .inline)
         .toolbar(focus.mode == .focus ? .hidden : .visible, for: .tabBar)
-        .navigationBarBackButtonHidden(focus.mode == .review)
-        .toolbar {
-            if focus.mode == .review {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(Strings.stage, systemImage: "chevron.left") {
-                        focus.showQueue()
-                    }
-                    .accessibilityIdentifier("execution.review.back-to-stage")
-                }
-            }
-        }
         #if DEBUG
         .task {
             switch InspectionSnapshotScenario.current?.rawValue {
