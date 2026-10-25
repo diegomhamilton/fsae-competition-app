@@ -1,9 +1,28 @@
 import Foundation
+import SwiftUI
 import Testing
 @testable import FSAEInspectionChecklist
 
 @MainActor
 struct InspectionCoordinatorTests {
+    @Test("Native stage Back returns to Team without overriding a switch to Sessions")
+    func stagePresentationBelongsToTeamNavigation() {
+        let coordinator = AppCoordinator(stages: stages())
+        let bindings = ContentViewBindings(appCoordinator: coordinator)
+        coordinator.selectScreen(.stageChecklist)
+        #expect(bindings.selectedScreenBinding.wrappedValue == .dashboard)
+        #expect(bindings.stagePresentedBinding.wrappedValue)
+
+        bindings.stagePresentedBinding.wrappedValue = false
+        #expect(coordinator.selectedScreen == .dashboard)
+        #expect(!bindings.stagePresentedBinding.wrappedValue)
+
+        coordinator.selectScreen(.stageChecklist)
+        bindings.selectedScreenBinding.wrappedValue = .sessionSelector
+        bindings.stagePresentedBinding.wrappedValue = false
+        #expect(coordinator.selectedScreen == .sessionSelector)
+    }
+
     @Test("TASK#10.4 production app launch does not seed mock teams")
     func productionAppLaunchDoesNotSeedMockTeams() {
         let coordinator = AppCoordinator(stages: stages())
