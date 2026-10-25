@@ -17,7 +17,7 @@ final class StageFocusCoordinator {
         static let flagRequiresReview = "Resolve this flag before submission."
     }
 
-    enum Mode: Equatable {
+    enum Mode: Hashable {
         case queue
         case focus
         case review
@@ -31,7 +31,8 @@ final class StageFocusCoordinator {
     let overview: StageOverviewPresentation
     let stage: InspectionStage
     private(set) var advanceSequence = 0
-    private(set) var mode: Mode = .queue
+    private var navigationRoutes: [StageExecutionRoute] = []
+    var mode: Mode { navigationRoutes.last?.mode ?? .queue }
     private(set) var selectedTestCaseID: String?
     private(set) var activeStepID: String?
     private(set) var isEditingFromReview = false
@@ -121,49 +122,6 @@ final class StageFocusCoordinator {
         }
         activeStepID = stepID
         return true
-    }
-
-    func showQueue() {
-        mode = .queue
-    }
-
-    func showReview() {
-        if mode != .review && !isEditingFromReview, let selection {
-            reviewReturnSelection = selection
-        }
-        isEditingFromReview = false
-        mode = .review
-    }
-
-    /// Returning from queue preserves the selection; returning from review restores
-    /// the original selection even when another result was edited during that review.
-    @discardableResult
-    func backToTest() -> Bool {
-        let continuingReviewEdit = mode == .queue && isEditingFromReview
-        let target = mode == .review ? reviewReturnSelection : selection
-        guard let target else {
-            mode = .queue
-            return false
-        }
-        select(target)
-        isEditingFromReview = continuingReviewEdit
-        return true
-    }
-
-    @discardableResult
-    func editResult(testCaseID: String, stepID: String) -> Bool {
-        guard let testCase = orderedTestCases.first(where: { $0.id == testCaseID }),
-              testCase.orderedSteps.contains(where: { $0.id == stepID }) else {
-            return false
-        }
-        select(Selection(testCaseID: testCaseID, stepID: stepID))
-        isEditingFromReview = true
-        return true
-    }
-
-    func returnToReview() {
-        isEditingFromReview = false
-        mode = .review
     }
 
     /// Call only after the result component confirms that the current save succeeded.
@@ -268,9 +226,98 @@ final class StageFocusCoordinator {
         selectedTestCaseID = target.testCaseID
         activeStepID = target.stepID
         isEditingFromReview = false
-        mode = .focus
+        if mode != .focus {
+            navigationRoutes.append(StageExecutionRoute(mode: .focus))
+        }
     }
 
+}
+
+extension StageFocusCoordinator {
+    /// Each level presents only its immediate successor in the enclosing NavigationStack.
+    func route(after parent: StageExecutionRoute?) -> StageExecutionRoute? {
+        guard let parent else { return navigationRoutes.first }
+        guard let index = navigationRoutes.firstIndex(where: { $0.id == parent.id }),
+              navigationRoutes.indices.contains(index + 1) else { return nil }
+        return navigationRoutes[index + 1]
+    }
+
+    /// Native Back and interactive dismissal truncate the same history used for presentation.
+    func popNavigation(after parent: StageExecutionRoute?) {
+        let previousMode = mode
+        if let parent {
+            guard let index = navigationRoutes.firstIndex(where: { $0.id == parent.id }) else { return }
+            navigationRoutes = Array(navigationRoutes.prefix(through: index))
+        } else {
+            navigationRoutes.removeAll()
+        }
+        if previousMode == .review, mode == .focus, let original = reviewReturnSelection {
+            selectedTestCaseID = original.testCaseID
+            activeStepID = original.stepID
+        }
+        isEditingFromReview = false
+    }
+}
+
+extension StageFocusCoordinator {
+    func showQueue() {
+        navigationRoutes.removeAll()
+    }
+
+    func showReview() {
+        if isEditingFromReview {
+            returnToReview()
+            return
+        }
+        guard mode != .review else { return }
+        reviewReturnSelection = selection
+        navigationRoutes.append(StageExecutionRoute(mode: .review))
+    }
+
+    /// Returning from queue preserves the selection; returning from review restores
+    /// the original selection even when another result was edited during that review.
+    @discardableResult
+    func backToTest() -> Bool {
+        let continuingReviewEdit = mode == .queue && isEditingFromReview
+        let target = mode == .review ? reviewReturnSelection : selection
+        guard let target else {
+            showQueue()
+            return false
+        }
+        if mode == .review {
+            if let index = navigationRoutes.lastIndex(where: { $0.mode == .focus }) {
+                navigationRoutes = Array(navigationRoutes.prefix(through: index))
+            } else {
+                navigationRoutes.removeAll()
+            }
+        }
+        select(target)
+        isEditingFromReview = continuingReviewEdit
+        return true
+    }
+
+    @discardableResult
+    func editResult(testCaseID: String, stepID: String) -> Bool {
+        guard let testCase = orderedTestCases.first(where: { $0.id == testCaseID }),
+              testCase.orderedSteps.contains(where: { $0.id == stepID }) else {
+            return false
+        }
+        select(Selection(testCaseID: testCaseID, stepID: stepID))
+        isEditingFromReview = true
+        return true
+    }
+
+    func returnToReview() {
+        isEditingFromReview = false
+        if let index = navigationRoutes.lastIndex(where: { $0.mode == .review }) {
+            navigationRoutes = Array(navigationRoutes.prefix(through: index))
+        } else {
+            navigationRoutes.append(StageExecutionRoute(mode: .review))
+        }
+    }
+}
+
+extension StageFocusCoordinator {
     private func stepStates(for testCase: InspectionTestCase, drafts: [String: TestCaseDraft]) -> [InspectionTestCaseStepViewState] {
         InspectionTestCaseViewState(
             testCase: testCase,
