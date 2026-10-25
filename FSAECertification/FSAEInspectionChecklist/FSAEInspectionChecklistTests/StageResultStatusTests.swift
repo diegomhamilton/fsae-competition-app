@@ -14,15 +14,16 @@ struct StageResultStatusTests {
         #expect(StageResultStatus.step(statusState(outcome: .pass, confirmedAt: .now), hasIssues: true) == .draft)
     }
 
-    @Test("Evidence-only results are recorded without inventing a Pass outcome")
-    func evidenceOnlyStatusIsRecorded() {
+    @Test("Confirmed evidence-only results share the Pass presentation without changing their outcome")
+    func evidenceOnlyStatusUsesPassPresentation() {
         let step = InspectionTestStep(id: "photo", code: "P", ruleReference: "T.1", title: "Photo", type: .check,
                                       content: "Record evidence.", requiredOutcome: false, requiresEvidence: true)
         let state = InspectionTestCaseStepViewState(displayOrder: 1, step: step, inheritedSafetyBadges: [],
             outcome: .notApplicable, notes: "", measurementInput: "", evidenceAttachments: [], confirmedAt: .now)
-        #expect(StageResultStatus.step(state, hasIssues: false) == .recorded)
+        #expect(StageResultStatus.step(state, hasIssues: false) == .pass)
+        #expect(state.outcome == .notApplicable)
         let testCase = InspectionTestCaseViewState(id: "case", code: "P", title: "Photo", ruleReferences: [], stepStates: [state])
-        #expect(StageResultStatus.testCase(testCase, issues: []) == .recorded)
+        #expect(StageResultStatus.testCase(testCase, issues: []) == .pass)
     }
 
     @Test("Case status cannot be complete while another step remains an unconfirmed draft")

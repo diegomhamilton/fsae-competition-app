@@ -5,7 +5,6 @@ enum StageResultStatus: Equatable {
     case unanswered
     case draft
     case pass
-    case recorded
     case fail
     case exception
     case flagged
@@ -15,7 +14,7 @@ enum StageResultStatus: Equatable {
         if state.confirmedAt != nil && !hasIssues {
             if state.outcome == .fail { return .fail }
             if state.step.requiredOutcome && state.outcome == .notApplicable { return .exception }
-            return state.step.requiredOutcome ? .pass : .recorded
+            return .pass
         }
         let original = TestStepDraft(step: state.step)
         let hasInput = state.outcome != original.outcome || state.notes != original.notes
@@ -35,7 +34,7 @@ enum StageResultStatus: Equatable {
         if scopedStatuses.allSatisfy({ $0 == .unanswered }) { return .unanswered }
         if scopedStatuses.contains(.unanswered) || scopedStatuses.contains(.draft) { return .draft }
         if scopedStatuses.contains(.exception) { return .exception }
-        return scopedStatuses.contains(.pass) ? .pass : .recorded
+        return .pass
     }
 
     var title: String {
@@ -43,7 +42,6 @@ enum StageResultStatus: Equatable {
         case .unanswered: StageOverviewStrings.unanswered
         case .draft: StageOverviewStrings.draft
         case .pass: StageOverviewStrings.passed
-        case .recorded: StageOverviewStrings.recorded
         case .fail: StageOverviewStrings.failed
         case .exception: StageOverviewStrings.exception
         case .flagged: StageOverviewStrings.flagged
@@ -55,7 +53,6 @@ enum StageResultStatus: Equatable {
         case .unanswered: "circle"
         case .draft: "square.and.pencil"
         case .pass: "checkmark.circle.fill"
-        case .recorded: "checkmark.circle"
         case .fail: "xmark.circle.fill"
         case .exception: "minus.circle.fill"
         case .flagged: "flag.fill"
@@ -65,7 +62,7 @@ enum StageResultStatus: Equatable {
     var color: Color {
         switch self {
         case .unanswered, .exception: .fsaeGray
-        case .draft, .recorded: .fsaePrimary
+        case .draft: .fsaePrimary
         case .pass: .fsaeGreen
         case .fail, .flagged: .fsaeRed
         }

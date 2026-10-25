@@ -1,5 +1,5 @@
 enum StageOverviewStrings {
-    static let currentTest = "Current test"
+    static let currentTest = "Current"
     static let updated = "Updated"
     static let chooseTest = "Choose a test"
     static let start = "Start inspection"
@@ -15,10 +15,9 @@ enum StageOverviewStrings {
     static let noTests = "There are no tests in this stage."
     static let unanswered = "Not started"
     static let draft = "Draft"
-    static let recorded = "Recorded"
     static let passed = "Pass"
     static let failed = "Fail"
-    static let flagged = "Flagged"
+    static let flagged = "Needs review"
     static let exception = "N/A"
     static let expanded = "Expanded"
     static let collapsed = "Collapsed"
