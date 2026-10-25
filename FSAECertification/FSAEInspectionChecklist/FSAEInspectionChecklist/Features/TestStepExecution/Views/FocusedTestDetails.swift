@@ -9,6 +9,9 @@ struct FocusedTestDetails: View {
         static let debug = "Debug display"
         static let showType = "Show step type badge"
     }
+    #if DEBUG
+    @AppStorage(InternalSettingsView.showDebugActionsKey) private var showDebugActions = false
+    #endif
     let testCase: InspectionTestCaseViewState
     let step: InspectionTestCaseStepViewState
     @Binding var showsTypeBadge: Bool
@@ -34,9 +37,11 @@ struct FocusedTestDetails: View {
                     }
                 }
                 #if DEBUG
-                Section(Strings.debug) {
-                    Toggle(Strings.showType, isOn: $showsTypeBadge)
-                        .accessibilityIdentifier("execution.debug-type-toggle")
+                if showDebugActions {
+                    Section(Strings.debug) {
+                        Toggle(Strings.showType, isOn: $showsTypeBadge)
+                            .accessibilityIdentifier("execution.debug-type-toggle")
+                    }
                 }
                 #endif
             }

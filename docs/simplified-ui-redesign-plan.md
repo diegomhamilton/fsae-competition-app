@@ -103,3 +103,5 @@ Manual review checklist: Sessions → Add Team (toolbar and form); Team → Open
 Validation: generic iOS Simulator build succeeded for arm64 and x86_64; `git diff --check` passed. Visually inspected Add Team and the isolated Pass/Fail inspection fixture in the running iPhone 17 Pro simulator. Remaining interactive checklist items require manual review.
 
 The test information action now lives in the focused test's top-right toolbar. It retains its View details label, accessibility identifier, details sheet, and saving-state guard; the test heading no longer contains a separate info control.
+
+Follow-up: Add Team's cancellation toolbar button uses an explicit xmark symbol with the accessible Cancel label to avoid an empty icon-only toolbar presentation. The info sheet's Debug display section and step type badge now obey Internal Settings → Show debug actions (and remain excluded from release builds).

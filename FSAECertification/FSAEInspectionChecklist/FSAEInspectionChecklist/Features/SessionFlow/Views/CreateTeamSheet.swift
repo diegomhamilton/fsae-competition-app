@@ -48,7 +48,8 @@ struct CreateTeamSheet: View {
             .navigationTitle(Strings.createTeamTitle)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(Strings.cancel) { dismiss() }
+                    Button(Strings.cancel, systemImage: "xmark") { dismiss() }
+                        .labelStyle(.iconOnly)
                         .inspectionButtonStyle()
                         .accessibilityIdentifier("session-selector.add-team.cancel")
                 }
