@@ -49,6 +49,12 @@ final class AppCoordinator: ObservableObject {
     }
 
     func selectScreen(_ screen: ProposedScreen) {
+        #if DEBUG
+        if screen == .internalSettings {
+            selectedScreen = screen
+            return
+        }
+        #endif
         selectedScreen = ProposedScreen.topLevelJudgeLandmarks.contains(screen) ? screen : .stageChecklist
     }
 
