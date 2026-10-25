@@ -30,6 +30,7 @@ final class StageFocusCoordinator {
 
     let overview: StageOverviewPresentation
     let stage: InspectionStage
+    private(set) var advanceSequence = 0
     private(set) var mode: Mode = .queue
     private(set) var selectedTestCaseID: String?
     private(set) var activeStepID: String?
@@ -169,6 +170,12 @@ final class StageFocusCoordinator {
     /// The coordinator also checks the persisted fields before moving the judge's place.
     @discardableResult
     func advanceAfterSave(draftsByTestCaseID: [String: TestCaseDraft]) -> Bool {
+        guard performAdvanceAfterSave(draftsByTestCaseID: draftsByTestCaseID) else { return false }
+        advanceSequence += 1
+        return true
+    }
+
+    private func performAdvanceAfterSave(draftsByTestCaseID: [String: TestCaseDraft]) -> Bool {
         guard mode == .focus,
               let testCase = activeTestCase,
               let currentStepIndex = testCase.orderedSteps.firstIndex(where: { $0.id == activeStepID }) else {

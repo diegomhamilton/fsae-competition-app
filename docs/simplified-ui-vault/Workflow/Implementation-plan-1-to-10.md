@@ -2,7 +2,7 @@
 title: "Implementation and PR plan - improvements 1 to 10"
 domain: inspection-event
 feature: dynamic-focused-execution
-status: ready-for-implementation
+status: implemented-in-draft-prs
 owners: [architect-agent, planner-agent, developer-agent, tester-agent, documenter-agent]
 approved_scope: 2026-10-15
 source_files:
@@ -22,9 +22,9 @@ related_scenarios:
 
 ## Scope and current state
 
-The user approved implementing improvements **1-10** on 15 October 2026. Items **11-15 remain deferred** in milestone 11. This document is an implementation plan, not a claim that the new interactions are already implemented.
+The user approved implementing improvements **1-10** on 15 October 2026. Items **11-15 remain deferred** in milestone 11. Implementation is now available in three draft PRs; see [[Dynamic-implementation-delivery|the implementation and validation record]]. The detailed plan below retains the approved scope.
 
-Current branch: `simplified-ui-redesign`. Planning starts from `4f812a8`. The existing redesign is 12 local commits ahead of `develop`; a GitHub search found no PR for this head branch. Its last recorded validation is 138 tests / 141 cases passing and a successful Release build. Recheck the baseline at implementation kickoff rather than presenting the old run as new evidence.
+Shared feature branch: `simplified-ui-redesign`, published base `ceef990`. Planning started from `4f812a8`. The existing redesign is 12 local commits ahead of `develop`; a GitHub search found no PR for this head branch. Its last recorded validation is 138 tests / 141 cases passing and a successful Release build. Recheck the baseline at implementation kickoff rather than presenting the old run as new evidence.
 
 Keep the queue's rounded appearance. Improve the task's visual size without showing additional information, stretching every element to fill a fixed percentage, or requiring a single screen layout to fit every content length and keyboard size.
 
@@ -116,4 +116,4 @@ Improvements **11-15** remain documented: contextual + actions, Undo after advan
 
 ## Definition of done
 
-All ten approved improvements work together, predecessor controls are removed, field values remain durable through navigation and failure, each component has evidence, the full checks pass, and the updated report/vault reference actual source commits and PRs. This planning update changes no app code and opens no PR.
+All ten approved improvements work together, predecessor controls are removed, field values remain durable through navigation and failure, each component has evidence, the full checks pass, and the updated report/vault reference actual source commits and PRs. The three draft PRs are implemented and independently target the shared feature branch; GitHub merges await human review.

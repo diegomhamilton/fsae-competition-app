@@ -69,6 +69,16 @@
       "width": 600,
       "height": 400,
       "color": "2"
+    },
+    {
+      "id": "dynamic-delivery",
+      "type": "file",
+      "file": "Workflow/Dynamic-implementation-delivery.md",
+      "x": 0,
+      "y": 3640,
+      "width": 600,
+      "height": 400,
+      "color": "5"
     }
   ],
   "edges": [
@@ -125,6 +135,15 @@
       "toSide": "top",
       "toEnd": "arrow",
       "label": "Implement improvements 1-10"
+    },
+    {
+      "id": "plan-to-delivery",
+      "fromNode": "implementation-plan-1-to-10",
+      "fromSide": "bottom",
+      "toNode": "dynamic-delivery",
+      "toSide": "top",
+      "toEnd": "arrow",
+      "label": "Three draft PRs and verified combined preview"
     }
   ]
 }
