@@ -92,7 +92,7 @@ Steps:
 Validation:
 
 - Confirm the persona scenario names the actor, goal, system response, and evidence to capture.
-- Check that any implementation follow-up is represented in OpenSpec tasks or a prompt folder.
+- Check that any implementation follow-up is represented in OpenSpec tasks or the active backlog.
 
 Follow-up:
 

@@ -12,7 +12,7 @@ This is based on the Inspection Sheet PDF document available in the `context/` f
 - [Current system map](docs/system-map.md)
 - [Inspection event tutorials](docs/inspection-event/tutorials.md)
 - [Review hygiene and PR rules](docs/inspection-event/review-hygiene.md)
-- [Tentpole 3 organization plan](docs/inspection-event/organization-plan.md)
+- [Source organization](docs/inspection-event/organization-plan.md)
 
 ---
 
