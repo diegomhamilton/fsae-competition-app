@@ -5,7 +5,7 @@ enum StageOverviewStrings {
     static let start = "Start inspection"
     static let resume = "Continue inspection"
     static let continueTest = "Continue current test"
-    static let review = "Review results"
+    static let review = "Review stage"
     static let results = "Results"
     static let resolve = "Needs attention"
     static let ready = "All results confirmed"
@@ -31,6 +31,10 @@ enum StageOverviewStrings {
 
     static func progress(confirmed: Int, total: Int) -> String {
         "\(confirmed) of \(total) results confirmed"
+    }
+
+    static func needsReview(_ count: Int) -> String {
+        "\(count) \(count == 1 ? "result needs" : "results need") review"
     }
 
     static func notes(_ notes: String) -> String { "Notes: \(notes)" }

@@ -20,7 +20,13 @@ struct StageQueueView: View {
 
         RestoringOverviewScroll(savedOffset: presentation.queueOffset,
             rememberOffset: presentation.rememberQueueOffset, revealID: presentation.queueRevealID) {
-                StageOverviewHeader(team: team, confirmedCount: confirmed, totalCount: total)
+                StageOverviewHeader(
+                    team: team, confirmedCount: confirmed, totalCount: total,
+                    needsReviewCount: Set(focusedIssues.filter {
+                        $0.issueID.hasPrefix("flaggedIssue.")
+                    }.map(\.stepID)).count,
+                    review: total > 0 && confirmed < total ? review : nil
+                )
                 if total == 0 {
                     Text(StageOverviewStrings.noTests).foregroundStyle(Color.fsaeSecondaryText)
                 } else if confirmed < total {
@@ -38,11 +44,6 @@ struct StageQueueView: View {
 
                 HStack {
                     Spacer()
-                    if !focusedIssues.isEmpty {
-                        Button(StageOverviewStrings.review, systemImage: "checklist", action: review)
-                            .frame(minHeight: 48)
-                            .accessibilityIdentifier("execution.queue.review")
-                    }
                 }
 
                 Text(StageOverviewStrings.testSections).font(.headline)
