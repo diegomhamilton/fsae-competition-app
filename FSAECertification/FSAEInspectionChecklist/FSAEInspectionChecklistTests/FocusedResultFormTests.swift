@@ -4,6 +4,72 @@ import Testing
 
 @MainActor
 struct FocusedResultFormTests {
+    @Test("US-002: editing the outcome from notes survives keyboard blur", arguments: [InspectionOutcome.pass, .fail])
+    func outcomeEditingSurvivesNotesBlur(outcome: InspectionOutcome) async {
+        var saved: [TestStepDraft] = []
+        let note = "Distinct judge note for mounting check"
+        let form = FocusedResultForm(state: state(outcome: outcome, notes: note), autosaveDelay: .seconds(60)) {
+            saved.append($0)
+            return true
+        }
+        form.beginNotes()
+        form.focusChanged(from: nil, to: .notes)
+        // The compact outcome pill requests editing, then dismisses the notes keyboard.
+        form.setNotesEditing(false)
+        form.editResult(includingEvidence: false)
+        form.focusChanged(from: .notes, to: nil)
+        #expect(form.isEditingOutcome)
+        #expect(!form.isReady)
+        #expect(form.draft.notes == note)
+
+        let corrected: InspectionOutcome = outcome == .pass ? .fail : .pass
+        form.selectOutcome(corrected)
+        #expect(form.isReady)
+        #expect(await form.confirm())
+        #expect(saved.last?.outcome == corrected)
+        #expect(saved.last?.notes == note)
+        #expect(saved.last?.confirmedAt != nil)
+    }
+
+    @Test("Leaving notes preserves a newly requested measurement edit")
+    func measurementEditSurvivesNotesBlur() async {
+        let form = FocusedResultForm(state: state(type: .measurement, outcome: .pass, notes: "Measurement note"),
+            autosaveDelay: .seconds(60)) { _ in true }
+        form.updateMeasurement("4.25")
+        form.finishInput()
+        form.beginNotes()
+        form.setNotesEditing(false)
+        form.editResult(includingEvidence: false)
+        form.focusChanged(from: .notes, to: nil)
+        #expect(form.isEditingMeasurement)
+        #expect(form.isEditingOutcome)
+        #expect(form.draft.measurementInput == "4.25")
+        #expect(form.draft.notes == "Measurement note")
+        #expect(!form.isReady)
+        #expect(await form.flush())
+    }
+
+    @Test("Ordinary notes and measurement blur finish only their field; Done finishes the result")
+    func blurAndDoneCompleteInput() async {
+        let form = FocusedResultForm(state: state(type: .measurement, outcome: .pass),
+            autosaveDelay: .seconds(60)) { _ in true }
+        form.updateMeasurement("3.75")
+        form.focusChanged(from: .measurement, to: nil)
+        #expect(!form.isEditingMeasurement)
+        #expect(form.isReady)
+        form.beginNotes()
+        form.updateNotes("Different optional note")
+        form.focusChanged(from: .notes, to: nil)
+        #expect(!form.isEditingNotes)
+        #expect(form.isReady)
+        form.editResult(includingEvidence: false)
+        form.finishInput()
+        #expect(!form.isEditingOutcome)
+        #expect(!form.isEditingMeasurement)
+        #expect(form.isReady)
+        #expect(await form.flush())
+    }
+
     @Test("Changing an outcome retains valid evidence without requiring a replacement")
     func outcomeEditKeepsEvidenceReady() async {
         let photo = EvidenceAttachmentMetadata(id: "photo", displayName: "Photo", mediaType: .photo,

@@ -132,6 +132,14 @@ final class FocusedResultForm {
 
     func setNotesEditing(_ editing: Bool) { isEditingNotes = editing }
 
+    func focusChanged(from previous: FocusedResultField?, to current: FocusedResultField?) {
+        setNotesEditing(current == .notes)
+        guard previous != nil, current == nil else { return }
+        // Blur completes the field being left, not an edit requested by another control.
+        attemptedCompletion = true
+        if previous == .measurement { isEditingMeasurement = false }
+    }
+
     func finishInput() {
         attemptedCompletion = true
         isEditingMeasurement = false
