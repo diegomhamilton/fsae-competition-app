@@ -35,7 +35,7 @@ struct InspectionStageListViewState: Equatable, Sendable {
     }
 
     var summaryText: String {
-        "\(testCaseCount) test cases"
+        InspectionLocalization.format("%d test cases", testCaseCount)
     }
 }
 
@@ -71,7 +71,7 @@ struct InspectionSectionDisplayText: Equatable, Sendable {
     let subtitle: String
 
     init(rawTitle: String) {
-        let parts = rawTitle.split(separator: "/", maxSplits: 1, omittingEmptySubsequences: true)
+        let parts = rawTitle.inspectionLocalized.split(separator: "/", maxSplits: 1, omittingEmptySubsequences: true)
         title = parts.first.map(String.init)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? rawTitle
         subtitle = parts.dropFirst().first.map(String.init)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
     }
@@ -105,14 +105,14 @@ struct InspectionStageTestCaseRowState: Identifiable, Equatable, Sendable {
     }
 
     var progressText: String {
-        "\(completedStepCount)/\(totalStepCount) complete"
+        InspectionLocalization.format("%d/%d complete", completedStepCount, totalStepCount)
     }
 
     var blockerSummary: String {
         switch blockerCount {
-        case 0: "No blockers"
-        case 1: "1 blocker"
-        default: "\(blockerCount) blockers"
+        case 0: "No blockers".inspectionLocalized
+        case 1: "1 blocker".inspectionLocalized
+        default: InspectionLocalization.format("%d blockers", blockerCount)
         }
     }
 
@@ -145,9 +145,9 @@ enum InspectionStageTestCaseRowStatus: Equatable, Sendable {
 
     var displayName: String {
         switch self {
-        case .blocked: "Blocked"
-        case .complete: "Complete"
-        case .pending: "Pending"
+        case .blocked: "Blocked".inspectionLocalized
+        case .complete: "Complete".inspectionLocalized
+        case .pending: "Pending".inspectionLocalized
         }
     }
 

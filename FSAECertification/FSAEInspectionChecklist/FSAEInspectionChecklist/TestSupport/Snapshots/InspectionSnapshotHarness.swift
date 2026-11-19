@@ -5,6 +5,7 @@ import UIKit
 /// Isolated review fixtures: no judge session or persisted production draft is changed.
 enum InspectionSnapshotScenario: String, CaseIterable {
     case queue, focus, ready, fail, measurement, evidence, review, details
+    case gloves
     case queueReturn = "queue-return"
     case longest
     case saving, confirmed, safety
@@ -91,8 +92,8 @@ struct InspectionSnapshotHarness: View {
                     return scenario != .saveFailure
                 },
                 latestDrafts: { drafts },
-                initialTestCaseID: scenario == .longest ? longestCase?.id : scenario == .queue || scenario == .queueSupplies ? nil : "case-3",
-                initialStepID: scenario == .longest ? longestCase?.orderedSteps.max(by: { $0.content.count < $1.content.count })?.id : "step-3",
+                initialTestCaseID: initialTestCaseID,
+                initialStepID: initialStepID,
                 initialReview: [.review, .reviewIncomplete, .reviewReturn, .reviewCorrection, .reviewFlagged, .resolveFlag, .reviewSubmitted, .submissionFailure].contains(scenario),
                 initialDetails: scenario == .details,
                 initialQueue: scenario == .queueDrawer,
@@ -131,25 +132,58 @@ struct InspectionSnapshotHarness: View {
             drafts["case-3"] = value
         }
     }
+
+    private var initialTestCaseID: String? {
+        switch scenario {
+        case .longest: longestCase?.id
+        case .queue, .queueSupplies: nil
+        case .gloves: "case-5"
+        default: "case-3"
+        }
+    }
+
+    private var initialStepID: String? {
+        switch scenario {
+        case .longest: longestCase?.orderedSteps.max(by: { $0.content.count < $1.content.count })?.id
+        case .gloves: "step-5"
+        default: "step-3"
+        }
+    }
 }
 
 enum InspectionSnapshotFixtures {
     static func stage(for scenario: InspectionSnapshotScenario) -> InspectionStage {
+        let contentService = InspectionContentService()
         if scenario == .longest,
-           let url = Bundle.main.url(forResource: OfficialInspectionResource.body.fileName, withExtension: "json"),
-           let data = try? Data(contentsOf: url),
-           let stage = try? InspectionContentService().decodeStage(data, resourceName: OfficialInspectionResource.body.fileName) {
+           let stage = try? contentService.loadStage(.body) {
             return stage
         }
-        let titles = ["DRIVER HELMET", "FIRE EXTINGUISHERS", "ARM RESTRAINTS", "DRIVER SUIT", "GLOVES", "SHOES", "WET TIRES", "SPARE PARTS", "CHANGING PROCEDURE"]
-        let cases = titles.enumerated().map { index, title in
+        let garage = try? contentService.loadStage(.garage)
+        let officialCases = garage?.orderedSections.flatMap(\.orderedTestCases) ?? []
+        let egress = try? contentService.loadStage(.egress)
+        let egressCase = egress?.orderedSections.first?.orderedTestCases.first
+        // Keep scenario position and draft IDs while using the matching official equipment criteria.
+        let itemIDs = ["G1", "G9", "G3", "G4", "G5", "G6", "G8", "G7", "G2"]
+        let cases = itemIDs.enumerated().compactMap { index, itemID -> InspectionTestCase? in
+            guard let officialCase = officialCases.first(where: { $0.id == itemID }),
+                  let officialStep = officialCase.orderedSteps.first else { return nil }
             let number = index + 1
             let measured = (scenario == .measurement || scenario == .measurementReady) && number == 3
             let evidence = [.evidence, .evidenceReady, .photoSources].contains(scenario) && number == 3
+            let title = measured ? (egress?.title ?? "Egress Test") : officialCase.title
+            let ruleReferences = measured ? (egressCase?.ruleReferences ?? []) : officialCase.ruleReferences
+            let instruction: String
+            if measured {
+                instruction = egressCase?.orderedSteps.first { $0.displayOrder == 14 }?.content ?? ""
+            } else if evidence {
+                instruction = "Record a clear photo of the installed arm restraints."
+            } else {
+                instruction = officialStep.content
+            }
             let step = InspectionTestStep(
-                id: "step-\(number)", code: "G-\(number)", ruleReference: "T.13.8", title: title,
+                id: "step-\(number)", code: "G-\(number)", ruleReference: ruleReferences.first ?? "", title: title,
                 type: measured ? .measurement : .check,
-                content: measured ? "Measure the driver exit time. Record the elapsed time in seconds." : evidence ? "Record a clear photo of the installed arm restraints." : "Required for all drivers. Must be commercially manufactured. No label required.",
+                content: instruction,
                 requiredOutcome: !evidence, requiresEvidence: evidence,
                 safetyBadges: scenario == .safety && number == 3 ? [.energized] : [],
                 measurementRange: measured ? MeasurementRange(unit: .seconds, minimum: 0, maximum: 5, maximumFractionDigits: 2) : nil
@@ -157,15 +191,15 @@ enum InspectionSnapshotFixtures {
             var steps = [step]
             if scenario == .multiStep && number == 3 {
                 steps.append(InspectionTestStep(id: "step-3b", code: "G-3B", displayOrder: 1,
-                    ruleReference: "T.13.8", title: "Check release", type: .check,
+                    ruleReference: officialStep.ruleReference, title: "Check release", type: .check,
                     content: "Verify the driver can release both arm restraints without assistance.",
                     requiredOutcome: true, requiresEvidence: false))
             }
             return InspectionTestCase(id: "case-\(number)", code: "GAR-\(number)", displayOrder: number,
-                                      title: measured ? "DRIVER EGRESS" : title, ruleReferences: ["T.13.8"], steps: steps)
+                                      title: title, ruleReferences: ruleReferences, steps: steps)
         }
         return InspectionStage(id: "snapshot-garage", title: "Garage Inspection", displayOrder: 1,
-            sections: [InspectionSection(id: "drivers", title: "Driver equipment", displayOrder: 1, testCases: Array(cases.prefix(6))),
+            sections: [InspectionSection(id: "drivers", title: "Driver Equipment", displayOrder: 1, testCases: Array(cases.prefix(6))),
                        InspectionSection(id: "supplies", title: "Tires and supplies", displayOrder: 2, testCases: Array(cases.suffix(3)))])
     }
 

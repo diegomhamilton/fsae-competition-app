@@ -25,7 +25,7 @@ struct StageReviewCaseView: View {
                 ForEach(state.steps) { step in
                     Button { editResult(step.id) } label: {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text(step.step.title).font(.title3.bold())
+                            Text(step.step.title.inspectionLocalized).font(.title3.bold())
                             StageResultBadge(status: StageResultStatus.step(step, hasIssues: issues.contains { $0.stepID == step.id }), textStyle: .title3)
                             resultDetails(step)
                         }
@@ -43,7 +43,7 @@ struct StageReviewCaseView: View {
     }
     private var header: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(state.title).font(.title2.bold())
+            Text(state.title.inspectionLocalized).font(.title2.bold())
             HStack {
                 StageResultBadge(status: StageResultStatus.testCase(state, issues: issues), textStyle: .title3)
                 if isUpdated {

@@ -6,13 +6,13 @@ import UIKit
 struct FocusedPhotoSourcePicker: View {
     enum Source { case camera, library }
     private enum Strings {
-        static let title = "Add photo"
-        static let take = "Take photo"
-        static let choose = "Choose existing photo"
-        static let unavailable = "A camera is not available on this device."
-        static let denied = "Camera access is off. Enable it in Settings to take a photo."
-        static let settings = "Open Settings"
-        static let cancel = "Cancel"
+        static var title: String { "Add photo".inspectionLocalized }
+        static var take: String { "Take photo".inspectionLocalized }
+        static var choose: String { "Choose existing photo".inspectionLocalized }
+        static var unavailable: String { "A camera is not available on this device.".inspectionLocalized }
+        static var denied: String { "Camera access is off. Enable it in Settings to take a photo.".inspectionLocalized }
+        static var settings: String { "Open Settings".inspectionLocalized }
+        static var cancel: String { "Cancel".inspectionLocalized }
     }
     let choose: (Source) -> Void
     @Environment(\.dismiss) private var dismiss

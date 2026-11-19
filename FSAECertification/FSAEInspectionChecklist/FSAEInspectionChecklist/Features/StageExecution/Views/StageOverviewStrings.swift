@@ -1,43 +1,43 @@
 enum StageOverviewStrings {
-    static let currentTest = "Current"
-    static let updated = "Updated"
-    static let chooseTest = "Choose a test"
-    static let start = "Start inspection"
-    static let resume = "Continue inspection"
-    static let continueTest = "Continue current test"
-    static let review = "Review stage"
-    static let results = "Results"
-    static let resolve = "Needs attention"
-    static let ready = "All results confirmed"
-    static let readyDescription = "Check the results before submitting this stage."
-    static let edit = "Edit result"
-    static let unconfirmed = "Not confirmed"
-    static let noTests = "There are no tests in this stage."
-    static let unanswered = "Not started"
-    static let draft = "Draft"
-    static let passed = "Pass"
-    static let failed = "Fail"
-    static let flagged = "Needs review"
-    static let exception = "N/A"
-    static let expanded = "Expanded"
-    static let collapsed = "Collapsed"
-    static let photoUnavailable = "Photo unavailable"
+    static var currentTest: String { "Current".inspectionLocalized }
+    static var updated: String { "Updated".inspectionLocalized }
+    static var chooseTest: String { "Choose a test".inspectionLocalized }
+    static var start: String { "Start inspection".inspectionLocalized }
+    static var resume: String { "Continue inspection".inspectionLocalized }
+    static var continueTest: String { "Continue current test".inspectionLocalized }
+    static var review: String { "Review stage".inspectionLocalized }
+    static var results: String { "Results".inspectionLocalized }
+    static var resolve: String { "Needs attention".inspectionLocalized }
+    static var ready: String { "All results confirmed".inspectionLocalized }
+    static var readyDescription: String { "Check the results before submitting this stage.".inspectionLocalized }
+    static var edit: String { "Edit result".inspectionLocalized }
+    static var unconfirmed: String { "Not confirmed".inspectionLocalized }
+    static var noTests: String { "There are no tests in this stage.".inspectionLocalized }
+    static var unanswered: String { "Not started".inspectionLocalized }
+    static var draft: String { "Draft".inspectionLocalized }
+    static var passed: String { "Pass".inspectionLocalized }
+    static var failed: String { "Fail".inspectionLocalized }
+    static var flagged: String { "Needs review".inspectionLocalized }
+    static var exception: String { "N/A".inspectionLocalized }
+    static var expanded: String { "Expanded".inspectionLocalized }
+    static var collapsed: String { "Collapsed".inspectionLocalized }
+    static var photoUnavailable: String { "Photo unavailable".inspectionLocalized }
 
-    static let testSections = "Test sections"
+    static var testSections: String { "Test sections".inspectionLocalized }
 
     static func vehicle(_ team: InspectionTeam) -> String {
         "\(team.carNumber) · \(team.school)"
     }
 
     static func progress(confirmed: Int, total: Int) -> String {
-        "\(confirmed) of \(total) results confirmed"
+        InspectionLocalization.format("%d of %d results confirmed", confirmed, total)
     }
 
     static func needsReview(_ count: Int) -> String {
-        "\(count) \(count == 1 ? "result needs" : "results need") review"
+        InspectionLocalization.format(count == 1 ? "%d result needs review" : "%d results need review", count)
     }
 
-    static func notes(_ notes: String) -> String { "Notes: \(notes)" }
-    static func photoCount(_ count: Int) -> String { count == 1 ? "1 photo" : "\(count) photos" }
-    static func sectionCount(_ count: Int) -> String { count == 1 ? "1 test" : "\(count) tests" }
+    static func notes(_ notes: String) -> String { InspectionLocalization.format("Notes: %@", notes) }
+    static func photoCount(_ count: Int) -> String { count == 1 ? "1 photo".inspectionLocalized : InspectionLocalization.format("%d photos", count) }
+    static func sectionCount(_ count: Int) -> String { count == 1 ? "1 test".inspectionLocalized : InspectionLocalization.format("%d tests", count) }
 }

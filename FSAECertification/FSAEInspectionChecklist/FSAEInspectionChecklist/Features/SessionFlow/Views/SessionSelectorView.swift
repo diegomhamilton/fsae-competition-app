@@ -4,16 +4,21 @@
 //
 
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 struct SessionSelectorView: View {
     fileprivate enum Strings {
-        static let title = "Active Inspections"
-        static let createTeamTitle = "Add Team"
-        static let emptyCatalog = "No local teams yet."
-        static let emptyCatalogDetail = "Add a team to start the local inspection workflow."
+        static var title: String { "Active Inspections".inspectionLocalized }
+        static var createTeamTitle: String { "Add Team".inspectionLocalized }
+        static var emptyCatalog: String { "No local teams yet.".inspectionLocalized }
+        static var emptyCatalogDetail: String { "Add a team to start the local inspection workflow.".inspectionLocalized }
+        static var language: String { "Language".inspectionLocalized }
     }
 
     @State private var showsAddTeam = false
+    @Environment(\.openURL) private var openURL
     @ObservedObject var coordinator: SessionSelectionCoordinator
     let selectTeam: (Int) -> Void
     let createTeam: (LocalTeamCatalogEntry) -> Void
@@ -58,15 +63,15 @@ struct SessionSelectorView: View {
                                         .font(.headline)
                                         .foregroundStyle(Color.fsaeText)
                                 }
-                                Text(team.currentStage)
+                                Text(team.currentStage.inspectionLocalized)
                                     .font(.subheadline)
                                     .foregroundStyle(Color.fsaeSecondaryText)
-                                Text(team.lastSaved)
+                                Text(team.lastSaved.inspectionLocalized)
                                     .font(.caption2)
                                     .foregroundStyle(Color.fsaeSecondaryText)
                             }
                             Spacer()
-                            StatusPill(text: team.status.rawValue, color: team.status.color)
+                            StatusPill(text: team.status.rawValue.inspectionLocalized, color: team.status.color)
                                 .accessibilityIdentifier(
                                     InspectionAccessibilityIdentifier.sessionSelectorTeamStatus(teamID: team.id)
                                         .rawValue
@@ -91,10 +96,24 @@ struct SessionSelectorView: View {
         }
         .navigationTitle(Strings.title)
         .toolbar {
+            #if os(iOS)
+            ToolbarItem(placement: .topBarLeading) {
+                Button(Strings.language, systemImage: "globe") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(url)
+                    }
+                }
+                .labelStyle(.iconOnly)
+                .inspectionButtonStyle()
+                .accessibilityIdentifier("session-selector.language")
+            }
+            .sharedBackgroundVisibility(.hidden)
+            #endif
             ToolbarItem(placement: .primaryAction) {
                 Button(Strings.createTeamTitle, systemImage: "plus") {
                     showsAddTeam = true
                 }
+                .labelStyle(.iconOnly)
                 .inspectionButtonStyle()
                 .accessibilityIdentifier("session-selector.add-team")
             }

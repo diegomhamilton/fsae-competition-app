@@ -25,7 +25,7 @@ struct FocusedTestDescription: View {
                 #endif
                 // Authored line breaks define requirements without splitting decimals or rule references.
                 VStack(alignment: .leading, spacing: 6) {
-                    ForEach(Array(state.step.content.components(separatedBy: .newlines).filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, paragraph in
+                    ForEach(Array(state.step.content.inspectionLocalized.components(separatedBy: .newlines).filter { !$0.isEmpty }.enumerated()), id: \.offset) { _, paragraph in
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Text("•").accessibilityHidden(true)
                             Text(paragraph)

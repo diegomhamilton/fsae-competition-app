@@ -10,19 +10,19 @@ struct ActiveTeamDashboardView: View {
     @AppStorage(InternalSettingsView.showDebugActionsKey) private var showDebugActions = false
     #endif
     fileprivate enum Strings {
-        static let eyebrow = "Active Team"
-        static let overallProgress = "Overall progress"
-        static let openBlockers = "Open blockers"
-        static let currentStage = "Current Stage"
-        static let openStage = "Open Stage"
-        static let completeSession = "Complete Session"
-        static let completeSessionBlocked = "Resolve validation blockers before completing this session."
-        static let debugActions = "Debug Actions"
-        static let debugMarkAllPassed = "Mark All Passed"
-        static let debugMarkAllIncomplete = "Mark All Incomplete"
-        static let stages = "Stages"
-        static let complete = "Complete"
-        static let noBlockers = "No blockers"
+        static var eyebrow: String { "Active Team".inspectionLocalized }
+        static var overallProgress: String { "Overall progress".inspectionLocalized }
+        static var openBlockers: String { "Open blockers".inspectionLocalized }
+        static var currentStage: String { "Current Stage".inspectionLocalized }
+        static var openStage: String { "Open Stage".inspectionLocalized }
+        static var completeSession: String { "Complete Session".inspectionLocalized }
+        static var completeSessionBlocked: String { "Resolve validation blockers before completing this session.".inspectionLocalized }
+        static var debugActions: String { "Debug Actions".inspectionLocalized }
+        static var debugMarkAllPassed: String { "Mark All Passed".inspectionLocalized }
+        static var debugMarkAllIncomplete: String { "Mark All Incomplete".inspectionLocalized }
+        static var stages: String { "Stages".inspectionLocalized }
+        static var complete: String { "Complete".inspectionLocalized }
+        static var noBlockers: String { "No blockers".inspectionLocalized }
     }
 
     @ObservedObject var coordinator: InspectionExecutionCoordinator
@@ -52,12 +52,12 @@ struct ActiveTeamDashboardView: View {
                         Text(Strings.currentStage)
                             .font(.caption.weight(.bold))
                             .foregroundStyle(Color.fsaeSecondaryText)
-                        Text(team.currentStage)
+                        Text(team.currentStage.inspectionLocalized)
                             .font(.title3.weight(.bold))
                             .foregroundStyle(Color.fsaeText)
                     }
                     Spacer()
-                    StatusPill(text: team.lastSaved, color: .fsaeBlue)
+                    StatusPill(text: team.lastSaved.inspectionLocalized, color: .fsaeBlue)
                 }
                 Button {
                     if let stageID = selectedStageID {
@@ -153,10 +153,10 @@ private struct StageRow: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(state.stageTitle)
+                    Text(state.stageTitle.inspectionLocalized)
                         .font(.headline)
                         .foregroundStyle(Color.fsaeText)
-                    Text(state.stageSubtitle)
+                    Text(state.stageSubtitle.inspectionLocalized)
                         .font(.caption)
                         .foregroundStyle(Color.fsaeSecondaryText)
                 }

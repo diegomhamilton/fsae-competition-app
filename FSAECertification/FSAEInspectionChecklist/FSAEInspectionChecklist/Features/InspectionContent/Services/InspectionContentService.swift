@@ -60,9 +60,7 @@ struct InspectionContentService: @unchecked Sendable {
         var loadedStages: [InspectionStage] = []
 
         for resource in resources {
-            let data = try data(for: resource)
-            let stage = try decodeStage(data, resourceName: resource.fileName)
-            loadedStages.append(stage)
+            loadedStages.append(try loadStage(resource))
         }
 
         return loadedStages.sorted { lhs, rhs in
@@ -72,6 +70,10 @@ struct InspectionContentService: @unchecked Sendable {
                 lhs.displayOrder < rhs.displayOrder
             }
         }
+    }
+
+    func loadStage(_ resource: OfficialInspectionResource) throws -> InspectionStage {
+        try decodeStage(data(for: resource), resourceName: resource.fileName)
     }
 
     func decodeStage(_ data: Data, resourceName: String) throws -> InspectionStage {

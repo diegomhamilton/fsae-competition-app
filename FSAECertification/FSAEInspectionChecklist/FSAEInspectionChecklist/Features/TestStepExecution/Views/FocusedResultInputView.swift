@@ -41,10 +41,17 @@ struct FocusedResultInputView: View {
                             form.selectOutcome(outcome)
                             if outcome == .fail { focusedField.wrappedValue = .notes }
                         } label: {
-                            Label(outcome.displayName, systemImage: outcome == .fail ? "xmark" : "checkmark")
-                                .font(.title2.bold())
-                                .frame(maxWidth: .infinity, minHeight: 80)
-                                .contentShape(.rect(cornerRadius: 24))
+                            HStack(spacing: 6) {
+                                Image(systemName: outcome == .fail ? "xmark" : "checkmark")
+                                    .accessibilityHidden(true)
+                                Text(outcome.displayName)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.65)
+                                    .allowsTightening(true)
+                            }
+                            .font(.title2.bold())
+                            .frame(maxWidth: .infinity, minHeight: 80)
+                            .contentShape(.rect(cornerRadius: 24))
                         }
                         .inspectionButtonStyle(tint: outcome == .fail ? .fsaeRed : .fsaeGreen)
                         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testStepOutcome(stepID: form.step.id, outcome: outcome).rawValue)

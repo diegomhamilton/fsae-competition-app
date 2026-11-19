@@ -15,7 +15,7 @@ struct StageReviewIssuesView: View {
                 } label: {
                     HStack {
                         VStack(alignment: .leading) {
-                            Text(issue.stepTitle).font(.headline)
+                            Text(issue.stepTitle.inspectionLocalized).font(.headline)
                             Text(issue.message).font(.callout).foregroundStyle(Color.fsaeSecondaryText)
                         }
                         Spacer()

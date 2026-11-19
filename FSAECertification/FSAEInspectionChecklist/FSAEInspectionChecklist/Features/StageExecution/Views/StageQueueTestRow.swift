@@ -20,7 +20,7 @@ struct StageQueueTestRow: View {
                         .font(.headline)
                         .foregroundStyle(status.color)
                     VStack(alignment: .leading) {
-                        Text(state.title)
+                        Text(state.title.inspectionLocalized)
                             .font(.headline)
                             .fixedSize(horizontal: false, vertical: true)
                         if status != .pass && status != .fail {

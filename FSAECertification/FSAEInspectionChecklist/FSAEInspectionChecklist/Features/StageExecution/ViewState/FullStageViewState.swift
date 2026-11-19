@@ -56,14 +56,14 @@ struct FullStageViewState: Identifiable, Equatable, Sendable {
     }
 
     var progressText: String {
-        "\(completeStepCount)/\(stepCount) complete"
+        InspectionLocalization.format("%d/%d complete", completeStepCount, stepCount)
     }
 
     var blockerText: String {
         switch blockerCount {
-        case 0: "No blockers"
-        case 1: "1 blocker"
-        default: "\(blockerCount) blockers"
+        case 0: "No blockers".inspectionLocalized
+        case 1: "1 blocker".inspectionLocalized
+        default: InspectionLocalization.format("%d blockers", blockerCount)
         }
     }
 
