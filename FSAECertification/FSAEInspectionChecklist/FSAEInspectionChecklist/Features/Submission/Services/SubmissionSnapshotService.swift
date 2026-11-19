@@ -32,7 +32,8 @@ actor SubmissionSnapshotService {
         drafts: [TestCaseDraft],
         submittedAt: Date = Date(),
         recheckReferencesByTestCaseID: [String: [String]] = [:],
-        recheckReferences: [String] = []
+        recheckReferences: [String] = [],
+        preserveDrafts: Bool = false
     ) async throws -> SubmissionSnapshotResult {
         try await validateNewSubmission(
             context: context,
@@ -50,7 +51,8 @@ actor SubmissionSnapshotService {
                 context: context,
                 submissionID: submissionID,
                 submittedAt: submittedAt,
-                recheckReferences: references
+                recheckReferences: references,
+                removeDraft: !preserveDrafts
             )
             let snapshot = try await persistence.loadSubmittedTestCaseSnapshot(
                 context: context,

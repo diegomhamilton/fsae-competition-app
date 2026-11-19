@@ -53,7 +53,7 @@ struct TeamSwitchConfirmationView: View {
                 Button(Strings.cancel) {
                     cancelSwitch()
                 }
-                .buttonStyle(.bordered)
+                .inspectionButtonStyle()
                 .controlSize(.large)
                 .accessibilityIdentifier(
                     InspectionAccessibilityIdentifier.teamSwitchCancelAction(
@@ -67,7 +67,7 @@ struct TeamSwitchConfirmationView: View {
                 } label: {
                     Label(Strings.saveAndSwitch, systemImage: "checkmark.circle.fill")
                 }
-                .buttonStyle(.borderedProminent)
+                .inspectionButtonStyle()
                 .controlSize(.large)
                 .accessibilityIdentifier(
                     InspectionAccessibilityIdentifier.teamSwitchConfirmAction(

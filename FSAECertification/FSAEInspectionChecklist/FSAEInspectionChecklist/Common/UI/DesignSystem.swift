@@ -7,17 +7,11 @@ import SwiftUI
 
 struct ScreenShell<Content: View>: View {
     let title: String
-    let subtitle: String
     @ViewBuilder var content: Content
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(Color.fsaePrimary)
-                    .padding(.leading, 12)
-
                 content
             }
             .padding(.top, 4)

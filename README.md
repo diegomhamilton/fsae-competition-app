@@ -37,7 +37,7 @@ For the system context, actors, business transactions, architecture invariants, 
 ### Development
 
 - [Review hygiene and PR rules](docs/inspection-event/review-hygiene.md)
-- [Tentpole 3 organization plan](docs/inspection-event/organization-plan.md)
+- [Source organization](docs/inspection-event/organization-plan.md)
 
 `docs/` describes the current implemented system and its runtime behavior. `Design/` contains proposed or historical architecture, flows, screen maps, and implementation plans that may be partially implemented or superseded.
 

@@ -32,6 +32,12 @@ struct InspectionTestCaseViewState: Identifiable, Equatable, Sendable {
         }
     }
 
+    func canAdvance(from stepID: String?, hasUnsavedDraft: Bool) -> Bool {
+        guard !hasUnsavedDraft else { return false }
+        let step = stepID.map { id in steps.first { $0.id == id } } ?? steps.first
+        return step?.isComplete == true
+    }
+
     var validationSummary: InspectionTestCaseValidationSummary {
         InspectionTestCaseValidationSummary(steps: steps)
     }
@@ -68,7 +74,9 @@ extension InspectionTestCaseViewState {
                     outcome: draft.outcome,
                     notes: draft.notes,
                     measurementInput: draft.measurementInput,
-                    evidenceAttachments: draft.evidenceAttachments
+                    evidenceAttachments: draft.evidenceAttachments,
+                    confirmedAt: draft.confirmedAt,
+                    flaggedForReview: draft.flaggedForReview
                 )
             }
         )
@@ -83,6 +91,30 @@ struct InspectionTestCaseStepViewState: Identifiable, Equatable, Sendable {
     let notes: String
     let measurementInput: String
     let evidenceAttachments: [EvidenceAttachmentMetadata]
+    let confirmedAt: Date?
+    let flaggedForReview: Bool?
+
+    init(
+        displayOrder: Int,
+        step: InspectionTestStep,
+        inheritedSafetyBadges: [InspectionSafetyBadge],
+        outcome: InspectionOutcome,
+        notes: String,
+        measurementInput: String,
+        evidenceAttachments: [EvidenceAttachmentMetadata],
+        confirmedAt: Date? = nil,
+        flaggedForReview: Bool? = nil
+    ) {
+        self.displayOrder = displayOrder
+        self.step = step
+        self.inheritedSafetyBadges = inheritedSafetyBadges
+        self.outcome = outcome
+        self.notes = notes
+        self.measurementInput = measurementInput
+        self.evidenceAttachments = evidenceAttachments
+        self.confirmedAt = confirmedAt
+        self.flaggedForReview = flaggedForReview
+    }
 
     var id: String {
         step.id

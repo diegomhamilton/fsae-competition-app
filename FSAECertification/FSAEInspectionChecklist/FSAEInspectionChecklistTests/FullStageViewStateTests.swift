@@ -43,7 +43,7 @@ struct FullStageViewStateTests {
             stageID: "06_rain",
             testCaseID: "egress-case",
             stepID: "EG-14",
-            issueID: "invalidMeasurement.EG-14.outsideAllowedRange"
+            issueID: "invalidMeasurement.EG-14"
         ))
     }
 

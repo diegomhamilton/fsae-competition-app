@@ -56,26 +56,28 @@ struct ContentTabsView: View {
                                 #endif
                             }
                         )
+                        .navigationDestination(isPresented: bindings.stagePresentedBinding) {
+                            if let stage = executionCoordinator.activeStage {
+                                StageNavigationView(
+                                    appCoordinator: appCoordinator,
+                                    executionCoordinator: executionCoordinator,
+                                    stage: stage
+                                )
+                            }
+                        }
                     } else {
                         EmptyFlowState(title: "Select a team to start inspection.")
                     }
                 }
             }
 
-            Tab("Stage", systemImage: "checklist", value: .stageChecklist) {
-                if let executionCoordinator = bindings.executionCoordinator,
-                   let stage = executionCoordinator.activeStage {
-                    StageNavigationView(
-                        appCoordinator: appCoordinator,
-                        executionCoordinator: executionCoordinator,
-                        stage: stage
-                    )
-                } else {
-                    NavigationStack {
-                        EmptyFlowState(title: "Open a team stage to inspect.")
-                    }
+            #if DEBUG
+            Tab(InternalSettingsView.Strings.title, systemImage: "gearshape", value: .internalSettings) {
+                NavigationStack {
+                    InternalSettingsView()
                 }
             }
+            #endif
         }
     }
 }
@@ -86,74 +88,35 @@ private struct StageNavigationView: View {
     let stage: InspectionStage
 
     var body: some View {
-        NavigationStack(path: $executionCoordinator.stageNavigationPath) {
-            FullStageView(
-                team: executionCoordinator.activeTeam,
-                stage: stage,
-                draftsByTestCaseID: executionCoordinator.draftsByTestCaseID,
-                openStepDetail: { step in
-                    appCoordinator.openTestStep(id: step.id)
-                },
-                updateStepDraft: { stepDraft, testCaseID in
-                    Task {
-                        await appCoordinator.saveStepDraft(
-                            stepDraft,
-                            testCaseID: testCaseID
-                        )
-                    }
-                },
-                submitStage: {},
-                openBlockingRoute: { route in
-                    if appCoordinator.openTestCase(id: route.testCaseID) {
-                        appCoordinator.openTestStep(id: route.stepID)
-                    }
-                }
-            )
+        focusedStage()
             .navigationDestination(for: StageNavigationRoute.self) { route in
                 destination(for: route)
             }
-        }
+    }
+
+    private func focusedStage(testCaseID: String? = nil, stepID: String? = nil) -> some View {
+        FullStageView(
+            team: executionCoordinator.activeTeam, stage: stage,
+            draftsByTestCaseID: executionCoordinator.draftsByTestCaseID,
+            saveStepDraft: { draft, caseID in
+                await executionCoordinator.saveStepDraft(draft, testCaseID: caseID)
+            },
+            latestDrafts: { executionCoordinator.draftsByStageID[stage.id] ?? [:] },
+            hasUnsavedDraft: executionCoordinator.sessionContext.hasUnsavedDraft,
+            hasFailedSave: { (executionCoordinator.failedDraftCaseIDsByStageID[stage.id] ?? []).contains($0) },
+            retryFailedSaves: { await executionCoordinator.retryFailedDraftSaves() },
+            initialTestCaseID: testCaseID, initialStepID: stepID,
+            hasSubmittedStage: executionCoordinator.lastStageSubmission?.stageID == stage.id,
+            submitStage: { await appCoordinator.submitActiveStage() }
+        )
+        .id("\(executionCoordinator.sessionContext.eventID).\(executionCoordinator.sessionContext.sessionID).\(executionCoordinator.activeTeam.id).\(stage.id).\(testCaseID ?? "queue").\(stepID ?? "first")")
     }
 
     @ViewBuilder
     private func destination(for route: StageNavigationRoute) -> some View {
         switch route {
-        case .testCase(let testCaseID):
-            if let testCase = testCase(id: testCaseID) {
-                TestCaseView(
-                    team: executionCoordinator.activeTeam,
-                    stage: stage,
-                    testCase: InspectionTestCaseViewState(
-                        testCase: testCase,
-                        draft: executionCoordinator.draft(for: testCase)
-                    ),
-                    openStepDetail: { step in
-                        appCoordinator.openTestStep(id: step.id)
-                    },
-                    updateStepDraft: { stepDraft in
-                        Task {
-                            await appCoordinator.saveStepDraft(
-                                stepDraft,
-                                testCaseID: testCase.id
-                            )
-                        }
-                    }
-                )
-            } else {
-                EmptyFlowState(title: "Open a test case from the active stage.")
-            }
-        case .testStep:
-            StepOverviewView(
-                coordinator: executionCoordinator
-            ) {
-                appCoordinator.returnToActiveTestCase()
-            }
+        case .testCase(let id): focusedStage(testCaseID: id)
+        case .testStep(let id, let stepID): focusedStage(testCaseID: id, stepID: stepID)
         }
-    }
-
-    private func testCase(id testCaseID: String) -> InspectionTestCase? {
-        stage.orderedSections
-            .flatMap(\.orderedTestCases)
-            .first { $0.id == testCaseID }
     }
 }
