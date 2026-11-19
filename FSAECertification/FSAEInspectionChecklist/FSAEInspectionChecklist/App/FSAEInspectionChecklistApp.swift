@@ -11,7 +11,7 @@ struct FSAEInspectionChecklistApp: App {
         WindowGroup {
             #if DEBUG
             if let scenario = InspectionSnapshotScenario.current {
-                InspectionSnapshotHarness(scenario: scenario)
+                InspectionSnapshotHarness(scenario: scenario, onExit: InspectionSnapshotLaunch.current.exit)
             } else {
                 ContentView()
             }

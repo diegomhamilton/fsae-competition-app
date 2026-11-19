@@ -1,4 +1,5 @@
 #if DEBUG
+import Observation
 import SwiftUI
 import UIKit
 
@@ -30,24 +31,53 @@ enum InspectionSnapshotScenario: String, CaseIterable {
     case multiStep = "multi-step"
     case debugBadge = "debug-badge"
 
-    static var current: Self? {
-        let arguments = ProcessInfo.processInfo.arguments
-        guard let index = arguments.firstIndex(of: "-inspection-snapshot"),
-              arguments.indices.contains(index + 1) else { return nil }
-        return Self(rawValue: arguments[index + 1])
+    @MainActor static var current: Self? {
+        InspectionSnapshotLaunch.current.scenario
+    }
+}
+
+/// Snapshot arguments apply only while the isolated preview is active.
+@MainActor
+@Observable
+final class InspectionSnapshotLaunch {
+    static let current = InspectionSnapshotLaunch(arguments: ProcessInfo.processInfo.arguments)
+
+    private let arguments: [String]
+    private(set) var scenario: InspectionSnapshotScenario?
+
+    init(arguments: [String]) {
+        self.arguments = arguments
+        if let index = arguments.firstIndex(of: "-inspection-snapshot"),
+           arguments.indices.contains(index + 1) {
+            scenario = InspectionSnapshotScenario(rawValue: arguments[index + 1])
+        }
+    }
+
+    func includes(_ argument: String) -> Bool {
+        scenario != nil && arguments.contains(argument)
+    }
+
+    func exit() {
+        scenario = nil
     }
 }
 
 struct InspectionSnapshotHarness: View {
+    private enum Strings {
+        static var exit: String { "Return to inspections".inspectionLocalized }
+    }
+
     let scenario: InspectionSnapshotScenario
+    let onExit: () -> Void
     @State private var drafts: [String: TestCaseDraft]
     @State private var submitted = false
     private let stage: InspectionStage
     private let team = InspectionTeam(id: 13, school: "capiba", carNumber: "13", status: .ready,
                                       currentStage: "Garage Inspection", lastSaved: "")
 
-    init(scenario: InspectionSnapshotScenario) {
+    init(scenario: InspectionSnapshotScenario, onExit: @escaping () -> Void) {
         self.scenario = scenario
+        self.onExit = onExit
         let stage = InspectionSnapshotFixtures.stage(for: scenario)
         self.stage = stage
         _drafts = State(initialValue: InspectionSnapshotFixtures.drafts(for: scenario, stage: stage))
@@ -115,6 +145,15 @@ struct InspectionSnapshotHarness: View {
                 }
             )
             .id(scenario == .evidenceReady ? drafts["case-3"]?.stepDraft(stepID: "step-3")?.draft.evidenceAttachments.count ?? 0 : 0)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(Strings.exit, systemImage: "chevron.backward", action: onExit)
+                        .labelStyle(.iconOnly)
+                        .inspectionButtonStyle()
+                        .accessibilityIdentifier("inspection.preview.exit")
+                }
+                .sharedBackgroundVisibility(.hidden)
+            }
         }
         .inspectionButtonStyle()
         .task {

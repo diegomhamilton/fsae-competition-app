@@ -31,7 +31,7 @@ struct FocusedExecutionLayout<Header: View, Content: View, Result: View>: View {
         }
         .background(Color.fsaeBackground)
         #if DEBUG
-        .environment(\.dynamicTypeSize, ProcessInfo.processInfo.arguments.contains("-inspection-large-text") ? .accessibility1 : textSize)
+        .environment(\.dynamicTypeSize, InspectionSnapshotLaunch.current.includes("-inspection-large-text") ? .accessibility1 : textSize)
         #endif
     }
 }

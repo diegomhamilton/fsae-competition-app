@@ -6,7 +6,7 @@ struct StageQueueSectionView: View {
 
     private var usesReducedMotion: Bool {
         #if DEBUG
-        reduceMotion || ProcessInfo.processInfo.arguments.contains("-inspection-reduce-motion")
+        reduceMotion || InspectionSnapshotLaunch.current.includes("-inspection-reduce-motion")
         #else
         reduceMotion
         #endif
