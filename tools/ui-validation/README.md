@@ -3,7 +3,7 @@
 `checkpoint.sh` exposes individual observable build, test, simulator, and capture steps. It never switches branches, commits, fetches, or rebuilds for installation. Use one retained simulator and stable DerivedData throughout a checkpoint.
 
 ```sh
-export FSAE_DEVELOPER_DIR=/Applications/Xcode26-2.app/Contents/Developer
+export FSAE_DEVELOPER_DIR="$(xcode-select -p)"
 export FSAE_DERIVED_DATA=/tmp/FSAESimplifiedUIDerivedData
 export FSAE_SIMULATOR_ID=34AA36AD-2704-4759-A347-01A023DEB371
 tools/ui-validation/checkpoint.sh help
@@ -15,4 +15,4 @@ Run `boot`, `ready`, `install`, `launch`, and `capture` separately, checking eac
 
 The Swift gate is an independently implemented adaptation of the boot-screen sampling technique in the same owner's ios-bass-app project at `.agents/skills/ios-feature-validation/scripts/check_screenshot.swift`. Exit `0` permits visual inspection, `1` indicates invalid input, and `2` rejects a likely boot or blank black screen. A very dark intentional UI can be a false positive; inspect the image and document any waiver rather than silently treating it as passed.
 
-Full workflow and source attribution are in `docs/simplified-ui-vault/Workflow/Build-and-snapshot-workflow.md` and `Learnings-from-ios-bass-app.md`. In this session XcodeBuildMCP is unavailable; checkpoint notes must identify direct Xcode validation accurately.
+Full workflow and validation requirements are in [docs/validation.md](../../docs/validation.md). Use whichever validation tools are available and name the tool and source actually checked. Keep captures and result bundles in temporary output or PR evidence; do not accumulate repository galleries or PDF reports.
