@@ -16,7 +16,7 @@ struct InspectionStageListViewState: Equatable, Sendable {
         draftsByTestCaseID: [String: TestCaseDraft] = [:]
     ) {
         stageID = stage.id
-        stageTitle = stage.title
+        stageTitle = stage.displayTitle
         sections = stage.orderedSections.map { section in
             InspectionStageListSectionViewState(
                 stageID: stage.id,

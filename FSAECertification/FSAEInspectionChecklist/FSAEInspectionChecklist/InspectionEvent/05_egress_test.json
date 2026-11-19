@@ -1,6 +1,8 @@
 {
   "code": "05_egress",
   "title": "Egress Test",
+  "subject": "Driver exit",
+  "category": "test",
   "displayOrder": 5,
   "sections": [
     {
@@ -10,7 +12,7 @@
         {
           "itemId": "EgressTest",
           "ruleRef": [],
-          "title": "EGRESS TEST",
+          "title": "Driver exit",
           "displayOrder": 1,
           "badges": [],
           "steps": [

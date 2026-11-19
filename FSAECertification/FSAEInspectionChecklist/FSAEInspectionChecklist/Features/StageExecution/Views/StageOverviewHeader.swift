@@ -4,11 +4,17 @@ struct StageOverviewHeader: View {
     let team: InspectionTeam
     let confirmedCount: Int
     let totalCount: Int
+    var category: InspectionStageCategory?
     var needsReviewCount = 0
     var review: (() -> Void)?
 
     var body: some View {
         VStack(alignment: .leading) {
+            if let category {
+                Text(category.title.inspectionLocalized)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color.fsaeSecondaryText)
+            }
             Text(StageOverviewStrings.vehicle(team)).font(.title2).bold()
             Text(StageOverviewStrings.progress(confirmed: confirmedCount, total: totalCount))
                 .font(.subheadline)

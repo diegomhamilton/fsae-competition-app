@@ -170,7 +170,7 @@ enum InspectionSnapshotFixtures {
             let number = index + 1
             let measured = (scenario == .measurement || scenario == .measurementReady) && number == 3
             let evidence = [.evidence, .evidenceReady, .photoSources].contains(scenario) && number == 3
-            let title = measured ? (egress?.title ?? "Egress Test") : officialCase.title
+            let title = measured ? (egress?.displayTitle ?? "Driver exit") : officialCase.title
             let ruleReferences = measured ? (egressCase?.ruleReferences ?? []) : officialCase.ruleReferences
             let instruction: String
             if measured {
@@ -198,7 +198,8 @@ enum InspectionSnapshotFixtures {
             return InspectionTestCase(id: "case-\(number)", code: "GAR-\(number)", displayOrder: number,
                                       title: title, ruleReferences: ruleReferences, steps: steps)
         }
-        return InspectionStage(id: "snapshot-garage", title: "Garage Inspection", displayOrder: 1,
+        return InspectionStage(id: "snapshot-garage", title: "Garage Inspection",
+            subject: garage?.subject, category: garage?.category, displayOrder: 1,
             sections: [InspectionSection(id: "drivers", title: "Driver Equipment", displayOrder: 1, testCases: Array(cases.prefix(6))),
                        InspectionSection(id: "supplies", title: "Tires and supplies", displayOrder: 2, testCases: Array(cases.suffix(3)))])
     }

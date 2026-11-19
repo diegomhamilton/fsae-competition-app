@@ -1,6 +1,8 @@
 {
   "code": "03_chassis",
   "title": "Chassis Inspection",
+  "subject": "Chassis",
+  "category": "inspection",
   "displayOrder": 3,
   "sections": [
     {

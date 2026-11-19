@@ -28,10 +28,24 @@ enum SessionStatus: String, Hashable {
     }
 }
 
+nonisolated enum InspectionStageCategory: String, Codable, Hashable, Sendable {
+    case inspection
+    case test
+
+    var title: String {
+        switch self {
+        case .inspection: "Inspection"
+        case .test: "Test"
+        }
+    }
+}
+
 struct InspectionStage: Identifiable, Codable, Hashable, Sendable {
     let id: String
     let code: String
     let title: String
+    let subject: String?
+    let category: InspectionStageCategory?
     let displayOrder: Int
     let subtitle: String
     let progress: Double
@@ -42,6 +56,8 @@ struct InspectionStage: Identifiable, Codable, Hashable, Sendable {
         id: String,
         code: String? = nil,
         title: String,
+        subject: String? = nil,
+        category: InspectionStageCategory? = nil,
         displayOrder: Int,
         subtitle: String = "",
         progress: Double = 0,
@@ -51,6 +67,8 @@ struct InspectionStage: Identifiable, Codable, Hashable, Sendable {
         self.id = id
         self.code = code ?? id
         self.title = title
+        self.subject = subject
+        self.category = category
         self.displayOrder = displayOrder
         self.subtitle = subtitle
         self.progress = progress
@@ -77,6 +95,8 @@ struct InspectionStage: Identifiable, Codable, Hashable, Sendable {
         )
     }
 
+    var displayTitle: String { subject ?? title }
+
     var orderedSections: [InspectionSection] {
         sections.sorted { lhs, rhs in
             if lhs.displayOrder == rhs.displayOrder {
@@ -97,6 +117,8 @@ extension InspectionStage {
         case id
         case code
         case title
+        case subject
+        case category
         case displayOrder
         case subtitle
         case progress
@@ -111,6 +133,8 @@ extension InspectionStage {
         id = try container.decodeIfPresent(String.self, forKey: .id) ?? decodedCode
         code = decodedCode
         title = try container.decode(String.self, forKey: .title)
+        subject = try container.decodeIfPresent(String.self, forKey: .subject)
+        category = try container.decodeIfPresent(InspectionStageCategory.self, forKey: .category)
         displayOrder = try container.decode(Int.self, forKey: .displayOrder)
         subtitle = try container.decodeIfPresent(String.self, forKey: .subtitle) ?? ""
         progress = try container.decodeIfPresent(Double.self, forKey: .progress) ?? 0

@@ -77,7 +77,7 @@ struct FullStageView: View {
 
     var body: some View {
         queueScreen()
-        .navigationTitle(stage.title.inspectionLocalized)
+        .navigationTitle(stage.displayTitle.inspectionLocalized)
         .navigationBarTitleDisplayMode(.large)
         // The persistent owner updates visibility when the route changes, including a pop.
         .toolbar(focus.mode == .focus ? .hidden : .visible, for: .tabBar)
@@ -143,7 +143,8 @@ struct FullStageView: View {
         FocusedExecutionLayout {
             if let testCase = activeTestCaseState {
                 FocusExecutionContext(title: testCase.title, vehicle: team,
-                    position: testPosition, total: focus.orderedTestCases.count)
+                    position: testPosition, total: focus.orderedTestCases.count,
+                    category: stage.category == .test ? stage.category : nil)
             }
         } content: {
             if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {

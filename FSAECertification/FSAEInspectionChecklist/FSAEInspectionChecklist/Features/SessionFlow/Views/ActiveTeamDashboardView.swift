@@ -52,7 +52,7 @@ struct ActiveTeamDashboardView: View {
                         Text(Strings.currentStage)
                             .font(.caption.weight(.bold))
                             .foregroundStyle(Color.fsaeSecondaryText)
-                        Text(team.currentStage.inspectionLocalized)
+                        Text((coordinator.activeStage?.displayTitle ?? team.currentStage).inspectionLocalized)
                             .font(.title3.weight(.bold))
                             .foregroundStyle(Color.fsaeText)
                     }
@@ -156,9 +156,16 @@ private struct StageRow: View {
                     Text(state.stageTitle.inspectionLocalized)
                         .font(.headline)
                         .foregroundStyle(Color.fsaeText)
-                    Text(state.stageSubtitle.inspectionLocalized)
-                        .font(.caption)
-                        .foregroundStyle(Color.fsaeSecondaryText)
+                    if let category = state.stageCategory {
+                        Text(category.title.inspectionLocalized)
+                            .font(.caption)
+                            .foregroundStyle(Color.fsaeSecondaryText)
+                    }
+                    if !state.stageSubtitle.isEmpty {
+                        Text(state.stageSubtitle.inspectionLocalized)
+                            .font(.caption)
+                            .foregroundStyle(Color.fsaeSecondaryText)
+                    }
                 }
                 Spacer()
                 StatusPill(

@@ -1,6 +1,8 @@
 {
   "code": "04_ev",
   "title": "EV Inspection",
+  "subject": "Electrical system",
+  "category": "inspection",
   "displayOrder": 4,
   "sections": [
     {

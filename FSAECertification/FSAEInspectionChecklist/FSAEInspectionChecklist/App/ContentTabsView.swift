@@ -15,7 +15,8 @@ struct ContentTabsView: View {
             Tab("Sessions".inspectionLocalized, systemImage: "person.2", value: .sessionSelector) {
                 NavigationStack {
                     SessionSelectorView(
-                        coordinator: appCoordinator.eventCoordinator.sessionSelectionCoordinator
+                        coordinator: appCoordinator.eventCoordinator.sessionSelectionCoordinator,
+                        stages: appCoordinator.eventCoordinator.stages
                     ) { teamID in
                         Task {
                             await appCoordinator.selectTeam(id: teamID)

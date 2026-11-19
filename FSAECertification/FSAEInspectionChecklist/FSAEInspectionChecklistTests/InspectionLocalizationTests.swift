@@ -7,8 +7,14 @@ struct InspectionLocalizationTests {
     @Test("Portuguese checklist covers all six stages without changing official content or identity")
     func completePortugueseChecklist() async throws {
         let stages = try await InspectionContentService().loadOfficialStages()
+        #expect(stages.map(\.category) == [.inspection, .inspection, .inspection, .inspection, .test, .test])
+        #expect(stages.map { InspectionLocalization.text($0.displayTitle, language: .portuguese) } == [
+            "Equipamentos", "Carenagem", "Chassi", "Sistema elétrico", "Saída do piloto", "Chuva",
+        ])
         for stage in stages {
             expectTranslation(stage.title)
+            expectTranslation(stage.displayTitle)
+            if let category = stage.category { expectTranslation(category.title) }
             for section in stage.sections {
                 expectTranslation(section.title)
                 for testCase in section.testCases {

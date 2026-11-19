@@ -8,6 +8,7 @@ import Foundation
 struct FullStageViewState: Identifiable, Equatable, Sendable {
     let stageID: String
     let stageTitle: String
+    let stageCategory: InspectionStageCategory?
     let teamName: String
     let stageSubtitle: String
     let sections: [FullStageSectionViewState]
@@ -22,7 +23,8 @@ struct FullStageViewState: Identifiable, Equatable, Sendable {
         draftsByTestCaseID: [String: TestCaseDraft] = [:]
     ) {
         stageID = stage.id
-        stageTitle = stage.title
+        stageTitle = stage.displayTitle
+        stageCategory = stage.category
         teamName = team.map { "\($0.carNumber) \($0.school)" } ?? stage.title
         stageSubtitle = stage.subtitle
         sections = stage.orderedSections.map { section in

@@ -20,15 +20,18 @@ struct SessionSelectorView: View {
     @State private var showsAddTeam = false
     @Environment(\.openURL) private var openURL
     @ObservedObject var coordinator: SessionSelectionCoordinator
+    let stages: [InspectionStage]
     let selectTeam: (Int) -> Void
     let createTeam: (LocalTeamCatalogEntry) -> Void
 
     init(
         coordinator: SessionSelectionCoordinator,
+        stages: [InspectionStage],
         selectTeam: @escaping (Int) -> Void,
         createTeam: @escaping (LocalTeamCatalogEntry) -> Void = { _ in }
     ) {
         self.coordinator = coordinator
+        self.stages = stages
         self.selectTeam = selectTeam
         self.createTeam = createTeam
     }
@@ -63,7 +66,7 @@ struct SessionSelectorView: View {
                                         .font(.headline)
                                         .foregroundStyle(Color.fsaeText)
                                 }
-                                Text(team.currentStage.inspectionLocalized)
+                                Text((stages.first { $0.title == team.currentStage }?.displayTitle ?? team.currentStage).inspectionLocalized)
                                     .font(.subheadline)
                                     .foregroundStyle(Color.fsaeSecondaryText)
                                 Text(team.lastSaved.inspectionLocalized)

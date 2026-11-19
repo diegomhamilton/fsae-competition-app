@@ -117,6 +117,7 @@
 "Bends Size C, Upper SIS diag Size B, Shoulder Harness Brace Size C." = "Curvas: tamanho C; diagonal superior da estrutura de impacto lateral (SIS): tamanho B; suporte dos cintos de ombro: tamanho C.";
 "Blocked" = "Bloqueada";
 "Body Inspection" = "Inspeção de carenagem";
+"Bodywork" = "Carenagem";
 "Bodywork Off" = "Carenagem removida";
 "Bolted electrical connections in the high current path of the Tractive System must include a positive locking feature to prevent unintentional loosening." = "As conexões elétricas aparafusadas no caminho de alta corrente do sistema trativo devem ter travamento mecânico para impedir afrouxamento involuntário.";
 "Bonded joints in the steering column must have metal backup." = "Juntas coladas na coluna de direção devem ter retenção metálica de segurança.";
@@ -157,6 +158,7 @@
 "Charger connector must incorporate an interlock such that the connectors only become live if are correctly connected." = "O conector do carregador deve incorporar intertravamento para que os conectores só sejam energizados quando estiverem conectados corretamente.";
 "Charger(s) for the Accumulator(s)." = "Carregador(es) do(s) acumulador(es).";
 "Charging Procedure" = "Procedimento de recarga";
+"Chassis" = "Chassi";
 "Chassis Features" = "Elementos do chassi";
 "Chassis Inspection" = "Inspeção de chassi";
 "Check" = "Verificação";
@@ -204,6 +206,7 @@
 "Driver In, Bodywork On" = "Piloto no veículo, carenagem instalada";
 "Driver Out" = "Piloto fora do veículo";
 "Driver Restraints" = "Cintos e dispositivos de retenção do piloto";
+"Driver exit" = "Saída do piloto";
 "EDGE RADII" = "Raios das bordas";
 "EGRESS" = "Saída do piloto";
 "EGRESS TEST" = "Teste de saída do piloto";
@@ -222,6 +225,8 @@
 "Edit result" = "Editar resultado";
 "Egress Procedure" = "Procedimento de saída do piloto";
 "Egress Test" = "Teste de saída do piloto";
+"Electrical system" = "Sistema elétrico";
+"Equipment" = "Equipamentos";
 "Enable TS." = "Habilitar o TS.";
 "Enter a distinct car number." = "Informe um número de veículo diferente do nome da equipe.";
 "Expanded" = "Expandido";
@@ -314,6 +319,7 @@
 "Instruct the ESO to connect a resistor to the TSMP to induce an insulation fault." = "Orientar o ESO a conectar um resistor ao TSMP para induzir uma falha de isolamento.";
 "Instructions" = "Instruções";
 "Inspections" = "Inspeções";
+"Inspection" = "Inspeção";
 "Insulated against heat conduction, convection and radiation.\nLowest point no lower than top of lower structure OR must have longitudinal 1.00\" OD x 0.065\" steel tube underneath." = "Isolado contra calor por condução, convecção e radiação.\nO ponto mais baixo não pode ficar abaixo do topo da estrutura inferior OU deve haver um tubo longitudinal de aço de 1.00\" de diâmetro externo x 0.065\" sob o banco.";
 "Insulated cable shears, screwdrivers and associated HV tools." = "Alicates de corte de cabos, chaves de fenda e demais ferramentas de alta tensão isoladas.";
 "Insulating tape or paint may be part of the insulation but must not be the only insulation." = "Fita isolante ou tinta podem fazer parte do isolamento, mas não podem ser o único isolamento.";
@@ -465,6 +471,7 @@
 "ROLL BAR PADDING" = "Acolchoamento dos arcos de proteção";
 "RTML DOT COMPLIANCE" = "Conformidade da RTML com DOT";
 "RTML FLASHING" = "Sinalização intermitente da RTML";
+"Rain" = "Chuva";
 "Rain Test" = "Teste de chuva";
 "Rain Test Procedure" = "Procedimento do teste de chuva";
 "Ready" = "Pronta";
@@ -613,6 +620,7 @@
 "Tech may use ultrasound to measure wall thickness and/or ask that 4 mm dia holes be drilled.\nSee table F.3.2.1 Requirements by Application." = "A inspeção pode usar ultrassom para medir a espessura da parede e/ou solicitar furos de 4 mm de diâmetro.\nConsultar a tabela F.3.2.1 de requisitos por aplicação.";
 "Template to pass from above cockpit to bottom of top SIS tube and less than 320mm from lowest point inside cockpit.\nSteering wheel & column, seat and padding can be removed; no removing firewall.\nFore/aft translation of template OK." = "O gabarito deve passar de cima do cockpit até a parte inferior do tubo superior da SIS e ficar a menos de 320mm do ponto mais baixo dentro do cockpit.\nVolante e coluna, banco e acolchoamento podem ser removidos; a parede corta-fogo não pode ser removida.\nÉ permitido deslocar o gabarito para a frente e para trás.";
 "Template to pass from rearwards of the steering column to 100 mm rearwards of the pedals.\nSteering wheel may be removed; padding may be removed if removable with no tools & with driver in seat." = "O gabarito deve passar de trás da coluna de direção até 100 mm atrás dos pedais.\nO volante pode ser removido; o acolchoamento pode ser removido se isso for possível sem ferramentas e com o piloto sentado.";
+"Test" = "Teste";
 "Test details" = "Detalhes do item";
 "Test queue" = "Lista de itens";
 "Test sections" = "Seções da inspeção";

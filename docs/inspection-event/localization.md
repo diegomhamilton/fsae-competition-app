@@ -27,18 +27,23 @@ These publications support terminology, not a claim that this app is an official
 
 | Source term | Portuguese display |
 | --- | --- |
-| Garage Inspection | Inspeção de equipamentos |
-| Body Inspection | Inspeção de carenagem |
-| Chassis Inspection | Inspeção de chassi |
-| EV Inspection | Inspeção elétrica (EV) |
-| Egress Test | Teste de saída do piloto |
-| Rain Test | Teste de chuva |
 | Accumulator | Acumulador |
 | Firewall | Parede corta-fogo (firewall) |
 | Tractive System | Sistema trativo (TS) |
 | Shutdown circuit | Circuito de desligamento |
 | Interlock | Intertravamento |
 | Arm restraints | Restritores de braço |
+
+Stage headings use the localized subject. The stage overview shows its category as a separate label.
+
+| Stage | Portuguese heading | Category |
+| --- | --- | --- |
+| Garage Inspection | Equipamentos | Inspeção |
+| Body Inspection | Carenagem | Inspeção |
+| Chassis Inspection | Chassi | Inspeção |
+| EV Inspection | Sistema elétrico | Inspeção |
+| Egress Test | Saída do piloto | Teste |
+| Rain Test | Chuva | Teste |
 
 Keep official acronyms (IMD, AMS/BMS, ESF, SES, TSMS, GLVMS, TSMP, MSD, BSPD, APPS, RML/RTML and TSSI) as written in each source item. Do not silently merge similar acronyms or replace required equipment markings. English marking text such as “High Voltage Present” stays quoted with a Portuguese explanation.
 

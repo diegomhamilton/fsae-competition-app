@@ -1,6 +1,8 @@
 {
   "code": "01_garage",
   "title": "Garage Inspection",
+  "subject": "Equipment",
+  "category": "inspection",
   "displayOrder": 1,
   "sections": [
     {
