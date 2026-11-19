@@ -92,7 +92,9 @@ final class FocusedResultForm {
 
     var hasUnsavedChanges: Bool { revision > savedRevision }
 
-    func selectOutcome(_ outcome: InspectionOutcome) {
+    /// An approval tap can confirm immediately if all required input is complete.
+    @discardableResult
+    func selectOutcome(_ outcome: InspectionOutcome) -> Bool {
         draft.outcome = outcome
         isEditingOutcome = false
         if outcome == .fail && draft.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -101,6 +103,7 @@ final class FocusedResultForm {
             isEditingNotes = false
         }
         changed()
+        return outcome == .pass && isReady
     }
 
     func updateNotes(_ notes: String) {
