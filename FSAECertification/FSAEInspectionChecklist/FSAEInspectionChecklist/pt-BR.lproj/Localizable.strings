@@ -62,7 +62,6 @@
 "Action" = "Ação";
 "Activate TS, shake the switch and check if TS deactivates." = "Ativar o TS, agitar a chave e verificar se o TS desativa.";
 "Activate Tractive System; IMD indicator OFF, TSSI is GREEN." = "Ativar o sistema trativo; indicador do IMD DESLIGADO e TSSI VERDE.";
-"Active Inspections" = "Inspeções em andamento";
 "Active Team" = "Equipe em inspeção";
 "Add Team" = "Adicionar equipe";
 "Add a photo before confirming this result." = "Adicione uma foto antes de confirmar este resultado.";
@@ -314,6 +313,7 @@
 "Instruct the ESO to activate the tractive system (TS)." = "Orientar o ESO a ativar o sistema trativo (TS).";
 "Instruct the ESO to connect a resistor to the TSMP to induce an insulation fault." = "Orientar o ESO a conectar um resistor ao TSMP para induzir uma falha de isolamento.";
 "Instructions" = "Instruções";
+"Inspections" = "Inspeções";
 "Insulated against heat conduction, convection and radiation.\nLowest point no lower than top of lower structure OR must have longitudinal 1.00\" OD x 0.065\" steel tube underneath." = "Isolado contra calor por condução, convecção e radiação.\nO ponto mais baixo não pode ficar abaixo do topo da estrutura inferior OU deve haver um tubo longitudinal de aço de 1.00\" de diâmetro externo x 0.065\" sob o banco.";
 "Insulated cable shears, screwdrivers and associated HV tools." = "Alicates de corte de cabos, chaves de fenda e demais ferramentas de alta tensão isoladas.";
 "Insulating tape or paint may be part of the insulation but must not be the only insulation." = "Fita isolante ou tinta podem fazer parte do isolamento, mas não podem ser o único isolamento.";

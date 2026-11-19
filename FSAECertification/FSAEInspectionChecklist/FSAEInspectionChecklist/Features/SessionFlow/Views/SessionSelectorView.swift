@@ -10,7 +10,7 @@ import UIKit
 
 struct SessionSelectorView: View {
     fileprivate enum Strings {
-        static var title: String { "Active Inspections".inspectionLocalized }
+        static var title: String { "Inspections".inspectionLocalized }
         static var createTeamTitle: String { "Add Team".inspectionLocalized }
         static var emptyCatalog: String { "No local teams yet.".inspectionLocalized }
         static var emptyCatalogDetail: String { "Add a team to start the local inspection workflow.".inspectionLocalized }
@@ -97,6 +97,27 @@ struct SessionSelectorView: View {
         .navigationTitle(Strings.title)
         .toolbar {
             #if os(iOS)
+            ToolbarItem(placement: .largeTitle) {
+                ViewThatFits(in: .horizontal) {
+                    Label {
+                        Text(Strings.title)
+                    } icon: {
+                        Image(systemName: "target")
+                            .font(.title2.weight(.semibold))
+                            .foregroundStyle(Color.fsaePrimary)
+                            .accessibilityHidden(true)
+                    }
+                    .labelStyle(.titleAndIcon)
+                    .fixedSize(horizontal: true, vertical: false)
+
+                    Text(Strings.title)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
+                .font(.largeTitle.bold())
+                .accessibilityAddTraits(.isHeader)
+            }
+
             ToolbarItem(placement: .topBarLeading) {
                 Button(Strings.language, systemImage: "globe") {
                     if let url = URL(string: UIApplication.openSettingsURLString) {
