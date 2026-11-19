@@ -30,6 +30,7 @@ doc_hooks:
     - openspec/changes/technical-inspection-event-development-plan/design.md
   downstream:
     - docs/README.md
+    - docs/architecture-overview.md
     - CLAUDE.md
 ---
 
