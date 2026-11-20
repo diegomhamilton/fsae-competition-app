@@ -50,11 +50,11 @@ struct FullStageView: View {
         }
         if initialReview { navigation.showReview() }
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("-inspection-review-position") {
+        if InspectionSnapshotLaunch.current.includes("-inspection-review-position") {
             navigation.overview.rememberReviewOffset(340)
             navigation.overview.lastCorrectedCaseID = "case-3"
         }
-        if ProcessInfo.processInfo.arguments.contains("-inspection-queue-position") {
+        if InspectionSnapshotLaunch.current.includes("-inspection-queue-position") {
             navigation.selectTestCase(id: "case-8", draftsByTestCaseID: draftsByTestCaseID)
             if let first = stage.orderedSections.first { navigation.overview.toggleSection(first.id) }
         }

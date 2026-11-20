@@ -284,7 +284,7 @@ struct FocusedResultView: View {
             default:
                 break
             }
-            if ProcessInfo.processInfo.arguments.contains("-inspection-invalid-measurement") {
+            if InspectionSnapshotLaunch.current.includes("-inspection-invalid-measurement") {
                 form.selectOutcome(.pass)
                 form.updateMeasurement("6.25")
             }
