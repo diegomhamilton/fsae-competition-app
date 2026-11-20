@@ -1,10 +1,12 @@
 #if DEBUG
+import Observation
 import SwiftUI
 import UIKit
 
 /// Isolated review fixtures: no judge session or persisted production draft is changed.
 enum InspectionSnapshotScenario: String, CaseIterable {
     case queue, focus, ready, fail, measurement, evidence, review, details
+    case gloves
     case queueReturn = "queue-return"
     case longest
     case saving, confirmed, safety
@@ -29,24 +31,53 @@ enum InspectionSnapshotScenario: String, CaseIterable {
     case multiStep = "multi-step"
     case debugBadge = "debug-badge"
 
-    static var current: Self? {
-        let arguments = ProcessInfo.processInfo.arguments
-        guard let index = arguments.firstIndex(of: "-inspection-snapshot"),
-              arguments.indices.contains(index + 1) else { return nil }
-        return Self(rawValue: arguments[index + 1])
+    @MainActor static var current: Self? {
+        InspectionSnapshotLaunch.current.scenario
+    }
+}
+
+/// Snapshot arguments apply only while the isolated preview is active.
+@MainActor
+@Observable
+final class InspectionSnapshotLaunch {
+    static let current = InspectionSnapshotLaunch(arguments: ProcessInfo.processInfo.arguments)
+
+    private let arguments: [String]
+    private(set) var scenario: InspectionSnapshotScenario?
+
+    init(arguments: [String]) {
+        self.arguments = arguments
+        if let index = arguments.firstIndex(of: "-inspection-snapshot"),
+           arguments.indices.contains(index + 1) {
+            scenario = InspectionSnapshotScenario(rawValue: arguments[index + 1])
+        }
+    }
+
+    func includes(_ argument: String) -> Bool {
+        scenario != nil && arguments.contains(argument)
+    }
+
+    func exit() {
+        scenario = nil
     }
 }
 
 struct InspectionSnapshotHarness: View {
+    private enum Strings {
+        static var exit: String { "Return to inspections".inspectionLocalized }
+    }
+
     let scenario: InspectionSnapshotScenario
+    let onExit: () -> Void
     @State private var drafts: [String: TestCaseDraft]
     @State private var submitted = false
     private let stage: InspectionStage
     private let team = InspectionTeam(id: 13, school: "capiba", carNumber: "13", status: .ready,
                                       currentStage: "Garage Inspection", lastSaved: "")
 
-    init(scenario: InspectionSnapshotScenario) {
+    init(scenario: InspectionSnapshotScenario, onExit: @escaping () -> Void) {
         self.scenario = scenario
+        self.onExit = onExit
         let stage = InspectionSnapshotFixtures.stage(for: scenario)
         self.stage = stage
         _drafts = State(initialValue: InspectionSnapshotFixtures.drafts(for: scenario, stage: stage))
@@ -91,8 +122,8 @@ struct InspectionSnapshotHarness: View {
                     return scenario != .saveFailure
                 },
                 latestDrafts: { drafts },
-                initialTestCaseID: scenario == .longest ? longestCase?.id : scenario == .queue || scenario == .queueSupplies ? nil : "case-3",
-                initialStepID: scenario == .longest ? longestCase?.orderedSteps.max(by: { $0.content.count < $1.content.count })?.id : "step-3",
+                initialTestCaseID: initialTestCaseID,
+                initialStepID: initialStepID,
                 initialReview: [.review, .reviewIncomplete, .reviewReturn, .reviewCorrection, .reviewFlagged, .resolveFlag, .reviewSubmitted, .submissionFailure].contains(scenario),
                 initialDetails: scenario == .details,
                 initialQueue: scenario == .queueDrawer,
@@ -114,6 +145,15 @@ struct InspectionSnapshotHarness: View {
                 }
             )
             .id(scenario == .evidenceReady ? drafts["case-3"]?.stepDraft(stepID: "step-3")?.draft.evidenceAttachments.count ?? 0 : 0)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(Strings.exit, systemImage: "chevron.backward", action: onExit)
+                        .labelStyle(.iconOnly)
+                        .inspectionButtonStyle()
+                        .accessibilityIdentifier("inspection.preview.exit")
+                }
+                .sharedBackgroundVisibility(.hidden)
+            }
         }
         .inspectionButtonStyle()
         .task {
@@ -131,25 +171,58 @@ struct InspectionSnapshotHarness: View {
             drafts["case-3"] = value
         }
     }
+
+    private var initialTestCaseID: String? {
+        switch scenario {
+        case .longest: longestCase?.id
+        case .queue, .queueSupplies: nil
+        case .gloves: "case-5"
+        default: "case-3"
+        }
+    }
+
+    private var initialStepID: String? {
+        switch scenario {
+        case .longest: longestCase?.orderedSteps.max(by: { $0.content.count < $1.content.count })?.id
+        case .gloves: "step-5"
+        default: "step-3"
+        }
+    }
 }
 
 enum InspectionSnapshotFixtures {
     static func stage(for scenario: InspectionSnapshotScenario) -> InspectionStage {
+        let contentService = InspectionContentService()
         if scenario == .longest,
-           let url = Bundle.main.url(forResource: OfficialInspectionResource.body.fileName, withExtension: "json"),
-           let data = try? Data(contentsOf: url),
-           let stage = try? InspectionContentService().decodeStage(data, resourceName: OfficialInspectionResource.body.fileName) {
+           let stage = try? contentService.loadStage(.body) {
             return stage
         }
-        let titles = ["DRIVER HELMET", "FIRE EXTINGUISHERS", "ARM RESTRAINTS", "DRIVER SUIT", "GLOVES", "SHOES", "WET TIRES", "SPARE PARTS", "CHANGING PROCEDURE"]
-        let cases = titles.enumerated().map { index, title in
+        let garage = try? contentService.loadStage(.garage)
+        let officialCases = garage?.orderedSections.flatMap(\.orderedTestCases) ?? []
+        let egress = try? contentService.loadStage(.egress)
+        let egressCase = egress?.orderedSections.first?.orderedTestCases.first
+        // Keep scenario position and draft IDs while using the matching official equipment criteria.
+        let itemIDs = ["G1", "G9", "G3", "G4", "G5", "G6", "G8", "G7", "G2"]
+        let cases = itemIDs.enumerated().compactMap { index, itemID -> InspectionTestCase? in
+            guard let officialCase = officialCases.first(where: { $0.id == itemID }),
+                  let officialStep = officialCase.orderedSteps.first else { return nil }
             let number = index + 1
             let measured = (scenario == .measurement || scenario == .measurementReady) && number == 3
             let evidence = [.evidence, .evidenceReady, .photoSources].contains(scenario) && number == 3
+            let title = measured ? (egress?.displayTitle ?? "Driver exit") : officialCase.title
+            let ruleReferences = measured ? (egressCase?.ruleReferences ?? []) : officialCase.ruleReferences
+            let instruction: String
+            if measured {
+                instruction = egressCase?.orderedSteps.first { $0.displayOrder == 14 }?.content ?? ""
+            } else if evidence {
+                instruction = "Record a clear photo of the installed arm restraints."
+            } else {
+                instruction = officialStep.content
+            }
             let step = InspectionTestStep(
-                id: "step-\(number)", code: "G-\(number)", ruleReference: "T.13.8", title: title,
+                id: "step-\(number)", code: "G-\(number)", ruleReference: ruleReferences.first ?? "", title: title,
                 type: measured ? .measurement : .check,
-                content: measured ? "Measure the driver exit time. Record the elapsed time in seconds." : evidence ? "Record a clear photo of the installed arm restraints." : "Required for all drivers. Must be commercially manufactured. No label required.",
+                content: instruction,
                 requiredOutcome: !evidence, requiresEvidence: evidence,
                 safetyBadges: scenario == .safety && number == 3 ? [.energized] : [],
                 measurementRange: measured ? MeasurementRange(unit: .seconds, minimum: 0, maximum: 5, maximumFractionDigits: 2) : nil
@@ -157,15 +230,16 @@ enum InspectionSnapshotFixtures {
             var steps = [step]
             if scenario == .multiStep && number == 3 {
                 steps.append(InspectionTestStep(id: "step-3b", code: "G-3B", displayOrder: 1,
-                    ruleReference: "T.13.8", title: "Check release", type: .check,
+                    ruleReference: officialStep.ruleReference, title: "Check release", type: .check,
                     content: "Verify the driver can release both arm restraints without assistance.",
                     requiredOutcome: true, requiresEvidence: false))
             }
             return InspectionTestCase(id: "case-\(number)", code: "GAR-\(number)", displayOrder: number,
-                                      title: measured ? "DRIVER EGRESS" : title, ruleReferences: ["T.13.8"], steps: steps)
+                                      title: title, ruleReferences: ruleReferences, steps: steps)
         }
-        return InspectionStage(id: "snapshot-garage", title: "Garage Inspection", displayOrder: 1,
-            sections: [InspectionSection(id: "drivers", title: "Driver equipment", displayOrder: 1, testCases: Array(cases.prefix(6))),
+        return InspectionStage(id: "snapshot-garage", title: "Garage Inspection",
+            subject: garage?.subject, category: garage?.category, displayOrder: 1,
+            sections: [InspectionSection(id: "drivers", title: "Driver Equipment", displayOrder: 1, testCases: Array(cases.prefix(6))),
                        InspectionSection(id: "supplies", title: "Tires and supplies", displayOrder: 2, testCases: Array(cases.suffix(3)))])
     }
 

@@ -2,12 +2,12 @@ import SwiftUI
 
 struct CreateTeamSheet: View {
     private enum Strings {
-        static let createTeamTitle = "Add Team"
-        static let teamNamePlaceholder = "Team display name"
-        static let carNumberPlaceholder = "Car number"
-        static let createTeamAction = "Add Team"
-        static let duplicateFieldsError = "Enter a distinct car number."
-        static let cancel = "Cancel"
+        static var createTeamTitle: String { "Add Team".inspectionLocalized }
+        static var teamNamePlaceholder: String { "Team display name".inspectionLocalized }
+        static var carNumberPlaceholder: String { "Car number".inspectionLocalized }
+        static var createTeamAction: String { "Add Team".inspectionLocalized }
+        static var duplicateFieldsError: String { "Enter a distinct car number.".inspectionLocalized }
+        static var cancel: String { "Cancel".inspectionLocalized }
     }
 
     let createTeam: (LocalTeamCatalogEntry) -> Void

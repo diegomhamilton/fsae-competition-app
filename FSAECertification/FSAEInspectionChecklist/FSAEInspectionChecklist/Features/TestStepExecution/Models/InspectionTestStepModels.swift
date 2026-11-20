@@ -121,7 +121,7 @@ nonisolated enum InspectionTestStepType: String, Codable, CaseIterable, Hashable
     case context
 
     var label: String {
-        rawValue.capitalized
+        rawValue.capitalized.inspectionLocalized
     }
 
     var symbol: String {
@@ -166,13 +166,13 @@ nonisolated enum InspectionSafetyBadge: String, Codable, Hashable, Sendable {
 
     var displayName: String {
         switch self {
-        case .energized: "CAUTION: ENERGIZED"
+        case .energized: "CAUTION: ENERGIZED".inspectionLocalized
         }
     }
 
     var accessibilityLabel: String {
         switch self {
-        case .energized: "Caution, energized dynamic test step"
+        case .energized: "Caution, energized dynamic test step".inspectionLocalized
         }
     }
 }
@@ -202,7 +202,7 @@ extension InspectionSafetyBadge {
         let rawValue = try container.decode(String.self)
 
         switch rawValue {
-        case Self.energized.rawValue, Self.energized.displayName:
+        case Self.energized.rawValue, "CAUTION: ENERGIZED":
             self = .energized
         default:
             throw DecodingError.dataCorruptedError(
@@ -221,10 +221,10 @@ nonisolated enum InspectionOutcome: String, Codable, CaseIterable, Hashable, Sen
 
     var displayName: String {
         switch self {
-        case .pass: "Pass"
-        case .fail: "Fail"
-        case .notApplicable: "N/A"
-        case .pending: "Pending"
+        case .pass: "Pass".inspectionLocalized
+        case .fail: "Fail".inspectionLocalized
+        case .notApplicable: "N/A".inspectionLocalized
+        case .pending: "Pending".inspectionLocalized
         }
     }
 

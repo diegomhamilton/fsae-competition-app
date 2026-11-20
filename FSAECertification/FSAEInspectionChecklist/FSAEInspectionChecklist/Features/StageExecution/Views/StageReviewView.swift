@@ -51,7 +51,7 @@ struct StageReviewView: View {
         .task(id: presentation.lastCorrectedCaseID) {
             guard let corrected = presentation.lastCorrectedCaseID else { return }
             #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("-inspection-review-position") { return }
+            if InspectionSnapshotLaunch.current.includes("-inspection-review-position") { return }
             #endif
             do { try await Task.sleep(for: .seconds(3)) } catch { return }
             if presentation.lastCorrectedCaseID == corrected { presentation.lastCorrectedCaseID = nil }

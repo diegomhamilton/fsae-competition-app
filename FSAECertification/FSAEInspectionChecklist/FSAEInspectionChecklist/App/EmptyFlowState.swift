@@ -13,7 +13,7 @@ struct EmptyFlowState: View {
             title: title
         ) {
             ContentPanel {
-                Text(title)
+                Text(title.inspectionLocalized)
                     .font(.headline)
                     .foregroundStyle(Color.fsaeText)
             }

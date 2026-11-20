@@ -56,6 +56,8 @@ VoiceOver users must be able to complete login, session selection, stage inspect
 
 ## Localization Conventions
 
+Portuguese and English are available from the app's page in iOS Settings. The globe button on the Inspections screen opens that page. See [Portuguese inspection terminology](localization.md) for source references, identity preservation, original-English access and coverage checks.
+
 User-visible text and accessibility labels should be centralized through structured per-file `Strings` enums. Raw string literals are acceptable only for stable technical identifiers, fixture values, or test-only data.
 
 When new UI text is introduced, include its visible copy, accessibility label or hint, and validation/error copy in the same localizable structure. This keeps future string catalog migration mechanical and reviewable.

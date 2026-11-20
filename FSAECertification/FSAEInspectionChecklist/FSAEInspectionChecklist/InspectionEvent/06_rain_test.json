@@ -1,6 +1,8 @@
 {
   "code": "06_rain",
   "title": "Rain Test",
+  "subject": "Rain",
+  "category": "test",
   "displayOrder": 6,
   "sections": [
     {
@@ -10,7 +12,7 @@
         {
           "itemId": "RainTest",
           "ruleRef": [],
-          "title": "RAIN TEST",
+          "title": "Rain",
           "displayOrder": 1,
           "badges": [
             "CAUTION: ENERGIZED"

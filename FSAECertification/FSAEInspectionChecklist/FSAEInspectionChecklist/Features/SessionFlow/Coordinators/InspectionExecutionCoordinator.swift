@@ -132,17 +132,17 @@ final class InspectionExecutionCoordinator: ObservableObject {
     ) async -> Bool {
         guard !isSubmittingStage else { return false }
         guard let stage = activeStage, !sessionContext.hasUnsavedDraft else {
-            stageSubmissionError = String(localized: "Wait for your results to save before submitting.")
+            stageSubmissionError = "Wait for your results to save before submitting.".inspectionLocalized
             return false
         }
         guard !stage.orderedSections.flatMap(\.orderedTestCases).flatMap(\.orderedSteps).isEmpty else {
-            stageSubmissionError = String(localized: "There are no test results to submit.")
+            stageSubmissionError = "There are no test results to submit.".inspectionLocalized
             return false
         }
         let stageDrafts = draftsByStageID[stage.id] ?? [:]
         let focusValidation = StageFocusCoordinator(stage: stage, evidenceAvailable: evidenceAvailable)
         guard focusValidation.focusedValidationIssues(draftsByTestCaseID: stageDrafts).isEmpty else {
-            stageSubmissionError = String(localized: "Confirm all results, add required evidence, and resolve flags before submitting.")
+            stageSubmissionError = "Confirm all results, add required evidence, and resolve flags before submitting.".inspectionLocalized
             return false
         }
         let frozenDrafts = stage.orderedSections.flatMap(\.orderedTestCases).map { testCase in
@@ -162,7 +162,7 @@ final class InspectionExecutionCoordinator: ObservableObject {
             lastStageSubmission = result.snapshot
             return true
         } catch {
-            stageSubmissionError = String(localized: "Stage could not be submitted. Your results are kept; try again.")
+            stageSubmissionError = "Stage could not be submitted. Your results are kept; try again.".inspectionLocalized
             return false
         }
     }

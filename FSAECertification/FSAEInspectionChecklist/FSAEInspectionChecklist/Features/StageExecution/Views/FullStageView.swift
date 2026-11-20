@@ -2,11 +2,11 @@ import SwiftUI
 
 struct FullStageView: View {
     private enum Strings {
-        static let queue = "Test queue"
-        static let details = "View details"
-        static let back = "Back to test"
-        static let review = "Review stage"
-        static let done = "Done"
+        static var queue: String { "Test queue".inspectionLocalized }
+        static var details: String { "View details".inspectionLocalized }
+        static var back: String { "Back to test".inspectionLocalized }
+        static var review: String { "Review stage".inspectionLocalized }
+        static var done: String { "Done".inspectionLocalized }
     }
 
     let team: InspectionTeam
@@ -50,11 +50,11 @@ struct FullStageView: View {
         }
         if initialReview { navigation.showReview() }
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("-inspection-review-position") {
+        if InspectionSnapshotLaunch.current.includes("-inspection-review-position") {
             navigation.overview.rememberReviewOffset(340)
             navigation.overview.lastCorrectedCaseID = "case-3"
         }
-        if ProcessInfo.processInfo.arguments.contains("-inspection-queue-position") {
+        if InspectionSnapshotLaunch.current.includes("-inspection-queue-position") {
             navigation.selectTestCase(id: "case-8", draftsByTestCaseID: draftsByTestCaseID)
             if let first = stage.orderedSections.first { navigation.overview.toggleSection(first.id) }
         }
@@ -77,7 +77,7 @@ struct FullStageView: View {
 
     var body: some View {
         queueScreen()
-        .navigationTitle(stage.title)
+        .navigationTitle(stage.displayTitle.inspectionLocalized)
         .navigationBarTitleDisplayMode(.large)
         // The persistent owner updates visibility when the route changes, including a pop.
         .toolbar(focus.mode == .focus ? .hidden : .visible, for: .tabBar)
@@ -143,17 +143,18 @@ struct FullStageView: View {
         FocusedExecutionLayout {
             if let testCase = activeTestCaseState {
                 FocusExecutionContext(title: testCase.title, vehicle: team,
-                    position: testPosition, total: focus.orderedTestCases.count)
+                    position: testPosition, total: focus.orderedTestCases.count,
+                    category: stage.category == .test ? stage.category : nil)
             }
         } content: {
             if focus.mode == .focus, let testCase = activeTestCaseState, let step = activeStepState {
                 if testCase.steps.count > 1 {
                     Menu {
                         ForEach(testCase.steps) { item in
-                            Button(item.step.title) { focus.selectStep(id: item.id) }
+                            Button(item.step.title.inspectionLocalized) { focus.selectStep(id: item.id) }
                         }
                     } label: {
-                        Text("Step \((testCase.steps.firstIndex { $0.id == step.id } ?? 0) + 1) of \(testCase.steps.count)")
+                        Text(InspectionLocalization.format("Step %d of %d", (testCase.steps.firstIndex { $0.id == step.id } ?? 0) + 1, testCase.steps.count))
                     }
                     .frame(minHeight: 48)
                     .accessibilityIdentifier("execution.step-selector")

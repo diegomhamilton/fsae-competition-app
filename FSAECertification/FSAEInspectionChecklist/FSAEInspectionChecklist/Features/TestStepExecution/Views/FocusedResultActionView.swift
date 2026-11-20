@@ -2,6 +2,7 @@ import SwiftUI
 
 struct FocusedResultActionView: View {
     let form: FocusedResultForm
+    let isSaving: Bool
     let confirm: () -> Void
     var title = FocusedResultStrings.saveNext
 
@@ -12,7 +13,7 @@ struct FocusedResultActionView: View {
                 .foregroundStyle(Color.fsaeGreen)
                 .frame(maxWidth: .infinity, minHeight: 80)
                 .accessibilityIdentifier("execution.result-confirmation")
-        } else if form.isConfirming {
+        } else if isSaving {
             ProgressView(FocusedResultStrings.saving)
                 .frame(maxWidth: .infinity, minHeight: 80)
                 .accessibilityIdentifier("execution.result-saving")

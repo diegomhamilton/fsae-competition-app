@@ -3,9 +3,9 @@ import SwiftUI
 
 struct InternalSettingsView: View {
     enum Strings {
-        static let title = "Internal Settings"
-        static let debugActions = "Show debug actions"
-        static let detail = "Show development actions on the Team screen and debug display options in test details."
+        static var title: String { "Internal Settings".inspectionLocalized }
+        static var debugActions: String { "Show debug actions".inspectionLocalized }
+        static var detail: String { "Show development actions on the Team screen and debug display options in test details.".inspectionLocalized }
     }
 
     static let showDebugActionsKey = "internalSettings.showDebugActions"

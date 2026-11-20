@@ -12,9 +12,9 @@ import Observation
 @Observable
 final class StageFocusCoordinator {
     private enum Strings {
-        static let confirmationRequired = "Confirm this result."
-        static let evidenceRequired = "Add a photo before confirming this result."
-        static let flagRequiresReview = "Resolve this flag before submission."
+        static var confirmationRequired: String { "Confirm this result.".inspectionLocalized }
+        static var evidenceRequired: String { "Add a photo before confirming this result.".inspectionLocalized }
+        static var flagRequiresReview: String { "Resolve this flag before submission.".inspectionLocalized }
     }
 
     enum Mode: Hashable {

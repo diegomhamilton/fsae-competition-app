@@ -1,34 +1,34 @@
 import Foundation
 
 enum FocusedResultStrings {
-    static let writeNote = String(localized: "Write a note…")
-    static let editMode = String(localized: "Edit mode")
-    static let change = String(localized: "Change")
-    static let retake = String(localized: "Retake")
-    static let saveReview = "Save & return to review"
-    static let saveNext = String(localized: "Save & next test")
-    static let saving = String(localized: "Saving…")
-    static let confirmed = String(localized: "Result saved")
-    static let edit = String(localized: "Edit result")
-    static let notes = String(localized: "Judge notes")
-    static let requiredNotes = String(localized: "Reason for failure")
-    static let addNotes = String(localized: "Add notes")
-    static let addPhoto = String(localized: "Add photo evidence")
-    static let more = String(localized: "Notes, evidence, and more actions")
-    static let rerun = String(localized: "Rerun test")
-    static let flag = String(localized: "Flag issue")
-    static let resolveFlag = String(localized: "Resolve flag")
-    static let flaggedForReview = String(localized: "Flagged for review")
-    static let review = String(localized: "Review stage")
-    static let returnToReview = String(localized: "Return to review")
-    static let measurement = String(localized: "Measurement")
-    static let done = String(localized: "Done")
-    static let selected = String(localized: "Selected")
-    static let photoLoading = String(localized: "Adding photo…")
-    static let photoFailed = String(localized: "Photo could not be added. Try another photo.")
-    static let saveFailed = String(localized: "Changes could not be saved on this device.")
-    static let retry = String(localized: "Retry saving")
-    static let removePhoto = String(localized: "Remove photo")
-    static let viewPhotos = String(localized: "View photo evidence")
-    static let requiredEvidence = String(localized: "Add a photo before continuing.")
+    static var writeNote: String { "Write a note…".inspectionLocalized }
+    static var editMode: String { "Edit mode".inspectionLocalized }
+    static var change: String { "Change".inspectionLocalized }
+    static var retake: String { "Retake".inspectionLocalized }
+    static var saveReview: String { "Save & return to review".inspectionLocalized }
+    static var saveNext: String { "Save & next test".inspectionLocalized }
+    static var saving: String { "Saving…".inspectionLocalized }
+    static var confirmed: String { "Result saved".inspectionLocalized }
+    static var edit: String { "Edit result".inspectionLocalized }
+    static var notes: String { "Judge notes".inspectionLocalized }
+    static var requiredNotes: String { "Reason for failure".inspectionLocalized }
+    static var addNotes: String { "Add notes".inspectionLocalized }
+    static var addPhoto: String { "Add photo evidence".inspectionLocalized }
+    static var more: String { "Notes, evidence, and more actions".inspectionLocalized }
+    static var rerun: String { "Rerun test".inspectionLocalized }
+    static var flag: String { "Flag issue".inspectionLocalized }
+    static var resolveFlag: String { "Resolve flag".inspectionLocalized }
+    static var flaggedForReview: String { "Flagged for review".inspectionLocalized }
+    static var review: String { "Review stage".inspectionLocalized }
+    static var returnToReview: String { "Return to review".inspectionLocalized }
+    static var measurement: String { "Measurement".inspectionLocalized }
+    static var done: String { "Done".inspectionLocalized }
+    static var selected: String { "Selected".inspectionLocalized }
+    static var photoLoading: String { "Adding photo…".inspectionLocalized }
+    static var photoFailed: String { "Photo could not be added. Try another photo.".inspectionLocalized }
+    static var saveFailed: String { "Changes could not be saved on this device.".inspectionLocalized }
+    static var retry: String { "Retry saving".inspectionLocalized }
+    static var removePhoto: String { "Remove photo".inspectionLocalized }
+    static var viewPhotos: String { "View photo evidence".inspectionLocalized }
+    static var requiredEvidence: String { "Add a photo before continuing.".inspectionLocalized }
 }

@@ -109,7 +109,7 @@ struct FocusedResultFormTests {
         let form = FocusedResultForm(state: state(), autosaveDelay: .seconds(60)) { _ in true }
         #expect(!form.attemptedCompletion)
         #expect(!form.isReady)
-        form.selectOutcome(.fail)
+        #expect(!form.selectOutcome(.fail))
         #expect(form.showsNotes)
         #expect(!form.isReady)
         form.updateNotes("Restraint is damaged")
@@ -122,7 +122,7 @@ struct FocusedResultFormTests {
     @Test("Measurement entry stays editable until Done, including comma decimal input")
     func measurementNeedsDone() async {
         let form = FocusedResultForm(state: state(type: .measurement), autosaveDelay: .seconds(60)) { _ in true }
-        form.selectOutcome(.pass)
+        #expect(!form.selectOutcome(.pass))
         form.updateMeasurement("4,25")
         #expect(form.draft.measurementInput == "4.25")
         #expect(form.draft.measurementValue?.value == Decimal(string: "4.25"))
@@ -142,7 +142,7 @@ struct FocusedResultFormTests {
     func photoRequiresPersistedImage() async {
         let mock = EvidenceAttachmentMetadata(id: "mock", displayName: "Mock", mediaType: .photo, source: .mockAttachment, createdAt: Date())
         let form = FocusedResultForm(state: state(requiresEvidence: true, attachments: [mock]), autosaveDelay: .seconds(60), evidenceAvailable: { $0.localRelativePath != nil }) { _ in true }
-        form.selectOutcome(.pass)
+        #expect(!form.selectOutcome(.pass))
         #expect(!form.isReady)
         #expect(form.validationIssues.contains { $0.code == .missingRequiredEvidence })
         form.beginPhotoImport()
@@ -325,7 +325,7 @@ struct FocusedResultFormTests {
     func confirmationWaitsForSave() async {
         let recorder = SuspendedResultWriter()
         let form = FocusedResultForm(state: state(), autosaveDelay: .seconds(60)) { draft in await recorder.write(draft) }
-        form.selectOutcome(.pass)
+        #expect(form.selectOutcome(.pass))
         let confirmation = Task { await form.confirm() }
         await recorder.waitForFirstWrite()
         #expect(form.isConfirming)
@@ -334,6 +334,9 @@ struct FocusedResultFormTests {
         recorder.finishFirstWrite()
         #expect(await confirmation.value)
         #expect(form.didConfirm)
+        #expect(recorder.writes.count == 1)
+        #expect(recorder.writes.first?.outcome == .pass)
+        #expect(recorder.writes.first?.confirmedAt != nil)
     }
 
     private func state(

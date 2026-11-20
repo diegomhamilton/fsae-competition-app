@@ -5,6 +5,7 @@ struct FocusedResultInputView: View {
     let form: FocusedResultForm
     let testCaseID: String
     let focusedField: FocusState<FocusedResultField?>.Binding
+    let selectOutcome: (InspectionOutcome) -> Void
     let addPhoto: () -> Void
 
     var body: some View {
@@ -38,13 +39,19 @@ struct FocusedResultInputView: View {
                 layout {
                     ForEach([InspectionOutcome.fail, .pass], id: \.self) { outcome in
                         Button {
-                            form.selectOutcome(outcome)
-                            if outcome == .fail { focusedField.wrappedValue = .notes }
+                            selectOutcome(outcome)
                         } label: {
-                            Label(outcome.displayName, systemImage: outcome == .fail ? "xmark" : "checkmark")
-                                .font(.title2.bold())
-                                .frame(maxWidth: .infinity, minHeight: 80)
-                                .contentShape(.rect(cornerRadius: 24))
+                            HStack(spacing: 6) {
+                                Image(systemName: outcome == .fail ? "xmark" : "checkmark")
+                                    .accessibilityHidden(true)
+                                Text(outcome.displayName)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.65)
+                                    .allowsTightening(true)
+                            }
+                            .font(.title2.bold())
+                            .frame(maxWidth: .infinity, minHeight: 80)
+                            .contentShape(.rect(cornerRadius: 24))
                         }
                         .inspectionButtonStyle(tint: outcome == .fail ? .fsaeRed : .fsaeGreen)
                         .accessibilityIdentifier(InspectionAccessibilityIdentifier.testStepOutcome(stepID: form.step.id, outcome: outcome).rawValue)

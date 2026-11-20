@@ -1,6 +1,8 @@
 {
   "code": "02_body",
   "title": "Body Inspection",
+  "subject": "Bodywork",
+  "category": "inspection",
   "displayOrder": 2,
   "sections": [
     {

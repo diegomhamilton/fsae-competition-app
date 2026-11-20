@@ -2,10 +2,10 @@ import SwiftUI
 
 struct StageSubmissionAction: View {
     private enum Strings {
-        static let submit = "Submit stage"
-        static let submitting = "Submitting stage..."
-        static let submitted = "Stage submitted"
-        static let failed = "Stage could not be submitted. Your results are kept; try again."
+        static var submit: String { "Submit stage".inspectionLocalized }
+        static var submitting: String { "Submitting stage...".inspectionLocalized }
+        static var submitted: String { "Stage submitted".inspectionLocalized }
+        static var failed: String { "Stage could not be submitted. Your results are kept; try again.".inspectionLocalized }
     }
     let canSubmit: Bool
     let hasSubmitted: Bool

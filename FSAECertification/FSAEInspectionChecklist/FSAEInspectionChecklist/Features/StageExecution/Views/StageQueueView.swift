@@ -22,6 +22,7 @@ struct StageQueueView: View {
             rememberOffset: presentation.rememberQueueOffset, revealID: presentation.queueRevealID) {
                 StageOverviewHeader(
                     team: team, confirmedCount: confirmed, totalCount: total,
+                    category: stage.category,
                     needsReviewCount: Set(focusedIssues.filter {
                         $0.issueID.hasPrefix("flaggedIssue.")
                     }.map(\.stepID)).count,

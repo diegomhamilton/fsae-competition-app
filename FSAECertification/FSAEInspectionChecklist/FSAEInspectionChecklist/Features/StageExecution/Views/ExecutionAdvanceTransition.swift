@@ -8,7 +8,7 @@ struct ExecutionAdvanceTransition<Content: View>: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private var usesReducedMotion: Bool {
         #if DEBUG
-        reduceMotion || ProcessInfo.processInfo.arguments.contains("-inspection-reduce-motion")
+        reduceMotion || InspectionSnapshotLaunch.current.includes("-inspection-reduce-motion")
         #else
         reduceMotion
         #endif

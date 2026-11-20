@@ -2,11 +2,11 @@ import Foundation
 
 extension InspectionTestCaseValidationIssue {
     private enum Strings {
-        static let outcome = "Select an outcome before submission."
-        static let notes = "Failed outcomes require judge notes."
-        static let evidence = "Add the required photo evidence."
-        static let measurement = "Measurement value is required."
-        static let invalidMeasurement = "Measurement is outside the allowed format or range."
+        static var outcome: String { "Select an outcome before submission.".inspectionLocalized }
+        static var notes: String { "Failed outcomes require judge notes.".inspectionLocalized }
+        static var evidence: String { "Add the required photo evidence.".inspectionLocalized }
+        static var measurement: String { "Measurement value is required.".inspectionLocalized }
+        static var invalidMeasurement: String { "Measurement is outside the allowed format or range.".inspectionLocalized }
     }
     var localizedMessage: String {
         switch code {

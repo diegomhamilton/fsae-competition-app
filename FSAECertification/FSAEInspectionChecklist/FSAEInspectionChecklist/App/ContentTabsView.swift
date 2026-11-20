@@ -12,10 +12,11 @@ struct ContentTabsView: View {
         let bindings = ContentViewBindings(appCoordinator: appCoordinator)
 
         TabView(selection: bindings.selectedScreenBinding) {
-            Tab("Sessions", systemImage: "person.2", value: .sessionSelector) {
+            Tab("Sessions".inspectionLocalized, systemImage: "person.2", value: .sessionSelector) {
                 NavigationStack {
                     SessionSelectorView(
-                        coordinator: appCoordinator.eventCoordinator.sessionSelectionCoordinator
+                        coordinator: appCoordinator.eventCoordinator.sessionSelectionCoordinator,
+                        stages: appCoordinator.eventCoordinator.stages
                     ) { teamID in
                         Task {
                             await appCoordinator.selectTeam(id: teamID)
@@ -26,7 +27,7 @@ struct ContentTabsView: View {
                 }
             }
 
-            Tab("Team", systemImage: "gauge.with.dots.needle.50percent", value: .dashboard) {
+            Tab("Team".inspectionLocalized, systemImage: "gauge.with.dots.needle.50percent", value: .dashboard) {
                 NavigationStack {
                     if let executionCoordinator = bindings.executionCoordinator {
                         ActiveTeamDashboardView(
@@ -66,7 +67,7 @@ struct ContentTabsView: View {
                             }
                         }
                     } else {
-                        EmptyFlowState(title: "Select a team to start inspection.")
+                        EmptyFlowState(title: "Select a team to start inspection.".inspectionLocalized)
                     }
                 }
             }

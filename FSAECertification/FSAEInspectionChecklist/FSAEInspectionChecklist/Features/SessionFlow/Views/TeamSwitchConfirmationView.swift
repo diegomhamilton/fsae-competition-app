@@ -7,14 +7,14 @@ import SwiftUI
 
 struct TeamSwitchConfirmationView: View {
     fileprivate enum Strings {
-        static let eyebrow = "Team Switch"
-        static let title = "Save Draft Before Switching?"
-        static let subtitle = "The current session has local inspection work that should be saved before loading another team."
-        static let currentTeam = "Current team"
-        static let targetTeam = "Target team"
-        static let savedDraft = "Draft will be saved with the current stage pointer."
-        static let cancel = "Cancel"
-        static let saveAndSwitch = "Save & Switch"
+        static var eyebrow: String { "Team Switch".inspectionLocalized }
+        static var title: String { "Save Draft Before Switching?".inspectionLocalized }
+        static var subtitle: String { "The current session has local inspection work that should be saved before loading another team.".inspectionLocalized }
+        static var currentTeam: String { "Current team".inspectionLocalized }
+        static var targetTeam: String { "Target team".inspectionLocalized }
+        static var savedDraft: String { "Draft will be saved with the current stage pointer.".inspectionLocalized }
+        static var cancel: String { "Cancel".inspectionLocalized }
+        static var saveAndSwitch: String { "Save & Switch".inspectionLocalized }
     }
 
     @ObservedObject var coordinator: InspectionExecutionCoordinator

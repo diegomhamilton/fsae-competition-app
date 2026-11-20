@@ -2,8 +2,8 @@ import SwiftUI
 
 struct DraftSaveRecoveryView: View {
     private enum Strings {
-        static let failure = "Some results could not be saved."
-        static let retry = "Retry saving"
+        static var failure: String { "Some results could not be saved.".inspectionLocalized }
+        static var retry: String { "Retry saving".inspectionLocalized }
     }
     let hasFailedSave: Bool
     let retry: @MainActor () async -> Bool
