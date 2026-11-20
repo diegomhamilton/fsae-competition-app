@@ -100,7 +100,12 @@ struct FocusedResultView: View {
                             }
                         }
                     )
-                    FocusedResultActionView(form: form, confirm: confirm, title: isReviewCorrection ? FocusedResultStrings.saveReview : FocusedResultStrings.saveNext)
+                    FocusedResultActionView(
+                        form: form,
+                        isSaving: confirmationTask != nil || form.isConfirming,
+                        confirm: confirm,
+                        title: isReviewCorrection ? FocusedResultStrings.saveReview : FocusedResultStrings.saveNext
+                    )
                 } else {
                     HStack {
                         Spacer()
@@ -118,6 +123,7 @@ struct FocusedResultView: View {
                         form: form,
                         testCaseID: testCaseID,
                         focusedField: $focusedField,
+                        selectOutcome: selectOutcome,
                         addPhoto: { form.preparePhotoReplacement(nil); showsPhotoSources = true }
                     )
                 }
@@ -179,7 +185,7 @@ struct FocusedResultView: View {
         .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: form.isReady)
         .animation(reduceMotion ? nil : .smooth(duration: 0.22), value: form.isEditingNotes)
         .controlSize(.large)
-        .disabled(form.isConfirming || form.didConfirm)
+        .disabled(confirmationTask != nil || form.isConfirming || form.didConfirm)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("execution.result-component")
         .sheet(isPresented: $showsPhotoSources, onDismiss: openRequestedPhotoSource) {
@@ -262,8 +268,7 @@ struct FocusedResultView: View {
                 focusedField = .notes
             case "auto-advance":
                 if state.id == "step-3" {
-                    form.selectOutcome(.pass)
-                    confirm()
+                    selectOutcome(.pass)
                 }
             case "measurement":
                 focusedField = .measurement
@@ -308,6 +313,15 @@ struct FocusedResultView: View {
         }
     }
 
+    private func selectOutcome(_ outcome: InspectionOutcome) {
+        guard confirmationTask == nil else { return }
+        if form.selectOutcome(outcome) {
+            confirm()
+        } else if outcome == .fail {
+            focusedField = .notes
+        }
+    }
+
     private func confirm() {
         guard confirmationTask == nil else { return }
         focusedField = nil
@@ -318,7 +332,9 @@ struct FocusedResultView: View {
                 onConfirmationActivityChanged(false)
                 return
             }
-            do { try await Task.sleep(for: .milliseconds(550)) }
+            do {
+                if !reduceMotion { try await Task.sleep(for: .milliseconds(220)) }
+            }
             catch {
                 confirmationTask = nil
                 onConfirmationActivityChanged(false)

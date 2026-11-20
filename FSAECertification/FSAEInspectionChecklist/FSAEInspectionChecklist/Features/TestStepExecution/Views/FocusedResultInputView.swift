@@ -5,6 +5,7 @@ struct FocusedResultInputView: View {
     let form: FocusedResultForm
     let testCaseID: String
     let focusedField: FocusState<FocusedResultField?>.Binding
+    let selectOutcome: (InspectionOutcome) -> Void
     let addPhoto: () -> Void
 
     var body: some View {
@@ -38,8 +39,7 @@ struct FocusedResultInputView: View {
                 layout {
                     ForEach([InspectionOutcome.fail, .pass], id: \.self) { outcome in
                         Button {
-                            form.selectOutcome(outcome)
-                            if outcome == .fail { focusedField.wrappedValue = .notes }
+                            selectOutcome(outcome)
                         } label: {
                             HStack(spacing: 6) {
                                 Image(systemName: outcome == .fail ? "xmark" : "checkmark")
