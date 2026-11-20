@@ -12,25 +12,39 @@ struct StageSubmissionAction: View {
     let results: [TestCaseDraft]
     let submit: @MainActor () async -> Bool
     let onActivityChanged: (Bool) -> Void
-    @State private var isSubmitting = false
-    @State private var succeeded = false
-    @State private var failed = false
+    @State private var coordinator: StageSubmissionCoordinator
     #if DEBUG
     @State private var preparedSnapshot = false
     #endif
 
+    init(
+        canSubmit: Bool,
+        hasSubmitted: Bool,
+        results: [TestCaseDraft],
+        submit: @escaping @MainActor () async -> Bool,
+        onActivityChanged: @escaping (Bool) -> Void,
+        coordinator: StageSubmissionCoordinator? = nil
+    ) {
+        self.canSubmit = canSubmit
+        self.hasSubmitted = hasSubmitted
+        self.results = results
+        self.submit = submit
+        self.onActivityChanged = onActivityChanged
+        _coordinator = State(initialValue: coordinator ?? StageSubmissionCoordinator())
+    }
+
     var body: some View {
         VStack(alignment: .leading) {
-            if failed {
+            if coordinator.failed {
                 Text(Strings.failed).foregroundStyle(Color.fsaeRed)
                     .accessibilityIdentifier("execution.review.submit-failure")
             }
-            if hasSubmitted || succeeded {
+            if hasSubmitted || coordinator.succeeded {
                 Label(Strings.submitted, systemImage: "checkmark.circle.fill")
                     .foregroundStyle(Color.fsaeGreen).font(.headline)
                     .frame(maxWidth: .infinity, minHeight: 56)
                     .accessibilityIdentifier("execution.review.submitted")
-            } else if isSubmitting {
+            } else if coordinator.isSubmitting {
                 ProgressView(Strings.submitting).frame(maxWidth: .infinity, minHeight: 56)
             } else {
                 Button { performSubmission() } label: {
@@ -44,8 +58,7 @@ struct StageSubmissionAction: View {
         }
         .padding().background(Color.fsaeSurface)
         .onChange(of: results) { _, _ in
-            succeeded = false
-            failed = false
+            coordinator.resultsChanged()
         }
         #if DEBUG
         .task {
@@ -59,15 +72,9 @@ struct StageSubmissionAction: View {
     }
 
     private func performSubmission() {
-        guard canSubmit, !isSubmitting, !hasSubmitted, !succeeded else { return }
-        isSubmitting = true
-        failed = false
-        onActivityChanged(true)
         Task {
-            succeeded = await submit()
-            failed = !succeeded
-            isSubmitting = false
-            onActivityChanged(false)
+            await coordinator.perform(canSubmit: canSubmit, hasSubmitted: hasSubmitted,
+                                      submit: submit, onActivityChanged: onActivityChanged)
         }
     }
 }
